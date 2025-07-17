@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import ProjectSelection from '../components/ProjectSelection'
 import AgentSelection from '../components/AgentSelection'
-import CallLogs from '../components/CallLogs'
+import Dashboard from '../components/Dashboard'
 
 export default function Home() {
   const [currentView, setCurrentView] = useState('projects')
@@ -16,7 +16,7 @@ export default function Home() {
 
   const handleAgentSelect = (agent: any) => {
     setSelectedAgent(agent)
-    setCurrentView('sessions')
+    setCurrentView('dashboard')
   }
 
   const handleBackToProjects = () => {
@@ -40,9 +40,9 @@ export default function Home() {
           onBack={handleBackToProjects}
         />
       )
-    case 'sessions':
+    case 'dashboard':
       return (
-        <CallLogs 
+        <Dashboard 
           project={selectedProject}
           agent={selectedAgent}
           onBack={handleBackToAgents}
