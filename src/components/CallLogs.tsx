@@ -1,13 +1,12 @@
-// components/CallLogs.tsx
+// components/CallLogs.tsx - FIXED VERSION
 'use client'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { 
   Search, 
   Filter, 
   Download, 
   Phone, 
   Clock, 
-  User, 
   CheckCircle, 
   XCircle,
   Loader2,
@@ -47,7 +46,8 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
   const [selectedCalls, setSelectedCalls] = useState<Set<string>>(new Set())
   const [expandedCall, setExpandedCall] = useState<string | null>(null)
   
-  const { data: calls, loading, hasMore, error, loadMore } = useInfiniteScroll('pype_voice_call_logs', {
+  // Memoize the query options to prevent unnecessary re-renders
+  const queryOptions = useMemo(() => ({
     select: `
       id,
       call_id,
@@ -70,15 +70,22 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     ],
     orderBy: { column: 'created_at', ascending: false },
     limit: 30
-  })
+  }), [agent.id])
 
-
+  const { data: calls, loading, hasMore, error, loadMore } = useInfiniteScroll('pype_voice_call_logs', queryOptions)
 
   // Intersection observer for infinite scroll
   const loadMoreRef = useRef<HTMLDivElement>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    // Cleanup previous observer
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+    }
+
+    // Create new observer
+    observerRef.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !loading) {
           loadMore()
@@ -88,14 +95,27 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     )
 
     if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current)
+      observerRef.current.observe(loadMoreRef.current)
     }
 
-    return () => observer.disconnect()
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+    }
   }, [hasMore, loading, loadMore])
 
-  // Filter calls based on search
-  const filteredCalls = calls
+  // Filter calls based on search (client-side filtering)
+  const filteredCalls = useMemo(() => {
+    if (!search) return calls
+    
+    const searchLower = search.toLowerCase()
+    return calls.filter((call: CallLog) => 
+      call.customer_number.toLowerCase().includes(searchLower) ||
+      call.call_id.toLowerCase().includes(searchLower) ||
+      call.call_ended_reason.toLowerCase().includes(searchLower)
+    )
+  }, [calls, search])
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -132,13 +152,15 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
   }
 
   const handleSelectCall = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedCalls)
-    if (checked) {
-      newSelected.add(id)
-    } else {
-      newSelected.delete(id)
-    }
-    setSelectedCalls(newSelected)
+    setSelectedCalls(prev => {
+      const newSelected = new Set(prev)
+      if (checked) {
+        newSelected.add(id)
+      } else {
+        newSelected.delete(id)
+      }
+      return newSelected
+    })
   }
 
   const toggleCallExpansion = (callId: string) => {
