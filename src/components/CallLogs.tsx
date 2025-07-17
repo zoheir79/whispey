@@ -15,6 +15,8 @@ import {
   Calendar
 } from 'lucide-react'
 import { useInfiniteScroll } from '../../hooks/useSupabase'
+import SimpleAudioPlayer from './SimpleAudioPlayer'
+import { extractS3Key } from '../../utils/s3'
 
 interface CallLog {
   id: string
@@ -31,7 +33,6 @@ interface CallLog {
   call_ended_at: string
   recording_url: string
   duration_seconds: number
-  voice_recording_url: string
   created_at: string
 }
 
@@ -62,7 +63,6 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
       call_ended_at,
       duration_seconds,
       recording_url,
-      voice_recording_url,
       created_at
     `,
     filters: [
@@ -277,6 +277,9 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Recordings
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -325,6 +328,16 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                           <ChevronDown className={`w-4 h-4 transition-transform ${expandedCall === call.id ? 'rotate-180' : ''}`} />
                           Details
                         </button>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {call.recording_url? (
+                          <SimpleAudioPlayer 
+                            s3Key={extractS3Key(call.recording_url)} 
+                            callId={call.call_id}
+                          />
+                        ) : (
+                          <span className="text-gray-400">No recording</span>
+                        )}
                       </td>
                     </tr>
                     {expandedCall === call.id && (
