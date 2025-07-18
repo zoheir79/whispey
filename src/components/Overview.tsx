@@ -185,7 +185,7 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-8">
       {/* Date Filters */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <div className="flex flex-col sm:flex-row items-right  gap-4">
         {/* Quick Filters */}
         <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
           {quickFilters.map((filter) => (
