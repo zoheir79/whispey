@@ -57,7 +57,8 @@ export const useInfiniteScroll = (table: string, options: any = {}) => {
         // Remove duplicates by checking existing IDs
         setData(prevData => {
           const existingIds = new Set(prevData.map(item => item.id))
-          const uniqueNewData = fetchedData.filter(item => !existingIds.has(item?.id))
+          //@ts-ignore
+          const uniqueNewData = fetchedData.filter(item => !existingIds.has(item.id))
           return [...prevData, ...uniqueNewData]
         })
         offsetRef.current += fetchedData.length
