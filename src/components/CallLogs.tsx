@@ -55,6 +55,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
       metadata,
       environment,
       transcript_type,
+      avg_latency,
       transcript_json,
       created_at
     `,
@@ -247,7 +248,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                         )}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
-                        {call?.avg_latency ? `${call.avg_latency}ms` : "-"}
+                        {call?.avg_latency ? `${call.avg_latency.toFixed(4)}ms` : "-"}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         {call.metadata ? (

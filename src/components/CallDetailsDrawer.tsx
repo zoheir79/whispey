@@ -52,35 +52,65 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   // Calculate conversation metrics
   const conversationMetrics = useMemo(() => {
     if (!transcriptLogs?.length) return null
-
+  
     const metrics = {
       stt: [] as number[],
       llm: [] as number[],
       tts: [] as number[],
       eou: [] as number[],
       agentResponseLatencies: [] as number[],
+      totalTurnLatencies: [] as number[], // NEW: Complete turn latency
+      endToEndLatencies: [] as number[], // NEW: User speak to agent speak
       totalTurns: transcriptLogs.length,
     }
-
+  
     transcriptLogs.forEach((log: TranscriptLog) => {
+      // Individual component latencies
       if (log.stt_metrics?.duration) metrics.stt.push(log.stt_metrics.duration)
       if (log.llm_metrics?.ttft) metrics.llm.push(log.llm_metrics.ttft)
       if (log.tts_metrics?.ttfb) metrics.tts.push(log.tts_metrics.ttfb)
       if (log.eou_metrics?.end_of_utterance_delay) metrics.eou.push(log.eou_metrics.end_of_utterance_delay)
-      if (log.user_transcript && log.agent_response && log.llm_metrics?.ttft && log.tts_metrics?.ttfb) {
-        const agentResponseTime = (log.llm_metrics.ttft || 0) + (log.tts_metrics.ttfb || 0)
+  
+      // CORRECTED: Agent response time should include TTS duration, not just TTFB
+      if (log.user_transcript && log.agent_response && log.llm_metrics?.ttft && log.tts_metrics) {
+        const llmTime = log.llm_metrics.ttft || 0
+        const ttsTime = (log.tts_metrics.ttfb || 0) + (log.tts_metrics.duration || 0) // Include full TTS time
+        const agentResponseTime = llmTime + ttsTime
         metrics.agentResponseLatencies.push(agentResponseTime)
       }
+  
+      // NEW: Calculate total turn latency (STT + LLM + TTS)
+      if (log.stt_metrics?.duration && log.llm_metrics?.ttft && log.tts_metrics) {
+        const sttTime = log.stt_metrics.duration || 0
+        const llmTime = log.llm_metrics.ttft || 0
+        const ttsTime = (log.tts_metrics.ttfb || 0) + (log.tts_metrics.duration || 0)
+        const totalTurnTime = sttTime + llmTime + ttsTime
+        metrics.totalTurnLatencies.push(totalTurnTime)
+      }
+  
+      // NEW: Calculate end-to-end latency (includes EOU detection)
+      if (log.eou_metrics?.end_of_utterance_delay && log.stt_metrics?.duration && 
+          log.llm_metrics?.ttft && log.tts_metrics) {
+        const eouTime = log.eou_metrics.end_of_utterance_delay || 0
+        const sttTime = log.stt_metrics.duration || 0
+        const llmTime = log.llm_metrics.ttft || 0
+        const ttsTime = (log.tts_metrics.ttfb || 0) + (log.tts_metrics.duration || 0)
+        const endToEndTime = eouTime + sttTime + llmTime + ttsTime
+        metrics.endToEndLatencies.push(endToEndTime)
+      }
     })
-
+  
     const calculateStats = (values: number[]) => {
-      if (values.length === 0) return { avg: 0, min: 0, max: 0, count: 0 }
+      if (values.length === 0) return { avg: 0, min: 0, max: 0, count: 0, p95: 0 }
+      const sorted = [...values].sort((a, b) => a - b)
       const avg = values.reduce((sum, val) => sum + val, 0) / values.length
       const min = Math.min(...values)
       const max = Math.max(...values)
-      return { avg, min, max, count: values.length }
+      const p95Index = Math.floor(sorted.length * 0.95)
+      const p95 = sorted[p95Index] || 0
+      return { avg, min, max, count: values.length, p95 }
     }
-
+  
     return {
       ...metrics,
       sttStats: calculateStats(metrics.stt),
@@ -88,11 +118,32 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       ttsStats: calculateStats(metrics.tts),
       eouStats: calculateStats(metrics.eou),
       agentResponseStats: calculateStats(metrics.agentResponseLatencies),
-      avgTotalLatency:
-        calculateStats(metrics.stt).avg + calculateStats(metrics.llm).avg + calculateStats(metrics.tts).avg,
+      totalTurnStats: calculateStats(metrics.totalTurnLatencies), // NEW
+      endToEndStats: calculateStats(metrics.endToEndLatencies), // NEW
+      
+      // CORRECTED: Average total latency should be from actual turn calculations
+      avgTotalLatency: calculateStats(metrics.totalTurnLatencies).avg,
       avgAgentResponseTime: calculateStats(metrics.agentResponseLatencies).avg,
+      avgEndToEndLatency: calculateStats(metrics.endToEndLatencies).avg, // NEW
     }
   }, [transcriptLogs])
+  
+  // CORRECTED: Update the color thresholds and usage
+  const getLatencyColor = (value: number, type: "stt" | "llm" | "tts" | "eou" | "total" | "e2e") => {
+    const thresholds = {
+      stt: { good: 1, fair: 2 },
+      llm: { good: 1, fair: 3 },
+      tts: { good: 1, fair: 2 },
+      eou: { good: 0.5, fair: 1.5 }, // CORRECTED: EOU should be much faster
+      total: { good: 3, fair: 6 },
+      e2e: { good: 4, fair: 8 }, // NEW: End-to-end thresholds
+    }
+    const threshold = thresholds[type]
+    if (value <= threshold.good) return "text-emerald-500"
+    if (value <= threshold.fair) return "text-amber-500"
+    return "text-red-500"
+  }
+  
 
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp * 1000)
@@ -110,19 +161,6 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
     const minutes = Math.floor(elapsed / 60)
     const seconds = Math.floor(elapsed % 60)
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-  }
-
-  const getLatencyColor = (value: number, type: "stt" | "llm" | "tts" | "total") => {
-    const thresholds = {
-      stt: { good: 1, fair: 2 },
-      llm: { good: 1, fair: 3 },
-      tts: { good: 1, fair: 2 },
-      total: { good: 3, fair: 6 },
-    }
-    const threshold = thresholds[type]
-    if (value <= threshold.good) return "text-emerald-500"
-    if (value <= threshold.fair) return "text-amber-500"
-    return "text-red-500"
   }
 
   const downloadTranscript = () => {
@@ -295,7 +333,7 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                       <div
                         className={cn(
                           "text-lg font-semibold",
-                          getLatencyColor(conversationMetrics.eouStats.avg, "total"),
+                          getLatencyColor(conversationMetrics.eouStats.avg, "eou"),
                         )}
                       >
                         {formatDuration(conversationMetrics.eouStats.avg)}
