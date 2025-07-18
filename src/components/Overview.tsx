@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip } from 'recharts'
+
 import { 
   Phone, 
   Clock, 
@@ -106,7 +108,7 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
 
   // Fetch calls data
   const { data: calls, loading, error } = useSupabaseQuery('pype_voice_call_logs', {
-    select: 'id, call_ended_reason, duration_seconds, created_at, customer_number',
+    select: 'id, call_ended_reason, duration_seconds,avg_latency,created_at, customer_number',
     filters: [
       { column: 'agent_id', operator: 'eq', value: agent.id },
       { column: 'created_at', operator: 'gte', value: `${apiDateRange.from}T00:00:00` },
@@ -124,25 +126,31 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
     const successfulCalls = calls.filter(call => call.call_ended_reason === 'completed').length
     const successRate = totalCalls > 0 ? Math.round((successfulCalls / totalCalls) * 100) : 0
     const uniqueCustomers = new Set(calls.map(call => call.customer_number)).size
+    const averageLatency = calls.reduce((sum, call) => sum + (call.avg_latency || 0), 0) / calls.reduce((count, call) => count + (call.avg_latency ? 1 : 0), 0)
 
     // Simple daily data for charts
     const dailyData = calls.reduce((acc, call) => {
-      const date = formatDate(new Date(call.created_at))
-      if (!acc[date]) {
-        acc[date] = { date, calls: 0, minutes: 0 }
+      const dateObj = new Date(call.created_at)
+      const dateKey = dateObj.toISOString().split('T')[0]  // 'YYYY-MM-DD' for sorting
+      const dateLabel = formatDate(dateObj) // e.g. 'Jan 1'
+    
+      if (!acc[dateKey]) {
+        acc[dateKey] = { date: dateLabel, dateKey, calls: 0, minutes: 0 }
       }
-      acc[date].calls += 1
-      acc[date].minutes += Math.round((call.duration_seconds || 0) / 60)
+      acc[dateKey].calls += 1
+      acc[dateKey].minutes += Math.round((call.duration_seconds || 0) / 60)
       return acc
     }, {} as any)
 
-    const chartData = Object.values(dailyData)
+    // @ts-ignore
+    const chartData = Object.values(dailyData).sort((a, b) => a.dateKey.localeCompare(b.dateKey))
 
     return {
       totalCalls,
       totalMinutes,
       successfulCalls,
       successRate,
+      averageLatency,
       uniqueCustomers,
       chartData
     }
@@ -263,12 +271,12 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
             <Card className="border-0 bg-gray-50/50">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 text-emerald-600" />
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-semibold text-gray-900">{analytics.successfulCalls}</p>
-                    <p className="text-sm text-gray-600">Successful</p>
+                    <p className="text-2xl font-semibold text-gray-900">{analytics.averageLatency.toFixed(2)}</p>
+                    <p className="text-sm text-gray-600">overall Latency</p>
                   </div>
                 </div>
               </CardContent>
@@ -277,12 +285,12 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
             <Card className="border-0 bg-gray-50/50">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-semibold text-gray-900">{analytics.successRate}%</p>
-                    <p className="text-sm text-gray-600">Success Rate</p>
+                    <p className="text-2xl font-semibold text-gray-900">{analytics.successfulCalls}</p>
+                    <p className="text-sm text-gray-600">Successful</p>
                   </div>
                 </div>
               </CardContent>
@@ -309,6 +317,7 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
                         tickLine={false}
                         tick={{ fontSize: 12, fill: '#6b7280' }}
                       />
+                      <Tooltip />
                       <Line 
                         type="monotone" 
                         dataKey="calls" 
@@ -341,6 +350,7 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
                         tickLine={false}
                         tick={{ fontSize: 12, fill: '#6b7280' }}
                       />
+                      <Tooltip />
                       <Bar 
                         dataKey="minutes" 
                         fill="#10b981"
