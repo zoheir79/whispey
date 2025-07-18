@@ -1,6 +1,11 @@
 'use client'
 import React, { useState } from 'react'
-import { BarChart3, List } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { 
+  ChevronLeft,
+  BarChart3, 
+  List 
+} from 'lucide-react'
 import Overview from './Overview'
 import CallLogs from './CallLogs'
 
@@ -19,57 +24,50 @@ const Dashboard: React.FC<DashboardProps> = ({ project, agent, onBack }) => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <div className="border-b border-gray-800 px-6 py-4">
-        <button 
-          onClick={onBack}
-          className="text-blue-400 hover:text-blue-300 mb-2"
-        >
-          ← Back to Agents
-        </button>
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">{agent.name}</h1>
-            <p className="text-gray-400 mt-1">{project.name}</p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-white">
+      {/* Simple Header */}
+      <header className="px-6 py-12 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+  <div className="max-w-7xl mx-auto flex row justify-between">
+    <Button variant="ghost" onClick={onBack} className="mb-6 -ml-3 hover:bg-white/50">
+      <ChevronLeft className="h-4 w-4 mr-2" />
+      Back to Agents
+    </Button>
+    
+    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
 
-      {/* Tabs */}
-      <div className="border-b border-gray-800">
-        <div className="px-6">
-          <nav className="flex space-x-8">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-400'
-                      : 'border-transparent text-gray-400 hover:text-gray-300'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              )
-            })}
-          </nav>
-        </div>
-      </div>
+      {/* Right side - Enhanced Tabs */}
+      <nav className="flex space-x-2 bg-white/70 backdrop-blur-sm rounded-xl p-2 shadow-sm border border-white/50 lg:flex-shrink-0">
+        {tabs.map((tab) => {
+          const Icon = tab.icon
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                activeTab === tab.id
+                  ? 'bg-white text-gray-900 shadow-md ring-1 ring-gray-200'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          )
+        })}
+      </nav>
+    </div>
+  </div>
+</header>
 
       {/* Tab Content */}
-      <div className="flex-1">
+      <main className="flex-1">
         {activeTab === 'overview' && (
           <Overview project={project} agent={agent} />
         )}
         {activeTab === 'logs' && (
           <CallLogs project={project} agent={agent} onBack={onBack} />
         )}
-      </div>
+      </main>
     </div>
   )
 }

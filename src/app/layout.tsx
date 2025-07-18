@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Pype Voice Dashboard',
-  description: 'Call logs dashboard for Pype Voice',
+  title: 'Pype AI',
+  description: 'Will Make Your Life Easier',
 }
 
 export default function RootLayout({
