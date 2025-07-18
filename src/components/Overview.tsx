@@ -2,7 +2,6 @@
 import React, { useState, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip } from 'recharts'
@@ -142,7 +141,7 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
       return acc
     }, {} as any)
 
-    // @ts-ignore
+    // @ts-expect-error - TypeScript doesn't know the structure of dailyData
     const chartData = Object.values(dailyData).sort((a, b) => a.dateKey.localeCompare(b.dateKey))
 
     return {
