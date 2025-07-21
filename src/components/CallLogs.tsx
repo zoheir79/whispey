@@ -111,6 +111,23 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
 
+  const formatToIndianDateTime = (timestamp:any) => {
+    const date = new Date(timestamp)
+    
+    // Add 5 hours and 30 minutes (5.5 hours = 330 minutes)
+    const indianTime = new Date(date.getTime() + (5.5 * 60 * 60 * 1000))
+    
+    return indianTime.toLocaleString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+
+  
   const formatTimeShort = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
@@ -234,7 +251,8 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       </TableCell>
 
                       <TableCell className="text-sm text-muted-foreground">
-                        {call.call_started_at}
+                        {formatToIndianDateTime(call.call_started_at)}
+                        {/* {call.call_started_at} */}
                       </TableCell>
 
 

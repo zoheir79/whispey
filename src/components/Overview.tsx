@@ -17,12 +17,8 @@ import {
   CalendarDays
 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { useSupabaseQuery } from '../../hooks/useSupabase'
+import { useOverviewQuery } from '../../hooks/useOverviewQuery'
 
-const formatDate = (date: Date) => {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  return `${months[date.getMonth()]} ${date.getDate()}`
-}
 
 const subDays = (date: Date, days: number) => {
   const result = new Date(date)
@@ -105,55 +101,13 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
     }
   }
 
-  // Fetch calls data
-  const { data: calls, loading, error } = useSupabaseQuery('pype_voice_call_logs', {
-    select: 'id, call_ended_reason, duration_seconds,avg_latency,created_at, customer_number',
-    filters: [
-      { column: 'agent_id', operator: 'eq', value: agent.id },
-      { column: 'created_at', operator: 'gte', value: `${apiDateRange.from}T00:00:00` },
-      { column: 'created_at', operator: 'lte', value: `${apiDateRange.to}T23:59:59` }
-    ],
-    orderBy: { column: 'created_at', ascending: false }
+  // CHANGE 2: Replace the old useSupabaseQuery with the optimized hook
+  const { data: analytics, loading, error } = useOverviewQuery({
+    agentId: agent.id,
+    dateFrom: apiDateRange.from,
+    dateTo: apiDateRange.to
   })
 
-  // Calculate simple analytics
-  const analytics = useMemo(() => {
-    if (!calls?.length) return null
-
-    const totalCalls = calls.length
-    const totalMinutes = Math.round(calls.reduce((sum, call) => sum + (call.duration_seconds || 0), 0) / 60)
-    const successfulCalls = calls.filter(call => call.call_ended_reason === 'completed').length
-    const successRate = totalCalls > 0 ? Math.round((successfulCalls / totalCalls) * 100) : 0
-    const uniqueCustomers = new Set(calls.map(call => call.customer_number)).size
-    const averageLatency = calls.reduce((sum, call) => sum + (call.avg_latency || 0), 0) / calls.reduce((count, call) => count + (call.avg_latency ? 1 : 0), 0)
-
-    // Simple daily data for charts
-    const dailyData = calls.reduce((acc, call) => {
-      const dateObj = new Date(call.created_at)
-      const dateKey = dateObj.toISOString().split('T')[0]  // 'YYYY-MM-DD' for sorting
-      const dateLabel = formatDate(dateObj) // e.g. 'Jan 1'
-    
-      if (!acc[dateKey]) {
-        acc[dateKey] = { date: dateLabel, dateKey, calls: 0, minutes: 0 }
-      }
-      acc[dateKey].calls += 1
-      acc[dateKey].minutes += Math.round((call.duration_seconds || 0) / 60)
-      return acc
-    }, {} as any)
-
-    // @ts-expect-error - TypeScript doesn't know the structure of dailyData
-    const chartData = Object.values(dailyData).sort((a, b) => a.dateKey.localeCompare(b.dateKey))
-
-    return {
-      totalCalls,
-      totalMinutes,
-      successfulCalls,
-      successRate,
-      averageLatency,
-      uniqueCustomers,
-      chartData
-    }
-  }, [calls])
 
   if (loading) {
     return (
@@ -304,7 +258,7 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
                 <h3 className="text-lg font-semibold text-gray-900 mb-6">Daily Calls</h3>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={analytics.chartData}>
+                    <LineChart data={analytics.dailyData}>
                       <XAxis 
                         dataKey="date" 
                         axisLine={false}
@@ -337,7 +291,8 @@ const Overview: React.FC<OverviewProps> = ({ project, agent }) => {
                 <h3 className="text-lg font-semibold text-gray-900 mb-6">Daily Minutes</h3>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analytics.chartData}>
+                    {/* CHANGE 5: Use analytics.dailyData instead of analytics.chartData */}
+                    <BarChart data={analytics.dailyData}>
                       <XAxis 
                         dataKey="date" 
                         axisLine={false}
