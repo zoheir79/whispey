@@ -84,14 +84,12 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
         const sttTime = log.stt_metrics?.duration || 0
         const llmTime = log.llm_metrics?.ttft || 0
         const ttsTime = (log.tts_metrics?.ttfb || 0) + (log.tts_metrics?.duration || 0)
-        const totalTurnTime = sttTime + llmTime + ttsTime
+        const totalTurnTime = llmTime + ttsTime + sttTime
 
-        
         if(totalTurnTime > 0)
         {
           metrics.totalTurnLatencies.push(totalTurnTime)
         }
-
       }
   
       // NEW: Calculate end-to-end latency (includes EOU detection)
@@ -258,10 +256,10 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
               <div
                 className={cn(
                   "text-2xl font-bold",
-                  conversationMetrics ? getLatencyColor(conversationMetrics.avgTotalLatency, "total") : "",
+                  conversationMetrics ? getLatencyColor(conversationMetrics.avgEndToEndLatency, "total") : "",
                 )}
               >
-                {conversationMetrics ? formatDuration(conversationMetrics.avgTotalLatency) : "N/A"}
+                {conversationMetrics ? formatDuration(conversationMetrics.avgEndToEndLatency) : "N/A"}
               </div>
               <div className="text-sm text-muted-foreground">Avg Latency</div>
             </div>
