@@ -42,6 +42,7 @@ interface CampaignLog {
   createdAt: string
   uploadedAt: string
   real_attempt_count:number
+  system_error_count:number
 }
 
 interface CampaignLogsProps {
@@ -616,8 +617,8 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
                       <TableHead className="w-[160px] font-semibold text-foreground">FPO Name</TableHead>
                       <TableHead className="w-[120px] font-semibold text-foreground">FPO Login ID</TableHead>
                       <TableHead className="w-[100px] font-semibold text-foreground">Status</TableHead>
-                                             <TableHead className="w-[90px] font-semibold text-foreground">Real Attempts</TableHead>
-                      <TableHead className="w-[200px] font-semibold text-foreground">Source File</TableHead>
+                      <TableHead className="w-[90px] font-semibold text-foreground">Retry Attempts</TableHead>
+                      <TableHead className="w-[200px] font-semibold text-foreground">System  Error</TableHead>
                       <TableHead className="w-[140px] font-semibold text-foreground pr-6">Created At</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -669,14 +670,11 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
                         </TableCell>
 
                         <TableCell className="py-4">
-                          <div className="flex items-center gap-2">
-                            <FileText className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-xs text-gray-600 truncate max-w-[180px]" title={log.sourceFile}>
-                              {log.sourceFile.split('/').pop()}
-                            </span>
+                          <div className="flex items-center gap-2 text-sm font-medium">
+                            <Clock className="w-3 h-3 text-muted-foreground" />
+                            {log.system_error_count}
                           </div>
                         </TableCell>
-
                         <TableCell className="text-sm text-muted-foreground py-4 pr-6">
                           {formatDateTime(log.createdAt)}
                         </TableCell>
