@@ -29,6 +29,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider
+      signInUrl='/sign-in'
       appearance={{
         variables: {
           colorPrimary: "#2563eb", // Blue-600

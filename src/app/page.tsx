@@ -10,16 +10,14 @@ export default function Home() {
   const { isSignedIn, isLoaded } = useUser()
   const router = useRouter()
 
-  // ✅ move useEffect before any return
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      router.push('/sign-in')
+      router.push('/sign') // This ensures your custom page is used
     }
   }, [isLoaded, isSignedIn, router])
 
-  // ✅ safely return spinner or content
   if (!isLoaded) return <LoadingSpinner />
-  if (!isSignedIn) return null // wait for redirect (or show message/spinner)
+  if (!isSignedIn) return <LoadingSpinner />
 
   return <ProjectSelection />
 }
