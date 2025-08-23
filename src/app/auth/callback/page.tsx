@@ -19,30 +19,18 @@ function CallbackComponent() {
       return;
     }
 
-    const validateToken = async () => {
-      try {
-        const res = await fetch(`/api/validate-sso-token?token=${token}`);
-        const data = await res.json();
-
-        if (res.ok && data.valid) {
-          // Token valid, redirect
-          router.replace(redirect);
-        } else {
-          setError(data.detail || 'Invalid token');
-        }
-      } catch (err) {
-        setError('Something went wrong while validating the token');
-      }
-    };
-
-    validateToken();
+    // With our JWT system, we can simply set the token in a cookie and redirect
+    // The middleware will handle validation on subsequent requests
+    document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+    router.replace(redirect);
+    
   }, [searchParams, router]);
 
   if (error) {
-    return <div style={{ padding: '2rem', color: 'red' }}>SSO Error: {error}</div>;
+    return <div style={{ padding: '2rem', color: 'red' }}>Authentication Error: {error}</div>;
   }
 
-  return <div style={{ padding: '2rem' }}>Validating, please wait...</div>;
+  return <div style={{ padding: '2rem' }}>Redirecting, please wait...</div>;
 }
 
 // Default export with Suspense boundary

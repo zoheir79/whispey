@@ -1,10 +1,58 @@
 'use client';
 
-import { SignIn } from '@clerk/nextjs';
+import { useState } from 'react';
 import Image from 'next/image';
-import { Mic, Sparkles, Shield, Zap } from 'lucide-react';
+import { Mic, Sparkles, Shield, Zap, Loader2 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function AuthPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/dashboard';
+  
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const payload = isLogin 
+        ? { email, password } 
+        : { email, password, firstName, lastName };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Authentication failed');
+      }
+
+      // Set auth token in cookie
+      document.cookie = `auth-token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+
+      // Redirect to dashboard or requested page
+      router.push(redirectUrl);
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white flex">
       {/* Left Side - Branding & Value Proposition */}
@@ -30,7 +78,7 @@ export default function AuthPage() {
             </h1>
             
             <p className="text-slate-300 text-lg mb-12 leading-relaxed">
-              Join hundereds of engineers and get complete observability into your Voice AI Applications.
+              Join hundreds of engineers and get complete observability into your Voice AI Applications.
             </p>
 
             {/* Features */}
@@ -85,40 +133,115 @@ export default function AuthPage() {
           {/* Header */}
           <div className="text-center lg:text-left">
             <h2 className="text-3xl font-bold text-slate-900 mb-2">
-              Welcome back
+              {isLogin ? 'Welcome back' : 'Create an account'}
             </h2>
             <p className="text-slate-600">
-              Sign in to your account to continue
+              {isLogin ? 'Sign in to your account to continue' : 'Get started with Whispey'}
             </p>
           </div>
 
-          {/* Clerk Sign In Component */}
+          {/* Custom Auth Form */}
           <div className="mt-8">
-            <SignIn 
-              routing="hash"
-              appearance={{
-                elements: {
-                  card: "shadow-none bg-transparent p-0",
-                  formButtonPrimary: "bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 ease-in-out shadow-sm hover:shadow-md",
-                  headerTitle: "hidden",
-                  headerSubtitle: "hidden",
-                  socialButtonsBlockButton: "border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-lg transition-all duration-200 ease-in-out",
-                  socialButtonsBlockButtonText: "font-medium",
-                  formFieldInput: "border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out",
-                  formFieldLabel: "text-slate-700 font-medium mb-2",
-                  footerActionLink: "text-slate-900 hover:text-slate-700 font-medium",
-                  dividerLine: "bg-slate-200",
-                  dividerText: "text-slate-500 font-medium",
-                  formFieldInputShowPasswordButton: "text-slate-500 hover:text-slate-700",
-                  identityPreviewText: "text-slate-600",
-                  identityPreviewEditButton: "text-slate-900 hover:text-slate-700"
-                },
-                layout: {
-                  socialButtonsPlacement: "top"
-                }
-              }}
-              redirectUrl="/dashboard"
-            />
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                    Email address
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete={isLogin ? 'current-password' : 'new-password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
+                  />
+                </div>
+
+                {!isLogin && (
+                  <>
+                    <div>
+                      <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-1">
+                        First name
+                      </label>
+                      <input
+                        id="firstName"
+                        name="firstName"
+                        type="text"
+                        autoComplete="given-name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="w-full border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-1">
+                        Last name
+                      </label>
+                      <input
+                        id="lastName"
+                        name="lastName"
+                        type="text"
+                        autoComplete="family-name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="w-full border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 ease-in-out shadow-sm hover:shadow-md flex items-center justify-center"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                      {isLogin ? 'Signing in...' : 'Creating account...'}
+                    </>
+                  ) : (
+                    isLogin ? 'Sign in' : 'Create account'
+                  )}
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-6 text-center">
+              <button 
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-slate-900 hover:text-slate-700 font-medium text-sm"
+              >
+                {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
+              </button>
+            </div>
           </div>
 
           {/* Trust Indicators */}
