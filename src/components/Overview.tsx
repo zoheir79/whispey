@@ -208,7 +208,7 @@ const Overview: React.FC<OverviewProps> = ({
       }
     }
     run()
-  }, [customTotals, dateRange.from, dateRange.to, roleLoading, agent.id])
+  }, [customTotals, dateRange.from, dateRange.to, roleLoading, agent?.id])
 
   const calculateCustomTotals = async () => {
     if (customTotals.length === 0) return
@@ -219,7 +219,7 @@ const Overview: React.FC<OverviewProps> = ({
         customTotals.map(config =>
           CustomTotalsService.calculateCustomTotal(
             config, 
-            agent.id, 
+            agent?.id, 
             dateRange.from, 
             dateRange.to
           )
@@ -323,7 +323,7 @@ const Overview: React.FC<OverviewProps> = ({
   const handleDownloadCustomTotal = async (config: CustomTotalConfig) => {
     try {
       // Build filters mirroring SQL
-      const { andFilters, orString } = buildFiltersForDownload(config, agent.id, dateRange?.from, dateRange?.to)
+      const { andFilters, orString } = buildFiltersForDownload(config, agent?.id, dateRange?.from, dateRange?.to)
       
       // Convertir les filtres au format attendu par fetchFromTable
       const filters = andFilters.map(f => ({
@@ -438,7 +438,7 @@ const Overview: React.FC<OverviewProps> = ({
   const handleSaveCustomTotal = async (config: CustomTotalConfig) => {
 
     try {
-      const result = await CustomTotalsService.saveCustomTotal(config, project.id, agent.id)
+      const result = await CustomTotalsService.saveCustomTotal(config, project?.id, agent?.id)
       if (result.success) {
         await loadCustomTotals() // Reload the list
       } else {
@@ -1138,8 +1138,8 @@ const Overview: React.FC<OverviewProps> = ({
                   <FloatingActionMenu
                     metadataFields={metadataFields}
                     transcriptionFields={transcriptionFields}
-                    agentId={agent.id}
-                    projectId={project.id}
+                    agentId={agent?.id}
+                    projectId={project?.id}
                     userEmail={userEmail}
                     availableColumns={AVAILABLE_COLUMNS}
                     onSaveCustomTotal={handleSaveCustomTotal}

@@ -151,9 +151,9 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }, [projectId, project])
 
   const handleAgentClick = (agent: Agent) => {
-    setSelectedAgent(agent.id)
+    setSelectedAgent(agent?.id)
     setTimeout(() => {
-      router.push(`/agents/${agent.id}`)
+      router.push(`/agents/${agent?.id}`)
     }, 150)
   }
 
@@ -170,9 +170,9 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }
 
   const handleDeleteAgent = async (agent: Agent) => {
-    setDeletingAgent(agent.id)
+    setDeletingAgent(agent?.id)
     try {
-      const response = await fetch(`/api/agents/${agent.id}`, {
+      const response = await fetch(`/api/agents/${agent?.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   const filteredAgents = (agents || []).filter(agent => {
     const matchesSearch = agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       agent.agent_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      agent.id.toLowerCase().includes(searchQuery.toLowerCase())
+      agent?.id?.toLowerCase().includes(searchQuery.toLowerCase())
     
     const matchesStatus = statusFilter === 'all' || 
       (statusFilter === 'active' && agent.is_active) ||
@@ -379,7 +379,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
               <div
                 key={agent.id}
                 className={`group px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0 ${
-                  selectedAgent === agent.id ? 'bg-blue-50' : ''
+                  selectedAgent === agent?.id ? 'bg-blue-50' : ''
                 }`}
                 onClick={() => handleAgentClick(agent)}
               >
@@ -409,7 +409,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                         </span>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>ID: {agent.id.slice(0, 8)}...{agent.id.slice(-4)}</span>
+                        <span>ID: {agent?.id?.slice(0, 8)}...{agent?.id?.slice(-4)}</span>
                         <span>Created {formatDate(agent.created_at)}</span>
                       </div>
                     </div>

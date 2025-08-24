@@ -466,7 +466,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
       orderBy: { column: "created_at", ascending: false },
       limit: 50,
     }
-  }, [agent.id, activeFilters, role])
+  }, [agent?.id, activeFilters, role])
 
   
 
