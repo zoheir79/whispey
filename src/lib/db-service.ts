@@ -79,7 +79,8 @@ export async function fetchFromTable<T = any[]>(options: { table: string } & Que
 /**
  * Insère des données dans une table
  */
-export async function insertIntoTable<T = any>(table: string, data: Record<string, any>): Promise<DbResponse<T>> {
+export async function insertIntoTable<T = any>(options: { table: string; data: Record<string, any> }): Promise<DbResponse<T>> {
+  const { table, data } = options;
   const columns = Object.keys(data);
   const values = Object.values(data);
   
