@@ -60,10 +60,9 @@ export async function POST(request: NextRequest) {
     // Step 1: Update project with retry configuration
     const { error: projectUpdateError } = await updateTable({
         table: 'pype_voice_projects',
-        data: { retry_configuration: retryConfig }, 
-      'id', 
-      projectId
-    )
+        data: { retry_configuration: retryConfig },
+        filters: [{ column: 'id', operator: 'eq', value: projectId }]
+    })
 
     if (projectUpdateError) {
       console.error('Error updating project retry config:', projectUpdateError)

@@ -283,17 +283,19 @@ static async calculateCustomTotal(
       const { error } = await updateTable({
         table: 'pype_voice_custom_totals_configs',
         data: {
-        name: updates.name,
-        description: updates.description,
-        aggregation: updates.aggregation,
-        column_name: updates.column,
-        json_field: updates.jsonField,
-        filters: updates.filters,
-        filter_logic: updates.filterLogic,
-        icon: updates.icon,
-        color: updates.color,
-        updated_at: new Date().toISOString()
-      }, 'id', configId)
+          name: updates.name,
+          description: updates.description,
+          aggregation: updates.aggregation,
+          column_name: updates.column,
+          json_field: updates.jsonField,
+          filters: updates.filters,
+          filter_logic: updates.filterLogic,
+          icon: updates.icon,
+          color: updates.color,
+          updated_at: new Date().toISOString()
+        },
+        filters: [{ column: 'id', operator: 'eq', value: configId }]
+      })
 
       if (error) {
         return { success: false, error: error.message }

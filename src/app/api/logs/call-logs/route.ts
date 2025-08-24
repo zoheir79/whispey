@@ -182,10 +182,12 @@ export async function POST(request: NextRequest) {
       const { error: costError } = await updateTable({
         table: 'pype_voice_call_logs',
         data: {
-        total_llm_cost: total_llm_cost_inr,
-        total_tts_cost: total_tts_cost_inr,
-        total_stt_cost: total_stt_cost_inr
-      }, 'id', insertedLog.id);
+          total_llm_cost: total_llm_cost_inr,
+          total_tts_cost: total_tts_cost_inr,
+          total_stt_cost: total_stt_cost_inr
+        },
+        filters: [{ column: 'id', operator: 'eq', value: insertedLog.id }]
+      });
 
       if (costError) {
         console.log("Total cost insertion error:", costError);
