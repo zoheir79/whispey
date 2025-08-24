@@ -139,7 +139,7 @@ const Overview: React.FC<OverviewProps> = ({
 
 
   const { data: analytics, loading, error } = useOverviewQuery({
-    agentId: agent.id,
+    agentId: agent?.id,
     dateFrom: dateRange.from,
     dateTo: dateRange.to
   })
@@ -149,7 +149,7 @@ const Overview: React.FC<OverviewProps> = ({
     transcriptionFields, 
     loading: fieldsLoading,
     error: fieldsError 
-  } = useDynamicFields(agent.id)
+  } = useDynamicFields(agent?.id)
 
 
   useEffect(() => {
@@ -157,7 +157,7 @@ const Overview: React.FC<OverviewProps> = ({
       const getUserRole = async () => {
         setRoleLoading(true)
         try {
-          const userRole = await getUserProjectRole(userEmail, project.id)
+          const userRole = await getUserProjectRole(userEmail, project?.id)
           setRole(userRole)
         } catch (error) {
           console.error('Failed to load user role:', error)
@@ -171,13 +171,13 @@ const Overview: React.FC<OverviewProps> = ({
       setRoleLoading(false)
       setRole('user') // Default when no user email
     }
-  }, [userEmail, project.id])
+  }, [userEmail, project?.id])
 
 
 
   const loadCustomTotals = async () => {
     try {
-      const configs = await CustomTotalsService.getCustomTotals(project.id, agent.id)
+      const configs = await CustomTotalsService.getCustomTotals(project?.id, agent?.id)
       setCustomTotals(configs)
     } catch (error) {
       console.error('Failed to load custom totals:', error)
