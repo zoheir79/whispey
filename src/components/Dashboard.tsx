@@ -135,11 +135,40 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
   
 
-  const { data: agents, loading: agentLoading, error: agentError, refetch: refetchAgent } = useQuery('agents', {
-    params: {
-      id: shouldFetch ? agentId : undefined
+  const [agents, setAgents] = React.useState<any[]>([])
+  const [agentLoading, setAgentLoading] = React.useState(true)
+  const [agentError, setAgentError] = React.useState<string | null>(null)
+
+  const fetchAgent = React.useCallback(async () => {
+    if (!shouldFetch || !agentId) {
+      setAgents([])
+      setAgentLoading(false)
+      return
     }
-  })
+
+    setAgentLoading(true)
+    setAgentError(null)
+
+    try {
+      const response = await fetch(`/api/agents/${agentId}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch agent')
+      }
+      const agentData = await response.json()
+      setAgents([agentData])
+    } catch (err: any) {
+      setAgentError(err.message)
+      setAgents([])
+    } finally {
+      setAgentLoading(false)
+    }
+  }, [shouldFetch, agentId])
+
+  const refetchAgent = fetchAgent
+
+  React.useEffect(() => {
+    fetchAgent()
+  }, [fetchAgent])
 
   const agent = shouldFetch ? agents?.[0] : null
 
