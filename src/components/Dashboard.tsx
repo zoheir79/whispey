@@ -18,16 +18,15 @@ import {
   Home,
   Circle,
   CalendarDays,
-  Check
+  Check,
+  AlertTriangle,
+  Link as LinkIcon
 } from 'lucide-react'
 import Overview from './Overview'
 import CallLogs from './calls/CallLogs'
 import CampaignLogs from './campaigns/CampaignLogs'
 import Header from '@/components/shared/Header'
-
-import { useQuery } from '../hooks/useDatabase'
 import FieldExtractorDialog from './FieldExtractorLogs'
-import { AlertTriangle, Link as LinkIcon } from 'lucide-react'
 import { 
   Tooltip,
   TooltipContent,
@@ -480,24 +479,24 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       if (vapiStatus?.connected) {
                         // Navigate to settings if connected
                         router.push(`/agents/${agentId}/vapi`)
-                    } else {
-                      // Setup webhook if not connected
-                      handleWebhookSetup()
-                    }
-                  }}
-                  className="ml-4"
-                  variant="outline"
-                  disabled={vapiStatusLoading || connectingWebhook}
-                >
-                  {vapiStatusLoading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : connectingWebhook ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : vapiStatus?.connected ? (
-                    <Bot className="w-4 h-4 mr-2" />
-                  ) : (
-                    <LinkIcon className="w-4 h-4 mr-2" />
-                  )}
+                      } else {
+                        // Setup webhook if not connected
+                        handleWebhookSetup()
+                      }
+                    }}
+                    className="ml-4"
+                    variant="outline"
+                    disabled={vapiStatusLoading || connectingWebhook}
+                  >
+                    {vapiStatusLoading ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : connectingWebhook ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : vapiStatus?.connected ? (
+                      <Bot className="w-4 h-4 mr-2" />
+                    ) : (
+                      <LinkIcon className="w-4 h-4 mr-2" />
+                    )}
                   
                   {vapiStatusLoading ? 'Checking...' :
                   connectingWebhook ? 'Connecting...' :
