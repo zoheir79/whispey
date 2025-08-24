@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserById } from '@/lib/auth-utils';
+import { verifyUserAuth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user ID from request headers (set by middleware)
-    const userId = request.headers.get('x-user-id');
+    // Check authentication (now reads JWT from cookies)
+    const { isAuthenticated, userId } = await verifyUserAuth();
 
-    if (!userId) {
+    if (!isAuthenticated || !userId) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
         { status: 401 }
