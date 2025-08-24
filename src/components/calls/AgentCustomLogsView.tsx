@@ -146,7 +146,7 @@ const getStatusVariant = (status: string) => {
 }
 
 // ===== MAIN COMPONENT =====
-const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, dateRange }): JSX.Element => {
+const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, dateRange }) => {
   // ===== STATE MANAGEMENT =====
   const [selectedViewId, setStoredSelectedViewId] = useLocalStorage(`selectedView-${agentId}`, "all")
   
@@ -463,13 +463,13 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
 
     try {
       const { error } = await insertIntoTable({
-   table: 'pype_voice_agent_call_log_views',
-   data: {
-        agent_id: agentId,
-        name: viewName.trim(
- }),
-        filters: currentFilters,
-        visible_columns: currentColumns,
+        table: 'pype_voice_agent_call_log_views',
+        data: {
+          agent_id: agentId,
+          name: viewName.trim(),
+          filters: currentFilters,
+          visible_columns: currentColumns,
+        }
       })
 
       if (error) throw error
