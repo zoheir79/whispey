@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Force Node.js runtime to avoid Edge Runtime module compatibility issues
+export const runtime = 'nodejs';
+
 // Define which routes are public (don't require authentication)
 const publicPaths = [
   '/sign-in',
