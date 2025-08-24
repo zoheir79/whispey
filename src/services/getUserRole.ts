@@ -5,7 +5,7 @@ interface UserRoleRecord {
 }
 
 export async function getUserProjectRole(email: string, projectId: string) {
-  const { data, error } = await fetchFromTable<UserRoleRecord[]>({
+  const { data, error } = await fetchFromTable<UserRoleRecord>({
     table: 'pype_voice_email_project_mapping',
     select: 'role',
     filters: [
