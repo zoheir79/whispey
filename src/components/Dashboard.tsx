@@ -480,18 +480,51 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       if (vapiStatus?.connected) {
                         // Navigate to settings if connected
                         router.push(`/agents/${agentId}/vapi`)
-                      } else {
-                        // Setup webhook if not connected
-                        handleWebhookSetup()
-                      }
-                    }}
-                    className="ml-4"
-                    variant="outline"
-                    disabled={vapiStatusLoading || connectingWebhook}
                   >
-                    {vapiStatusLoading ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : connectingWebhook ? (
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                )
+              })}
+            </div>
+
+            {isVapiAgent && (
+              <div className="relative">
+                <Button
+                  onClick={() => {
+                    if (vapiStatus?.connected) {
+                      // Navigate to settings if connected
+                      router.push(`/agents/${agentId}/vapi`)
+                    } else {
+                      // Setup webhook if not connected
+                      handleWebhookSetup()
+                    }
+                  }}
+                  className="ml-4"
+                  variant="outline"
+                  disabled={vapiStatusLoading || connectingWebhook}
+                >
+                  {vapiStatusLoading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : connectingWebhook ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : vapiStatus?.connected ? (
+                    <Bot className="w-4 h-4 mr-2" />
+                  ) : (
+                    <LinkIcon className="w-4 h-4 mr-2" />
+                  )}
+                  
+                  {vapiStatusLoading ? 'Checking...' :
+                  connectingWebhook ? 'Connecting...' :
+                  vapiStatus?.connected ? 'Agent Settings' : 'Connect VAPI'}
+                </Button>
+                
+                {/* Status indicator */}
+                {!vapiStatusLoading && vapiStatus && (
+                  <div className="absolute -top-1 -right-1">
+                    {vapiStatus.connected ? (
+                      <div className="w-3 h-3 bg-green-500 rounded-full border-2 border-white" 
+                          title="Webhook connected" />
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     ) : vapiStatus?.connected ? (
                       <Bot className="w-4 h-4 mr-2" />
@@ -570,20 +603,22 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                 </Popover>
               </div>
               
-              <FieldExtractorDialog
-                initialData={JSON.parse(agent?.field_extractor_prompt || '[]')}
-                isEnabled={!!agent?.field_extractor}
-                onSave={async (fieldData, enabled) => {
-                  const response = await fetch(`/api/agents/${agent.id}`, {
-                    method: 'PATCH',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                      field_extractor: enabled,
-                      field_extractor_prompt: JSON.stringify(fieldData)
+              {agent?.id && (
+                <FieldExtractorDialog
+                  initialData={JSON.parse(agent?.field_extractor_prompt || '[]')}
+                  isEnabled={!!agent?.field_extractor}
+                  onSave={async (fieldData, enabled) => {
+                    if (!agent?.id) return
+                    const response = await fetch(`/api/agents/${agent.id}`, {
+                      method: 'PATCH',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        field_extractor: enabled,
+                        field_extractor_prompt: JSON.stringify(fieldData)
+                      })
                     })
-                  })
                   
                   const result = await response.json()
                   const error = !response.ok ? new Error('Failed to update agent') : null
@@ -602,7 +637,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        {activeTab === 'overview' && (
+        {activeTab === 'overview' && agent?.id && (
           <Overview 
             project={project} 
             agent={agent}
@@ -611,10 +646,10 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
             isCustomRange={isCustomRange}
           />
         )}
-        {activeTab === 'logs' && (
+        {activeTab === 'logs' && agent?.id && (
           <CallLogs project={project} agent={agent} onBack={handleBack} />
         )}
-        {activeTab === 'campaign-logs' && isEnhancedProject && (
+        {activeTab === 'campaign-logs' && isEnhancedProject && agent?.id && (
           <CampaignLogs project={project} agent={agent} onBack={handleBack} />
         )}
       </div>
