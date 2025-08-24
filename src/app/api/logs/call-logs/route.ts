@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
 
       // Insert conversation turns into metrics logs
       const { error: turnsError } = await Promise.all(
-        conversationTurns.map(turn => insertIntoTable('pype_voice_metrics_logs', turn))
+        conversationTurns.map(turn => insertIntoTable({ table: 'pype_voice_metrics_logs', data: turn }))
       ).then(results => {
         const errors = results.filter(result => result.error).map(result => result.error);
         return { error: errors.length > 0 ? errors[0] : null };

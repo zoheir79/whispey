@@ -48,12 +48,11 @@ export async function POST(request: NextRequest) {
       const campaign_config = {endDate: end_date, startDate: start_date, dailyEndTime: end_time, dailyStartTime: start_time}
       
       
-      const { error: projectUpdateError } = await updateTable(
-        'pype_voice_projects', 
-        { retry_configuration: retry_config, campaign_config: campaign_config }, 
-        'id', 
-        project_id
-      )
+      const { error: projectUpdateError } = await updateTable({
+   table: 'pype_voice_projects',
+   data: {retry_configuration: retry_config, campaign_config: campaign_config},
+   filters: [{ column: 'id', operator: 'eq', value: project_id }]
+ })
 
       if (projectUpdateError) {
         console.error('Error updating project retry configuration:', projectUpdateError)

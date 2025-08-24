@@ -462,9 +462,12 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
     if (!viewName.trim()) return
 
     try {
-      const { error } = await insertIntoTable("pype_voice_agent_call_log_views", {
+      const { error } = await insertIntoTable({
+   table: 'pype_voice_agent_call_log_views',
+   data: {
         agent_id: agentId,
-        name: viewName.trim(),
+        name: viewName.trim(
+ }),
         filters: currentFilters,
         visible_columns: currentColumns,
       })
@@ -482,7 +485,10 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
 
   const deleteView = useCallback(async (id: string): Promise<void> => {
     try {
-      const { error } = await deleteFromTable("pype_voice_agent_call_log_views", "id", id)
+      const { error } = await deleteFromTable({
+   table: 'pype_voice_agent_call_log_views',
+   filters: [{ column: 'id', operator: 'eq', value: id }]
+ })
 
       if (error) throw error
 

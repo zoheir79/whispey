@@ -262,7 +262,10 @@ static async calculateCustomTotal(
     configId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await deleteFromTable('pype_voice_custom_totals_configs', 'id', configId)
+      const { error } = await deleteFromTable({
+   table: 'pype_voice_custom_totals_configs',
+   filters: [{ column: 'id', operator: 'eq', value: configId }]
+ })
 
       if (error) {
         return { success: false, error: error.message }

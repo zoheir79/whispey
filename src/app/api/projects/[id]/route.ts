@@ -36,12 +36,11 @@ export async function PUT(
       const newHashedToken = hashToken(newApiToken)
 
       // Update the project with the new hashed token
-      const { data, error } = await updateTable(
-        'pype_voice_projects', 
-        { token_hash: newHashedToken }, 
-        'id', 
-        projectId
-      )
+      const { data, error } = await updateTable({
+   table: 'pype_voice_projects',
+   data: {token_hash: newHashedToken},
+   filters: [{ column: 'id', operator: 'eq', value: projectId }]
+ })
 
       if (error) {
         console.error('Error regenerating project token:', error)
@@ -111,12 +110,11 @@ export async function PATCH(
     }
 
     // Update the project with retry configuration
-    const { data, error } = await updateTable(
-      'pype_voice_projects', 
-      { retry_configuration }, 
-      'id', 
-      projectId
-    )
+    const { data, error } = await updateTable({
+   table: 'pype_voice_projects',
+   data: {retry_configuration},
+   filters: [{ column: 'id', operator: 'eq', value: projectId }]
+ })
 
     if (error) {
       console.error('Error updating project:', error)
@@ -177,7 +175,10 @@ export async function DELETE(
     if (agentIds.length > 0) {
       // Delete call logs for each agent individually
       for (const agentId of agentIds) {
-        const { error: callLogError } = await deleteFromTable('pype_voice_call_logs', 'agent_id', agentId)
+        const { error: callLogError } = await deleteFromTable({
+   table: 'pype_voice_call_logs',
+   filters: [{ column: 'agent_id', operator: 'eq', value: agentId }]
+ })
         if (callLogError) {
           console.error(`Error deleting call logs for agent ${agentId}:`, callLogError)
         }
@@ -186,7 +187,10 @@ export async function DELETE(
 
       // 3. Delete metrics logs for each agent individually
       for (const agentId of agentIds) {
-        const { error: metricsError } = await deleteFromTable('pype_voice_metrics_logs', 'session_id', agentId)
+        const { error: metricsError } = await deleteFromTable({
+   table: 'pype_voice_metrics_logs',
+   filters: [{ column: 'session_id', operator: 'eq', value: agentId }]
+ })
         if (metricsError) {
           console.warn(`Warning: Could not delete metrics logs for agent ${agentId}:`, metricsError)
         }
@@ -197,7 +201,10 @@ export async function DELETE(
     console.log('Successfully deleted auth tokens')
 
     // 5. Delete all agents for this project
-    const { error: agentsDeleteError } = await deleteFromTable('pype_voice_agents', 'project_id', projectId)
+    const { error: agentsDeleteError } = await deleteFromTable({
+   table: 'pype_voice_agents',
+   filters: [{ column: 'project_id', operator: 'eq', value: projectId }]
+ })
 
     if (agentsDeleteError) {
       console.error('Error deleting agents:', agentsDeleteError)
@@ -209,7 +216,10 @@ export async function DELETE(
     console.log('Successfully deleted agents')
 
     // 6. Finally, delete the project itself
-    const { error: projectError } = await deleteFromTable('pype_voice_projects', 'id', projectId)
+    const { error: projectError } = await deleteFromTable({
+   table: 'pype_voice_projects',
+   filters: [{ column: 'id', operator: 'eq', value: projectId }]
+ })
 
     if (projectError) {
       console.error('Error deleting project:', projectError)

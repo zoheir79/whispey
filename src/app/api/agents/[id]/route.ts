@@ -95,7 +95,10 @@ export async function DELETE(
     console.log(`Starting cascade delete for agent: ${agentId}`)
 
     // 1. Delete call logs for this agent
-    const { error: callLogsError } = await deleteFromTable('pype_voice_call_logs', 'agent_id', agentId)
+    const { error: callLogsError } = await deleteFromTable({
+   table: 'pype_voice_call_logs',
+   filters: [{ column: 'agent_id', operator: 'eq', value: agentId }]
+ })
 
     if (callLogsError) {
       console.error('Error deleting call logs:', callLogsError)
@@ -107,7 +110,10 @@ export async function DELETE(
     console.log('Successfully deleted call logs')
 
     // 2. Delete metrics logs (adjust based on your schema relationships)
-    const { error: metricsError } = await deleteFromTable('pype_voice_metrics_logs', 'session_id', agentId) // Adjust this field based on your actual schema
+    const { error: metricsError } = await deleteFromTable({
+   table: 'pype_voice_metrics_logs',
+   filters: [{ column: 'session_id', operator: 'eq', value: agentId }]
+ }) // Adjust this field based on your actual schema
 
     // Don't fail if metrics logs have different relationships
     if (metricsError) {
@@ -119,7 +125,10 @@ export async function DELETE(
     console.log('Successfully deleted auth tokens')
 
     // 4. Finally, delete the agent itself
-    const { error: agentError } = await deleteFromTable('pype_voice_agents', 'id', agentId)
+    const { error: agentError } = await deleteFromTable({
+   table: 'pype_voice_agents',
+   filters: [{ column: 'id', operator: 'eq', value: agentId }]
+ })
 
     if (agentError) {
       console.error('Error deleting agent:', agentError)
