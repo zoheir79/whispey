@@ -517,11 +517,11 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                   </div>
                 )}
               </div>
-            </div>
+            )}
           </div>
 
-            {/* Right: Refined Controls */}
-            <div className="flex items-center gap-6">
+          {/* Right: Refined Controls */}
+          <div className="flex items-center gap-6">
               {/* Polished Period Filters */}
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-gray-600">Period</span>
