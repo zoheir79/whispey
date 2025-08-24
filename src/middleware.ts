@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Force Node.js runtime to avoid Edge Runtime module compatibility issues
-export const runtime = 'nodejs';
-
 // Define which routes are public (don't require authentication)
 const publicPaths = [
   '/sign-in',
@@ -21,17 +18,6 @@ function isPublicPath(path: string): boolean {
   );
 }
 
-// Edge-compatible token validation (basic check only)
-function isValidTokenFormat(token: string): boolean {
-  try {
-    // Basic JWT format check: xxx.yyy.zzz
-    const parts = token.split('.');
-    return parts.length === 3 && parts.every(part => part.length > 0);
-  } catch {
-    return false;
-  }
-}
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
@@ -40,26 +26,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Skip API routes except those that need auth
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/protected/')) {
+  // Skip all API routes - they handle their own auth validation
+  if (pathname.startsWith('/api/')) {
     return NextResponse.next();
   }
 
-  // Check for auth token in cookies
+  // Check for auth token in cookies (simple presence check only)
   const token = request.cookies.get('auth-token')?.value;
 
-  // If no token found, redirect to sign-in
-  if (!token) {
-    const signInUrl = new URL('/sign-in', request.url);
-    signInUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(signInUrl);
-  }
-
-  // Basic token format validation (Edge Runtime compatible)
-  const validFormat = isValidTokenFormat(token);
-
-  // If token is invalid, redirect to sign-in
-  if (!validFormat) {
+  // If no token found, redirect to sign-in (token validation done in API routes)
+  if (!token || token.length === 0) {
     const signInUrl = new URL('/sign-in', request.url);
     signInUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(signInUrl);
