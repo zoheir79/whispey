@@ -436,17 +436,17 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <h1 className="text-2xl font-semibold text-gray-900 tracking-tight truncate max-w-[250px] cursor-default">
-                      {agent.name}
+                      {agent?.name || 'Loading...'}
                     </h1>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{agent.name}</p>
+                    <p>{agent?.name || 'Loading...'}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
                 <div className="flex items-center gap-2">
-                  <Badge className={`text-xs font-medium px-3 py-1 rounded-full ${getEnvironmentColor(agent.environment)}`}>
-                    {agent.environment}
+                  <Badge className={`text-xs font-medium px-3 py-1 rounded-full ${getEnvironmentColor(agent?.environment || 'development')}`}>
+                    {agent?.environment || 'development'}
                   </Badge>
                 </div>
               </div>
