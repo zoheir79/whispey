@@ -145,13 +145,13 @@ export async function POST(
       const { data: mapping, error } = await insertIntoTable({
         table: 'pype_voice_email_project_mapping',
         data: {
-        email: email.trim(
-      }),
-        project_id: projectId,
-        role,
-        permissions,
-        added_by_user_id: userId,
-        is_active: true,
+          email: email.trim(),
+          project_id: projectId,
+          role,
+          permissions,
+          added_by_user_id: userId,
+          is_active: true,
+        }
       })
 
       if (error) {

@@ -224,7 +224,9 @@ export async function POST(request: NextRequest) {
         table: 'pype_voice_call_logs',
         data: {
           transcription_metrics: fpoResult?.logData
-        }, 'id', insertedLog.id);
+        },
+        filters: [{ column: 'id', operator: 'eq', value: insertedLog.id }]
+      });
 
         if (insertFpoError) {
           console.error('Error updating FPO transcript log:', insertFpoError);
