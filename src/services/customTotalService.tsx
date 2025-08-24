@@ -44,7 +44,8 @@ export class CustomTotalsService {
   // Get all custom totals for an agent 
   static async getCustomTotals(projectId: string, agentId: string): Promise<CustomTotalConfig[]> {
     try {
-      const { data, error } = await fetchFromTable<Record<string, any>>('pype_voice_custom_totals_configs', {
+      const { data, error } = await fetchFromTable<Record<string, any>>({
+        table: 'pype_voice_custom_totals_configs',
         filters: [
           { column: 'project_id', operator: 'eq', value: projectId },
           { column: 'agent_id', operator: 'eq', value: agentId }
