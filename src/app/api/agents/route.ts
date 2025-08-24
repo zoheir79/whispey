@@ -56,7 +56,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify project exists
-    const { data: project, error: projectError } = await fetchFromTable('pype_voice_projects', {
+    const { data: project, error: projectError } = await fetchFromTable({
+      table: 'pype_voice_projects',
       select: 'id',
       filters: [{ column: 'id', operator: 'eq', value: project_id }],
       limit: 1
@@ -71,7 +72,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if agent with same name already exists in this project  
-    const { data: existingAgents, error: checkError } = await fetchFromTable('pype_voice_agents', {
+    const { data: existingAgents, error: checkError } = await fetchFromTable({
+      table: 'pype_voice_agents',
       select: 'id, name',
       filters: [
         { column: 'project_id', operator: 'eq', value: project_id },
@@ -170,7 +172,8 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const { data: agents, error } = await fetchFromTable('pype_voice_agents', {
+    const { data: agents, error } = await fetchFromTable({
+      table: 'pype_voice_agents',
       select: '*',
       filters: [
         { column: 'project_id', operator: 'eq', value: projectId },
