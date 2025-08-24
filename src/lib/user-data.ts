@@ -68,10 +68,8 @@ export async function getCurrentUserProfile(): Promise<{
 // Server-side function to get current user from JWT auth
 export async function getCurrentJWTUser() {
   try {
-    const headersList = await headers()
-    const authorization = headersList.get('authorization')
-    
-    const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+    // Check authentication (now reads JWT from cookies)
+    const { isAuthenticated, userId } = await verifyUserAuth()
     if (!isAuthenticated || !userId) {
       console.error('User not authenticated')
       return null
