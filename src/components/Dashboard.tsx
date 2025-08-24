@@ -187,24 +187,51 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
   console.log({agent})
 
 
-  const { data: projects, loading: projectLoading, error: projectError } = useQuery('projects', {
-    params: {
-      id: (shouldFetch && agent?.project_id) ? agent.project_id : undefined
+  const [projects, setProjects] = React.useState<any[]>([])
+  const [projectLoading, setProjectLoading] = React.useState(true)
+  const [projectError, setProjectError] = React.useState<string | null>(null)
+
+  const fetchProject = React.useCallback(async () => {
+    if (!shouldFetch || !agent?.project_id) {
+      setProjects([])
+      setProjectLoading(false)
+      return
     }
-  })
+
+    setProjectLoading(true)
+    setProjectError(null)
+
+    try {
+      const response = await fetch(`/api/projects/${agent.project_id}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch project')
+      }
+      const projectData = await response.json()
+      setProjects([projectData])
+    } catch (err: any) {
+      setProjectError(err.message)
+      setProjects([])
+    } finally {
+      setProjectLoading(false)
+    }
+  }, [shouldFetch, agent?.project_id])
+
+  React.useEffect(() => {
+    fetchProject()
+  }, [fetchProject])
 
 
 
   const project = (shouldFetch && agent?.project_id) ? projects?.[0] : null
 
   useEffect(()=>{
-    if(project && agent.project_id){
+    if(project && agent?.project_id && agent?.name){
       setBreadcrumb({
         project: project.name,
         item: agent.name
       })
     }
-  },[agents,projects])
+  },[project, agent])
 
   const handleBack = () => {
     if (agent?.project_id) {
