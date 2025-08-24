@@ -138,80 +138,60 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Simple test response to verify route is working
-    return NextResponse.json({ 
-      message: 'Projects route working',
-      userId: userId,
-      timestamp: new Date().toISOString()
-    }, { status: 200 })
-
-    // Get current user from database (commented out for testing)
-    /*const { data: userData } = await fetchFromTable({
+    // Get current user from database to get email
+    const { data: userData } = await fetchFromTable({
       table: 'pype_voice_users',
       select: 'user_id, name, email',
       filters: [{ column: 'user_id', operator: '=', value: userId }]
     })
     
     const user = Array.isArray(userData) && userData.length > 0 ? userData[0] as any : null
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!user || !user.email) {
+      return NextResponse.json({ error: 'User email not found' }, { status: 400 })
     }
 
-    const userEmail = user.email
-    // Fetch projects linked to user email
-    // Note: This is a more complex query with joins that our simple db-service doesn't handle yet
-    // We'll need to do this in two steps
-    
-    // 1. Get the project mappings for this user
+    // Get project mappings for this user's email (simplified approach)
     const { data: mappings, error } = await fetchFromTable({
       table: 'pype_voice_email_project_mapping',
-      select: 'project_id, role, is_active',
-      filters: [{ column: 'email', operator: '=', value: userEmail }]
+      select: 'project_id, role',
+      filters: [{ column: 'email', operator: '=', value: user.email }]
     })
-    
+
     if (error) {
       console.error('Error fetching project mappings:', error)
       return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
     }
-    
-    // 2. Get the project details for each mapping
-    const projectMappings = []
-    
-    if (Array.isArray(mappings) && mappings.length > 0) {
-      for (const mapping of mappings) {
-        const mappingData = mapping as any
-        const { data: projectData, error: projectError } = await fetchFromTable({
-          table: 'pype_voice_projects',
-          select: 'id, name, description, environment, is_active, owner_user_id, created_at',
-          filters: [{ column: 'id', operator: '=', value: mappingData.project_id }]
-        })
-        
-        if (projectError || !Array.isArray(projectData) || projectData.length === 0) {
-          console.error('Error fetching project data:', projectError)
-          continue
-        }
 
-        const project = projectData[0] as any
-        projectMappings.push({
-          ...project,
-          role: mappingData.role,
-          is_active: mappingData.is_active
-        })
-      }
+    if (!Array.isArray(mappings) || mappings.length === 0) {
+      return NextResponse.json([], { status: 200 })
     }
 
-    if (error) {
-      console.error('Error fetching projects:', error)
+    // Get all project IDs 
+    const projectIds = mappings.map((m: any) => m.project_id)
+    
+    // Fetch all projects in one query
+    const { data: projects, error: projectsError } = await fetchFromTable({
+      table: 'pype_voice_projects',
+      select: 'id, name, description, environment, is_active, created_at',
+      filters: [{ column: 'id', operator: 'IN', value: projectIds }]
+    })
+
+    if (projectsError) {
+      console.error('Error fetching projects:', projectsError)
       return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
     }
 
-    // Return only active projects with user role included
-    const activeProjects = projectMappings
-      .filter(mapping => mapping.is_active)
-      .map(mapping => ({
-        ...mapping,
-        user_role: mapping.role
-      }))
+    // Combine projects with user roles (matching original logic)
+    const projectsWithRoles = (projects as any[] || []).map(project => {
+      const mapping = mappings.find((m: any) => m.project_id === project.id)
+      return {
+        ...project,
+        user_role: mapping?.role || 'member'
+      }
+    })
+
+    // Return only active projects (matching original logic)
+    const activeProjects = projectsWithRoles.filter(project => project.is_active)
 
     return NextResponse.json(activeProjects, { status: 200 })
 
