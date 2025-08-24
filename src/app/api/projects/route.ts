@@ -203,20 +203,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.json([], { status: 200 })
     }
 
-    // Get all project IDs 
-    const projectIds = mappings.map((m: any) => m.project_id)
+    // Get all projects individually (avoids UUID array formatting issues)
+    const projects = []
     
-    // Fetch all projects in one query
-    const { data: projects, error: projectsError } = await fetchFromTable({
-      table: 'pype_voice_projects',
-      select: 'id, name, description, environment, is_active, created_at',
-      filters: [{ column: 'id', operator: 'IN', value: projectIds }]
-    })
-
-    if (projectsError) {
-      console.error('Error fetching projects:', projectsError)
-      return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+    for (const mapping of mappings) {
+      const mappingData = mapping as any
+      const { data: projectData, error: projectError } = await fetchFromTable({
+        table: 'pype_voice_projects',
+        select: 'id, name, description, environment, is_active, created_at',
+        filters: [{ column: 'id', operator: '=', value: mappingData.project_id }]
+      })
+      
+      if (projectError) {
+        console.error('Error fetching project:', mappingData.project_id, projectError)
+        continue // Skip this project but continue with others
+      }
+      
+      if (Array.isArray(projectData) && projectData.length > 0) {
+        projects.push(projectData[0])
+      }
     }
+    
+    console.log('DEBUG: Fetched projects:', projects.length)
 
     // Combine projects with user roles (matching original logic)
     const projectsWithRoles = (projects as any[] || []).map(project => {
