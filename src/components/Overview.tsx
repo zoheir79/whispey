@@ -354,8 +354,8 @@ const Overview: React.FC<OverviewProps> = ({
         select: 'id,agent_id,customer_number,call_id,call_ended_reason,call_started_at,call_ended_at,duration_seconds,metadata,transcription_metrics,avg_latency,created_at',
         filters,
         orderBy: { column: 'created_at', ascending: false },
-        limit: 2000,
-        orCondition
+        limit: 2000
+        // Note: orCondition not supported by current fetchFromTable interface
       })
       if (error) {
         alert(`Failed to fetch logs: ${error.message}`)
