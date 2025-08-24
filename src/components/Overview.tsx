@@ -197,9 +197,8 @@ const Overview: React.FC<OverviewProps> = ({
       try {
         const results = await CustomTotalsService.batchCalculateCustomTotals(
           customTotals,
-          agent.id,
-          dateRange.from,
-          dateRange.to
+          'project-id', // TODO: Get actual project ID
+          agent.id
         )
         setCustomTotalResults(results)
       } catch (e) {
