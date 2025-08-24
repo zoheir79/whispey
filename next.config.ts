@@ -37,9 +37,7 @@ const nextConfig: NextConfig = {
   },
   
   // Configuration pour les modules externes côté serveur
-  experimental: {
-    serverComponentsExternalPackages: ['pg', 'pg-native', 'jsonwebtoken', 'bcryptjs']
-  }
+  serverExternalPackages: ['pg', 'pg-native', 'jsonwebtoken', 'bcryptjs']
 };
 
 export default nextConfig;

@@ -1,7 +1,8 @@
 import { fetchFromTable } from "@/lib/db-service"
 
 export async function getUserProjectRole(email: string, projectId: string) {
-  const { data, error } = await fetchFromTable('pype_voice_email_project_mapping', {
+  const { data, error } = await fetchFromTable({
+        table: 'pype_voice_email_project_mapping',
     select: 'role',
     filters: [
       { column: 'email', operator: 'eq', value: email },

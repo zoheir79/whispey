@@ -115,7 +115,10 @@ export async function POST(request: NextRequest) {
     };
 
     // Insert log into database
-    const { data: insertedLog, error: insertError } = await insertIntoTable('pype_voice_call_logs', logData);
+    const { data: insertedLog, error: insertError } = await insertIntoTable({
+        table: 'pype_voice_call_logs',
+        data: logData
+      });
 
     if (insertError) {
       console.error('Database insert error:', insertError);
@@ -176,7 +179,9 @@ export async function POST(request: NextRequest) {
           callStartedAt: call_started_at
         });
 
-      const { error: costError } = await updateTable('pype_voice_call_logs', {
+      const { error: costError } = await updateTable({
+        table: 'pype_voice_call_logs',
+        data: {
         total_llm_cost: total_llm_cost_inr,
         total_tts_cost: total_tts_cost_inr,
         total_stt_cost: total_stt_cost_inr
@@ -213,7 +218,9 @@ export async function POST(request: NextRequest) {
           field_extractor_prompt: agentConfig.field_extractor_prompt,
         });
 
-        const { error: insertFpoError } = await updateTable('pype_voice_call_logs', {
+        const { error: insertFpoError } = await updateTable({
+        table: 'pype_voice_call_logs',
+        data: {
           transcription_metrics: fpoResult?.logData
         }, 'id', insertedLog.id);
 

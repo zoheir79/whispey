@@ -121,9 +121,12 @@ export async function POST(
       }
 
       // Insert mapping using user_id
-      const { data: newMapping, error } = await insertIntoTable('pype_voice_email_project_mapping', {
+      const { data: newMapping, error } = await insertIntoTable({
+        table: 'pype_voice_email_project_mapping',
+        data: {
         user_id: existingUserData.user_id,
-        email: email.trim(),
+        email: email.trim(
+      }),
         project_id: projectId,
         role,
         permissions,
@@ -139,8 +142,11 @@ export async function POST(
       return NextResponse.json({ message: 'User added to project', member: newMapping, type: 'direct_add' }, { status: 201 })
     } else {
       // Create pending email-based invite
-      const { data: mapping, error } = await insertIntoTable('pype_voice_email_project_mapping', {
-        email: email.trim(),
+      const { data: mapping, error } = await insertIntoTable({
+        table: 'pype_voice_email_project_mapping',
+        data: {
+        email: email.trim(
+      }),
         project_id: projectId,
         role,
         permissions,

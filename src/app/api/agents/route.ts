@@ -137,7 +137,10 @@ export async function POST(request: NextRequest) {
     })
 
     // Insert agent into pype_voice_agents
-    const { data: agent, error: agentError } = await insertIntoTable('pype_voice_agents', agentData)
+    const { data: agent, error: agentError } = await insertIntoTable({
+        table: 'pype_voice_agents',
+        data: agentData
+      })
 
     if (agentError) {
       console.error('❌ Error creating agent:', agentError)

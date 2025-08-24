@@ -72,7 +72,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert project into database
-    const { data: project, error: projectError } = await insertIntoTable('pype_voice_projects', projectData)
+    const { data: project, error: projectError } = await insertIntoTable({
+        table: 'pype_voice_projects',
+        data: projectData
+      })
 
 
     if (projectError) {
@@ -88,7 +91,9 @@ export async function POST(request: NextRequest) {
     // Add creator to email_project_mapping as owner
     const userEmail = user.email
     if (userEmail) {
-      const { error: mappingError } = await insertIntoTable('pype_voice_email_project_mapping', {
+      const { error: mappingError } = await insertIntoTable({
+        table: 'pype_voice_email_project_mapping',
+        data: {
         email: userEmail,
         project_id: project.id,
         role: 'owner',
@@ -99,6 +104,7 @@ export async function POST(request: NextRequest) {
           admin: true
         },
         added_by_user_id: userId
+      }
       })
 
       if (mappingError) {

@@ -137,7 +137,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert log into database
-    const { data: insertedLog, error: insertError } = await insertIntoTable('pype_voice_call_logs', logData)
+    const { data: insertedLog, error: insertError } = await insertIntoTable({
+        table: 'pype_voice_call_logs',
+        data: logData
+      })
 
     if (insertError) {
       console.error('Database insert error:', insertError)
@@ -170,11 +173,17 @@ export async function POST(request: NextRequest) {
       }))
  
       // Insert all conversation turns to database
-      const { error: turnsError } = await insertIntoTable('pype_voice_metrics_logs', conversationTurns[0])
+      const { error: turnsError } = await insertIntoTable({
+        table: 'pype_voice_metrics_logs',
+        data: conversationTurns[0]
+      })
       
       // For bulk insert, we need to insert each turn individually with current db-service
       for (const turn of conversationTurns) {
-        const { error } = await insertIntoTable('pype_voice_metrics_logs', turn)
+        const { error } = await insertIntoTable({
+        table: 'pype_voice_metrics_logs',
+        data: turn
+      })
         if (error) {
           console.error('Error inserting conversation turn:', error)
         }

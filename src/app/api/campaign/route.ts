@@ -58,8 +58,9 @@ export async function POST(request: NextRequest) {
     console.log(`Starting campaign creation for project: ${projectId}`)
 
     // Step 1: Update project with retry configuration
-    const { error: projectUpdateError } = await updateTable('pype_voice_projects', 
-      { retry_configuration: retryConfig }, 
+    const { error: projectUpdateError } = await updateTable({
+        table: 'pype_voice_projects',
+        data: { retry_configuration: retryConfig }, 
       'id', 
       projectId
     )

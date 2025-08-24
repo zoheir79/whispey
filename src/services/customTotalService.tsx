@@ -11,7 +11,9 @@ export class CustomTotalsService {
     agentId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await insertIntoTable('pype_voice_custom_totals_configs', {
+      const { error } = await insertIntoTable({
+        table: 'pype_voice_custom_totals_configs',
+        data: {
         project_id: projectId,
         agent_id: agentId,
         name: config.name,
@@ -24,6 +26,7 @@ export class CustomTotalsService {
         icon: config.icon,
         color: config.color,
         created_by: config.createdBy
+      }
       })
 
       if (error) {
@@ -277,7 +280,9 @@ static async calculateCustomTotal(
     updates: Partial<CustomTotalConfig>
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await updateTable('pype_voice_custom_totals_configs', {
+      const { error } = await updateTable({
+        table: 'pype_voice_custom_totals_configs',
+        data: {
         name: updates.name,
         description: updates.description,
         aggregation: updates.aggregation,

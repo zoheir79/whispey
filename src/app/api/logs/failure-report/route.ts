@@ -62,7 +62,10 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString()
     };
 
-    const { data: insertedLog, error: insertError } = await insertIntoTable('pype_voice_call_logs', failureData);
+    const { data: insertedLog, error: insertError } = await insertIntoTable({
+        table: 'pype_voice_call_logs',
+        data: failureData
+      });
 
     if (insertError) {
       console.error('Database insert error:', insertError);
