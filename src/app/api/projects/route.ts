@@ -131,7 +131,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication (now reads JWT from cookies)    const { isAuthenticated, userId } = await verifyUserAuth()
+    // Check authentication (now reads JWT from cookies)
+    const { isAuthenticated, userId } = await verifyUserAuth()
     
     if (!isAuthenticated || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
