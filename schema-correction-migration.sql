@@ -22,10 +22,15 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_pype_voice_users_user_id ON public.pype_vo
 ALTER TABLE public.pype_voice_projects 
 ADD COLUMN IF NOT EXISTS owner_user_id UUID;
 
--- Add foreign key constraint
-ALTER TABLE public.pype_voice_projects 
-ADD CONSTRAINT IF NOT EXISTS fk_projects_owner_user_id 
-FOREIGN KEY (owner_user_id) REFERENCES public.pype_voice_users(user_id);
+-- Add foreign key constraint (check if exists first)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_projects_owner_user_id') THEN
+        ALTER TABLE public.pype_voice_projects 
+        ADD CONSTRAINT fk_projects_owner_user_id 
+        FOREIGN KEY (owner_user_id) REFERENCES public.pype_voice_users(user_id);
+    END IF;
+END $$;
 
 -- ========================================
 -- 3. Fix email project mapping table
@@ -39,14 +44,24 @@ ADD COLUMN IF NOT EXISTS user_id UUID;
 ALTER TABLE public.pype_voice_email_project_mapping 
 ADD COLUMN IF NOT EXISTS added_by_user_id UUID;
 
--- Add foreign key constraints
-ALTER TABLE public.pype_voice_email_project_mapping 
-ADD CONSTRAINT IF NOT EXISTS fk_mapping_user_id 
-FOREIGN KEY (user_id) REFERENCES public.pype_voice_users(user_id);
+-- Add foreign key constraints (check if exists first)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_mapping_user_id') THEN
+        ALTER TABLE public.pype_voice_email_project_mapping 
+        ADD CONSTRAINT fk_mapping_user_id 
+        FOREIGN KEY (user_id) REFERENCES public.pype_voice_users(user_id);
+    END IF;
+END $$;
 
-ALTER TABLE public.pype_voice_email_project_mapping 
-ADD CONSTRAINT IF NOT EXISTS fk_mapping_added_by_user_id 
-FOREIGN KEY (added_by_user_id) REFERENCES public.pype_voice_users(user_id);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_mapping_added_by_user_id') THEN
+        ALTER TABLE public.pype_voice_email_project_mapping 
+        ADD CONSTRAINT fk_mapping_added_by_user_id 
+        FOREIGN KEY (added_by_user_id) REFERENCES public.pype_voice_users(user_id);
+    END IF;
+END $$;
 
 -- ========================================
 -- 4. Add missing columns detected in code
@@ -85,19 +100,34 @@ CREATE INDEX IF NOT EXISTS idx_agents_user_id ON public.pype_voice_agents(user_i
 -- 7. Add constraints for data integrity
 -- ========================================
 
--- Ensure projects have valid foreign key references
-ALTER TABLE public.pype_voice_projects 
-ADD CONSTRAINT IF NOT EXISTS fk_projects_owner 
-FOREIGN KEY (owner_user_id) REFERENCES public.pype_voice_users(user_id);
+-- Ensure projects have valid foreign key references (check if exists first)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_projects_owner') THEN
+        ALTER TABLE public.pype_voice_projects 
+        ADD CONSTRAINT fk_projects_owner 
+        FOREIGN KEY (owner_user_id) REFERENCES public.pype_voice_users(user_id);
+    END IF;
+END $$;
 
--- Ensure agents have valid foreign key references  
-ALTER TABLE public.pype_voice_agents 
-ADD CONSTRAINT IF NOT EXISTS fk_agents_user 
-FOREIGN KEY (user_id) REFERENCES public.pype_voice_users(user_id);
+-- Ensure agents have valid foreign key references (check if exists first)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_agents_user') THEN
+        ALTER TABLE public.pype_voice_agents 
+        ADD CONSTRAINT fk_agents_user 
+        FOREIGN KEY (user_id) REFERENCES public.pype_voice_users(user_id);
+    END IF;
+END $$;
 
-ALTER TABLE public.pype_voice_agents 
-ADD CONSTRAINT IF NOT EXISTS fk_agents_project 
-FOREIGN KEY (project_id) REFERENCES public.pype_voice_projects(id);
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_agents_project') THEN
+        ALTER TABLE public.pype_voice_agents 
+        ADD CONSTRAINT fk_agents_project 
+        FOREIGN KEY (project_id) REFERENCES public.pype_voice_projects(id);
+    END IF;
+END $$;
 
 -- ========================================
 -- 8. Optional: Add name column to users (combined first_name + last_name)
