@@ -146,7 +146,7 @@ const getStatusVariant = (status: string) => {
 }
 
 // ===== MAIN COMPONENT =====
-const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, dateRange }) => {
+const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, dateRange }): JSX.Element => {
   // ===== STATE MANAGEMENT =====
   const [selectedViewId, setStoredSelectedViewId] = useLocalStorage(`selectedView-${agentId}`, "all")
   
