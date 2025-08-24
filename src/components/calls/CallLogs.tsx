@@ -412,7 +412,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     // TODO: Implement proper role fetching from JWT token payload
     setRole('admin')
     setRoleLoading(false)
-  }, [project.id])
+  }, [project?.id])
 
   // Update visible columns when role changes
   useEffect(() => {
