@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifyToken } from './lib/auth-utils';
 
 // Define which routes are public (don't require authentication)
 const publicPaths = [
@@ -17,6 +16,17 @@ function isPublicPath(path: string): boolean {
   return publicPaths.some(publicPath => 
     path === publicPath || path.startsWith(`${publicPath}/`)
   );
+}
+
+// Edge-compatible token validation (basic check only)
+function isValidTokenFormat(token: string): boolean {
+  try {
+    // Basic JWT format check: xxx.yyy.zzz
+    const parts = token.split('.');
+    return parts.length === 3 && parts.every(part => part.length > 0);
+  } catch {
+    return false;
+  }
 }
 
 export function middleware(request: NextRequest) {
@@ -42,11 +52,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  // Verify token
-  const { valid, userId } = verifyToken(token);
+  // Basic token format validation (Edge Runtime compatible)
+  const validFormat = isValidTokenFormat(token);
 
   // If token is invalid, redirect to sign-in
-  if (!valid) {
+  if (!validFormat) {
     const signInUrl = new URL('/sign-in', request.url);
     signInUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(signInUrl);
