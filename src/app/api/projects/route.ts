@@ -149,10 +149,37 @@ export async function GET(request: NextRequest) {
     
     console.log('DEBUG: User lookup result:', { userData, userError })
     
-    const user = Array.isArray(userData) && userData.length > 0 ? userData[0] as any : null
+    let user = Array.isArray(userData) && userData.length > 0 ? userData[0] as any : null
     console.log('DEBUG: Parsed user:', user)
     
-    if (!user || !user.email) {
+    // Auto-create user if not exists (similar to original Clerk behavior)
+    if (!user) {
+      console.log('DEBUG: User not found, auto-creating user record')
+      const defaultEmail = `user-${userId.slice(-8)}@whispey.local` // Generate default email
+      
+      const { data: newUserData, error: createError } = await insertIntoTable({
+        table: 'pype_voice_users',
+        data: {
+          user_id: userId,
+          email: defaultEmail,
+          name: `User ${userId.slice(-8)}`, // Generate default name
+          created_at: new Date().toISOString()
+        }
+      })
+      
+      if (createError) {
+        console.error('DEBUG: Error creating user:', createError)
+        return NextResponse.json({ 
+          error: 'Failed to create user record',
+          debug: { userId, createError }
+        }, { status: 500 })
+      }
+      
+      user = { user_id: userId, email: defaultEmail, name: `User ${userId.slice(-8)}` }
+      console.log('DEBUG: Auto-created user:', user)
+    }
+    
+    if (!user.email) {
       console.log('DEBUG: User email not found - user:', user, 'email:', user?.email)
       return NextResponse.json({ 
         error: 'User email not found',
