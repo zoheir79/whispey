@@ -41,16 +41,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  // Token is valid, add user ID to headers for use in API routes
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-user-id', userId || '');
-
-  // Continue with the request
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  // Token exists - let API routes handle validation and user ID extraction
+  return NextResponse.next();
 }
 
 export const config = {
