@@ -162,11 +162,41 @@ export async function updateTable<T = any>(options: { table: string; data: Recor
 /**
  * Supprime des données d'une table
  */
-export async function deleteFromTable<T = any>(table: string, whereColumn: string, whereValue: any): Promise<DbResponse<T>> {
-  const sql = `DELETE FROM ${table} WHERE ${whereColumn} = $1 RETURNING *`;
+export async function deleteFromTable<T = any>(options: { table: string; filters: Array<{ column: string; operator: string; value: any }> }): Promise<DbResponse<T>> {
+  const { table, filters } = options;
+  
+  // Construire la clause WHERE à partir des filtres
+  let whereClause = '';
+  const whereParams: any[] = [];
+  
+  if (filters && filters.length > 0) {
+    const whereParts = filters.map((filter, index) => {
+      whereParams.push(filter.value);
+      let operator = '=';
+      
+      // Convertir les opérateurs Supabase en opérateurs SQL
+      switch (filter.operator) {
+        case 'eq': operator = '='; break;
+        case 'neq': operator = '!='; break;
+        case 'gt': operator = '>'; break;
+        case 'gte': operator = '>='; break;
+        case 'lt': operator = '<'; break;
+        case 'lte': operator = '<='; break;
+        case 'like': operator = 'LIKE'; break;
+        case 'ilike': operator = 'ILIKE'; break;
+        default: operator = '=';
+      }
+      
+      return `${filter.column} ${operator} $${index + 1}`;
+    });
+    
+    whereClause = ` WHERE ${whereParts.join(' AND ')}`;
+  }
+  
+  const sql = `DELETE FROM ${table}${whereClause} RETURNING *`;
   
   try {
-    const result = await query(sql, [whereValue]);
+    const result = await query(sql, whereParams);
     return { data: result.rows[0] as T, error: null };
   } catch (error: any) {
     console.error('Database delete error:', error);
