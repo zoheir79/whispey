@@ -183,7 +183,7 @@ export async function GET(request: NextRequest) {
 
     // Combine projects with user roles (matching original logic)
     const projectsWithRoles = (projects as any[] || []).map(project => {
-      const mapping = mappings.find((m: any) => m.project_id === project.id)
+      const mapping = mappings.find((m: any) => m.project_id === project.id) as any
       return {
         ...project,
         user_role: mapping?.role || 'member'
