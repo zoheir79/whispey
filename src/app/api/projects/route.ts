@@ -138,8 +138,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get current user from database
-    const { data: userData } = await fetchFromTable({
+    // Simple test response to verify route is working
+    return NextResponse.json({ 
+      message: 'Projects route working',
+      userId: userId,
+      timestamp: new Date().toISOString()
+    }, { status: 200 })
+
+    // Get current user from database (commented out for testing)
+    /*const { data: userData } = await fetchFromTable({
       table: 'pype_voice_users',
       select: 'user_id, name, email',
       filters: [{ column: 'user_id', operator: '=', value: userId }]
