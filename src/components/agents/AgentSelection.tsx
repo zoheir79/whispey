@@ -129,7 +129,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
       if (!response.ok) throw new Error('Failed to fetch agents')
       const agentsData = await response.json()
-      setAgents(agentsData || [])
+      setAgents(agentsData.agents || [])
     } catch (err: any) {
       setAgentsError(err.message)
     } finally {
