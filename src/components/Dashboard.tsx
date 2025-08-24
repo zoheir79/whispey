@@ -299,7 +299,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
     
     setVapiStatusLoading(true)
     try {
-      const response = await fetch(`/api/agents/${agent.id}/vapi/status`)
+      const response = await fetch(`/api/agents/${agent?.id}/vapi/status`)
       const data = await response.json()
       setVapiStatus(data)
     } catch (error) {
@@ -320,7 +320,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
     
     setConnectingWebhook(true)
     try {
-      const response = await fetch(`/api/agents/${agent.id}/vapi/setup-webhook`, {
+      const response = await fetch(`/api/agents/${agent?.id}/vapi/setup-webhook`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })
@@ -578,7 +578,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                     if (!agent?.id) return
                     
                     try {
-                      const response = await fetch(`/api/agents/${agent.id}`, {
+                      const response = await fetch(`/api/agents/${agent?.id}`, {
                         method: 'PATCH',
                         headers: {
                           'Content-Type': 'application/json'
