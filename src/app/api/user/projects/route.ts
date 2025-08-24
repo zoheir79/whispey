@@ -1,7 +1,10 @@
 // app/api/user/projects/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchFromTable } from '../../../../lib/db-service'
 import { verifyUserAuth } from '../../../../lib/auth'
+import { fetchFromTable } from '../../../../lib/db-service'
+
+// Force Node.js runtime for PostgreSQL compatibility
+export const runtime = 'nodejs'
 
 function mapProject(
   project: any,
