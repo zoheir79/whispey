@@ -1,11 +1,7 @@
 // src/app/api/agents/[id]/vapi/phone-numbers/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { fetchFromTable } from '@/lib/db-service'
 import { decryptApiKey } from '@/lib/vapi-encryption'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export async function GET(
   request: NextRequest,
@@ -22,11 +18,13 @@ export async function GET(
     console.log('🎯 Looking for phone numbers for assistant:', assistantId)
 
     // Fetch agent data from database
-    const { data: agent, error: agentError } = await supabase
-      .from('pype_voice_agents')
-      .select('vapi_api_key_encrypted, vapi_project_key_encrypted, configuration, project_id')
-      .eq('id', agentId)
-      .single()
+    const { data: agentData, error: agentError } = await fetchFromTable({
+      table: 'pype_voice_agents',
+      select: 'id, name, agent_type, configuration, vapi_api_key_encrypted, project_id',
+      filters: [{ column: 'id', operator: '=', value: agentId }]
+    })
+    
+    const agent = Array.isArray(agentData) && agentData.length > 0 ? agentData[0] as any : null
 
     if (agentError || !agent) {
       console.error('❌ Agent not found:', agentError)

@@ -1,13 +1,9 @@
 // app/api/projects/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { verifyUserAuth } from '@/lib/auth'
+import { headers } from 'next/headers'
 import crypto from 'crypto'
-
-// Create Supabase client for server-side operations (use service role for admin operations)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+import { fetchFromTable, insertIntoTable } from '@/lib/db-service'
 
 // Generate a secure API token
 function generateApiToken(): string {
@@ -24,16 +20,26 @@ function hashToken(token: string): string {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const { userId } = await auth()
-    if (!userId) {
+    const headersList = await headers()
+    const authorization = headersList.get('authorization')
+    
+    const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+    
+    if (!isAuthenticated || !userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    // Get current user details
-    const user = await currentUser()
+    // Get current user details from database
+    const { data: userData } = await fetchFromTable({
+      table: 'pype_voice_users',
+      select: 'user_id, name, email',
+      filters: [{ column: 'user_id', operator: '=', value: userId }]
+    })
+    
+    const user = Array.isArray(userData) && userData.length > 0 ? userData[0] as any : null
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
@@ -62,15 +68,11 @@ export async function POST(request: NextRequest) {
       is_active: true,
       retry_configuration: {},
       token_hash: hashedToken,
-      owner_clerk_id: userId // Add owner reference
+      owner_user_id: userId // Add owner reference
     }
 
-    // Start a transaction-like approach
-    const { data: project, error: projectError } = await supabase
-      .from('pype_voice_projects')
-      .insert([projectData])
-      .select('*')
-      .single()
+    // Insert project into database
+    const { data: project, error: projectError } = await insertIntoTable('pype_voice_projects', projectData)
 
 
     if (projectError) {
@@ -84,22 +86,20 @@ export async function POST(request: NextRequest) {
     console.log(`Successfully created project "${project.name}" with ID ${project.id}`)
 
     // Add creator to email_project_mapping as owner
-    const userEmail = user.emailAddresses[0]?.emailAddress
+    const userEmail = user.email
     if (userEmail) {
-      const { error: mappingError } = await supabase
-        .from('pype_voice_email_project_mapping')
-        .insert({
-          email: userEmail,
-          project_id: project.id,
-          role: 'owner',
-          permissions: {
-            read: true,
-            write: true,
-            delete: true,
-            admin: true
-          },
-          added_by_clerk_id: userId
-        })
+      const { error: mappingError } = await insertIntoTable('pype_voice_email_project_mapping', {
+        email: userEmail,
+        project_id: project.id,
+        role: 'owner',
+        permissions: {
+          read: true,
+          write: true,
+          delete: true,
+          admin: true
+        },
+        added_by_user_id: userId
+      })
 
       if (mappingError) {
         console.error('Error adding creator to email mapping:', mappingError)
@@ -131,37 +131,70 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
+    // Check authentication
+    const headersList = await headers()
+    const authorization = headersList.get('authorization')
+    
+    const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+    
+    if (!isAuthenticated || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await currentUser()
+    // Get current user from database
+    const { data: userData } = await fetchFromTable({
+      table: 'pype_voice_users',
+      select: 'user_id, name, email',
+      filters: [{ column: 'user_id', operator: '=', value: userId }]
+    })
+    
+    const user = Array.isArray(userData) && userData.length > 0 ? userData[0] as any : null
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const userEmail = user.emailAddresses[0]?.emailAddress
-    if (!userEmail) {
-      return NextResponse.json({ error: 'User email not found' }, { status: 400 })
-    }
-
+    const userEmail = user.email
     // Fetch projects linked to user email
-    const { data: projectMappings, error } = await supabase
-      .from('pype_voice_email_project_mapping')
-      .select(`
-        project:pype_voice_projects (
-          id,
-          name,
-          description,
-          environment,
-          is_active,
-          owner_clerk_id,
-          created_at
-        ),
-        role
-      `)
-      .eq('email', userEmail)
+    // Note: This is a more complex query with joins that our simple db-service doesn't handle yet
+    // We'll need to do this in two steps
+    
+    // 1. Get the project mappings for this user
+    const { data: mappings, error } = await fetchFromTable({
+      table: 'pype_voice_email_project_mapping',
+      select: 'project_id, role, is_active',
+      filters: [{ column: 'email', operator: '=', value: userEmail }]
+    })
+    
+    if (error) {
+      console.error('Error fetching project mappings:', error)
+      return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+    }
+    
+    // 2. Get the project details for each mapping
+    const projectMappings = []
+    
+    if (Array.isArray(mappings) && mappings.length > 0) {
+      for (const mapping of mappings) {
+        const mappingData = mapping as any
+        const { data: projectData, error: projectError } = await fetchFromTable({
+          table: 'pype_voice_projects',
+          select: 'id, name, description, environment, is_active, owner_user_id, created_at',
+          filters: [{ column: 'id', operator: '=', value: mappingData.project_id }]
+        })
+        
+        if (projectError || !Array.isArray(projectData) || projectData.length === 0) {
+          console.error('Error fetching project data:', projectError)
+          continue
+        }
+
+        const project = projectData[0] as any
+        projectMappings.push({
+          ...project,
+          role: mappingData.role,
+          is_active: mappingData.is_active
+        })
+      }
+    }
 
     if (error) {
       console.error('Error fetching projects:', error)
@@ -173,8 +206,9 @@ export async function GET(request: NextRequest) {
 
     // Return only active projects with user role included
     const activeProjects = projectMappings
+      .filter(mapping => mapping.is_active)
       .map(mapping => ({
-        ...mapping.project,
+        ...mapping,
         user_role: mapping.role
       }))
 

@@ -1,9 +1,8 @@
-// hooks/useSupabase.ts - FIXED VERSION
 'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { supabase } from '../lib/supabase'
+import { fetchFromTable } from '../lib/db-service'
 
-export const useInfiniteScroll = (table: string, options: any = {}) => {
+export const useInfiniteScrollWithFetch = (table: string, options: any = {}) => {
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
@@ -12,7 +11,6 @@ export const useInfiniteScroll = (table: string, options: any = {}) => {
   const offsetRef = useRef(0)
   const loadingRef = useRef(false) // Prevent concurrent requests
   const limit = options.limit || 50
-
 
   // Memoize options to prevent unnecessary re-renders
   const optionsHash = JSON.stringify(options)
@@ -28,28 +26,20 @@ export const useInfiniteScroll = (table: string, options: any = {}) => {
     try {
       const offset = reset ? 0 : offsetRef.current
       
-      let query = supabase
-        .from(table)
-        .select(options.select || '*')
-        .range(offset, offset + limit - 1)
-      
-      // Apply filters if provided
-      if (options.filters) {
-        options.filters.forEach((filter: any) => {
-          query = query.filter(filter.column, filter.operator, filter.value)
-        })
+      const query = {
+        table: table,
+        select: options.select || '*',
+        filters: options.filters || [],
+        orderBy: options.orderBy,
+        limit: limit,
+        offset: offset
       }
       
-      // Apply ordering
-      if (options.orderBy) {
-        query = query.order(options.orderBy.column, { ascending: options.orderBy.ascending })
+      const fetchedData = await fetchFromTable(query)
+      
+      if (!fetchedData || !Array.isArray(fetchedData)) {
+        throw new Error('Invalid response format')
       }
-      
-      const { data: newData, error } = await query
-      
-      if (error) throw error
-      
-      const fetchedData = newData || []
       
       if (reset) {
         setData(fetchedData)
@@ -58,7 +48,6 @@ export const useInfiniteScroll = (table: string, options: any = {}) => {
         // Remove duplicates by checking existing IDs
         setData(prevData => {
           const existingIds = new Set(prevData.map(item => item.id))
-          //@ts-ignore
           const uniqueNewData = fetchedData.filter(item => !existingIds.has(item.id))
           return [...prevData, ...uniqueNewData]
         })
@@ -68,7 +57,7 @@ export const useInfiniteScroll = (table: string, options: any = {}) => {
       setHasMore(fetchedData.length === limit)
       
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message || 'An error occurred while fetching data')
     } finally {
       setLoading(false)
       loadingRef.current = false
@@ -98,49 +87,48 @@ export const useInfiniteScroll = (table: string, options: any = {}) => {
 }
 
 // Alternative: Simple query hook without infinite scroll
-export const useSupabaseQuery = (table: string, options: any = {}) => {
-  const [data, setData] = useState<any[]>([])
+export const useQueryWithFetch = (table: string, options: any = {}) => {
+  const [data, setData] = useState<any[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const optionsHash = JSON.stringify(options)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
     
     try {
-      let query = supabase
-        .from(table)
-        .select(options.select || '*')
-      
-      if (options.filters) {
-        options.filters.forEach((filter: any) => {
-          query = query.filter(filter.column, filter.operator, filter.value)
-        })
+      const query = {
+        table: table,
+        select: options.select || '*',
+        filters: options.filters || [],
+        orderBy: options.orderBy,
+        limit: options.limit
       }
       
-      if (options.orderBy) {
-        query = query.order(options.orderBy.column, { ascending: options.orderBy.ascending })
+      const fetchedData = await fetchFromTable(query)
+      
+      if (!fetchedData || !Array.isArray(fetchedData)) {
+        throw new Error('Invalid response format')
       }
       
-      if (options.limit) {
-        query = query.limit(options.limit)
-      }
-      
-      const { data, error } = await query
-      
-      if (error) throw error
-      
-      setData(data || [])
+      setData(fetchedData)
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message || 'An error occurred while fetching data')
+      setData(null)
     } finally {
       setLoading(false)
     }
-  }, [table, JSON.stringify(options)])
+  }, [table, optionsHash])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
 
-  return { data, loading, error, refetch: fetchData }
+  const refresh = useCallback(() => {
+    fetchData()
+  }, [fetchData])
+
+  return { data, loading, error, refresh }
 }

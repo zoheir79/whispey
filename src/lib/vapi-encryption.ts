@@ -1,10 +1,6 @@
 // src/lib/vapi-encryption.ts
 import crypto from 'crypto'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import { fetchFromTable } from './db-service'
 
 // Get master key from environment
 const VAPI_MASTER_KEY = process.env.VAPI_MASTER_KEY
@@ -140,31 +136,37 @@ export async function getDecryptedVapiKeys(agentId: string): Promise<{
   apiKey: string
   projectApiKey: string
 }> {
-  const { data: agent, error } = await supabase
-    .from('pype_voice_agents')
-    .select('vapi_api_key_encrypted, vapi_project_key_encrypted, project_id')
-    .eq('id', agentId)
-    .single()
+  const { data, error } = await fetchFromTable({
+    table: 'pype_voice_agents',
+    select: 'vapi_api_key_encrypted, vapi_project_key_encrypted, project_id',
+    filters: [{ column: 'id', operator: '=', value: agentId }]
+  })
+
+  // Vérifier si nous avons des données et extraire le premier élément
+  const agent = Array.isArray(data) && data.length > 0 ? data[0] : null;
 
   if (error || !agent) {
     throw new Error('Agent not found')
   }
 
-  if (!agent.vapi_api_key_encrypted || !agent.vapi_project_key_encrypted) {
+  // Utiliser des assertions de type pour accéder aux propriétés
+  const agentData = agent as Record<string, any>;
+  
+  if (!agentData.vapi_api_key_encrypted || !agentData.vapi_project_key_encrypted) {
     throw new Error('Vapi keys not found for this agent')
   }
 
   try {
     return {
-      apiKey: decryptApiKey(agent.vapi_api_key_encrypted, agent.project_id),
-      projectApiKey: decryptApiKey(agent.vapi_project_key_encrypted, agent.project_id)
+      apiKey: decryptApiKey(agentData.vapi_api_key_encrypted, agentData.project_id),
+      projectApiKey: decryptApiKey(agentData.vapi_project_key_encrypted, agentData.project_id)
     }
   } catch (error) {
     console.error('Decryption error details:', {
       agentId,
-      projectId: agent.project_id,
-      hasApiKey: Boolean(agent.vapi_api_key_encrypted),
-      hasProjectKey: Boolean(agent.vapi_project_key_encrypted),
+      projectId: agentData.project_id,
+      hasApiKey: Boolean(agentData.vapi_api_key_encrypted),
+      hasProjectKey: Boolean(agentData.vapi_project_key_encrypted),
       error: error instanceof Error ? error.message : 'Unknown error'
     })
     throw new Error(`Decryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`)

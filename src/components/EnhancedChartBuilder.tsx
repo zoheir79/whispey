@@ -1,6 +1,6 @@
 // Enhanced chart hook - COUNT with multi-line support
 import React, { useState, useEffect, createContext, useContext } from 'react'
-import { supabase } from '../lib/supabase'
+import { fetchFromTable } from '../lib/db-service'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -140,49 +140,61 @@ export const useCountChartData = (
 
         if (config.filterValue) {
           // SINGLE LINE: Filter for specific value, only need created_at
-          query = supabase
-            .from('pype_voice_call_logs')
-            .select('created_at')  // ✅ FIXED: Added .select()
-            .eq('agent_id', agentId)
-            .gte('created_at', `${dateFrom}T00:00:00`)
-            .lte('created_at', `${dateTo}T23:59:59`)
+          const filters = [
+            { column: 'agent_id', operator: '=', value: agentId },
+            { column: 'created_at', operator: '>=', value: `${dateFrom}T00:00:00` },
+            { column: 'created_at', operator: '<=', value: `${dateTo}T23:59:59` }
+          ]
           
           if (config.source === 'table') {
-            query = query.eq(config.field, config.filterValue)
+            filters.push({ column: config.field, operator: '=', value: config.filterValue })
           } else if (config.source === 'metadata') {
-            query = query.eq(`metadata->${config.field}`, config.filterValue)
+            filters.push({ column: `metadata->${config.field}`, operator: '=', value: config.filterValue })
           } else if (config.source === 'transcription_metrics') {
-            query = query.eq(`transcription_metrics->${config.field}`, config.filterValue)
+            filters.push({ column: `transcription_metrics->${config.field}`, operator: '=', value: config.filterValue })
           }
+          
+          query = { table: 'pype_voice_call_logs', select: 'created_at', filters }
         } else {
           // MULTI-LINE: Need the actual field data to group by values
+          const filters = [
+            { column: 'agent_id', operator: '=', value: agentId },
+            { column: 'created_at', operator: '>=', value: `${dateFrom}T00:00:00` },
+            { column: 'created_at', operator: '<=', value: `${dateTo}T23:59:59` }
+          ]
+          
           if (config.source === 'table') {
-            query = supabase
-              .from('pype_voice_call_logs')
-              .select(`created_at, ${config.field}`)  // ✅ FIXED: Added .select()
-              .eq('agent_id', agentId)
-              .gte('created_at', `${dateFrom}T00:00:00`)
-              .lte('created_at', `${dateTo}T23:59:59`)
+            query = { 
+              table: 'pype_voice_call_logs', 
+              select: `created_at, ${config.field}`,
+              filters
+            }
           } else if (config.source === 'metadata') {
-            query = supabase
-              .from('pype_voice_call_logs')
-              .select('created_at, metadata')  // ✅ FIXED: Added .select()
-              .eq('agent_id', agentId)
-              .gte('created_at', `${dateFrom}T00:00:00`)
-              .lte('created_at', `${dateTo}T23:59:59`)
-              .not(`metadata->${config.field}`, 'is', null)
+            filters.push({ column: `metadata->${config.field}`, operator: 'is not', value: 'null' })
+            query = { 
+              table: 'pype_voice_call_logs', 
+              select: 'created_at, metadata',
+              filters
+            }
           } else if (config.source === 'transcription_metrics') {
-            query = supabase
-              .from('pype_voice_call_logs')
-              .select('created_at, transcription_metrics')  // ✅ FIXED: Added .select()
-              .eq('agent_id', agentId)
-              .gte('created_at', `${dateFrom}T00:00:00`)
-              .lte('created_at', `${dateTo}T23:59:59`)
-              .not(`transcription_metrics->${config.field}`, 'is', null)
+            filters.push({ column: `transcription_metrics->${config.field}`, operator: 'is not', value: 'null' })
+            query = { 
+              table: 'pype_voice_call_logs', 
+              select: 'created_at, transcription_metrics',
+              filters
+            }
           }
         }
 
-        const { data: records, error }: { data: DatabaseRecord[] | null, error: any } = await query
+        let records: DatabaseRecord[] | null = null;
+        let error: any = null;
+        
+        try {
+          const response = await fetchFromTable(query);
+          records = response as unknown as DatabaseRecord[];
+        } catch (err) {
+          error = err;
+        }
 
         if (error) {
           console.error('❌ Query error:', error)
@@ -354,22 +366,45 @@ export const useQuickFieldDiscovery = (agentId: string, dateFrom: string, dateTo
         setLoading(true)
 
         // Get transcription fields from agent configuration
-        const { data: agentData } = await supabase
-          .from('pype_voice_agents')
-          .select('field_extractor_keys')
-          .eq('id', agentId)
-          .single()
-
+        const agentQuery = {
+          table: 'pype_voice_agents',
+          select: 'field_extractor_keys',
+          filters: [{ column: 'id', operator: '=', value: agentId }],
+          single: true
+        };
+        
+        let agentData: { field_extractor_keys: string[] } | null = null;
+        try {
+          const response = await fetchFromTable(agentQuery);
+          if (response && Array.isArray(response) && response.length > 0) {
+            agentData = { field_extractor_keys: response[0].field_extractor_keys || [] };
+          }
+        } catch (err) {
+          console.error('Error fetching agent data:', err);
+        }
 
         // Get metadata fields from sample data
-        const { data: sampleRecords } = await supabase
-          .from('pype_voice_call_logs')
-          .select('metadata')
-          .eq('agent_id', agentId)
-          .gte('created_at', `${dateFrom}T00:00:00`)
-          .lte('created_at', `${dateTo}T23:59:59`)
-          .not('metadata', 'is', null)
-          .limit(20)
+        const sampleQuery = {
+          table: 'pype_voice_call_logs',
+          select: 'metadata',
+          filters: [
+            { column: 'agent_id', operator: '=', value: agentId },
+            { column: 'created_at', operator: '>=', value: `${dateFrom}T00:00:00` },
+            { column: 'created_at', operator: '<=', value: `${dateTo}T23:59:59` },
+            { column: 'metadata', operator: 'is not', value: 'null' }
+          ],
+          limit: 20
+        };
+        
+        let sampleRecords: any[] = [];
+        try {
+          const response = await fetchFromTable(sampleQuery);
+          if (response && Array.isArray(response)) {
+            sampleRecords = response;
+          }
+        } catch (err) {
+          console.error('Error fetching sample records:', err);
+        }
 
         // Extract metadata field names
         const metadataKeys = new Set<string>()

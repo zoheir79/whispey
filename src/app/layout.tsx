@@ -1,9 +1,4 @@
 import { type Metadata } from 'next'
-import {
-  ClerkProvider,
-  SignedIn,
-  SignedOut,
-} from '@clerk/nextjs'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 
@@ -25,37 +20,18 @@ export const metadata: Metadata = {
   },
 }
 
-
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider
-      signInUrl='/sign-in'
-      appearance={{
-        variables: {
-          colorPrimary: "#2563eb", // Blue-600
-        }
-      }}
-    >
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
-        >
-          <main>
-            <SignedOut>
-              {/* This ensures auth pages don't show header */}
-              <div className="min-h-screen">
-                {children}
-              </div>
-            </SignedOut>
-            <SignedIn>
-              {children}
-            </SignedIn>
-          </main>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
+      >
+        <main className="min-h-screen">
+          {children}
+        </main>
+      </body>
+    </html>
   )
 }

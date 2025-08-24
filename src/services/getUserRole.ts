@@ -1,16 +1,18 @@
-import { supabase } from "@/lib/supabase"
+import { fetchFromTable } from "@/lib/db-service"
 
 export async function getUserProjectRole(email: string, projectId: string) {
-  const { data, error } = await supabase
-    .from('pype_voice_email_project_mapping')
-    .select('role')
-    .eq('email', email)
-    .eq('project_id', projectId)
-    .eq('is_active', true)
-    .single()
+  const { data, error } = await fetchFromTable('pype_voice_email_project_mapping', {
+    select: 'role',
+    filters: [
+      { column: 'email', operator: 'eq', value: email },
+      { column: 'project_id', operator: 'eq', value: projectId },
+      { column: 'is_active', operator: 'eq', value: true }
+    ],
+    limit: 1
+  })
 
-  if (error || !data?.role) {
+  if (error || !data || data.length === 0 || !data[0]?.role) {
     return 'user'
   }
-  return data.role
+  return data[0].role
 }

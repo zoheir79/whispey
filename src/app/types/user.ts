@@ -1,9 +1,8 @@
 export interface PyveVoiceUser {
     id?: number
-    clerk_id: string
+    user_id: string
     email: string
-    first_name: string | null
-    last_name: string | null
+    name: string | null
     profile_image_url: string | null
     created_at?: string
     updated_at?: string
@@ -12,8 +11,7 @@ export interface PyveVoiceUser {
   
   export interface UserProfileUpdate {
     email?: string
-    first_name?: string | null
-    last_name?: string | null
+    name?: string | null
     profile_image_url?: string | null
   }
   

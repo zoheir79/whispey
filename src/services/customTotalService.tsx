@@ -1,5 +1,7 @@
-import { supabase } from '../lib/supabase'
+import { insertIntoTable, fetchFromTable, updateTable, deleteFromTable } from '../lib/db-service'
+import { calculateCustomTotal as rpcCalculateCustomTotal, batchCalculateCustomTotals as rpcBatchCalculateCustomTotals, getDistinctValues as rpcGetDistinctValues, getAvailableJsonFields as rpcGetAvailableJsonFields } from '../lib/db-rpc'
 import { CustomTotalConfig, CustomFilter, CustomTotalResult } from '../types/customTotals'
+import { DbResponse } from '../lib/db-types'
 
 export class CustomTotalsService {
   // Save custom total configuration to database (unchanged)
@@ -9,22 +11,20 @@ export class CustomTotalsService {
     agentId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase
-        .from('pype_voice_custom_totals_configs')
-        .insert({
-          project_id: projectId,
-          agent_id: agentId,
-          name: config.name,
-          description: config.description,
-          aggregation: config.aggregation,
-          column_name: config.column,
-          json_field: config.jsonField,
-          filters: config.filters,
-          filter_logic: config.filterLogic,
-          icon: config.icon,
-          color: config.color,
-          created_by: config.createdBy
-        })
+      const { error } = await insertIntoTable('pype_voice_custom_totals_configs', {
+        project_id: projectId,
+        agent_id: agentId,
+        name: config.name,
+        description: config.description,
+        aggregation: config.aggregation,
+        column_name: config.column,
+        json_field: config.jsonField,
+        filters: config.filters,
+        filter_logic: config.filterLogic,
+        icon: config.icon,
+        color: config.color,
+        created_by: config.createdBy
+      })
 
       if (error) {
         console.error('Error saving custom total:', error)
@@ -38,25 +38,23 @@ export class CustomTotalsService {
     }
   }
 
-  // Get all custom totals for an agent (unchanged)
-  static async getCustomTotals(
-    projectId: string, 
-    agentId: string
-  ): Promise<CustomTotalConfig[]> {
+  // Get all custom totals for an agent 
+  static async getCustomTotals(projectId: string, agentId: string): Promise<CustomTotalConfig[]> {
     try {
-      const { data, error } = await supabase
-        .from('pype_voice_custom_totals_configs')
-        .select('*')
-        .eq('project_id', projectId)
-        .eq('agent_id', agentId)
-        .order('created_at', { ascending: true })
+      const { data, error } = await fetchFromTable<Record<string, any>>('pype_voice_custom_totals_configs', {
+        filters: [
+          { column: 'project_id', operator: 'eq', value: projectId },
+          { column: 'agent_id', operator: 'eq', value: agentId }
+        ],
+        orderBy: { column: 'created_at', ascending: true }
+      })
 
-      if (error) {
+      if (error || !data) {
         console.error('Error fetching custom totals:', error)
         return []
       }
 
-      return data.map(row => ({
+      return data.map((row: Record<string, any>) => ({
         id: row.id,
         name: row.name,
         description: row.description || '',
@@ -93,26 +91,24 @@ static async calculateCustomTotal(
       ? config.jsonField 
       : null;
 
+    const { data, error } = await rpcCalculateCustomTotal({
+      agent_id: agentId,
+      aggregation: config.aggregation,
+      column_name: config.column,
+      json_field: jsonField, // Pass null instead of empty string
+      filters: config.filters,
+      filter_logic: config.filterLogic,
+      date_from: dateFrom || null,
+      date_to: dateTo || null
+    })
 
-    const { data, error } = await supabase
-      .rpc('calculate_custom_total', {
-        p_agent_id: agentId,
-        p_aggregation: config.aggregation,
-        p_column_name: config.column,
-        p_json_field: jsonField, // Pass null instead of empty string
-        p_filters: config.filters,
-        p_filter_logic: config.filterLogic,
-        p_date_from: dateFrom || null,
-        p_date_to: dateTo || null
-      })
-
-    if (error) {
+    if (error || !data) {
       console.error('Error calculating custom total:', error)
       return {
         configId: config.id,
         value: 0,
         label: config.name,
-        error: error.message
+        error: error?.message || 'Calculation failed'
       }
     }
 
@@ -144,47 +140,42 @@ static async calculateCustomTotal(
   }
 }
 
-  // NEW: Batch calculate multiple custom totals using RPC
+  // NEW: Batch  // Calculate multiple custom totals in batch
   static async batchCalculateCustomTotals(
-    configs: CustomTotalConfig[],
-    agentId: string,
-    dateFrom?: string,
-    dateTo?: string
+    configs: CustomTotalConfig[], 
+    projectId: string, 
+    agentId: string
   ): Promise<CustomTotalResult[]> {
-    if (configs.length === 0) return []
-
     try {
-      // Prepare configs for RPC
-      const rpcConfigs = configs.map(config => ({
-        id: config.id,
-        aggregation: config.aggregation,
-        column: config.column,
-        jsonField: config.jsonField || null,
-        filters: config.filters,
-        filterLogic: config.filterLogic
-      }))
+      // Prepare batch params
+      const batchParams = {
+        configs: configs.map(config => ({
+          config_id: config.id,
+          aggregation: config.aggregation,
+          column_name: config.column,
+          json_field: config.jsonField,
+          filters: config.filters,
+          filter_logic: config.filterLogic
+        })),
+        project_id: projectId,
+        agent_id: agentId
+      }
 
-      const { data, error } = await supabase
-        .rpc('batch_calculate_custom_totals', {
-          p_agent_id: agentId,
-          p_configs: rpcConfigs,
-          p_date_from: dateFrom || null,
-          p_date_to: dateTo || null
-        })
+      // Call batch RPC function
+      const { data, error } = await rpcBatchCalculateCustomTotals(batchParams)
 
-      if (error) {
+      if (error || !data) {
         console.error('Error batch calculating custom totals:', error)
-        // Return error results for all configs
         return configs.map(config => ({
           configId: config.id,
           value: 0,
           label: config.name,
-          error: error.message
+          error: 'Calculation failed'
         }))
       }
 
       // Map results back to CustomTotalResult format
-      return data.map((result: any) => {
+      return data.map((result: Record<string, any>) => {
         const config = configs.find(c => c.id === result.config_id)
         return {
           configId: result.config_id,
@@ -204,28 +195,27 @@ static async calculateCustomTotal(
     }
   }
 
-  // NEW: Get distinct values for a column (useful for filter dropdowns)
+  // NEW: Get distinct values for a column
   static async getDistinctValues(
     agentId: string,
     columnName: string,
-    jsonField?: string,
-    limit = 100
+    jsonField: string | null,
+    limit = 50
   ): Promise<Array<{ value: string; count: number }>> {
     try {
-      const { data, error } = await supabase
-        .rpc('get_distinct_values', {
-          p_agent_id: agentId,
-          p_column_name: columnName,
-          p_json_field: jsonField || null,
-          p_limit: limit
-        })
+      const { data, error } = await rpcGetDistinctValues({
+        agent_id: agentId,
+        column_name: columnName,
+        json_field: jsonField,
+        limit: limit
+      })
 
-      if (error) {
+      if (error || !data) {
         console.error('Error getting distinct values:', error)
         return []
       }
 
-      return data.map((row: any) => ({
+      return data.map((row: Record<string, any>) => ({
         value: row.distinct_value,
         count: parseInt(row.count_occurrences)
       }))
@@ -242,19 +232,18 @@ static async calculateCustomTotal(
     limit = 50
   ): Promise<Array<{ fieldName: string; sampleValue: string; occurrences: number }>> {
     try {
-      const { data, error } = await supabase
-        .rpc('get_available_json_fields', {
-          p_agent_id: agentId,
-          p_column_name: columnName,
-          p_limit: limit
-        })
+      const { data, error } = await rpcGetAvailableJsonFields({
+        agent_id: agentId,
+        column_name: columnName,
+        limit: limit
+      })
 
-      if (error) {
+      if (error || !data) {
         console.error('Error getting JSON fields:', error)
         return []
       }
 
-      return data.map((row: any) => ({
+      return data.map((row: Record<string, any>) => ({
         fieldName: row.field_name,
         sampleValue: row.sample_value,
         occurrences: parseInt(row.occurrences)
@@ -270,10 +259,7 @@ static async calculateCustomTotal(
     configId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase
-        .from('pype_voice_custom_totals_configs')
-        .delete()
-        .eq('id', configId)
+      const { error } = await deleteFromTable('pype_voice_custom_totals_configs', 'id', configId)
 
       if (error) {
         return { success: false, error: error.message }
@@ -291,21 +277,18 @@ static async calculateCustomTotal(
     updates: Partial<CustomTotalConfig>
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase
-        .from('pype_voice_custom_totals_configs')
-        .update({
-          name: updates.name,
-          description: updates.description,
-          aggregation: updates.aggregation,
-          column_name: updates.column,
-          json_field: updates.jsonField,
-          filters: updates.filters,
-          filter_logic: updates.filterLogic,
-          icon: updates.icon,
-          color: updates.color,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', configId)
+      const { error } = await updateTable('pype_voice_custom_totals_configs', {
+        name: updates.name,
+        description: updates.description,
+        aggregation: updates.aggregation,
+        column_name: updates.column,
+        json_field: updates.jsonField,
+        filters: updates.filters,
+        filter_logic: updates.filterLogic,
+        icon: updates.icon,
+        color: updates.color,
+        updated_at: new Date().toISOString()
+      }, 'id', configId)
 
       if (error) {
         return { success: false, error: error.message }

@@ -6,7 +6,8 @@ import { X, Bot, Clock, Brain, Volume2, Mic, Activity, Download } from "lucide-r
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { useSupabaseQuery } from "../../hooks/useSupabase"
+import { useState, useEffect } from "react"
+import { fetchFromTable } from "../../lib/db-service"
 import AudioPlayer from "../AudioPlayer"
 import { extractS3Key } from "../../utils/s3"
 import { cn } from "@/lib/utils"
@@ -38,16 +39,36 @@ interface CallDetailsDrawerProps {
 
 const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData, onClose }) => {
   const sessionId = callData?.id
+  const [transcriptLogs, setTranscriptLogs] = useState<TranscriptLog[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const {
-    data: transcriptLogs,
-    loading,
-    error,
-  } = useSupabaseQuery("pype_voice_metrics_logs", {
-    select: "*",
-    filters: [{ column: "session_id", operator: "eq", value: sessionId }],
-    orderBy: { column: "unix_timestamp", ascending: true },
-  })
+  useEffect(() => {
+    const fetchTranscriptLogs = async () => {
+      if (!sessionId) return
+      
+      setLoading(true)
+      setError(null)
+      
+      try {
+        const { data, error: fetchError } = await fetchFromTable({
+          table: "pype_voice_metrics_logs",
+          select: "*",
+          filters: [{ column: "session_id", operator: "=", value: sessionId }],
+          orderBy: { column: "unix_timestamp", ascending: true }
+        })
+
+        if (fetchError) throw new Error(fetchError.message || 'Database error')
+        setTranscriptLogs(Array.isArray(data) ? (data as unknown as TranscriptLog[]) : [])
+      } catch (err: any) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTranscriptLogs()
+  }, [sessionId])
 
   
   // Parse basic transcript_json if no metrics are available

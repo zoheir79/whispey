@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '../../../../lib/supabase';
+import { insertIntoTable } from '../../../../lib/db-service';
 import { verifyToken } from '../../../../lib/auth';
 import { FailureReportRequest } from '../../../../types/logs';
 
@@ -62,11 +62,7 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString()
     };
 
-    const { data: insertedLog, error: insertError } = await supabase
-      .from('pype_voice_call_logs')
-      .insert(failureData)
-      .select()
-      .single();
+    const { data: insertedLog, error: insertError } = await insertIntoTable('pype_voice_call_logs', failureData);
 
     if (insertError) {
       console.error('Database insert error:', insertError);

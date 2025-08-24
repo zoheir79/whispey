@@ -25,9 +25,8 @@ import CallLogs from './calls/CallLogs'
 import CampaignLogs from './campaigns/CampaignLogs'
 import Header from '@/components/shared/Header'
 
-import { useSupabaseQuery } from '../hooks/useSupabase'
+import { useQuery } from '../hooks/useDatabase'
 import FieldExtractorDialog from './FieldExtractorLogs'
-import { supabase } from '../lib/supabase'
 import { AlertTriangle, Link as LinkIcon } from 'lucide-react'
 import { 
   Tooltip,
@@ -136,9 +135,10 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
   
 
-  const { data: agents, loading: agentLoading, error: agentError, refetch: refetchAgent } = useSupabaseQuery('pype_voice_agents', {
-    select: 'id, name, agent_type, configuration, environment, created_at, is_active, project_id,field_extractor_prompt,field_extractor',
-    filters: shouldFetch ? [{ column: 'id', operator: 'eq', value: agentId }] : []
+  const { data: agents, loading: agentLoading, error: agentError, refetch: refetchAgent } = useQuery('agents', {
+    params: {
+      id: shouldFetch ? agentId : undefined
+    }
   })
 
   const agent = shouldFetch ? agents?.[0] : null
@@ -158,9 +158,10 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
   console.log({agent})
 
 
-  const { data: projects, loading: projectLoading, error: projectError } = useSupabaseQuery('pype_voice_projects', {
-    select: 'id, name, description, environment, created_at, is_active',
-    filters: (shouldFetch && agent?.project_id) ? [{ column: 'id', operator: 'eq', value: agent.project_id }] : []
+  const { data: projects, loading: projectLoading, error: projectError } = useQuery('projects', {
+    params: {
+      id: (shouldFetch && agent?.project_id) ? agent.project_id : undefined
+    }
   })
 
 
@@ -516,11 +517,20 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
               <FieldExtractorDialog
                 initialData={JSON.parse(agent?.field_extractor_prompt || '[]')}
                 isEnabled={!!agent?.field_extractor}
-                onSave={async (data, enabled) => {
-                  const { error } = await supabase
-                    .from('pype_voice_agents')
-                    .update({ field_extractor_prompt: JSON.stringify(data), field_extractor: enabled })
-                    .eq('id', agent.id)
+                onSave={async (fieldData, enabled) => {
+                  const response = await fetch(`/api/agents/${agent.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      field_extractor: enabled,
+                      field_extractor_prompt: JSON.stringify(fieldData)
+                    })
+                  })
+                  
+                  const result = await response.json()
+                  const error = !response.ok ? new Error('Failed to update agent') : null
                   if (!error) {
                     alert('Saved field extractor config.')
                     refetchAgent()

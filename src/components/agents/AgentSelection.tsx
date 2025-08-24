@@ -33,7 +33,7 @@ import {
   MonitorSpeaker,
   ExternalLink
 } from 'lucide-react'
-import { useSupabaseQuery } from '../../hooks/useSupabase'
+import { fetchFromTable } from '../../lib/db-service'
 import AgentCreationDialog from './AgentCreationDialog'
 import Header from '../shared/Header'
 
@@ -68,37 +68,84 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
     project: '',
     item: ''
   })
-  const router = useRouter()
 
-  // Fetch project data
-  const { data: projects, loading: projectLoading, error: projectError } = useSupabaseQuery('pype_voice_projects', {
-    select: 'id, name, description, environment, created_at, is_active',
-    filters: [{ column: 'id', operator: 'eq', value: projectId }]
-  })
+  // State for projects
+  const [projects, setProjects] = useState<any[]>([])
+  const [projectLoading, setProjectLoading] = useState(true)
+  const [projectError, setProjectError] = useState<string | null>(null)
+
+  // State for agents
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [agentsLoading, setAgentsLoading] = useState(true)
+  const [agentsError, setAgentsError] = useState<string | null>(null)
+
+  const router = useRouter()
 
   const project = projects?.[0]
 
+  // Fetch project data
+  useEffect(() => {
+    const fetchProject = async () => {
+      if (!projectId) return
 
-  useEffect(()=>{
-    if(projectId && project){
+      setProjectLoading(true)
+      setProjectError(null)
+
+      try {
+        const { data, error } = await fetchFromTable({
+          table: 'pype_voice_projects',
+          select: 'id, name, description, environment, created_at, is_active',
+          filters: [{ column: 'id', operator: '=', value: projectId }]
+        })
+
+        if (error) throw new Error(error.message || 'Failed to fetch project')
+        setProjects(Array.isArray(data) ? (data as unknown as any[]) : [])
+      } catch (err: any) {
+        setProjectError(err.message)
+      } finally {
+        setProjectLoading(false)
+      }
+    }
+
+    fetchProject()
+  }, [projectId])
+
+  // Fetch agents data
+  const fetchAgents = async () => {
+    if (!projectId) return
+
+    setAgentsLoading(true)
+    setAgentsError(null)
+
+    try {
+      const { data, error } = await fetchFromTable({
+        table: 'pype_voice_agents',
+        select: 'id, name, agent_type, configuration, environment, created_at, is_active, project_id',
+        filters: [{ column: 'project_id', operator: '=', value: projectId }],
+        orderBy: { column: 'created_at', ascending: false }
+      })
+
+      if (error) throw new Error(error.message || 'Failed to fetch agents')
+      setAgents(Array.isArray(data) ? (data as unknown as Agent[]) : [])
+    } catch (err: any) {
+      setAgentsError(err.message)
+    } finally {
+      setAgentsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchAgents()
+  }, [projectId])
+
+  useEffect(() => {
+    if (projectId && project) {
       setBreadcrumb({
         project: project.name,
         item: 'Agents'
       })
     }
-  },[projectId,project])
-
-  
-
-
-  // Fetch agents data
-  const { data: agents, loading: agentsLoading, error: agentsError, refetch } = useSupabaseQuery('pype_voice_agents', {
-    select: 'id, name, agent_type, configuration, environment, created_at, is_active, project_id',
-    filters: [
-      { column: 'project_id', operator: 'eq', value: projectId }
-    ],
-    orderBy: { column: 'created_at', ascending: false }
-  })
+  }, [projectId, project])
 
   const handleAgentClick = (agent: Agent) => {
     setSelectedAgent(agent.id)
@@ -116,7 +163,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }
 
   const handleAgentCreated = (agentData: any) => {
-    refetch()
+    fetchAgents()
   }
 
   const handleDeleteAgent = async (agent: Agent) => {
@@ -134,7 +181,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
         throw new Error(errorData.error || 'Failed to delete agent')
       }
 
-      refetch()
+      fetchAgents()
       setShowDeleteConfirm(null)
     } catch (error: unknown) {
       console.error('Error deleting agent:', error)

@@ -28,14 +28,13 @@ interface Project {
 
 interface Member {
   id: number
-  clerk_id: string
+  user_id: string
   role: string
   permissions: Record<string, any>
   joined_at: string
   user: {
     email: string
-    first_name: string | null
-    last_name: string | null
+    name: string | null
     profile_image_url: string | null
   }
 }
@@ -161,12 +160,13 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
     }
   }
 
-  const getUserInitials = (firstName: string | null, lastName: string | null, email: string) => {
-    if (firstName && lastName) {
-      return `${firstName[0]}${lastName[0]}`.toUpperCase()
-    }
-    if (firstName) {
-      return firstName.substring(0, 2).toUpperCase()
+  const getUserInitials = (name: string | null, email: string) => {
+    if (name) {
+      const nameParts = name.trim().split(' ')
+      if (nameParts.length >= 2) {
+        return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+      }
+      return name.substring(0, 2).toUpperCase()
     }
     return email.substring(0, 2).toUpperCase()
   }
@@ -286,15 +286,12 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={member.user.profile_image_url || undefined} />
                           <AvatarFallback>
-                            {getUserInitials(member.user.first_name, member.user.last_name, member.user.email)}
+                            {getUserInitials(member.user.name, member.user.email)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <p className="font-medium">
-                            {member.user.first_name && member.user.last_name 
-                              ? `${member.user.first_name} ${member.user.last_name}`
-                              : member.user.email
-                            }
+                            {member.user.name || member.user.email}
                           </p>
                           <p className="text-sm text-gray-600">{member.user.email}</p>
                           <p className="text-xs text-gray-500">

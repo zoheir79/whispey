@@ -1,27 +1,24 @@
 // app/api/call-logs/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { fetchFromTable, insertIntoTable } from '../../../lib/db-service'
 import crypto from 'crypto'
-
-// Create Supabase client for server-side operations
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Helper function to verify token
 const verifyToken = async (token: string, environment = 'dev') => {
   try {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
-    const { data: authToken, error } = await supabase
-      .from('pype_voice_projects')
-      .select('*')
-      .eq('token_hash', tokenHash)
-      .single()
+    const { data, error } = await fetchFromTable({
+      table: 'pype_voice_projects',
+      select: '*',
+      filters: [{ column: 'token_hash', operator: '=', value: tokenHash }]
+    })
 
-    if (error || !authToken) {
+    if (error || !data || !Array.isArray(data) || data.length === 0) {
       return { valid: false, error: 'Invalid or expired token' }
     }
+
+    const authToken = (data as any[])[0]
 
     return { 
       valid: true, 
@@ -139,12 +136,8 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString()
     }
 
-    // Insert log into Supabase
-    const { data: insertedLog, error: insertError } = await supabase
-      .from('pype_voice_call_logs')
-      .insert(logData)
-      .select()
-      .single()
+    // Insert log into database
+    const { data: insertedLog, error: insertError } = await insertIntoTable('pype_voice_call_logs', logData)
 
     if (insertError) {
       console.error('Database insert error:', insertError)
@@ -176,15 +169,21 @@ export async function POST(request: NextRequest) {
         unix_timestamp: turn.timestamp
       }))
  
-      // Insert all conversation turns to Supabase
-      const { error: turnsError } = await supabase
-        .from('pype_voice_metrics_logs')
-        .insert(conversationTurns)
- 
+      // Insert all conversation turns to database
+      const { error: turnsError } = await insertIntoTable('pype_voice_metrics_logs', conversationTurns[0])
+      
+      // For bulk insert, we need to insert each turn individually with current db-service
+      for (const turn of conversationTurns) {
+        const { error } = await insertIntoTable('pype_voice_metrics_logs', turn)
+        if (error) {
+          console.error('Error inserting conversation turn:', error)
+        }
+      }
+
       if (turnsError) {
-        console.error('Error inserting conversation turns to Supabase:', turnsError)
+        console.error('Error inserting conversation turns:', turnsError)
       } else {
-        console.log(`Inserted ${conversationTurns.length} conversation turns to Supabase`)
+        console.log(`Inserted ${conversationTurns.length} conversation turns`)
       }
     }
 

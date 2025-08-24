@@ -1,5 +1,6 @@
 // app/api/custom-totals/[...params]/route.ts
-import { auth } from '@clerk/nextjs/server'
+import { verifyUserAuth } from '@/lib/auth'
+import { headers } from 'next/headers'
 import { CustomTotalsService } from '@/services/customTotalService'
 import { NextRequest } from 'next/server'
 
@@ -8,9 +9,12 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ params: string[] }> }
 ) {
-  const { userId } = await auth()
+  const headersList = await headers()
+  const authorization = headersList.get('authorization')
   
-  if (!userId) {
+  const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+  
+  if (!isAuthenticated || !userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -36,9 +40,12 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ params: string[] }> }
 ) {
-  const { userId } = await auth()
+  const headersList = await headers()
+  const authorization = headersList.get('authorization')
   
-  if (!userId) {
+  const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+  
+  if (!isAuthenticated || !userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -110,9 +117,12 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ params: string[] }> }
 ) {
-  const { userId } = await auth()
+  const headersList = await headers()
+  const authorization = headersList.get('authorization')
   
-  if (!userId) {
+  const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+  
+  if (!isAuthenticated || !userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -145,9 +155,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ params: string[] }> }
 ) {
-  const { userId } = await auth()
+  const headersList = await headers()
+  const authorization = headersList.get('authorization')
   
-  if (!userId) {
+  const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+  
+  if (!isAuthenticated || !userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

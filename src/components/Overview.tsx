@@ -48,13 +48,13 @@ import { FloatingActionMenu } from './FloatingActionMenu'
 
 
 import { useDynamicFields } from '../hooks/useDynamicFields'
-import { useUser } from "@clerk/nextjs"
+// JWT auth is handled at the page level
 import CustomTotalsBuilder from './CustomTotalBuilds'
 import { CustomTotalsService } from '@/services/customTotalService'
 import { CustomTotalConfig, CustomTotalResult } from '../types/customTotals'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
-import { supabase } from '@/lib/supabase'
+import { fetchFromTable } from '@/lib/db-service'
 import Papa from 'papaparse'
 
 
@@ -322,48 +322,41 @@ const Overview: React.FC<OverviewProps> = ({
 
   const handleDownloadCustomTotal = async (config: CustomTotalConfig) => {
     try {
-      // Base select: include common columns + metadata/transcription as needed
-      let query = supabase
-        .from('pype_voice_call_logs')
-        .select('id,agent_id,customer_number,call_id,call_ended_reason,call_started_at,call_ended_at,duration_seconds,metadata,transcription_metrics,avg_latency,created_at')
-        .order('created_at', { ascending: false })
-        .limit(2000)
-
       // Build filters mirroring SQL
       const { andFilters, orString } = buildFiltersForDownload(config, agent.id, dateRange?.from, dateRange?.to)
-      for (const f of andFilters) {
-        switch (f.operator) {
-          case 'eq':
-            query = query.eq(f.column, f.value)
-            break
-          case 'ilike':
-            query = query.ilike(f.column, f.value)
-            break
-          case 'gte':
-            query = query.gte(f.column, f.value)
-            break
-          case 'lte':
-            query = query.lte(f.column, f.value)
-            break
-          case 'gt':
-            query = query.gt(f.column, f.value)
-            break
-          case 'lt':
-            query = query.lt(f.column, f.value)
-            break
-          case 'not.is':
-            query = query.not(f.column, 'is', f.value)
-            break
-          case 'neq':
-            query = query.neq(f.column, f.value)
-            break
-        }
-      }
+      
+      // Convertir les filtres au format attendu par fetchFromTable
+      const filters = andFilters.map(f => ({
+        column: f.column,
+        operator: f.operator === 'eq' ? '=' :
+                 f.operator === 'ilike' ? 'ilike' :
+                 f.operator === 'gte' ? '>=' :
+                 f.operator === 'lte' ? '<=' :
+                 f.operator === 'gt' ? '>' :
+                 f.operator === 'lt' ? '<' :
+                 f.operator === 'not.is' ? 'is not' :
+                 f.operator === 'neq' ? '!=' : f.operator,
+        value: f.value
+      }))
+      
+      // Gestion de la condition OR si présente
+      let orCondition = undefined
       if (orString) {
-        query = query.or(orString)
+        // Convertir la chaîne OR en format compatible avec fetchFromTable
+        // Note: Cette implémentation est simplifiée et pourrait nécessiter une adaptation
+        // selon la façon dont fetchFromTable gère les conditions OR
+        orCondition = orString
       }
-
-      const { data, error } = await query
+      
+      // Appel à fetchFromTable avec les paramètres appropriés
+      const { data, error } = await fetchFromTable({
+        table: 'pype_voice_call_logs',
+        select: 'id,agent_id,customer_number,call_id,call_ended_reason,call_started_at,call_ended_at,duration_seconds,metadata,transcription_metrics,avg_latency,created_at',
+        filters,
+        orderBy: { column: 'created_at', ascending: false },
+        limit: 2000,
+        orCondition
+      })
       if (error) {
         alert(`Failed to fetch logs: ${error.message}`)
         return

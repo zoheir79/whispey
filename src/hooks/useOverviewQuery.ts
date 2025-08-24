@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { callRPC } from '../lib/db-rpc'
+import { fetchFromTable } from '../lib/db-service'
 
 interface OverviewData {
   totalCalls: number
@@ -35,55 +36,63 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         setError(null)
     
         // 🔄 Call the PostgreSQL function to refresh the materialized view
-        const { error: refreshError } = await supabase.rpc('refresh_call_summary')
+        const { data: refreshData, error: refreshError } = await callRPC<any>('refresh_call_summary', {})
         if (refreshError) throw refreshError
 
     
         // ✅ Then query the refreshed materialized view
-        const { data: dailyStats, error: queryError } = await supabase
-          .from('call_summary_materialized')
-          .select(`
-            call_date,
-            calls,
-            total_minutes,
-            avg_latency,
-            unique_customers,
-            successful_calls,
-            success_rate,
-            total_cost
-          `)
-          .eq('agent_id', agentId)
-          .gte('call_date', dateFrom)
-          .lte('call_date', dateTo)
-          .order('call_date', { ascending: true })
-            
+        const { data: dailyStats, error: queryError } = await fetchFromTable({
+          table: 'call_summary_materialized',
+          select: '*',
+          filters: [
+            { column: 'agent_id', operator: '=', value: agentId },
+            { column: 'call_date', operator: '>=', value: dateFrom },
+            { column: 'call_date', operator: '<=', value: dateTo }
+          ],
+          orderBy: { column: 'call_date', ascending: true }
+        })
 
         if (queryError) throw queryError
             
         
-        const totalCalls = dailyStats?.reduce((sum, day) => sum + day.calls, 0) || 0
-        const successfulCalls = dailyStats?.reduce((sum, day) => sum + day.successful_calls, 0) || 0
-        const totalCost = dailyStats?.reduce((sum, day) => sum + day.total_cost, 0) || 0
+        // Typage des données reçues
+        type DailyStatRow = {
+          call_date: string;
+          calls: number;
+          total_minutes: number;
+          avg_latency: number;
+          unique_customers: number;
+          successful_calls: number;
+          success_rate: number;
+          total_cost: number;
+        };
+        
+        // Conversion du tableau any[] en tableau typé
+        const typedDailyStats = Array.isArray(dailyStats) ? dailyStats as unknown as DailyStatRow[] : [];
+        
+        const totalCalls = typedDailyStats.reduce((sum, day) => sum + day.calls, 0)
+        const successfulCalls = typedDailyStats.reduce((sum, day) => sum + day.successful_calls, 0)
+        const totalCost = typedDailyStats.reduce((sum, day) => sum + day.total_cost, 0)
 
 
     
         const typedData: OverviewData = {
           totalCalls,
           totalCost,
-          totalMinutes: dailyStats?.reduce((sum, day) => sum + day.total_minutes, 0) || 0,
+          totalMinutes: typedDailyStats.reduce((sum, day) => sum + day.total_minutes, 0),
           successfulCalls,
           successRate: totalCalls > 0 ? (successfulCalls / totalCalls) * 100 : 0,
-          averageLatency: dailyStats && dailyStats.length > 0
-            ? dailyStats.reduce((sum, day) => sum + day.avg_latency, 0) / dailyStats.length
+          averageLatency: typedDailyStats.length > 0
+            ? typedDailyStats.reduce((sum, day) => sum + day.avg_latency, 0) / typedDailyStats.length
             : 0,
-          uniqueCustomers: dailyStats?.reduce((sum, day) => sum + day.unique_customers, 0) || 0,
-          dailyData: dailyStats?.map(day => ({
+          uniqueCustomers: typedDailyStats.reduce((sum, day) => sum + day.unique_customers, 0),
+          dailyData: typedDailyStats.map(day => ({
             date: day.call_date,
             dateKey: day.call_date,
             calls: day.calls,
             minutes: day.total_minutes,
             avg_latency: day.avg_latency
-          })) || []
+          }))
           
         }
     

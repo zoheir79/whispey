@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
-import { supabase } from "../../lib/supabase"
+import { fetchFromTable, insertIntoTable, deleteFromTable } from "@/lib/db-service"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -220,23 +220,26 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
   // ===== API FUNCTIONS =====
   const fetchViews = useCallback(async (): Promise<void> => {
     try {
-      const { data, error } = await supabase
-        .from("pype_voice_agent_call_log_views")
-        .select("*")
-        .eq("agent_id", agentId)
-        .order("created_at", { ascending: false })
+      const { data, error } = await fetchFromTable({
+        table: "pype_voice_agent_call_log_views",
+        select: "*",
+        filters: [{ column: "agent_id", operator: "=", value: agentId }],
+        orderBy: { column: "created_at", ascending: false }
+      })
 
       if (error) throw error
-      setViews(data || [])
+      // Ensure data is properly typed as CustomView[]
+      const typedData = Array.isArray(data) ? data as unknown as CustomView[] : []
+      setViews(typedData)
     } catch (err) {
       console.error("Failed to fetch views:", err)
       setError("Unable to load saved views. Please try again.")
     }
   }, [agentId])
 
-  const convertToSupabaseFilters = useCallback(
+  const convertToFetchFilters = useCallback(
     (filters: FilterRule[]) => {
-      const supabaseFilters = [{ column: "agent_id", operator: "eq", value: agentId }]
+      const fetchFilters = [{ column: "agent_id", operator: "=", value: agentId }]
 
       filters.forEach((filter) => {
         const getColumnName = (forTextOperation = false) => {
@@ -249,21 +252,21 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
             if (filter.column === "call_started_at") {
               const startOfDay = `${filter.value} 00:00:00`
               const endOfDay = `${filter.value} 23:59:59.999`
-              supabaseFilters.push(
-                { column: filter.column, operator: "gte", value: startOfDay },
-                { column: filter.column, operator: "lte", value: endOfDay },
+              fetchFilters.push(
+                { column: filter.column, operator: ">=", value: startOfDay },
+                { column: filter.column, operator: "<=", value: endOfDay },
               )
             } else {
-              supabaseFilters.push({
+              fetchFilters.push({
                 column: getColumnName(false),
-                operator: "eq",
+                operator: "=",
                 value: filter.value,
               })
             }
             break
 
           case "contains":
-            supabaseFilters.push({
+            fetchFilters.push({
               column: getColumnName(true),
               operator: "ilike",
               value: `%${filter.value}%`,
@@ -271,7 +274,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
             break
 
           case "starts_with":
-            supabaseFilters.push({
+            fetchFilters.push({
               column: getColumnName(true),
               operator: "ilike",
               value: `${filter.value}%`,
@@ -283,15 +286,15 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
               const nextDay = new Date(filter.value)
               nextDay.setDate(nextDay.getDate() + 1)
               const nextDayStr = nextDay.toISOString().split("T")[0]
-              supabaseFilters.push({
+              fetchFilters.push({
                 column: filter.column,
-                operator: "gte",
+                operator: ">=",
                 value: `${nextDayStr} 00:00:00`,
               })
             } else {
-              supabaseFilters.push({
+              fetchFilters.push({
                 column: getColumnName(false),
-                operator: "gt",
+                operator: ">",
                 value: filter.value,
               })
             }
@@ -299,30 +302,30 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
 
           case "less_than":
             if (filter.column === "call_started_at") {
-              supabaseFilters.push({
+              fetchFilters.push({
                 column: filter.column,
-                operator: "lt",
+                operator: "<",
                 value: `${filter.value} 00:00:00`,
               })
             } else {
-              supabaseFilters.push({
+              fetchFilters.push({
                 column: getColumnName(false),
-                operator: "lt",
+                operator: "<",
                 value: filter.value,
               })
             }
             break
 
           case "json_equals":
-            supabaseFilters.push({
+            fetchFilters.push({
               column: getColumnName(true),
-              operator: "eq",
+              operator: "=",
               value: filter.value,
             })
             break
 
           case "json_contains":
-            supabaseFilters.push({
+            fetchFilters.push({
               column: getColumnName(true),
               operator: "ilike",
               value: `%${filter.value}%`,
@@ -330,26 +333,26 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
             break
 
           case "json_greater_than":
-            supabaseFilters.push({
+            fetchFilters.push({
               column: `${getColumnName(false)}::numeric`,
-              operator: "gt",
+              operator: ">",
               value: Number.parseFloat(filter.value).toString(),
             })
             break
 
           case "json_less_than":
-            supabaseFilters.push({
+            fetchFilters.push({
               column: `${getColumnName(false)}::numeric`,
-              operator: "lt",
+              operator: "<",
               value: Number.parseFloat(filter.value).toString(),
             })
             break
 
           case "json_exists":
-            supabaseFilters.push({
+            fetchFilters.push({
               column: getColumnName(false),
-              operator: "not.is",
-              value: "",
+              operator: "is not",
+              value: "null", // Use string "null" instead of null value
             })
             break
 
@@ -359,53 +362,51 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
         }
       })
 
-      return supabaseFilters
+      return fetchFilters
     },
     [agentId],
   )
 
   const fetchCallLogs = useCallback(async (pageNumber: number = 0, reset: boolean = false): Promise<void> => {
-
-    if (pageNumber === 0 || reset) {
-      setLoadingState(LoadingState.LOADING)
-    }
-    setError(null)
-
-
-    const endOfDay = new Date(dateRange.to + "T23:59:59.999");
-
-
     try {
-      let query = supabase
-        .from("pype_voice_call_logs")
-        .select("*")
-        .eq("agent_id", agentId)
-        .gte("call_started_at", dateRange.from)
-        .lte("call_started_at", endOfDay.toISOString())
-
-      const filters = convertToSupabaseFilters(currentFilters)
-      for (const filter of filters) {
-        // @ts-ignore
-        query = query[filter.operator](filter.column, filter.value)
-      }
-
-      const from = pageNumber * PAGE_SIZE
-      const to = from + PAGE_SIZE - 1
-
-      query = query.order("call_started_at", { ascending: false })
-      query = query.range(from, to)
-
-      const { data, error } = await query
-
+      setLoadingState(LoadingState.LOADING)
+      const customFilters = convertToFetchFilters(currentFilters)
+      const endOfDay = new Date(dateRange.to + "T23:59:59.999");
+      
+      // Prepare base filters
+      const baseFilters = [
+        { column: "agent_id", operator: "=", value: agentId },
+        { column: "call_started_at", operator: ">=", value: dateRange.from },
+        { column: "call_started_at", operator: "<=", value: endOfDay.toISOString() }
+      ];
+      
+      // Combine filters
+      const allFilters = [...baseFilters, ...customFilters.filter(f => f.column !== "agent_id")];
+      
+      const offset = pageNumber * PAGE_SIZE;
+      
+      // Execute query with fetchFromTable
+      const { data, error } = await fetchFromTable({
+        table: "pype_voice_call_logs",
+        select: "*",
+        filters: allFilters,
+        orderBy: { column: "call_started_at", ascending: false },
+        limit: PAGE_SIZE,
+        offset: offset
+      });
+      
       if (error) throw error
 
-      if (data.length < PAGE_SIZE) setHasMore(false)
+      // Ensure data is properly typed as CallLog[]
+      const typedData = Array.isArray(data) ? data as unknown as CallLog[] : [];
+      
+      if (typedData.length < PAGE_SIZE) setHasMore(false)
 
       if (reset || pageNumber === 0) {
-        setCallLogs(data || [])
+        setCallLogs(typedData)
       } else {
         setCallLogs((prev) => {
-          const combined = [...prev, ...data]
+          const combined = [...prev, ...typedData]
           const seen = new Set<string>()
           return combined.filter((log) => {
             if (seen.has(log.call_id)) return false
@@ -414,14 +415,14 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
           })
         })
       }
-      
+
       setLoadingState(LoadingState.SUCCESS)
     } catch (err) {
       console.error("Failed to fetch call logs:", err)
-      setError("Unable to load call logs. Please check your connection and try again.")
+      setError("Unable to load call logs. Please try again.")
       setLoadingState(LoadingState.ERROR)
     }
-  }, [currentFilters, agentId, dateRange, convertToSupabaseFilters])
+  }, [agentId, dateRange, currentFilters, convertToFetchFilters])
 
   // ===== VIEW MANAGEMENT FUNCTIONS =====
   const resetToAllView = useCallback((): void => {
@@ -461,14 +462,12 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
     if (!viewName.trim()) return
 
     try {
-      const { error } = await supabase.from("pype_voice_agent_call_log_views").insert([
-        {
-          agent_id: agentId,
-          name: viewName.trim(),
-          filters: currentFilters,
-          visible_columns: currentColumns,
-        },
-      ])
+      const { error } = await insertIntoTable("pype_voice_agent_call_log_views", {
+        agent_id: agentId,
+        name: viewName.trim(),
+        filters: currentFilters,
+        visible_columns: currentColumns,
+      })
 
       if (error) throw error
 
@@ -481,23 +480,21 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
     }
   }, [viewName, agentId, currentFilters, currentColumns, fetchViews])
 
-  const deleteView = useCallback(async (viewId: string): Promise<void> => {
+  const deleteView = useCallback(async (id: string): Promise<void> => {
     try {
-      const { error } = await supabase.from("pype_voice_agent_call_log_views").delete().eq("id", viewId)
+      const { error } = await deleteFromTable("pype_voice_agent_call_log_views", "id", id)
 
       if (error) throw error
 
-      setViews((prev) => prev.filter((view) => view.id !== viewId))
-
-      if (selectedViewId === viewId) {
+      await fetchViews()
+      if (selectedViewId === id) {
         setStoredSelectedViewId("all")
-        resetToAllView()
       }
     } catch (err) {
       console.error("Failed to delete view:", err)
       setError("Unable to delete view. Please try again.")
     }
-  }, [selectedViewId, resetToAllView, setStoredSelectedViewId])
+  }, [agentId, fetchViews, selectedViewId])
 
   // ===== PAGINATION =====
   const handleLoadMore = useCallback(() => {
@@ -511,37 +508,43 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const filters = convertToSupabaseFilters(currentFilters)
+        const customFilters = convertToFetchFilters(currentFilters)
         const endOfDay = new Date(dateRange.to + "T23:59:59.999");
         
-        let query = supabase
-          .from("pype_voice_call_logs")
-          .select("*")
-          .eq("agent_id", agentId)
-          .gte("call_started_at", dateRange.from)
-          .lte("call_started_at", endOfDay.toISOString())
-          .order("call_started_at", { ascending: false })
-          .limit(PAGE_SIZE)
-  
-        for (const filter of filters) {
-          // @ts-ignore
-          query = query[filter.operator](filter.column, filter.value)
-        }
-  
-        const { data, error } = await query
+        // Prepare base filters
+        const baseFilters = [
+          { column: "agent_id", operator: "=", value: agentId },
+          { column: "call_started_at", operator: ">=", value: dateRange.from },
+          { column: "call_started_at", operator: "<=", value: endOfDay.toISOString() }
+        ];
+        
+        // Combine filters
+        const allFilters = [...baseFilters, ...customFilters.filter(f => f.column !== "agent_id")];
+        
+        // Execute query with fetchFromTable
+        const { data, error } = await fetchFromTable<CallLog[]>({
+          table: "pype_voice_call_logs",
+          select: "*",
+          filters: allFilters,
+          orderBy: { column: "call_started_at", ascending: false },
+          limit: PAGE_SIZE
+        });
+        
         if (error) throw error
 
-  
         // Check if there's any new data not already in the list
         if (data && data.length > 0) {
+          // Ensure data is properly typed as CallLog[]
+          const typedData = Array.isArray(data) ? data as unknown as CallLog[] : [];
+          
           const latestExistingCallId = callLogs[0]?.call_id
-          const isNew = data.some((log) => log.call_id !== latestExistingCallId)
+          const isNew = typedData.some((log) => log.call_id !== latestExistingCallId)
   
           if (isNew) {
             // Append new logs at the beginning
             setCallLogs((prev) => {
               const ids = new Set(prev.map((log) => log.call_id))
-              const newOnes = data.filter((log) => !ids.has(log.call_id))
+              const newOnes = typedData.filter((log) => !ids.has(log.call_id))
               return [...newOnes, ...prev]
             })
           }
@@ -552,7 +555,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
     }, 5 * 60 * 1000)
   
     return () => clearInterval(interval)
-  }, [agentId, dateRange, currentFilters, callLogs, convertToSupabaseFilters])
+  }, [agentId, dateRange, currentFilters, callLogs, convertToFetchFilters])
   
   
 

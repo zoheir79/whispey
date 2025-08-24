@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '../../../../lib/supabase';
+import { fetchFromTable, insertIntoTable, updateTable } from '../../../../lib/db-service';
 import { sendResponse } from '../../../../lib/response';
 import { verifyToken } from '../../../../lib/auth';
 import { totalCostsINR } from '../../../../lib/calculateCost';
@@ -115,11 +115,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Insert log into database
-    const { data: insertedLog, error: insertError } = await supabase
-      .from('pype_voice_call_logs')
-      .insert(logData)
-      .select()
-      .single();
+    const { data: insertedLog, error: insertError } = await insertIntoTable('pype_voice_call_logs', logData);
 
     if (insertError) {
       console.error('Database insert error:', insertError);
@@ -149,9 +145,13 @@ export async function POST(request: NextRequest) {
         unix_timestamp: turn.timestamp
       }));
 
-      const { error: turnsError } = await supabase
-        .from('pype_voice_metrics_logs')
-        .insert(conversationTurns);
+      // Insert conversation turns into metrics logs
+      const { error: turnsError } = await Promise.all(
+        conversationTurns.map(turn => insertIntoTable('pype_voice_metrics_logs', turn))
+      ).then(results => {
+        const errors = results.filter(result => result.error).map(result => result.error);
+        return { error: errors.length > 0 ? errors[0] : null };
+      });
 
       if (turnsError) {
         console.error('Error inserting conversation turns:', turnsError);
@@ -176,14 +176,11 @@ export async function POST(request: NextRequest) {
           callStartedAt: call_started_at
         });
 
-      const { error: costError } = await supabase
-        .from('pype_voice_call_logs')
-        .update({
-          total_llm_cost: total_llm_cost_inr,
-          total_tts_cost: total_tts_cost_inr,
-          total_stt_cost: total_stt_cost_inr
-        })
-        .eq('id', insertedLog.id);
+      const { error: costError } = await updateTable('pype_voice_call_logs', {
+        total_llm_cost: total_llm_cost_inr,
+        total_tts_cost: total_tts_cost_inr,
+        total_stt_cost: total_stt_cost_inr
+      }, 'id', insertedLog.id);
 
       if (costError) {
         console.log("Total cost insertion error:", costError);
@@ -197,11 +194,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Process transcript with field extraction
-    const { data: agentConfig, error: agentError } = await supabase
-      .from('pype_voice_agents')
-      .select('field_extractor, field_extractor_prompt')
-      .eq('id', agent_id)
-      .single();
+    const { data: agentConfigData, error: agentError } = await fetchFromTable({
+      table: 'pype_voice_agents',
+      select: 'field_extractor, field_extractor_prompt',
+      filters: [{ column: 'id', operator: '=', value: agent_id }]
+    });
+    
+    const agentConfig = Array.isArray(agentConfigData) && agentConfigData.length > 0 ? agentConfigData[0] as any : null;
 
     if (agentError) {
       console.error('Failed to fetch agent config:', agentError);
@@ -214,12 +213,9 @@ export async function POST(request: NextRequest) {
           field_extractor_prompt: agentConfig.field_extractor_prompt,
         });
 
-        const { error: insertFpoError } = await supabase
-          .from('pype_voice_call_logs')
-          .update({
-            transcription_metrics: fpoResult?.logData
-          })
-          .eq('id', insertedLog.id);
+        const { error: insertFpoError } = await updateTable('pype_voice_call_logs', {
+          transcription_metrics: fpoResult?.logData
+        }, 'id', insertedLog.id);
 
         if (insertFpoError) {
           console.error('Error updating FPO transcript log:', insertFpoError);

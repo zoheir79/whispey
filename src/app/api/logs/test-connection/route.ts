@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '../../../../lib/supabase';
+import { fetchFromTable } from '../../../../lib/db-service';
 
 // Handle CORS preflight requests
 export async function OPTIONS(request: NextRequest) {
@@ -15,16 +15,17 @@ export async function OPTIONS(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Test Supabase connection
-    const { data, error } = await supabase
-      .from('pype_voice_projects')
-      .select('count(*)')
-      .limit(1);
+    // Test PostgreSQL connection
+    const { data, error } = await fetchFromTable({
+      table: 'pype_voice_projects',
+      select: 'COUNT(*) as count',
+      limit: 1
+    });
 
     if (error) {
-      console.error('Supabase connection error:', error);
+      console.error('PostgreSQL connection error:', error);
       return NextResponse.json(
-        { success: false, error: `Failed to connect to Supabase: ${error.message}` },
+        { success: false, error: `Failed to connect to PostgreSQL: ${error.message}` },
         { status: 500 }
       );
     }

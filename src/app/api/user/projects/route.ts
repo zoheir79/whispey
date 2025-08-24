@@ -1,12 +1,7 @@
 // app/api/user/projects/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { auth, currentUser } from '@clerk/nextjs/server'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { fetchFromTable } from '../../../../lib/db-service'
+import { verifyUserAuth } from '../../../../lib/auth'
 
 function mapProject(
   project: any,
@@ -26,46 +21,49 @@ function mapProject(
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
+    // Verify JWT authentication
+    const authHeader = request.headers.get('authorization')
+    const { isAuthenticated, userId } = await verifyUserAuth(authHeader)
+    
+    if (!isAuthenticated || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await currentUser()
-    if (!user) {
+    // Get user info from database using userId
+    const { data: userData, error: userError } = await fetchFromTable({
+      table: 'pype_voice_users',
+      select: 'id, email, name',
+      filters: [{ column: 'id', operator: '=', value: userId }]
+    })
+
+    if (userError || !userData || !Array.isArray(userData) || userData.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const userEmail = user.emailAddresses?.[0]?.emailAddress
+    const user = (userData as any[])[0]
+    const userEmail = user.email
+
     if (!userEmail) {
       return NextResponse.json({ error: 'User email not found' }, { status: 404 })
     }
 
     // Get projects for existing users
-    const { data: userProjects, error: userProjectsError } = await supabase
-      .from('pype_voice_email_project_mapping')
-      .select(`
+    const { data: userProjects, error: userProjectsError } = await fetchFromTable({
+      table: 'pype_voice_email_project_mapping',
+      select: `
         id,
-        clerk_id,
+        user_id,
         project_id,
         role,
         permissions,
         joined_at,
-        is_active,
-        project:pype_voice_projects!inner (
-          id,
-          name,
-          description,
-          environment,
-          created_at,
-          is_active,
-          token_hash,
-          owner_clerk_id
-        )
-      `)
-      .eq('clerk_id', userId)
-      .eq('is_active', true)
-      .eq('project.is_active', true)
+        is_active
+      `,
+      filters: [
+        { column: 'user_id', operator: '=', value: userId },
+        { column: 'is_active', operator: '=', value: true }
+      ]
+    })
 
     if (userProjectsError) {
       console.error('Error fetching user projects:', userProjectsError)
@@ -73,64 +71,70 @@ export async function GET(request: NextRequest) {
     }
 
     // Get projects for pending email mappings
-    const { data: emailMappings, error: emailMappingError } = await supabase
-      .from('pype_voice_email_project_mapping')
-      .select(`
+    const { data: emailMappings, error: emailMappingError } = await fetchFromTable({
+      table: 'pype_voice_email_project_mapping',
+      select: `
         id,
         email,
         project_id,
         role,
         permissions,
-        created_at,
-        project:pype_voice_projects!inner (
-          id,
-          name,
-          description,
-          environment,
-          created_at,
-          is_active,
-          token_hash,
-          owner_clerk_id
-        )
-      `)
-      .eq('email', userEmail)
-      .eq('project.is_active', true)
+        created_at
+      `,
+      filters: [{ column: 'email', operator: '=', value: userEmail }]
+    })
 
     if (emailMappingError) {
       console.error('Error fetching email mappings:', emailMappingError)
       // Don't fail the request on email mapping errors
     }
 
-    // Combine projects without duplicates
-    const allProjects: any[] = []
-    const projectIds = new Set<string>()
+    // Get unique project IDs from both sources
+    const projectIdsSet = new Set<string>()
+    const mappings: any[] = []
 
-    if (userProjects) {
-      userProjects.forEach(up => {
-        // @ts-ignore
-        if (!projectIds.has(up.project.id)) {
-          allProjects.push(
-            mapProject(up.project, up.role, up.permissions, up.joined_at, 'member')
-          )
-          // @ts-ignore
+    if (Array.isArray(userProjects)) {
+      userProjects.forEach((up: any) => {
+        projectIdsSet.add(up.project_id)
+        mappings.push({ ...up, access_type: 'member' })
+      })
+    }
 
-          projectIds.add(up.project.id)
+    if (Array.isArray(emailMappings)) {
+      emailMappings.forEach((em: any) => {
+        if (!projectIdsSet.has(em.project_id)) {
+          projectIdsSet.add(em.project_id)
+          mappings.push({ ...em, access_type: 'email_mapped' })
         }
       })
     }
 
-    if (emailMappings) {
-      emailMappings.forEach(em => {
-        // @ts-ignore
-
-        if (!projectIds.has(em.project.id)) {
-          allProjects.push(
-            mapProject(em.project, em.role, em.permissions, em.created_at, 'email_mapped')
-          )
-          // @ts-ignore
-          projectIds.add(em.project.id)
-        }
+    // Fetch project details for all project IDs
+    const allProjects: any[] = []
+    
+    for (const projectId of projectIdsSet) {
+      const { data: projectData, error: projectError } = await fetchFromTable({
+        table: 'pype_voice_projects',
+        select: 'id, name, description, environment, created_at, is_active',
+        filters: [{ column: 'id', operator: '=', value: projectId }]
       })
+
+      if (!projectError && Array.isArray(projectData) && projectData.length > 0) {
+        const project = projectData[0]
+        const mapping = mappings.find(m => m.project_id === projectId)
+        
+        if (mapping) {
+          allProjects.push(
+            mapProject(
+              project, 
+              mapping.role, 
+              mapping.permissions, 
+              mapping.joined_at || mapping.created_at, 
+              mapping.access_type
+            )
+          )
+        }
+      }
     }
 
     // Sort by newest project created_at first

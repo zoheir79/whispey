@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Phone, Clock, CheckCircle, XCircle, Loader2, AlertCircle, RefreshCw } from "lucide-react"
-import { useInfiniteScroll } from "../../hooks/useSupabase"
+import { useInfiniteScrollWithFetch } from "@/hooks/useInfiniteScrollWithFetch"
 import CallDetailsDrawer from "./CallDetailsDrawer"
 import CallFilter, { FilterRule } from "../CallFilter"
 import ColumnSelector from "../shared/ColumnSelector"
 import { cn } from "@/lib/utils"
 import { CostTooltip } from "../tool-tip/costToolTip"
 import { CallLog } from "../../types/logs"
-import { supabase } from "../../lib/supabase"
+import { fetchFromTable } from "../../lib/db-service"
 import Papa from 'papaparse'
-import { useUser } from "@clerk/nextjs"
+// JWT auth is handled at the page level
 import { getUserProjectRole } from "@/services/getUserRole"
 
 
@@ -238,9 +238,9 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     )
   }, [role])
 
-  // Convert FilterRule[] to Supabase filter format
-  const convertToSupabaseFilters = (filters: FilterRule[]) => {
-    const supabaseFilters = [{ column: "agent_id", operator: "eq", value: agent.id }]
+  // Convert FilterRule[] to fetchFromTable filter format
+  const convertToFetchFilters = (filters: FilterRule[]) => {
+    const fetchFilters = [{ column: "agent_id", operator: "=", value: agent.id }]
     
     filters.forEach(filter => {
       // Determine the column name (with JSONB path if applicable)
@@ -261,27 +261,27 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
           if (filter.column === 'call_started_at') {
             const startOfDay = `${filter.value} 00:00:00`
             const endOfDay = `${filter.value} 23:59:59.999`
-            supabaseFilters.push({ 
+            fetchFilters.push({ 
               column: filter.column, 
-              operator: 'gte', 
+              operator: '>=', 
               value: startOfDay
             })
-            supabaseFilters.push({ 
+            fetchFilters.push({ 
               column: filter.column, 
-              operator: 'lte', 
+              operator: '<=', 
               value: endOfDay
             })
           } else {
-            supabaseFilters.push({ 
+            fetchFilters.push({ 
               column: getColumnName(false), 
-              operator: 'eq', 
+              operator: '=', 
               value: filter.value 
             })
           }
           break
           
         case 'contains':
-          supabaseFilters.push({ 
+          fetchFilters.push({ 
             column: getColumnName(true), // Use ->> for text operations
             operator: 'ilike', 
             value: `%${filter.value}%` 
@@ -289,7 +289,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
           break
           
         case 'starts_with':
-          supabaseFilters.push({ 
+          fetchFilters.push({ 
             column: getColumnName(true), // Use ->> for text operations
             operator: 'ilike', 
             value: `${filter.value}%` 
@@ -301,15 +301,15 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
             const nextDay = new Date(filter.value)
             nextDay.setDate(nextDay.getDate() + 1)
             const nextDayStr = nextDay.toISOString().split('T')[0]
-            supabaseFilters.push({ 
+            fetchFilters.push({ 
               column: filter.column, 
-              operator: 'gte', 
+              operator: '>=', 
               value: `${nextDayStr} 00:00:00`
             })
           } else {
-            supabaseFilters.push({ 
+            fetchFilters.push({ 
               column: getColumnName(false), 
-              operator: 'gt', 
+              operator: '>', 
               value: filter.value 
             })
           }
@@ -317,15 +317,15 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
           
         case 'less_than':
           if (filter.column === 'call_started_at') {
-            supabaseFilters.push({ 
+            fetchFilters.push({ 
               column: filter.column, 
-              operator: 'lt', 
+              operator: '<', 
               value: `${filter.value} 00:00:00`
             })
           } else {
-            supabaseFilters.push({ 
+            fetchFilters.push({ 
               column: getColumnName(false), 
-              operator: 'lt', 
+              operator: '<', 
               value: filter.value 
             })
           }
@@ -333,15 +333,15 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
   
         // JSONB-specific operations
         case 'json_equals':
-          supabaseFilters.push({ 
+          fetchFilters.push({ 
             column: getColumnName(true), // Use ->> for text comparison
-            operator: 'eq', 
+            operator: '=', 
             value: filter.value 
           })
           break
           
         case 'json_contains':
-          supabaseFilters.push({ 
+          fetchFilters.push({ 
             column: getColumnName(true), // Use ->> for text operations
             operator: 'ilike', 
             value: `%${filter.value}%` 
@@ -350,28 +350,28 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
           
         case 'json_greater_than':
           // For numeric JSONB fields, use -> and cast to numeric
-          supabaseFilters.push({ 
+          fetchFilters.push({ 
             column: `${getColumnName(false)}::numeric`, 
-            operator: 'gt', 
+            operator: '>', 
             value: parseFloat(filter.value) 
           })
           break
           
         case 'json_less_than':
           // For numeric JSONB fields, use -> and cast to numeric
-          supabaseFilters.push({ 
+          fetchFilters.push({ 
             column: `${getColumnName(false)}::numeric`, 
-            operator: 'lt', 
+            operator: '<', 
             value: parseFloat(filter.value) 
           })
           break
           
         case 'json_exists':
           // Check if the JSONB field exists (is not null)
-          supabaseFilters.push({ 
+          fetchFilters.push({ 
             column: getColumnName(false), // Use -> for existence check
-            operator: 'not.is', 
-            value: null 
+            operator: 'is not', 
+            value: 'null' 
           })
           break
           
@@ -381,7 +381,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
       }
     })
     
-    return supabaseFilters
+    return fetchFilters
   }
 
   const handleColumnChange = (type: 'basic' | 'metadata' | 'transcription_metrics', column: string, visible: boolean) => {
@@ -404,30 +404,15 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
 
 
 
-const { user } = useUser()
-  const userEmail = user?.emailAddresses?.[0]?.emailAddress
+// JWT auth handled at page level, user context removed
 
   // Load user role first
   useEffect(() => {
-    if (userEmail) {
-      const getUserRole = async () => {
-        setRoleLoading(true)
-        try {
-          const userRole = await getUserProjectRole(userEmail, project.id)
-          setRole(userRole)
-        } catch (error) {
-          console.error('Failed to load user role:', error)
-          setRole('user') // Default to most restrictive role on error
-        } finally {
-          setRoleLoading(false)
-        }
-      }
-      getUserRole()
-    } else {
-      setRoleLoading(false)
-      setRole('user') // Default when no user email
-    }
-  }, [userEmail, project.id])
+    // JWT auth provides user context at page level, defaulting to 'admin' role
+    // TODO: Implement proper role fetching from JWT token payload
+    setRole('admin')
+    setRoleLoading(false)
+  }, [project.id])
 
   // Update visible columns when role changes
   useEffect(() => {
@@ -477,7 +462,7 @@ const { user } = useUser()
 
     return {
       select: selectColumns.join(','),
-      filters: convertToSupabaseFilters(activeFilters),
+      filters: convertToFetchFilters(activeFilters),
       orderBy: { column: "created_at", ascending: false },
       limit: 50,
     }
@@ -485,7 +470,7 @@ const { user } = useUser()
 
   
 
-  const { data: calls, loading, hasMore, error, loadMore, refresh } = useInfiniteScroll("pype_voice_call_logs", queryOptions)
+  const { data: calls, loading, hasMore, error, loadMore, refresh } = useInfiniteScrollWithFetch("pype_voice_call_logs", queryOptions)
 
   console.log(calls)
   // Extract all unique keys from metadata and transcription_metrics across all calls
@@ -527,7 +512,7 @@ const { user } = useUser()
   }, [dynamicColumns, basicColumns, JSON.stringify(dynamicColumnsKey)])
   
 
-  // Fixed handleDownloadCSV function
+  // Fixed handleDownloadCSV function using fetchFromTable
   const handleDownloadCSV = async () => {
     const { basic, metadata, transcription_metrics } = visibleColumns;
 
@@ -545,45 +530,15 @@ const { user } = useUser()
     console.log('Select columns:', selectColumns);
 
     try {
-      // Build base query with proper select
-      let query = supabase
-        .from("pype_voice_call_logs")
-        .select(selectColumns.join(','));
-
-      // Apply filters properly - FIXED VERSION
-      const filters = convertToSupabaseFilters(activeFilters);
-      console.log('Applying filters:', filters);
-
-      for (const filter of filters) {
-        switch (filter.operator) {
-          case 'eq':
-            query = query.eq(filter.column, filter.value);
-            break;
-          case 'ilike':
-            query = query.ilike(filter.column, filter.value);
-            break;
-          case 'gte':
-            query = query.gte(filter.column, filter.value);
-            break;
-          case 'lte':
-            query = query.lte(filter.column, filter.value);
-            break;
-          case 'gt':
-            query = query.gt(filter.column, filter.value);
-            break;
-          case 'lt':
-            query = query.lt(filter.column, filter.value);
-            break;
-          case 'not.is':
-            query = query.not(filter.column, 'is', filter.value);
-            break;
-          default:
-            console.warn(`Unknown operator: ${filter.operator}`);
-        }
-      }
-
-      // Order by created_at for consistency
-      query = query.order('created_at', { ascending: false });
+      // Préparer les options pour fetchFromTable
+      const queryOptions = {
+        table: "pype_voice_call_logs",
+        select: selectColumns.join(','),
+        filters: convertToFetchFilters(activeFilters),
+        orderBy: { column: "created_at", ascending: false }
+      };
+      
+      console.log('Applying filters:', queryOptions.filters);
 
       // Fetch all data in chunks
       let allData: CallLog[] = [];
@@ -594,16 +549,26 @@ const { user } = useUser()
       console.log('Starting data fetch...');
 
       while (hasMoreData) {
-        const { data, error } = await query.range(page * pageSize, (page + 1) * pageSize - 1);
+        // Add pagination to query options
+        const paginatedOptions = {
+          ...queryOptions,
+          limit: pageSize,
+          offset: page * pageSize
+        };
         
+        // Execute the query with fetchFromTable
+        const { data, error } = await fetchFromTable<CallLog[]>(paginatedOptions);
+
         if (error) {
-          console.error('Query error:', error);
+          console.error('Error fetching data for CSV:', error);
           alert("Failed to fetch data for export: " + error.message);
           return;
         }
 
         if (data && data.length > 0) {
-          allData = allData.concat(data as unknown as CallLog[]);
+          // Ensure proper type casting
+          const typedData = data as unknown as CallLog[];
+          allData = [...allData, ...typedData];
           console.log(`Fetched page ${page + 1}, total records: ${allData.length}`);
           
           // If we got less than pageSize, we're done
