@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fetchFromTable, updateTable, deleteFromTable } from '../../../../lib/db-service'
+import { verifyUserAuth } from '@/lib/auth'
 import crypto from 'crypto'
 
 // Generate a secure API token
@@ -12,6 +13,63 @@ function generateApiToken(): string {
 // Hash a token using SHA-256
 function hashToken(token: string): string {
   return crypto.createHash('sha256').update(token).digest('hex')
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: projectId } = await params
+
+    // Check authentication (now reads JWT from cookies)
+    const { isAuthenticated, userId } = await verifyUserAuth()
+    
+    if (!isAuthenticated || !userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    if (!projectId) {
+      return NextResponse.json(
+        { error: 'Project ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Fetch project details from database
+    const { data: projectData, error } = await fetchFromTable({
+      table: 'pype_voice_projects',
+      select: 'id, name, description, environment, is_active, created_at, owner_user_id',
+      filters: [{ column: 'id', operator: '=', value: projectId }]
+    })
+
+    if (error) {
+      console.error('Error fetching project:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch project' },
+        { status: 500 }
+      )
+    }
+
+    const project = Array.isArray(projectData) && projectData.length > 0 ? projectData[0] : null
+
+    if (!project) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      )
+    }
+
+    // Return project details
+    return NextResponse.json(project, { status: 200 })
+
+  } catch (error) {
+    console.error('Unexpected error fetching project:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
 }
 
 export async function PUT(
