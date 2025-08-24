@@ -131,8 +131,9 @@ const Overview: React.FC<OverviewProps> = ({
   const [loadingCustomTotals, setLoadingCustomTotals] = useState(false)
   const [roleLoading, setRoleLoading] = useState(true) // Add loading state for role
 
-  const { user } = useUser()
-  const userEmail = user?.emailAddresses?.[0]?.emailAddress
+  // TODO: Replace with JWT auth context when available
+  // const { user } = useUser() // Removed: obsolete Clerk hook
+  const userEmail = 'user@example.com' // TODO: Get from JWT auth context
 
 
 
