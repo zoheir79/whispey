@@ -576,26 +576,31 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                   isEnabled={!!agent?.field_extractor}
                   onSave={async (fieldData, enabled) => {
                     if (!agent?.id) return
-                    const response = await fetch(`/api/agents/${agent.id}`, {
-                      method: 'PATCH',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({
-                        field_extractor: enabled,
-                        field_extractor_prompt: JSON.stringify(fieldData)
+                    
+                    try {
+                      const response = await fetch(`/api/agents/${agent.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          field_extractor: enabled,
+                          field_extractor_prompt: JSON.stringify(fieldData)
+                        })
                       })
-                    })
-                  
-                  const result = await response.json()
-                  const error = !response.ok ? new Error('Failed to update agent') : null
-                  if (!error) {
-                    alert('Saved field extractor config.')
-                    refetchAgent()
-                  } else {
-                    alert('Error saving config: ' + error.message)
-                  }
-                }}
+                      
+                      const result = await response.json()
+                      
+                      if (response.ok) {
+                        alert('Saved field extractor config.')
+                        refetchAgent()
+                      } else {
+                        alert('Error saving config: ' + (result.error || 'Unknown error'))
+                      }
+                    } catch (error: any) {
+                      alert('Error saving config: ' + error.message)
+                    }
+                  }}
               />
             )}
           </div>
