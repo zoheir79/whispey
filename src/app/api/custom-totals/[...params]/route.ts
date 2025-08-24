@@ -8,11 +8,7 @@ import { NextRequest } from 'next/server'
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ params: string[] }> }
-) {
-  const headersList = await headers()
-  const authorization = headersList.get('authorization')
-  
-  const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+) {  const { isAuthenticated, userId } = await verifyUserAuth()
   
   if (!isAuthenticated || !userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -39,11 +35,7 @@ export async function GET(
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ params: string[] }> }
-) {
-  const headersList = await headers()
-  const authorization = headersList.get('authorization')
-  
-  const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+) {  const { isAuthenticated, userId } = await verifyUserAuth()
   
   if (!isAuthenticated || !userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -116,11 +108,7 @@ export async function POST(
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ params: string[] }> }
-) {
-  const headersList = await headers()
-  const authorization = headersList.get('authorization')
-  
-  const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+) {  const { isAuthenticated, userId } = await verifyUserAuth()
   
   if (!isAuthenticated || !userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -154,11 +142,7 @@ export async function PUT(
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ params: string[] }> }
-) {
-  const headersList = await headers()
-  const authorization = headersList.get('authorization')
-  
-  const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+) {  const { isAuthenticated, userId } = await verifyUserAuth()
   
   if (!isAuthenticated || !userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })

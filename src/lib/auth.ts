@@ -30,18 +30,27 @@ export const verifyToken = async (token: string, environment: string = 'dev'): P
   }
 };
 
-// Verify user authentication from request
-export const verifyUserAuth = async (authHeader: string | null): Promise<{ isAuthenticated: boolean; userId?: string }> => {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+// Verify user authentication from request (reads JWT from cookies)
+export const verifyUserAuth = async (request?: Request): Promise<{ isAuthenticated: boolean; userId?: string }> => {
+  try {
+    // Get JWT token from cookies (instead of Authorization header)
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token')?.value;
+
+    if (!token) {
+      return { isAuthenticated: false };
+    }
+
+    const { valid, userId } = verifyJwtToken(token);
+
+    if (!valid || !userId) {
+      return { isAuthenticated: false };
+    }
+
+    return { isAuthenticated: true, userId };
+  } catch (error) {
+    console.error('Auth verification error:', error);
     return { isAuthenticated: false };
   }
-
-  const token = authHeader.split(' ')[1];
-  const { valid, userId } = verifyJwtToken(token);
-
-  if (!valid || !userId) {
-    return { isAuthenticated: false };
-  }
-
-  return { isAuthenticated: true, userId };
 };

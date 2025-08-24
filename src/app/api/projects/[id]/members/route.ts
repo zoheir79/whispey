@@ -7,11 +7,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params:any }
 ) {
-  try {
-    const headersList = await headers()
-    const authorization = headersList.get('authorization')
-    
-    const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+  try {    const { isAuthenticated, userId } = await verifyUserAuth()
     
     if (!isAuthenticated || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -58,7 +54,6 @@ export async function POST(
     })
     
     const userProjectData = Array.isArray(userProject) && userProject.length > 0 ? userProject[0] as any : null
-      
 
     let hasAdminAccess = false
 
@@ -178,11 +173,7 @@ export async function GET(
   request: NextRequest,
   context: any
 ) {
-  try {
-    const headersList = await headers()
-    const authorization = headersList.get('authorization')
-    
-    const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+  try {    const { isAuthenticated, userId } = await verifyUserAuth()
     
     if (!isAuthenticated || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -203,7 +194,6 @@ export async function GET(
     })
     
     const accessData = Array.isArray(accessCheck) && accessCheck.length > 0 ? accessCheck[0] : null
-    
 
     if(accessError)
     {
@@ -214,7 +204,6 @@ export async function GET(
     if (!accessData) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
-
 
     // Get members with basic info
     const { data: members, error } = await fetchFromTable({

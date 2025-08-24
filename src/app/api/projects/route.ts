@@ -19,11 +19,8 @@ function hashToken(token: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const headersList = await headers()
-    const authorization = headersList.get('authorization')
-    
-    const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+    // Check authentication (now reads JWT from cookies) (now reads JWT from cookies)
+    const { isAuthenticated, userId } = await verifyUserAuth()
     
     if (!isAuthenticated || !userId) {
       return NextResponse.json(
@@ -77,7 +74,6 @@ export async function POST(request: NextRequest) {
         data: projectData
       })
 
-
     if (projectError) {
       console.error('Error creating project:', projectError)
       return NextResponse.json(
@@ -116,8 +112,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-
-
     // Return project data with the unhashed token
     const response = {
       ...project,
@@ -137,11 +131,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const headersList = await headers()
-    const authorization = headersList.get('authorization')
-    
-    const { isAuthenticated, userId } = await verifyUserAuth(authorization)
+    // Check authentication (now reads JWT from cookies)    const { isAuthenticated, userId } = await verifyUserAuth()
     
     if (!isAuthenticated || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -206,9 +196,6 @@ export async function GET(request: NextRequest) {
       console.error('Error fetching projects:', error)
       return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
     }
-
-
-
 
     // Return only active projects with user role included
     const activeProjects = projectMappings
