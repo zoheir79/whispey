@@ -597,7 +597,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                   }
                 }}
               />
-            </div>
+            )}
           </div>
         </div>
       </div>
