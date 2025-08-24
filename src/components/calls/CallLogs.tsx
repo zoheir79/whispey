@@ -240,7 +240,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
 
   // Convert FilterRule[] to fetchFromTable filter format
   const convertToFetchFilters = (filters: FilterRule[]) => {
-    const fetchFilters = [{ column: "agent_id", operator: "=", value: agent.id }]
+    const fetchFilters = [{ column: "agent_id", operator: "=", value: agent?.id }]
     
     filters.forEach(filter => {
       // Determine the column name (with JSONB path if applicable)
