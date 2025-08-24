@@ -19,7 +19,7 @@ function hashToken(token: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication (now reads JWT from cookies) (now reads JWT from cookies) (now reads JWT from cookies)
+    // Check authentication (now reads JWT from cookies)
     const { isAuthenticated, userId } = await verifyUserAuth()
     
     if (!isAuthenticated || !userId) {
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication (now reads JWT from cookies) (now reads JWT from cookies)
+    // Check authentication (now reads JWT from cookies)
     const { isAuthenticated, userId } = await verifyUserAuth()
     
     if (!isAuthenticated || !userId) {

@@ -24,7 +24,8 @@ function mapProject(
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify JWT authentication (now reads JWT from cookies) (now reads JWT from cookies)    const { isAuthenticated, userId } = await verifyUserAuth()
+    // Verify JWT authentication (now reads JWT from cookies)
+    const { isAuthenticated, userId } = await verifyUserAuth()
     
     if (!isAuthenticated || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
