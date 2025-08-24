@@ -138,16 +138,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    console.log('DEBUG: Authenticated userId from JWT:', userId)
+
     // Get current user from database to get email
-    const { data: userData } = await fetchFromTable({
+    const { data: userData, error: userError } = await fetchFromTable({
       table: 'pype_voice_users',
       select: 'user_id, name, email',
       filters: [{ column: 'user_id', operator: '=', value: userId }]
     })
     
+    console.log('DEBUG: User lookup result:', { userData, userError })
+    
     const user = Array.isArray(userData) && userData.length > 0 ? userData[0] as any : null
+    console.log('DEBUG: Parsed user:', user)
+    
     if (!user || !user.email) {
-      return NextResponse.json({ error: 'User email not found' }, { status: 400 })
+      console.log('DEBUG: User email not found - user:', user, 'email:', user?.email)
+      return NextResponse.json({ 
+        error: 'User email not found',
+        debug: { userId, userData, user }
+      }, { status: 400 })
     }
 
     // Get project mappings for this user's email (simplified approach)
