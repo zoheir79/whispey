@@ -480,21 +480,6 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       if (vapiStatus?.connected) {
                         // Navigate to settings if connected
                         router.push(`/agents/${agentId}/vapi`)
-                  >
-                    <Icon className="w-4 h-4" />
-                    {tab.label}
-                  </button>
-                )
-              })}
-            </div>
-
-            {isVapiAgent && (
-              <div className="relative">
-                <Button
-                  onClick={() => {
-                    if (vapiStatus?.connected) {
-                      // Navigate to settings if connected
-                      router.push(`/agents/${agentId}/vapi`)
                     } else {
                       // Setup webhook if not connected
                       handleWebhookSetup()
@@ -525,33 +510,15 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                     {vapiStatus.connected ? (
                       <div className="w-3 h-3 bg-green-500 rounded-full border-2 border-white" 
                           title="Webhook connected" />
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : vapiStatus?.connected ? (
-                      <Bot className="w-4 h-4 mr-2" />
                     ) : (
-                      <LinkIcon className="w-4 h-4 mr-2" />
+                      <div className="w-3 h-3 bg-orange-500 rounded-full border-2 border-white" 
+                          title="Setup required" />
                     )}
-                    
-                    {vapiStatusLoading ? 'Checking...' :
-                    connectingWebhook ? 'Connecting...' :
-                    vapiStatus?.connected ? 'Agent Settings' : 'Connect VAPI'}
-                  </Button>
-                  
-                  {/* Status indicator */}
-                  {!vapiStatusLoading && vapiStatus && (
-                    <div className="absolute -top-1 -right-1">
-                      {vapiStatus.connected ? (
-                        <div className="w-3 h-3 bg-green-500 rounded-full border-2 border-white" 
-                            title="Webhook connected" />
-                      ) : (
-                        <div className="w-3 h-3 bg-orange-500 rounded-full border-2 border-white" 
-                            title="Setup required" />
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
 
             {/* Right: Refined Controls */}
             <div className="flex items-center gap-6">
