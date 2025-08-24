@@ -33,7 +33,7 @@ import {
   MonitorSpeaker,
   ExternalLink
 } from 'lucide-react'
-import { fetchFromTable } from '../../lib/db-service'
+// Removed direct db-service import - using API calls instead
 import AgentCreationDialog from './AgentCreationDialog'
 import Header from '../shared/Header'
 
@@ -92,14 +92,16 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
       setProjectError(null)
 
       try {
-        const { data, error } = await fetchFromTable({
-          table: 'pype_voice_projects',
-          select: 'id, name, description, environment, created_at, is_active',
-          filters: [{ column: 'id', operator: '=', value: projectId }]
+        const response = await fetch(`/api/projects/${projectId}`, {
+          method: 'GET',
+          headers: {
+            'authorization': localStorage.getItem('token') || ''
+          }
         })
 
-        if (error) throw new Error(error.message || 'Failed to fetch project')
-        setProjects(Array.isArray(data) ? (data as unknown as any[]) : [])
+        if (!response.ok) throw new Error('Failed to fetch project')
+        const projectData = await response.json()
+        setProjects([projectData])
       } catch (err: any) {
         setProjectError(err.message)
       } finally {
@@ -118,15 +120,16 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
     setAgentsError(null)
 
     try {
-      const { data, error } = await fetchFromTable({
-        table: 'pype_voice_agents',
-        select: 'id, name, agent_type, configuration, environment, created_at, is_active, project_id',
-        filters: [{ column: 'project_id', operator: '=', value: projectId }],
-        orderBy: { column: 'created_at', ascending: false }
+      const response = await fetch(`/api/agents?project_id=${projectId}`, {
+        method: 'GET',
+        headers: {
+          'authorization': localStorage.getItem('token') || ''
+        }
       })
 
-      if (error) throw new Error(error.message || 'Failed to fetch agents')
-      setAgents(Array.isArray(data) ? (data as unknown as Agent[]) : [])
+      if (!response.ok) throw new Error('Failed to fetch agents')
+      const agentsData = await response.json()
+      setAgents(agentsData || [])
     } catch (err: any) {
       setAgentsError(err.message)
     } finally {

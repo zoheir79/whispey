@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useState, useEffect } from "react"
-import { fetchFromTable } from "../../lib/db-service"
+// Removed direct db-service import - using API calls instead
 import AudioPlayer from "../AudioPlayer"
 import { extractS3Key } from "../../utils/s3"
 import { cn } from "@/lib/utils"
@@ -51,15 +51,16 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       setError(null)
       
       try {
-        const { data, error: fetchError } = await fetchFromTable({
-          table: "pype_voice_metrics_logs",
-          select: "*",
-          filters: [{ column: "session_id", operator: "=", value: sessionId }],
-          orderBy: { column: "unix_timestamp", ascending: true }
+        const response = await fetch(`/api/logs/transcript?session_id=${sessionId}`, {
+          method: 'GET',
+          headers: {
+            'authorization': localStorage.getItem('token') || ''
+          }
         })
 
-        if (fetchError) throw new Error(fetchError.message || 'Database error')
-        setTranscriptLogs(Array.isArray(data) ? (data as unknown as TranscriptLog[]) : [])
+        if (!response.ok) throw new Error('Failed to fetch transcript logs')
+        const data = await response.json()
+        setTranscriptLogs(Array.isArray(data) ? data : [])
       } catch (err: any) {
         setError(err.message)
       } finally {

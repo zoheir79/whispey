@@ -54,7 +54,7 @@ import { CustomTotalsService } from '@/services/customTotalService'
 import { CustomTotalConfig, CustomTotalResult } from '../types/customTotals'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
-import { fetchFromTable } from '@/lib/db-service'
+// Removed direct db-service import - using API calls instead
 import Papa from 'papaparse'
 
 

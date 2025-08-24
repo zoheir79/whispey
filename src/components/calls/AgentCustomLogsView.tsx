@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
-import { fetchFromTable, insertIntoTable, deleteFromTable } from "@/lib/db-service"
+// Removed direct db-service import - using API calls instead
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"

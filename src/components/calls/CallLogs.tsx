@@ -13,7 +13,7 @@ import ColumnSelector from "../shared/ColumnSelector"
 import { cn } from "@/lib/utils"
 import { CostTooltip } from "../tool-tip/costToolTip"
 import { CallLog } from "../../types/logs"
-import { fetchFromTable } from "../../lib/db-service"
+// Removed direct db-service import - using API calls instead
 import Papa from 'papaparse'
 // JWT auth is handled at the page level
 import { getUserProjectRole } from "@/services/getUserRole"
