@@ -518,6 +518,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
               </div>
             )}
           </div>
+          </div>
 
           {/* Right: Refined Controls */}
           <div className="flex items-center gap-6">
