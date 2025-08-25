@@ -4,6 +4,7 @@ import { verifyUserAuth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import crypto from 'crypto'
 import { fetchFromTable, insertIntoTable } from '@/lib/db-service'
+import { getUserGlobalRole } from '@/services/getGlobalRole'
 
 // Generate a secure API token
 function generateApiToken(): string {
@@ -169,10 +170,19 @@ export async function GET(request: NextRequest) {
       
       if (createError) {
         console.error('DEBUG: Error creating user:', createError)
-        return NextResponse.json({ 
-          error: 'Failed to create user record',
-          debug: { userId, createError }
-        }, { status: 500 })
+        return NextResponse.json({
+          projects: [],
+          totalProjects: 0,
+          userRole: 'user',
+          canViewAll: false,
+          debug: {
+            userId,
+            userEmail: null,
+            mappings: [],
+            projectsCount: 0,
+            globalRole: null
+          }
+        })
       }
       
       user = { user_id: userId, email: defaultEmail, name: `User ${userId.slice(-8)}` }
@@ -187,16 +197,46 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Get project mappings for this user's email (simplified approach)
-    const { data: mappings, error } = await fetchFromTable({
-      table: 'pype_voice_email_project_mapping',
-      select: 'project_id, role',
-      filters: [{ column: 'email', operator: '=', value: user.email }]
-    })
-
-    if (error) {
-      console.error('Error fetching project mappings:', error)
-      return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+    // Get user's global role and permissions
+    const userGlobalRole = await getUserGlobalRole(userId);
+    
+    let mappings: any[] = [];
+    let error: any = null;
+    
+    // If user is admin, they can see all projects
+    if (userGlobalRole?.permissions?.canViewAllProjects) {
+      // Admin can see all projects - get all active projects
+      const { data: allProjects, error: projectsError } = await fetchFromTable({
+        table: 'pype_voice_projects',
+        select: 'id as project_id, name',
+        filters: [{ column: 'is_active', operator: '=', value: true }]
+      });
+      
+      if (projectsError) {
+        console.error('Error fetching all projects for admin:', projectsError)
+        return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+      }
+      
+      // Convert to mapping format with admin role
+      mappings = (allProjects || []).map((project: any) => ({
+        project_id: project.project_id,
+        role: 'admin' // Admin has admin role on all projects
+      }));
+    } else {
+      // Regular users - get project mappings for this user's email
+      const { data: userMappings, error: mappingsError } = await fetchFromTable({
+        table: 'pype_voice_email_project_mapping',
+        select: 'project_id, role',
+        filters: [{ column: 'email', operator: '=', value: user.email }]
+      });
+      
+      mappings = userMappings || [];
+      error = mappingsError;
+      
+      if (error) {
+        console.error('Error fetching project mappings:', error)
+        return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+      }
     }
 
     if (!Array.isArray(mappings) || mappings.length === 0) {

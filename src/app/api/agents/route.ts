@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { encryptApiKey } from '@/lib/vapi-encryption'
 import { fetchFromTable, insertIntoTable } from '@/lib/db-service'
+import { verifyUserAuth } from '@/lib/auth'
+import { getUserGlobalRole } from '@/services/getGlobalRole'
 
 export async function POST(request: NextRequest) {
   try {
@@ -165,41 +167,82 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Verify user authentication
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    
+    if (!isAuthenticated || !userId) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Get user's global role and permissions
+    const userGlobalRole = await getUserGlobalRole(userId);
+    
+    if (!userGlobalRole) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('project_id')
 
-    if (!projectId) {
-      return NextResponse.json(
-        { error: 'Project ID is required' },
-        { status: 400 }
-      )
+    let filters: any[] = [
+      { column: 'is_active', operator: 'eq', value: true }
+    ];
+
+    // If user is admin, they can see all agents
+    if (userGlobalRole.permissions.canViewAllAgents) {
+      // Admin can see all agents, optionally filtered by project
+      if (projectId) {
+        filters.push({ column: 'project_id', operator: 'eq', value: projectId });
+      }
+    } else {
+      // Regular users can only see agents from projects they have access to
+      if (!projectId) {
+        return NextResponse.json(
+          { error: 'Project ID is required for non-admin users' },
+          { status: 400 }
+        );
+      }
+      
+      // TODO: Check if user has access to this specific project
+      // For now, we'll filter by project_id and user_id if available
+      filters.push({ column: 'project_id', operator: 'eq', value: projectId });
+      
+      // Optional: Add user_id filter if agents table has user_id column
+      // filters.push({ column: 'user_id', operator: 'eq', value: userId });
     }
 
     const { data: agents, error } = await fetchFromTable({
       table: 'pype_voice_agents',
       select: '*',
-      filters: [
-        { column: 'project_id', operator: 'eq', value: projectId },
-        { column: 'is_active', operator: 'eq', value: true }
-      ],
+      filters,
       orderBy: { column: 'created_at', ascending: false }
-    })
+    });
 
     if (error) {
       console.error('Error fetching agents:', error)
       return NextResponse.json(
         { error: 'Failed to fetch agents' },
         { status: 500 }
-      )
+      );
     }
 
-    return NextResponse.json({ agents })
+    return NextResponse.json({ 
+      agents,
+      userRole: userGlobalRole.global_role,
+      canViewAll: userGlobalRole.permissions.canViewAllAgents
+    });
 
   } catch (error) {
     console.error('Unexpected error fetching agents:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }
