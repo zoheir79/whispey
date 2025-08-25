@@ -402,7 +402,7 @@ export const useQuickFieldDiscovery = (agentId: string, dateFrom: string, dateTo
         
         let agentData: { field_extractor_keys: string[] } | null = null;
         try {
-          const response = await fetchFromTable(agentQuery);
+          const response = await fetchFromAPI(agentQuery);
           if (response && Array.isArray(response) && response.length > 0) {
             agentData = { field_extractor_keys: response[0].field_extractor_keys || [] };
           }
