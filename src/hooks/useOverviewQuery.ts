@@ -43,6 +43,7 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
     
         // 🔄 Call the PostgreSQL function to refresh the materialized view
         const refreshResult = await callRPC('refreshCallSummary', {})
+        console.log('🔍 callRPC RESPONSE received:', refreshResult)
         if (refreshResult.error) throw refreshResult.error
 
     
