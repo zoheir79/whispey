@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Transcript not found' }, { status: 404 });
     }
 
-    const record = transcriptData[0] as TranscriptRecord;
+    const record = transcriptData[0] as unknown as TranscriptRecord;
     
     // Try to parse transcript_json properly
     let transcript = null;
