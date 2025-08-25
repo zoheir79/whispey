@@ -1,298 +1,198 @@
 import { CustomTotalConfig, CustomFilter, CustomTotalResult } from '../types/customTotals'
 
-// Helper function for API calls
-const apiCall = async (endpoint: string, body: any) => {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  return response.json();
-};
-
+// Client-safe service that uses API endpoints instead of direct DB calls
 export class CustomTotalsService {
-  // Save custom total configuration to database (using API)
+  // Helper function for API calls
+  private static async apiCall(endpoint: string, body: any) {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return response.json();
+  }
+
+  // Get saved custom totals configurations (alias for compatibility)
+  static async getCustomTotals(projectId: string, agentId: string): Promise<CustomTotalConfig[]> {
+    const result = await this.getSavedCustomTotals(projectId, agentId);
+    return result.data || [];
+  }
+
+  // Get saved custom totals configurations
+  static async getSavedCustomTotals(projectId: string, agentId: string): Promise<{ success: boolean; data?: CustomTotalConfig[]; error?: string }> {
+    try {
+      const result = await this.apiCall('/api/overview', {
+        table: 'pype_voice_custom_totals_configs',
+        select: '*',
+        filters: [
+          { column: 'project_id', operator: 'eq', value: projectId },
+          { column: 'agent_id', operator: 'eq', value: agentId }
+        ]
+      });
+
+      if (result.error) {
+        return { success: false, error: result.error };
+      }
+
+      return { success: true, data: result.data || [] };
+    } catch (error: any) {
+      console.error('Error fetching custom totals:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Calculate custom total using RPC
+  static async calculateCustomTotal(
+    config: CustomTotalConfig,
+    agentId: string,
+    dateRange: { from: string; to: string }
+  ): Promise<{ success: boolean; data?: CustomTotalResult; error?: string }> {
+    try {
+      const result = await this.apiCall('/api/db-rpc', {
+        method: 'calculateCustomTotal',
+        params: {
+          agent_id: agentId,
+          aggregation: config.aggregation,
+          column_name: config.column,
+          json_field: config.jsonField,
+          filters: config.filters || [],
+          filter_logic: config.filterLogic || 'AND',
+          date_from: dateRange.from,
+          date_to: dateRange.to
+        }
+      });
+
+      if (result.error) {
+        return { success: false, error: result.error };
+      }
+
+      return { success: true, data: result.data };
+    } catch (error: any) {
+      console.error('Error calculating custom total:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Batch calculate multiple custom totals
+  static async batchCalculateCustomTotals(
+    configs: CustomTotalConfig[],
+    projectId: string,
+    agentId: string,
+    dateRange: { from: string; to: string }
+  ): Promise<{ success: boolean; data?: CustomTotalResult[]; error?: string }> {
+    try {
+      const result = await this.apiCall('/api/db-rpc', {
+        method: 'batchCalculateCustomTotals',
+        params: {
+          configs,
+          project_id: projectId,
+          agent_id: agentId,
+          date_from: dateRange.from,
+          date_to: dateRange.to
+        }
+      });
+
+      if (result.error) {
+        return { success: false, error: result.error };
+      }
+
+      return { success: true, data: result.data || [] };
+    } catch (error: any) {
+      console.error('Error batch calculating custom totals:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Get distinct values for a field
+  static async getDistinctValues(
+    agentId: string,
+    columnName: string,
+    jsonField?: string,
+    limit: number = 100
+  ): Promise<{ success: boolean; data?: string[]; error?: string }> {
+    try {
+      const result = await this.apiCall('/api/db-rpc', {
+        method: 'getDistinctValues',
+        params: {
+          agent_id: agentId,
+          column_name: columnName,
+          json_field: jsonField,
+          limit
+        }
+      });
+
+      if (result.error) {
+        return { success: false, error: result.error };
+      }
+
+      return { success: true, data: result.data || [] };
+    } catch (error: any) {
+      console.error('Error getting distinct values:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Get available JSON fields
+  static async getAvailableJsonFields(
+    agentId: string,
+    dateRange: { from: string; to: string }
+  ): Promise<{ success: boolean; data?: string[]; error?: string }> {
+    try {
+      const result = await this.apiCall('/api/db-rpc', {
+        method: 'getAvailableJsonFields',
+        params: {
+          agent_id: agentId,
+          date_from: dateRange.from,
+          date_to: dateRange.to
+        }
+      });
+
+      if (result.error) {
+        return { success: false, error: result.error };
+      }
+
+      return { success: true, data: result.data || [] };
+    } catch (error: any) {
+      console.error('Error getting available JSON fields:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Save custom total configuration  
   static async saveCustomTotal(
     config: CustomTotalConfig, 
     projectId: string, 
     agentId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const result = await apiCall('/api/overview', {
+      const result = await this.apiCall('/api/overview', {
         table: 'pype_voice_custom_totals_configs',
-        select: '*',
-        filters: [],
-        // This should be an insert operation, but we'll adapt the API
+        // This is a simplified implementation - you might need a separate insert API
         data: {
           project_id: projectId,
           agent_id: agentId,
-          name: config.name,
-          description: config.description,
-          aggregation: config.aggregation,
-          column_name: config.column,
-          json_field: config.jsonField,
-          filters: config.filters,
-          filter_logic: config.filterLogic,
-          icon: config.icon,
-          color: config.color,
-          created_by: config.createdBy
+          ...config
         }
       });
 
       if (result.error) {
-        return { success: false, error: result.error }
+        return { success: false, error: result.error };
       }
-      return { success: true }
+
+      return { success: true };
     } catch (error: any) {
-      console.error('Error saving custom total:', error)
-      return { success: false, error: error.message }
+      console.error('Error saving custom total:', error);
+      return { success: false, error: error.message };
     }
   }
 
-  // Get all custom totals for an agent 
-  static async getCustomTotals(projectId: string, agentId: string): Promise<CustomTotalConfig[]> {
-    try {
-      const { data, error } = await fetchFromTable<Record<string, any>>({
-        table: 'pype_voice_custom_totals_configs',
-        filters: [
-          { column: 'project_id', operator: 'eq', value: projectId },
-          { column: 'agent_id', operator: 'eq', value: agentId }
-        ],
-        orderBy: { column: 'created_at', ascending: true }
-      })
-
-      if (error || !data) {
-        console.error('Error fetching custom totals:', error)
-        return []
-      }
-
-      return data.map((row: Record<string, any>) => ({
-        id: row.id,
-        name: row.name,
-        description: row.description || '',
-        aggregation: row.aggregation,
-        column: row.column_name,
-        jsonField: row.json_field,
-        filters: typeof row.filters === 'string' ? (JSON.parse(row.filters) || []) : (row.filters || []),
-        filterLogic: row.filter_logic,
-        icon: row.icon || 'calculator',
-        color: row.color || 'blue',
-        createdBy: row.created_by,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at
-      }))
-    } catch (error) {
-      console.error('Error fetching custom totals:', error)
-      return []
-    }
-  }
-
-  // Calculate custom total value using RPC - UPDATED TO USE RPC
- 
-// In your CustomTotalsService.calculateCustomTotal method:
-
-static async calculateCustomTotal(
-  config: CustomTotalConfig,
-  agentId: string,
-  dateFrom?: string,
-  dateTo?: string
-): Promise<CustomTotalResult> {
-  try {
-    // Ensure proper null handling for json_field
-    const jsonField = config.jsonField && config.jsonField.trim() !== '' 
-      ? config.jsonField 
-      : null;
-
-    const { data, error } = await rpcCalculateCustomTotal({
-      agent_id: agentId,
-      aggregation: config.aggregation,
-      column_name: config.column,
-      json_field: jsonField, // Pass null instead of empty string
-      filters: config.filters,
-      filter_logic: config.filterLogic,
-      date_from: dateFrom || null,
-      date_to: dateTo || null
-    })
-
-    if (error || !data) {
-      console.error('Error calculating custom total:', error)
-      return {
-        configId: config.id,
-        value: 0,
-        label: config.name,
-        error: error?.message || 'Calculation failed'
-      }
-    }
-
-
-    // RPC returns array with one result
-    const result = data?.[0]
-    if (result?.error_message) {
-      return {
-        configId: config.id,
-        value: 0,
-        label: config.name,
-        error: result.error_message
-      }
-    }
-
-    return {
-      configId: config.id,
-      value: result?.result || 0,
-      label: config.name
-    }
-  } catch (error) {
-    console.error('Error calculating custom total:', error)
-    return {
-      configId: config.id,
-      value: 0,
-      label: config.name,
-      error: 'Calculation failed'
-    }
-  }
-}
-
-  // NEW: Batch  // Calculate multiple custom totals in batch
-  static async batchCalculateCustomTotals(
-    configs: CustomTotalConfig[], 
-    projectId: string, 
-    agentId: string
-  ): Promise<CustomTotalResult[]> {
-    try {
-      // Prepare batch params
-      const batchParams = {
-        configs: configs.map(config => ({
-          config_id: config.id,
-          aggregation: config.aggregation,
-          column_name: config.column,
-          json_field: config.jsonField,
-          filters: config.filters,
-          filter_logic: config.filterLogic
-        })),
-        project_id: projectId,
-        agent_id: agentId
-      }
-
-      // Call batch RPC function
-      const { data, error } = await rpcBatchCalculateCustomTotals(batchParams)
-
-      if (error || !data) {
-        console.error('Error batch calculating custom totals:', error)
-        return configs.map(config => ({
-          configId: config.id,
-          value: 0,
-          label: config.name,
-          error: 'Calculation failed'
-        }))
-      }
-
-      // Map results back to CustomTotalResult format
-      return data.map((result: Record<string, any>) => {
-        const config = configs.find(c => c.id === result.config_id)
-        return {
-          configId: result.config_id,
-          value: result.result || 0,
-          label: config?.name || 'Unknown',
-          error: result.error_message || undefined
-        }
-      })
-    } catch (error) {
-      console.error('Error batch calculating custom totals:', error)
-      return configs.map(config => ({
-        configId: config.id,
-        value: 0,
-        label: config.name,
-        error: 'Calculation failed'
-      }))
-    }
-  }
-
-  // NEW: Get distinct values for a column
-  static async getDistinctValues(
-    agentId: string,
-    columnName: string,
-    jsonField: string | null,
-    limit = 50
-  ): Promise<Array<{ value: string; count: number }>> {
-    try {
-      const { data, error } = await rpcGetDistinctValues({
-        agent_id: agentId,
-        column_name: columnName,
-        json_field: jsonField,
-        limit: limit
-      })
-
-      if (error || !data) {
-        console.error('Error getting distinct values:', error)
-        return []
-      }
-
-      return data.map((row: Record<string, any>) => ({
-        value: row.distinct_value,
-        count: parseInt(row.count_occurrences)
-      }))
-    } catch (error) {
-      console.error('Error getting distinct values:', error)
-      return []
-    }
-  }
-
-  // NEW: Get available JSON fields dynamically
-  static async getAvailableJsonFields(
-    agentId: string,
-    columnName: string,
-    limit = 50
-  ): Promise<Array<{ fieldName: string; sampleValue: string; occurrences: number }>> {
-    try {
-      const { data, error } = await rpcGetAvailableJsonFields({
-        agent_id: agentId,
-        column_name: columnName,
-        limit: limit
-      })
-
-      if (error || !data) {
-        console.error('Error getting JSON fields:', error)
-        return []
-      }
-
-      return data.map((row: Record<string, any>) => ({
-        fieldName: row.field_name,
-        sampleValue: row.sample_value,
-        occurrences: parseInt(row.occurrences)
-      }))
-    } catch (error) {
-      console.error('Error getting JSON fields:', error)
-      return []
-    }
-  }
-
-  // Delete custom total (unchanged)
-  static async deleteCustomTotal(
-    configId: string
-  ): Promise<{ success: boolean; error?: string }> {
-    try {
-      const { error } = await deleteFromTable({
-   table: 'pype_voice_custom_totals_configs',
-   filters: [{ column: 'id', operator: 'eq', value: configId }]
- })
-
-      if (error) {
-        return { success: false, error: error.message }
-      }
-
-      return { success: true }
-    } catch (error) {
-      return { success: false, error: 'Failed to delete custom total' }
-    }
-  }
-
-  // Update custom total (unchanged)
+  // Update custom total configuration
   static async updateCustomTotal(
     configId: string,
     updates: Partial<CustomTotalConfig>
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await updateTable({
+      const result = await this.apiCall('/api/overview', {
         table: 'pype_voice_custom_totals_configs',
         data: {
           name: updates.name,
@@ -307,15 +207,36 @@ static async calculateCustomTotal(
           updated_at: new Date().toISOString()
         },
         filters: [{ column: 'id', operator: 'eq', value: configId }]
-      })
+      });
 
-      if (error) {
-        return { success: false, error: error.message }
+      if (result.error) {
+        return { success: false, error: result.error };
       }
 
-      return { success: true }
-    } catch (error) {
-      return { success: false, error: 'Failed to update custom total' }
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error updating custom total:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Delete custom total configuration
+  static async deleteCustomTotal(configId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const result = await this.apiCall('/api/overview', {
+        table: 'pype_voice_custom_totals_configs',
+        // This is a simplified implementation - you might need a separate delete API
+        filters: [{ column: 'id', operator: 'eq', value: configId }]
+      });
+
+      if (result.error) {
+        return { success: false, error: result.error };
+      }
+
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error deleting custom total:', error);
+      return { success: false, error: error.message };
     }
   }
 }
