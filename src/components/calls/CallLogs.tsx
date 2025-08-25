@@ -13,7 +13,34 @@ import ColumnSelector from "../shared/ColumnSelector"
 import { cn } from "@/lib/utils"
 import { CostTooltip } from "../tool-tip/costToolTip"
 import { CallLog } from "../../types/logs"
-import { fetchFromTable } from "../../lib/db-service" // TODO: Replace with API calls
+// DB operations now handled by useInfiniteScrollWithFetch hook using API endpoints
+
+// Client-safe API call function for CSV export
+const fetchFromAPI = async (query: any) => {
+  const response = await fetch('/api/db-rpc', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'fetchFromTable',
+      params: query
+    })
+  })
+
+  if (!response.ok) {
+    throw new Error(`API call failed: ${response.status} ${response.statusText}`)
+  }
+
+  const result = await response.json()
+  
+  if (!result.success) {
+    throw new Error(result.error || 'API call failed')
+  }
+  
+  return { data: result.data, error: null }
+}
+
 import Papa from 'papaparse'
 // JWT auth is handled at the page level
 import { getUserProjectRole } from "@/services/getUserRole"
@@ -556,12 +583,12 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
           offset: page * pageSize
         };
         
-        // Execute the query with fetchFromTable
-        const { data, error } = await fetchFromTable<CallLog[]>(paginatedOptions);
+        // Execute the query with API endpoint
+        const { data, error } = await fetchFromAPI(paginatedOptions);
 
         if (error) {
           console.error('Error fetching data for CSV:', error);
-          alert("Failed to fetch data for export: " + error.message);
+          alert("Failed to fetch data for export: " + (error as any)?.message || 'Unknown error');
           return;
         }
 

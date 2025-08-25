@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { callRPC, refreshCallSummary, calculateCustomTotal, batchCalculateCustomTotals, getDistinctValues, getAvailableJsonFields } from '@/lib/db-rpc';
-import { verifyAuth } from '@/lib/auth-utils';
+import { verifyUserAuth } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const authResult = await verifyAuth(request);
-    if (!authResult.success || !authResult.user) {
+    // Verify authentication using cookie-based auth (consistent with other endpoints)
+    const authResult = await verifyUserAuth(request);
+    if (!authResult.isAuthenticated || !authResult.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
