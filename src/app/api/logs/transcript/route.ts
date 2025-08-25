@@ -64,6 +64,25 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // If still no match, try searching by id field (primary key - frontend may pass id instead of call_id)
+    if (!queryError && (!transcriptData || transcriptData.length === 0)) {
+      console.log('🔍 TRANSCRIPT API: Trying id field match for id =:', session_id);
+      ({ data: transcriptData, error: queryError } = await fetchFromTable({
+        table: 'pype_voice_call_logs',
+        select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds',
+        filters: [
+          { column: 'id', operator: '=', value: session_id }
+        ],
+        limit: 1
+      }));
+      
+      console.log('🔍 TRANSCRIPT API: ID match result:', {
+        found: transcriptData?.length || 0,
+        error: queryError,
+        data: transcriptData
+      });
+    }
+
     if (queryError) {
       console.error('Transcript query error:', queryError);
       return NextResponse.json(
