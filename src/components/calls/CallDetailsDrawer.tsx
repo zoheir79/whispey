@@ -83,6 +83,12 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
            ? JSON.parse(callData.transcript_json)
            : callData.transcript_json)
       
+      // Ensure we have an array before mapping
+      if (!Array.isArray(transcript)) {
+        console.warn('transcript_json is not an array:', transcript)
+        return null
+      }
+      
       return transcript.map((item: any, index: number) => ({
         id: `basic-${index}`,
         role: item.role,
