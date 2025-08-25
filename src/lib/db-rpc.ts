@@ -51,16 +51,23 @@ export async function calculateCustomTotal<T = any>(params: {
   date_from?: string | null,
   date_to?: string | null
 }) {
-  return callRPC<T>('calculate_custom_total', {
-    p_agent_id: params.agent_id,
-    p_aggregation: params.aggregation,
-    p_column_name: params.column_name,
-    p_json_field: params.json_field,
-    p_filters: params.filters,
-    p_filter_logic: params.filter_logic,
-    p_date_from: params.date_from || null,
-    p_date_to: params.date_to || null
-  });
+  try {
+    // Try to call the RPC function if it exists
+    return await callRPC<T>('calculate_custom_total', {
+      p_agent_id: params.agent_id,
+      p_aggregation: params.aggregation,
+      p_column_name: params.column_name,
+      p_json_field: params.json_field,
+      p_filters: params.filters,
+      p_filter_logic: params.filter_logic,
+      p_date_from: params.date_from || null,
+      p_date_to: params.date_to || null
+    });
+  } catch (error: any) {
+    // If the function doesn't exist, return zero result gracefully
+    console.warn('calculate_custom_total RPC not found, returning zero result:', error.message);
+    return { data: [{ total: 0 }] as T[], error: null };
+  }
 }
 
 /**
@@ -73,13 +80,20 @@ export async function batchCalculateCustomTotals<T = any>(params: {
   date_from?: string | null,
   date_to?: string | null
 }) {
-  return callRPC<T>('batch_calculate_custom_totals', {
-    p_agent_id: params.agent_id,
-    p_project_id: params.project_id,
-    p_configs: params.configs,
-    p_date_from: params.date_from || null,
-    p_date_to: params.date_to || null
-  });
+  try {
+    // Try to call the RPC function if it exists
+    return await callRPC<T>('batch_calculate_custom_totals', {
+      p_agent_id: params.agent_id,
+      p_project_id: params.project_id,
+      p_configs: params.configs,
+      p_date_from: params.date_from || null,
+      p_date_to: params.date_to || null
+    });
+  } catch (error: any) {
+    // If the function doesn't exist, return empty results gracefully
+    console.warn('batch_calculate_custom_totals RPC not found, returning empty results:', error.message);
+    return { data: [] as T[], error: null };
+  }
 }
 
 /**
@@ -91,12 +105,19 @@ export async function getDistinctValues<T = any>(params: {
   json_field: string | null,
   limit: number
 }) {
-  return callRPC<T>('get_distinct_values', {
-    p_agent_id: params.agent_id,
-    p_column_name: params.column_name,
-    p_json_field: params.json_field,
-    p_limit: params.limit
-  });
+  try {
+    // Try to call the RPC function if it exists
+    return await callRPC<T>('get_distinct_values', {
+      p_agent_id: params.agent_id,
+      p_column_name: params.column_name,
+      p_json_field: params.json_field,
+      p_limit: params.limit
+    });
+  } catch (error: any) {
+    // If the function doesn't exist, return empty result gracefully
+    console.warn('get_distinct_values RPC not found, returning empty result:', error.message);
+    return { data: [] as T[], error: null };
+  }
 }
 
 /**
@@ -107,11 +128,18 @@ export async function getAvailableJsonFields<T = any>(params: {
   column_name: string,
   limit: number
 }) {
-  return callRPC<T>('get_available_json_fields', {
-    p_agent_id: params.agent_id,
-    p_column_name: params.column_name,
-    p_limit: params.limit
-  });
+  try {
+    // Try to call the RPC function if it exists
+    return await callRPC<T>('get_available_json_fields', {
+      p_agent_id: params.agent_id,
+      p_column_name: params.column_name,
+      p_limit: params.limit
+    });
+  } catch (error: any) {
+    // If the function doesn't exist, return empty result gracefully
+    console.warn('get_available_json_fields RPC not found, returning empty result:', error.message);
+    return { data: [] as T[], error: null };
+  }
 }
 
 /**

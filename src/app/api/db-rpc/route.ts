@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     switch (method) {
       case 'refreshCallSummary':
-        result = await callRPC('refresh_call_summary', {});
+        result = await refreshCallSummary();
         break;
       
       case 'calculateCustomTotal':
