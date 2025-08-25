@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         break;
       
       case 'getAvailableJsonFields':
-        result = await callRPC('get_available_json_fields', params);
+        result = await getAvailableJsonFields(params);
         break;
       
       case 'callRPC':
