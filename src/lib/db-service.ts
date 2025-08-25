@@ -38,9 +38,11 @@ export async function fetchFromTable<T = any[]>(options: { table: string } & Que
         case 'eq': operator = '='; break;
         case 'neq': operator = '!='; break;
         case 'gt': operator = '>'; break;
-        case 'gte': operator = '>='; break;
+        case 'gte': 
+        case '>=': operator = '>='; break;
         case 'lt': operator = '<'; break;
-        case 'lte': operator = '<='; break;
+        case 'lte': 
+        case '<=': operator = '<='; break;
         case 'like': operator = 'LIKE'; break;
         case 'ilike': operator = 'ILIKE'; break;
         default: operator = '=';
