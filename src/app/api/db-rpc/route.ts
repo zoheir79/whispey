@@ -22,32 +22,63 @@ export async function POST(request: NextRequest) {
     // Handle cases where method is undefined - this looks like a table query that should go to /api/overview
     if (!method && params && params.table) {
       console.log('Redirecting undefined method with table query to overview logic');
-      // Import the overview API logic
-      const { fetchFromTable } = await import('@/lib/db-service');
       
-      // Convert the params to the format expected by fetchFromTable
-      const queryParams = {
-        table: params.table,
-        select: params.select,
-        filters: params.filters || [],
-        orderBy: params.orderBy,
-        limit: params.limit,
-        offset: params.offset
-      };
-      
-      result = await fetchFromTable(queryParams);
-      
-      if (result.error) {
-        return NextResponse.json(
-          { error: 'Table query failed', details: result.error },
-          { status: 500 }
-        );
-      }
+      // Check if this is an Overview/CallLogs query for pype_voice_call_logs
+      if (params.table === 'pype_voice_call_logs') {
+        // This should be handled properly by the Overview component's useOverviewQuery hook
+        // For now, let it go through as a direct table query to maintain compatibility
+        const { fetchFromTable } = await import('@/lib/db-service');
+        
+        // Convert the params to the format expected by fetchFromTable
+        const queryParams = {
+          table: params.table,
+          select: params.select,
+          filters: params.filters || [],
+          orderBy: params.orderBy,
+          limit: params.limit,
+          offset: params.offset
+        };
+        
+        result = await fetchFromTable(queryParams);
+        
+        if (result.error) {
+          return NextResponse.json(
+            { error: 'Table query failed', details: result.error },
+            { status: 500 }
+          );
+        }
 
-      return NextResponse.json({ 
-        success: true, 
-        data: result.data 
-      });
+        return NextResponse.json({ 
+          success: true, 
+          data: result.data 
+        });
+      } else {
+        // For other tables, use the standard fetchFromTable logic
+        const { fetchFromTable } = await import('@/lib/db-service');
+        
+        const queryParams = {
+          table: params.table,
+          select: params.select,
+          filters: params.filters || [],
+          orderBy: params.orderBy,
+          limit: params.limit,
+          offset: params.offset
+        };
+        
+        result = await fetchFromTable(queryParams);
+        
+        if (result.error) {
+          return NextResponse.json(
+            { error: 'Table query failed', details: result.error },
+            { status: 500 }
+          );
+        }
+
+        return NextResponse.json({ 
+          success: true, 
+          data: result.data 
+        });
+      }
     }
 
     switch (method) {
