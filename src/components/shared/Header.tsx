@@ -6,9 +6,10 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mic, Bell, Search, Settings, BarChart3, Users, FileText, Zap, ChevronDown, HelpCircle, Command, ChevronRight, Slash, BookOpen, LogOut, User } from 'lucide-react';
+import { Mic, Bell, Search, Settings, BarChart3, Users, FileText, Zap, ChevronDown, HelpCircle, Command, ChevronRight, Slash, BookOpen, LogOut, User, Bot, Folders, Phone } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { useEffect, useState } from "react";
+import { useGlobalRole } from '@/hooks/useGlobalRole';
 
 interface HeaderProps {
   breadcrumb?: {
@@ -25,6 +26,7 @@ function Header({ breadcrumb }: HeaderProps) {
   } | null>(null);
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const { globalRole, permissions, isAdmin, isSuperAdmin, isLoading: roleLoading } = useGlobalRole();
 
   // Fetch user data from JWT auth
   useEffect(() => {
@@ -120,6 +122,54 @@ function Header({ breadcrumb }: HeaderProps) {
               )}
             </div>
 
+            {/* Navigation Menu - Role-based Access */}
+            {!roleLoading && (
+              <div className="flex items-center gap-1">
+                {/* Projects/Workspaces Access */}
+                <Link
+                  href="/"
+                  className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-blue-600 transition-all duration-200 rounded-lg hover:bg-blue-50/50 border border-transparent hover:border-blue-100"
+                >
+                  <Folders className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  <span className="hidden sm:inline">
+                    {isAdmin ? 'All Workspaces' : 'My Workspaces'}
+                  </span>
+                  <span className="sm:hidden">Workspaces</span>
+                </Link>
+
+                {/* Agents Access */}
+                <Link
+                  href="/agents"
+                  className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-green-600 transition-all duration-200 rounded-lg hover:bg-green-50/50 border border-transparent hover:border-green-100"
+                >
+                  <Bot className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  <span className="hidden sm:inline">
+                    {isAdmin ? 'All Agents' : 'My Agents'}
+                  </span>
+                  <span className="sm:hidden">Agents</span>
+                </Link>
+
+                {/* Calls Access */}
+                <Link
+                  href="/calls"
+                  className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-purple-600 transition-all duration-200 rounded-lg hover:bg-purple-50/50 border border-transparent hover:border-purple-100"
+                >
+                  <Phone className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  <span className="hidden sm:inline">
+                    {isAdmin ? 'All Calls' : 'My Calls'}
+                  </span>
+                  <span className="sm:hidden">Calls</span>
+                </Link>
+
+                {/* Admin Badge */}
+                {isAdmin && (
+                  <Badge variant="outline" className="ml-2 text-xs font-medium bg-blue-50 text-blue-700 border-blue-200">
+                    {isSuperAdmin ? 'Super Admin' : 'Admin'}
+                  </Badge>
+                )}
+              </div>
+            )}
+
             {/* Right Side Actions */}
             <div className="flex items-center gap-2">
               {/* Setup Instructions Link - New Addition */}
@@ -148,7 +198,7 @@ function Header({ breadcrumb }: HeaderProps) {
               </Link>
 
               {/* Vertical Separator */}
-              <div className="w-px h-5 bg-gray-200"></div>
+              <div className="w-px h-5 bg-gray-200 mx-2"></div>
 
               {/* Help Dropdown */}
               <DropdownMenu>
