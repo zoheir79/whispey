@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchFromTable } from '@/lib/db-service';
 import { verifyUserAuth } from '@/lib/auth';
 
+interface TranscriptRecord {
+  transcript_json: any;
+  transcript_with_metrics: any;
+  call_id: string;
+  duration_seconds: number;
+}
+
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication using cookie-based auth (consistent with other endpoints)
@@ -39,7 +46,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Transcript not found' }, { status: 404 });
     }
 
-    const record = transcriptData[0];
+    const record = transcriptData[0] as TranscriptRecord;
     
     // Try to parse transcript_json properly
     let transcript = null;
