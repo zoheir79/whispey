@@ -132,7 +132,6 @@ export async function POST(request: NextRequest) {
       call_ended_at,
       recording_url,
       duration_seconds,
-      voice_recording_url,
       created_at: new Date().toISOString()
     }
 
