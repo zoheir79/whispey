@@ -59,7 +59,7 @@ export default function SettingsPage() {
       }
     } catch (error) {
       console.error('Error fetching projects:', error)
-      toast.error('Erreur de connexion')
+      alert('❌ Erreur de connexion')
     } finally {
       setLoading(false)
     }
