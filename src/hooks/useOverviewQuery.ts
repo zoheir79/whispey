@@ -34,9 +34,18 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
       try {
         setLoading(true)
         setError(null)
+        
+        // 🔍 DEBUG: Log parameters being used
+        console.log('🔍 Overview Query DEBUG - Params:', {
+          agentId,
+          dateFrom,
+          dateTo,
+          hasAllParams: !!(agentId && dateFrom && dateTo)
+        })
     
         // 🔄 Call the PostgreSQL function to refresh the materialized view
         const refreshResult = await callRPC('refreshCallSummary', {})
+        console.log('🔍 Refresh result:', refreshResult)
         if (refreshResult.error) throw refreshResult.error
 
     
@@ -50,6 +59,19 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
             { column: 'call_date', operator: '<=', value: dateTo }
           ],
           orderBy: { column: 'call_date', ascending: true }
+        })
+        
+        // 🔍 DEBUG: Log the raw query results
+        console.log('🔍 Raw dailyStats from DB:', {
+          dailyStats,
+          isArray: Array.isArray(dailyStats),
+          length: dailyStats?.length,
+          queryError,
+          filters: [
+            { column: 'agent_id', operator: '=', value: agentId },
+            { column: 'call_date', operator: '>=', value: dateFrom },
+            { column: 'call_date', operator: '<=', value: dateTo }
+          ]
         })
 
         if (queryError) throw queryError
@@ -95,6 +117,18 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
           }))
           
         }
+        
+        // 🔍 DEBUG: Log final computed data
+        console.log('🔍 Final Overview Data:', {
+          totalCalls,
+          totalCost,
+          totalMinutes: typedData.totalMinutes,
+          successfulCalls,
+          successRate: typedData.successRate,
+          dailyDataLength: typedData.dailyData.length,
+          typedDailyStats: typedDailyStats.length,
+          firstDayStats: typedDailyStats[0]
+        })
     
         setData(typedData)
       } catch (err) {
