@@ -20,12 +20,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const session_id = searchParams.get('session_id');
 
+    console.log('🔍 TRANSCRIPT API: Received session_id:', session_id);
+
     if (!session_id) {
+      console.log('❌ TRANSCRIPT API: No session_id provided');
       return NextResponse.json({ error: 'session_id is required' }, { status: 400 });
     }
 
     // Fetch transcript data from the database using call_id (session_id)
     // Try exact match first, then try UUID pattern match if not found
+    console.log('🔍 TRANSCRIPT API: Trying exact match for call_id:', session_id);
     let { data: transcriptData, error: queryError } = await fetchFromTable({
       table: 'pype_voice_call_logs',
       select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds',
@@ -35,8 +39,15 @@ export async function GET(request: NextRequest) {
       limit: 1
     });
 
+    console.log('🔍 TRANSCRIPT API: Exact match result:', {
+      found: transcriptData?.length || 0,
+      error: queryError,
+      data: transcriptData
+    });
+
     // If no exact match found, try searching by UUID pattern (for cases where frontend passes UUID only)
     if (!queryError && (!transcriptData || transcriptData.length === 0)) {
+      console.log('🔍 TRANSCRIPT API: Trying pattern match for call_id LIKE:', `${session_id}%`);
       ({ data: transcriptData, error: queryError } = await fetchFromTable({
         table: 'pype_voice_call_logs',
         select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds',
@@ -45,6 +56,12 @@ export async function GET(request: NextRequest) {
         ],
         limit: 1
       }));
+      
+      console.log('🔍 TRANSCRIPT API: Pattern match result:', {
+        found: transcriptData?.length || 0,
+        error: queryError,
+        data: transcriptData
+      });
     }
 
     if (queryError) {
