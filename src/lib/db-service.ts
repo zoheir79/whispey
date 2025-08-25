@@ -68,7 +68,18 @@ export async function fetchFromTable<T = any[]>(options: { table: string } & Que
   }
   
   try {
+    // 🔍 DEBUG: Log the exact SQL and params being executed
+    console.log('🔍 fetchFromTable SQL QUERY:', sql);
+    console.log('🔍 fetchFromTable PARAMS:', params);
+    console.log('🔍 fetchFromTable TABLE:', table);
+    
     const result = await query(sql, params);
+    
+    console.log('🔍 fetchFromTable RESULT:', {
+      rowCount: result.rows?.length || 0,
+      rows: result.rows
+    });
+    
     return { data: result.rows as T[], error: null };
   } catch (error: any) {
     console.error('Database query error:', error);
