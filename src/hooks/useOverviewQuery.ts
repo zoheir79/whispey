@@ -46,8 +46,13 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         console.log('🔍 callRPC RESPONSE received:', refreshResult)
         if (refreshResult.error) throw refreshResult.error
 
+        console.log('✅ refreshCallSummary SUCCESS - Now fetching data from materialized view')
     
         // ✅ Then query the refreshed materialized view
+        console.log('🔍 About to call fetchFromTable with:', {
+          table: 'call_summary_materialized',
+          agentId, dateFrom, dateTo
+        })
         const { data: dailyStats, error: queryError } = await fetchFromTable({
           table: 'call_summary_materialized',
           select: '*',
@@ -57,6 +62,13 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
             { column: 'call_date', operator: '<=', value: dateTo }
           ],
           orderBy: { column: 'call_date', ascending: true }
+        })
+        
+        console.log('🔍 fetchFromTable RESPONSE received:', { 
+          success: !queryError,
+          error: queryError,
+          dataLength: dailyStats?.length || 0,
+          dailyStats: dailyStats
         })
 
         if (queryError) throw queryError
