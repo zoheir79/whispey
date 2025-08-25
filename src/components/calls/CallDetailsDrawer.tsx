@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useState, useEffect } from "react"
-import { fetchFromTable } from "../../lib/db-service" // TODO: Replace with API calls
+// Removed unused db-service import - already using API endpoints
 import AudioPlayer from "../AudioPlayer"
 import { extractS3Key } from "../../utils/s3"
 import { cn } from "@/lib/utils"

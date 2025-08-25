@@ -1,6 +1,6 @@
 // src/lib/vapi-encryption.ts
 import crypto from 'crypto'
-import { fetchFromTable } from './db-service'
+// Removed direct db-service import - using API endpoints
 
 // Get master key from environment
 const VAPI_MASTER_KEY = process.env.VAPI_MASTER_KEY
@@ -136,17 +136,33 @@ export async function getDecryptedVapiKeys(agentId: string): Promise<{
   apiKey: string
   projectApiKey: string
 }> {
-  const { data, error } = await fetchFromTable({
-    table: 'pype_voice_agents',
-    select: 'vapi_api_key_encrypted, vapi_project_key_encrypted, project_id',
-    filters: [{ column: 'id', operator: '=', value: agentId }]
-  })
+  let agent: any;
+  
+  try {
+    const response = await fetch('/api/overview', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        table: 'pype_voice_agents',
+        select: 'vapi_api_key_encrypted, vapi_project_key_encrypted, project_id',
+        filters: [{ column: 'id', operator: '=', value: agentId }]
+      })
+    });
 
-  // Vérifier si nous avons des données et extraire le premier élément
-  const agent = Array.isArray(data) && data.length > 0 ? data[0] : null;
+    if (!response.ok) {
+      throw new Error('Failed to fetch agent data');
+    }
 
-  if (error || !agent) {
-    throw new Error('Agent not found')
+    const result = await response.json();
+    agent = Array.isArray(result.data) && result.data.length > 0 ? result.data[0] : null;
+
+    if (result.error || !agent) {
+      throw new Error('Agent not found');
+    }
+  } catch (fetchError) {
+    throw new Error('Failed to fetch agent data');
   }
 
   // Utiliser des assertions de type pour accéder aux propriétés

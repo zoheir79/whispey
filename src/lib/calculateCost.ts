@@ -1,4 +1,4 @@
-import { fetchFromTable } from './db-service';
+// Removed direct db-service import - using API endpoints
 import { UsageData, CostResult } from '../types/logs';
 
 // Default fallback if DB misses data
@@ -9,43 +9,73 @@ const FALLBACK = {
 };
 
 async function getUsdToInr(onDate: string | Date): Promise<number> {
-  const date = new Date(onDate).toISOString().slice(0, 10);
-  const { data, error } = await fetchFromTable({
-    table: 'usd_to_inr_rate',
-    select: 'rate',
-    filters: [{ column: 'as_of', operator: '=', value: date }]
-  });
-  
-  // Le résultat est un tableau, nous prenons le premier élément
-  const rateData = Array.isArray(data) && data.length > 0 ? data[0] : null;
-  
-  if (error || !rateData || typeof rateData !== 'object' || !('rate' in rateData)) {
+  try {
+    const date = new Date(onDate).toISOString().slice(0, 10);
+    const response = await fetch('/api/overview', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        table: 'usd_to_inr_rate',
+        select: 'rate',
+        filters: [{ column: 'as_of', operator: '=', value: date }]
+      })
+    });
+
+    if (!response.ok) {
+      return 87.56; // Fallback rate
+    }
+
+    const result = await response.json();
+    const rateData = Array.isArray(result.data) && result.data.length > 0 ? result.data[0] : null;
+    
+    if (result.error || !rateData || typeof rateData !== 'object' || !('rate' in rateData)) {
+      return 87.56; // Fallback rate
+    }
+    return parseFloat(rateData.rate as string);
+  } catch (error) {
+    console.error('Error fetching USD to INR rate:', error);
     return 87.56; // Fallback rate
   }
-  return parseFloat(rateData.rate as string);
 }
 
 export async function fetchRate(pricingColumn: string, table: string, filters: Record<string, any>): Promise<number | null> {
-  // Convertir les filtres au format attendu par fetchFromTable
-  const formattedFilters = Object.entries(filters).map(([column, value]) => ({
-    column,
-    operator: '=',
-    value
-  }));
-  
-  const { data, error } = await fetchFromTable({
-    table,
-    select: pricingColumn,
-    filters: formattedFilters
-  });
-  
-  // Le résultat est un tableau, nous prenons le premier élément
-  const resultData = Array.isArray(data) && data.length > 0 ? data[0] : null;
-  
-  if (error || !resultData || typeof resultData !== 'object' || !(pricingColumn in resultData)) {
+  try {
+    // Convertir les filtres au format attendu par l'API
+    const formattedFilters = Object.entries(filters).map(([column, value]) => ({
+      column,
+      operator: '=',
+      value
+    }));
+    
+    const response = await fetch('/api/overview', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        table,
+        select: pricingColumn,
+        filters: formattedFilters
+      })
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const result = await response.json();
+    const resultData = Array.isArray(result.data) && result.data.length > 0 ? result.data[0] : null;
+    
+    if (result.error || !resultData || typeof resultData !== 'object' || !(pricingColumn in resultData)) {
+      return null;
+    }
+    return parseFloat(resultData[pricingColumn as keyof typeof resultData] as string);
+  } catch (error) {
+    console.error('Error fetching rate:', error);
     return null;
   }
-  return parseFloat(resultData[pricingColumn as keyof typeof resultData] as string);
 }
 
 interface TotalCostsParams {
@@ -61,29 +91,41 @@ export async function totalCostsINR({
 }: TotalCostsParams): Promise<CostResult> {
   const [usdToInr, gptRatesResult, ttsUsdResult, sttUsdSecResult] = await Promise.all([
     getUsdToInr(callStartedAt),
-    fetchFromTable({
-      table: 'gpt_api_pricing',
-      select: 'input_usd_per_million,output_usd_per_million',
-      filters: [{ column: 'model_name', operator: '=', value: modelName }]
-    }),
-    fetchFromTable({
-      table: 'audio_api_pricing',
-      select: 'cost_usd_per_unit',
-      filters: [
-        { column: 'unit', operator: '=', value: 'character' },
-        { column: 'provider', operator: '=', value: 'ElevenLabs' },
-        { column: 'model_or_plan', operator: 'like', value: '%Flash' }
-      ]
-    }),
-    fetchFromTable({
-      table: 'audio_api_pricing',
-      select: 'cost_inr_per_unit',
-      filters: [
-        { column: 'unit', operator: '=', value: 'second' },
-        { column: 'provider', operator: '=', value: 'Sarvam AI' },
-        { column: 'model_or_plan', operator: 'like', value: '%transcription%' }
-      ]
-    })
+    fetch('/api/overview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        table: 'gpt_api_pricing',
+        select: 'input_usd_per_million,output_usd_per_million',
+        filters: [{ column: 'model_name', operator: '=', value: modelName }]
+      })
+    }).then(r => r.ok ? r.json() : { data: null, error: 'Failed to fetch' }),
+    fetch('/api/overview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        table: 'audio_api_pricing',
+        select: 'cost_usd_per_unit',
+        filters: [
+          { column: 'unit', operator: '=', value: 'character' },
+          { column: 'provider', operator: '=', value: 'ElevenLabs' },
+          { column: 'model_or_plan', operator: 'like', value: '%Flash' }
+        ]
+      })
+    }).then(r => r.ok ? r.json() : { data: null, error: 'Failed to fetch' }),
+    fetch('/api/overview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        table: 'audio_api_pricing',
+        select: 'cost_inr_per_unit',
+        filters: [
+          { column: 'unit', operator: '=', value: 'second' },
+          { column: 'provider', operator: '=', value: 'Sarvam AI' },
+          { column: 'model_or_plan', operator: 'like', value: '%transcription%' }
+        ]
+      })
+    }).then(r => r.ok ? r.json() : { data: null, error: 'Failed to fetch' })
   ]);
   
   // Extraire les données des résultats
