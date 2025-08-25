@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyUserAuth } from '@/lib/auth'
 import { query } from '@/lib/db'
 import crypto from 'crypto'
+import { getUserGlobalRole } from '@/services/getGlobalRole'
 
 /**
  * API Keys Management Route (Fixed for existing DB schema)
@@ -22,25 +23,65 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get all projects with API tokens (fixed for existing DB schema)
-    const result = await query(`
-      SELECT 
-        id,
-        name,
-        created_at,
-        CASE 
-          WHEN token_hash IS NOT NULL THEN true
-          ELSE false
-        END as has_token,
-        updated_at
-      FROM pype_voice_projects
-      ORDER BY created_at DESC
-      LIMIT 10
-    `)
+    // Get user's global role and permissions
+    const userGlobalRole = await getUserGlobalRole(userId);
+    
+    if (!userGlobalRole) {
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Get projects with API tokens based on role permissions
+    let queryStr = '';
+    let queryParams: any[] = [];
+    
+    if (userGlobalRole.permissions.canViewAllProjects) {
+      // Admin can see all projects with API tokens
+      queryStr = `
+        SELECT 
+          id,
+          name,
+          created_at,
+          CASE 
+            WHEN token_hash IS NOT NULL THEN true
+            ELSE false
+          END as has_token,
+          updated_at
+        FROM pype_voice_projects
+        ORDER BY created_at DESC
+        LIMIT 10
+      `;
+    } else {
+      // Regular users can only see projects they have access to
+      queryStr = `
+        SELECT DISTINCT 
+          p.id,
+          p.name,
+          p.created_at,
+          CASE 
+            WHEN p.token_hash IS NOT NULL THEN true
+            ELSE false
+          END as has_token,
+          p.updated_at
+        FROM pype_voice_projects p
+        INNER JOIN pype_voice_email_project_mapping epm ON p.id = epm.project_id
+        INNER JOIN pype_voice_users u ON u.email = epm.email
+        WHERE u.user_id = $1
+        ORDER BY p.created_at DESC
+        LIMIT 10
+      `;
+      queryParams = [userId];
+    }
+    
+    const result = await query(queryStr, queryParams)
 
     return NextResponse.json({
       success: true,
-      projects: result.rows
+      projects: result.rows,
+      userRole: userGlobalRole.global_role,
+      canViewAll: userGlobalRole.permissions.canViewAllProjects
     })
 
   } catch (error) {

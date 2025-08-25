@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchFromTable } from '@/lib/db-service';
 import { verifyUserAuth } from '@/lib/auth';
+import { getUserGlobalRole } from '@/services/getGlobalRole';
 
 interface TranscriptRecord {
   transcript_json: any;
@@ -17,6 +18,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get user's global role and permissions
+    const userGlobalRole = await getUserGlobalRole(authResult.userId);
+    
+    if (!userGlobalRole) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const { searchParams } = new URL(request.url);
     const session_id = searchParams.get('session_id');
 
@@ -27,15 +35,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'session_id is required' }, { status: 400 });
     }
 
+    // Build filters based on role permissions
+    let filters = [
+      { column: 'call_id', operator: '=', value: session_id }
+    ];
+
+    // If user is NOT an admin, restrict access to call logs from their projects only
+    if (!userGlobalRole.permissions.canViewAllCalls) {
+      filters.push({
+        column: 'project_id',
+        operator: 'in',
+        value: `SELECT project_id FROM pype_voice_email_project_mapping WHERE email = (SELECT email FROM pype_voice_users WHERE user_id = '${authResult.userId}')`
+      });
+    }
+    // Admin users can access all call transcripts without additional filters
+
     // Fetch transcript data from the database using call_id (session_id)
     // Try exact match first, then try UUID pattern match if not found
-    console.log('🔍 TRANSCRIPT API: Trying exact match for call_id:', session_id);
+    console.log('🔍 TRANSCRIPT API: Trying exact match for call_id:', session_id, 'with role:', userGlobalRole.global_role);
     let { data: transcriptData, error: queryError } = await fetchFromTable({
       table: 'pype_voice_call_logs',
-      select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds',
-      filters: [
-        { column: 'call_id', operator: '=', value: session_id }
-      ],
+      select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds, project_id',
+      filters,
       limit: 1
     });
 
