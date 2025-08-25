@@ -64,11 +64,28 @@ export const useCustomTotals = ({
     setError(null)
     
     try {
-      const calculatedResults = await Promise.all(
+      const calculatedResponses = await Promise.all(
         configs.map(config => 
-          CustomTotalsService.calculateCustomTotal(config, agentId, dateFrom, dateTo)
+          CustomTotalsService.calculateCustomTotal(config, agentId, { from: dateFrom || '', to: dateTo || '' })
         )
       )
+      
+      // Extract data from API responses and handle errors
+      const calculatedResults: CustomTotalResult[] = calculatedResponses.map((response, index) => {
+        if (response.success && response.data) {
+          return response.data
+        } else {
+          // Return error result if calculation failed
+          const config = configs[index]
+          return {
+            configId: config.id || '',
+            value: 0,
+            label: config.name || 'Unknown',
+            error: response.error || 'Calculation failed'
+          }
+        }
+      })
+      
       setResults(calculatedResults)
     } catch (err) {
       setError('Failed to calculate custom totals')
