@@ -28,6 +28,9 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { callRPC, fetchFromTable } = useApiClient()
+  
+  // 🔍 DEBUG: Hook called
+  console.log('🔍 useOverviewQuery HOOK CALLED with params:', { agentId, dateFrom, dateTo })
 
   useEffect(() => {
     const fetchOverviewData = async () => {
@@ -105,8 +108,19 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
     }
     
 
+    // 🔍 DEBUG: Check conditions before executing
+    console.log('🔍 useOverviewQuery CONDITIONS:', {
+      agentId: !!agentId,
+      dateFrom: !!dateFrom, 
+      dateTo: !!dateTo,
+      allConditionsMet: !!(agentId && dateFrom && dateTo)
+    })
+    
     if (agentId && dateFrom && dateTo) {
+      console.log('✅ CONDITIONS MET - Calling fetchOverviewData')
       fetchOverviewData()
+    } else {
+      console.log('❌ CONDITIONS NOT MET - fetchOverviewData NOT called')
     }
   }, [agentId, dateFrom, dateTo])
 
