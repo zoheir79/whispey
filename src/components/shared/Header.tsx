@@ -232,13 +232,17 @@ function Header({ breadcrumb }: HeaderProps) {
                       <p className="text-xs text-gray-500">{user?.email}</p>
                     </div>
                     <div className="py-1">
-                      <DropdownMenuItem className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
-                        <User className="w-4 h-4 mr-3 text-gray-600" />
-                        <span className="font-medium text-gray-900">Profile</span>
+                      <DropdownMenuItem asChild>
+                        <Link href="/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                          <User className="w-4 h-4 mr-3 text-gray-600" />
+                          <span className="font-medium text-gray-900">Profile</span>
+                        </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
-                        <Settings className="w-4 h-4 mr-3 text-gray-600" />
-                        <span className="font-medium text-gray-900">Settings</span>
+                      <DropdownMenuItem asChild>
+                        <Link href="/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                          <Settings className="w-4 h-4 mr-3 text-gray-600" />
+                          <span className="font-medium text-gray-900">Settings</span>
+                        </Link>
                       </DropdownMenuItem>
                     </div>
                     <DropdownMenuSeparator className="bg-gray-100" />
