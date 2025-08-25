@@ -19,6 +19,37 @@ export async function POST(request: NextRequest) {
 
     let result;
 
+    // Handle cases where method is undefined - this looks like a table query that should go to /api/overview
+    if (!method && params && params.table) {
+      console.log('Redirecting undefined method with table query to overview logic');
+      // Import the overview API logic
+      const { fetchFromTable } = await import('@/lib/db-service');
+      
+      // Convert the params to the format expected by fetchFromTable
+      const queryParams = {
+        table: params.table,
+        select: params.select,
+        filters: params.filters || [],
+        orderBy: params.orderBy,
+        limit: params.limit,
+        offset: params.offset
+      };
+      
+      result = await fetchFromTable(queryParams);
+      
+      if (result.error) {
+        return NextResponse.json(
+          { error: 'Table query failed', details: result.error },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({ 
+        success: true, 
+        data: result.data 
+      });
+    }
+
     switch (method) {
       case 'refreshCallSummary':
         result = await refreshCallSummary();
