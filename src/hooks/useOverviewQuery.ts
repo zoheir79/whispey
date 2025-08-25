@@ -34,9 +34,12 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
 
   useEffect(() => {
     const fetchOverviewData = async () => {
+      console.log('🚀 fetchOverviewData STARTED')
       try {
         setLoading(true)
         setError(null)
+        
+        console.log('🔍 About to call callRPC with refreshCallSummary')
     
         // 🔄 Call the PostgreSQL function to refresh the materialized view
         const refreshResult = await callRPC('refreshCallSummary', {})
@@ -101,8 +104,15 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
     
         setData(typedData)
       } catch (err) {
+        console.error('❌ CRITICAL ERROR in fetchOverviewData:', err)
+        console.error('❌ Error details:', {
+          message: err instanceof Error ? err.message : 'Unknown error',
+          stack: err instanceof Error ? err.stack : 'No stack trace',
+          errorObject: err
+        })
         setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
+        console.log('🏁 fetchOverviewData FINISHED (finally block)')
         setLoading(false)
       }
     }
