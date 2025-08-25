@@ -425,7 +425,7 @@ export const useQuickFieldDiscovery = (agentId: string, dateFrom: string, dateTo
         
         let sampleRecords: any[] = [];
         try {
-          const response = await fetchFromTable(sampleQuery);
+          const response = await fetchFromAPI(sampleQuery);
           if (response && Array.isArray(response)) {
             sampleRecords = response;
           }
