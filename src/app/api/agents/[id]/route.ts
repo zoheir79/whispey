@@ -133,7 +133,7 @@ export async function PATCH(
     console.log('🔍 Values:', values)
 
     // Execute update using raw query since we need RETURNING
-    const { query } = await import('@/lib/db-connection')
+    const { query } = await import('@/lib/db')
     const result = await query(sql, values)
 
     if (result.rows.length === 0) {
