@@ -79,7 +79,9 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
     try {
       const transcript = Array.isArray(callData.transcript_json) 
         ? callData.transcript_json 
-        : JSON.parse(callData.transcript_json)
+        : (typeof callData.transcript_json === 'string' 
+           ? JSON.parse(callData.transcript_json)
+           : callData.transcript_json)
       
       return transcript.map((item: any, index: number) => ({
         id: `basic-${index}`,
