@@ -9,9 +9,15 @@ ALTER TABLE public.pype_voice_users
 ADD COLUMN IF NOT EXISTS global_role VARCHAR(20) DEFAULT 'user';
 
 -- Set allowed values for global_role
-ALTER TABLE public.pype_voice_users 
-ADD CONSTRAINT IF NOT EXISTS chk_global_role 
-CHECK (global_role IN ('user', 'admin', 'super_admin'));
+DO $$ 
+BEGIN
+    -- Check if constraint doesn't exist before adding it
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_global_role') THEN
+        ALTER TABLE public.pype_voice_users 
+        ADD CONSTRAINT chk_global_role 
+        CHECK (global_role IN ('user', 'admin', 'super_admin'));
+    END IF;
+END $$;
 
 -- Create index for performance
 CREATE INDEX IF NOT EXISTS idx_pype_voice_users_global_role 
