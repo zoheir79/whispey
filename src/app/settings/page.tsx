@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import Header from '@/components/shared/Header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -200,12 +201,14 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto p-6">
-      {/* Header */}
-      <div className="flex items-center space-x-2 mb-6">
-        <SettingsIcon className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">Settings</h1>
-      </div>
+    <>
+      <Header />
+      <div className="container max-w-4xl mx-auto p-6">
+        {/* Header */}
+        <div className="flex items-center space-x-2 mb-6">
+          <SettingsIcon className="h-6 w-6" />
+          <h1 className="text-2xl font-bold">Settings</h1>
+        </div>
 
       {/* Unified Notification System */}
       {notification.show && (
@@ -436,6 +439,7 @@ x-pype-token: VOTRE_API_KEY`}
           </Card>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }
