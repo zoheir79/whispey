@@ -220,17 +220,29 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
   // ===== API FUNCTIONS =====
   const fetchViews = useCallback(async (): Promise<void> => {
     try {
-      const { data, error } = await fetchFromTable({
-        table: "pype_voice_agent_call_log_views",
-        select: "*",
-        filters: [{ column: "agent_id", operator: "=", value: agentId }],
-        orderBy: { column: "created_at", ascending: false }
-      })
+      const response = await fetch('/api/overview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          table: "pype_voice_agent_call_log_views",
+          select: "*",
+          filters: [{ column: "agent_id", operator: "=", value: agentId }],
+          orderBy: { column: "created_at", ascending: false }
+        })
+      });
 
-      if (error) throw error
+      if (!response.ok) {
+        throw new Error('Failed to fetch views');
+      }
+
+      const result = await response.json();
+      if (result.error) throw new Error(result.error.message || 'API error');
+      
       // Ensure data is properly typed as CustomView[]
-      const typedData = Array.isArray(data) ? data as unknown as CustomView[] : []
-      setViews(typedData)
+      const typedData = Array.isArray(result.data) ? result.data as unknown as CustomView[] : [];
+      setViews(typedData);
     } catch (err) {
       console.error("Failed to fetch views:", err)
       setError("Unable to load saved views. Please try again.")
@@ -385,17 +397,30 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
       
       const offset = pageNumber * PAGE_SIZE;
       
-      // Execute query with fetchFromTable
-      const { data, error } = await fetchFromTable({
-        table: "pype_voice_call_logs",
-        select: "*",
-        filters: allFilters,
-        orderBy: { column: "call_started_at", ascending: false },
-        limit: PAGE_SIZE,
-        offset: offset
+      // Execute query with API endpoint
+      const response = await fetch('/api/overview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          table: "pype_voice_call_logs",
+          select: "*",
+          filters: allFilters,
+          orderBy: { column: "call_started_at", ascending: false },
+          limit: PAGE_SIZE,
+          offset: offset
+        })
       });
       
-      if (error) throw error
+      if (!response.ok) {
+        throw new Error('Failed to fetch call logs');
+      }
+
+      const result = await response.json();
+      if (result.error) throw new Error(result.error.message || 'API error');
+      
+      const data = result.data;
 
       // Ensure data is properly typed as CallLog[]
       const typedData = Array.isArray(data) ? data as unknown as CallLog[] : [];
@@ -462,17 +487,29 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
     if (!viewName.trim()) return
 
     try {
-      const { error } = await insertIntoTable({
-        table: 'pype_voice_agent_call_log_views',
-        data: {
-          agent_id: agentId,
-          name: viewName.trim(),
-          filters: currentFilters,
-          visible_columns: currentColumns,
-        }
-      })
+      const response = await fetch('/api/overview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'insert',
+          table: 'pype_voice_agent_call_log_views',
+          data: {
+            agent_id: agentId,
+            name: viewName.trim(),
+            filters: currentFilters,
+            visible_columns: currentColumns,
+          }
+        })
+      });
 
-      if (error) throw error
+      if (!response.ok) {
+        throw new Error('Failed to save view');
+      }
+
+      const result = await response.json();
+      if (result.error) throw new Error(result.error.message || 'API error');
 
       setViewName("")
       setIsCustomizeOpen(false)
@@ -485,12 +522,24 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
 
   const deleteView = useCallback(async (id: string): Promise<void> => {
     try {
-      const { error } = await deleteFromTable({
-   table: 'pype_voice_agent_call_log_views',
-   filters: [{ column: 'id', operator: 'eq', value: id }]
- })
+      const response = await fetch('/api/overview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'delete',
+          table: 'pype_voice_agent_call_log_views',
+          filters: [{ column: 'id', operator: 'eq', value: id }]
+        })
+      });
 
-      if (error) throw error
+      if (!response.ok) {
+        throw new Error('Failed to delete view');
+      }
+
+      const result = await response.json();
+      if (result.error) throw new Error(result.error.message || 'API error');
 
       await fetchViews()
       if (selectedViewId === id) {
@@ -527,16 +576,29 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
         // Combine filters
         const allFilters = [...baseFilters, ...customFilters.filter(f => f.column !== "agent_id")];
         
-        // Execute query with fetchFromTable
-        const { data, error } = await fetchFromTable<CallLog[]>({
-          table: "pype_voice_call_logs",
-          select: "*",
-          filters: allFilters,
-          orderBy: { column: "call_started_at", ascending: false },
-          limit: PAGE_SIZE
+        // Execute query with API endpoint
+        const response = await fetch('/api/overview', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            table: "pype_voice_call_logs",
+            select: "*",
+            filters: allFilters,
+            orderBy: { column: "call_started_at", ascending: false },
+            limit: PAGE_SIZE
+          })
         });
         
-        if (error) throw error
+        if (!response.ok) {
+          throw new Error('Failed to fetch call logs in background');
+        }
+
+        const result = await response.json();
+        if (result.error) throw new Error(result.error.message || 'API error');
+        
+        const data = result.data;
 
         // Check if there's any new data not already in the list
         if (data && data.length > 0) {
