@@ -15,6 +15,13 @@ export async function fetchFromTable<T = any[]>(options: { table: string } & Que
   const { table, ...queryOptions } = options;
   const { select = '*', filters = [], orderBy, limit, offset } = queryOptions;
   
+  // Handle missing tables from Supabase → PostgreSQL migration
+  const MISSING_TABLES = ['pype_voice_custom_totals_configs'];
+  if (MISSING_TABLES.includes(table)) {
+    console.warn(`Table ${table} does not exist in PostgreSQL setup - returning empty result`);
+    return { data: [] as T[], error: null };
+  }
+  
   // Construire la requête SQL de base
   let sql = `SELECT ${select} FROM ${table}`;
   const params: any[] = [];
