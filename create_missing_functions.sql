@@ -115,6 +115,9 @@ AS $$
 DECLARE
     config_item JSONB;
     calc_result RECORD;
+    v_config_id TEXT;
+    v_result NUMERIC;
+    v_error_message TEXT;
 BEGIN
     -- Itérer sur chaque configuration dans le tableau
     FOR config_item IN SELECT jsonb_array_elements(p_configs)
@@ -132,12 +135,16 @@ BEGIN
             p_date_to
         );
         
+        -- Assigner les valeurs aux variables
+        v_config_id := config_item->>'id';
+        v_result := calc_result.result;
+        v_error_message := calc_result.error_message;
+        
         -- Retourner le résultat pour cette configuration
-        RETURN NEXT (
-            config_item->>'id',
-            calc_result.result,
-            calc_result.error_message
-        );
+        config_id := v_config_id;
+        result := v_result;
+        error_message := v_error_message;
+        RETURN NEXT;
     END LOOP;
     
     RETURN;
