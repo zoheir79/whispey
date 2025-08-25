@@ -584,7 +584,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Minutes</h3>
-                      <p className="text-2xl font-light text-gray-900 tracking-tight">{analytics?.totalMinutes?.toLocaleString() || '0'}</p>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">{analytics?.totalMinutes ? Math.round(analytics.totalMinutes).toLocaleString() : '0'}</p>
                       <p className="text-xs text-gray-400 font-medium">Duration</p>
                     </div>
                   </div>
