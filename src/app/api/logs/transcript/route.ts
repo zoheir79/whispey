@@ -25,7 +25,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch transcript data from the database using call_id (session_id)
-    const { data: transcriptData, error: queryError } = await fetchFromTable({
+    // Try exact match first, then try UUID pattern match if not found
+    let { data: transcriptData, error: queryError } = await fetchFromTable({
       table: 'pype_voice_call_logs',
       select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds',
       filters: [
@@ -33,6 +34,18 @@ export async function GET(request: NextRequest) {
       ],
       limit: 1
     });
+
+    // If no exact match found, try searching by UUID pattern (for cases where frontend passes UUID only)
+    if (!queryError && (!transcriptData || transcriptData.length === 0)) {
+      ({ data: transcriptData, error: queryError } = await fetchFromTable({
+        table: 'pype_voice_call_logs',
+        select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds',
+        filters: [
+          { column: 'call_id', operator: 'like', value: `${session_id}%` }
+        ],
+        limit: 1
+      }));
+    }
 
     if (queryError) {
       console.error('Transcript query error:', queryError);
