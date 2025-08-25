@@ -13,6 +13,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { method, params } = body;
 
+    // Debug logging to see what method is being called
+    console.log('DB-RPC API called with method:', method);
+    console.log('DB-RPC API called with params:', params);
+
     let result;
 
     switch (method) {
