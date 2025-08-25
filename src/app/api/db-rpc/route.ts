@@ -83,7 +83,9 @@ export async function POST(request: NextRequest) {
 
     switch (method) {
       case 'refreshCallSummary':
+        console.log('🔥 API ROUTE: About to call refreshCallSummary()');
         result = await refreshCallSummary();
+        console.log('🔥 API ROUTE: refreshCallSummary() completed with result:', result);
         break;
       
       case 'calculateCustomTotal':
