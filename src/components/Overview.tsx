@@ -201,9 +201,12 @@ const Overview: React.FC<OverviewProps> = ({
         const results = await CustomTotalsService.batchCalculateCustomTotals(
           customTotals,
           'project-id', // TODO: Get actual project ID
-          agent.id
+          agent.id,
+          dateRange
         )
-        setCustomTotalResults(results)
+        if (results.success && results.data) {
+          setCustomTotalResults(results.data)
+        }
       } catch (e) {
         console.error('Batch calc failed', e)
       } finally {
@@ -223,13 +226,15 @@ const Overview: React.FC<OverviewProps> = ({
           CustomTotalsService.calculateCustomTotal(
             config, 
             agent?.id, 
-            dateRange.from, 
-            dateRange.to
+            dateRange
           )
         )
       )
 
-      setCustomTotalResults(results)
+      const validResults = results
+        .filter(result => result.success && result.data)
+        .map(result => result.data!)
+      setCustomTotalResults(validResults)
     } catch (error) {
       console.error('Failed to calculate custom totals:', error)
     } finally {
@@ -361,7 +366,7 @@ const Overview: React.FC<OverviewProps> = ({
         // Note: orCondition not supported by current fetchFromTable interface
       })
       if (error) {
-        alert(`Failed to fetch logs: ${error.message}`)
+        alert(`Failed to fetch logs: ${error}`)
         return
       }
       
