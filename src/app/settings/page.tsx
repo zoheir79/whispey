@@ -18,7 +18,7 @@ import {
   RefreshCw,
   Settings as SettingsIcon
 } from 'lucide-react'
-import { toast } from 'sonner'
+// Using native browser alerts instead of external toast library
 
 interface Project {
   id: string
@@ -55,7 +55,7 @@ export default function SettingsPage() {
       if (data.success) {
         setProjects(data.projects)
       } else {
-        toast.error('Erreur lors du chargement des projets')
+        alert('❌ Erreur lors du chargement des projets')
       }
     } catch (error) {
       console.error('Error fetching projects:', error)
@@ -84,10 +84,10 @@ export default function SettingsPage() {
           projectId: data.projectId,
           hint: data.hint
         })
-        toast.success('API key créée avec succès !')
+        alert('✅ API key créée avec succès !')
         await fetchProjects() // Refresh the list
       } else {
-        toast.error(data.message || 'Erreur lors de la création')
+        alert('❌ ' + (data.message || 'Erreur lors de la création'))
       }
     } catch (error) {
       console.error('Error creating API key:', error)
@@ -114,10 +114,10 @@ export default function SettingsPage() {
       const data = await response.json()
 
       if (data.success) {
-        toast.success('API key révoquée avec succès')
+        alert('✅ API key révoquée avec succès')
         await fetchProjects() // Refresh the list
       } else {
-        toast.error(data.message || 'Erreur lors de la révocation')
+        alert('❌ ' + (data.message || 'Erreur lors de la révocation'))
       }
     } catch (error) {
       console.error('Error revoking API key:', error)
@@ -127,7 +127,7 @@ export default function SettingsPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    toast.success('Token copié dans le presse-papiers !')
+    alert('📋 Token copié dans le presse-papiers !')
   }
 
   const closeNewKeyModal = () => {
