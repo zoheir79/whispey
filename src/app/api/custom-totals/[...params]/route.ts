@@ -65,7 +65,7 @@ export async function POST(
       // Calculate results
       const results = await Promise.all(
         targetConfigs.map(config => 
-          CustomTotalsService.calculateCustomTotal(config, agentId, dateFrom, dateTo)
+          CustomTotalsService.calculateCustomTotal(config, agentId, { from: dateFrom, to: dateTo })
         )
       )
 
