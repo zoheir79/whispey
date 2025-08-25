@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { callRPC } from '../lib/db-rpc'
-import { fetchFromTable } from '../lib/db-service'
+import { useApiClient } from './useApiClient'
 
 interface OverviewData {
   totalCalls: number
@@ -28,6 +27,7 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
   const [data, setData] = useState<OverviewData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { callRPC, fetchFromTable } = useApiClient()
 
   useEffect(() => {
     const fetchOverviewData = async () => {
@@ -36,8 +36,8 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         setError(null)
     
         // 🔄 Call the PostgreSQL function to refresh the materialized view
-        const { data: refreshData, error: refreshError } = await callRPC<any>('refresh_call_summary', {})
-        if (refreshError) throw refreshError
+        const refreshResult = await callRPC('refreshCallSummary', {})
+        if (refreshResult.error) throw refreshResult.error
 
     
         // ✅ Then query the refreshed materialized view

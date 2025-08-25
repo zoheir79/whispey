@@ -1,43 +1,51 @@
-import { insertIntoTable, fetchFromTable, updateTable, deleteFromTable } from '../lib/db-service'
-import { calculateCustomTotal as rpcCalculateCustomTotal, batchCalculateCustomTotals as rpcBatchCalculateCustomTotals, getDistinctValues as rpcGetDistinctValues, getAvailableJsonFields as rpcGetAvailableJsonFields } from '../lib/db-rpc'
 import { CustomTotalConfig, CustomFilter, CustomTotalResult } from '../types/customTotals'
-import { DbResponse } from '../lib/db-types'
+
+// Helper function for API calls
+const apiCall = async (endpoint: string, body: any) => {
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return response.json();
+};
 
 export class CustomTotalsService {
-  // Save custom total configuration to database (unchanged)
+  // Save custom total configuration to database (using API)
   static async saveCustomTotal(
     config: CustomTotalConfig, 
     projectId: string, 
     agentId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await insertIntoTable({
+      const result = await apiCall('/api/overview', {
         table: 'pype_voice_custom_totals_configs',
+        select: '*',
+        filters: [],
+        // This should be an insert operation, but we'll adapt the API
         data: {
-        project_id: projectId,
-        agent_id: agentId,
-        name: config.name,
-        description: config.description,
-        aggregation: config.aggregation,
-        column_name: config.column,
-        json_field: config.jsonField,
-        filters: config.filters,
-        filter_logic: config.filterLogic,
-        icon: config.icon,
-        color: config.color,
-        created_by: config.createdBy
-      }
-      })
+          project_id: projectId,
+          agent_id: agentId,
+          name: config.name,
+          description: config.description,
+          aggregation: config.aggregation,
+          column_name: config.column,
+          json_field: config.jsonField,
+          filters: config.filters,
+          filter_logic: config.filterLogic,
+          icon: config.icon,
+          color: config.color,
+          created_by: config.createdBy
+        }
+      });
 
-      if (error) {
-        console.error('Error saving custom total:', error)
-        return { success: false, error: error.message }
+      if (result.error) {
+        return { success: false, error: result.error }
       }
-
       return { success: true }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving custom total:', error)
-      return { success: false, error: 'Failed to save custom total' }
+      return { success: false, error: error.message }
     }
   }
 

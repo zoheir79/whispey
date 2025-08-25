@@ -118,6 +118,46 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
   }
 }
 
+export async function verifyAuth(request: Request): Promise<AuthResult> {
+  try {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return { success: false, message: 'No valid authorization header' };
+    }
+
+    const token = authHeader.substring(7);
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET not configured');
+    }
+
+    const payload = jwt.verify(token, secret) as any;
+    
+    // Find user by ID from token
+    const result = await query('SELECT * FROM pype_voice_users WHERE id = $1', [payload.sub]);
+    if (result.rows.length === 0) {
+      return { success: false, message: 'User not found' };
+    }
+
+    const user = result.rows[0];
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        profile_image_url: user.profile_image_url,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+      },
+    };
+  } catch (error) {
+    console.error('Auth verification error:', error);
+    return { success: false, message: 'Invalid token' };
+  }
+}
+
 export async function getUserById(userId: string): Promise<User | null> {
   try {
     const result = await query(

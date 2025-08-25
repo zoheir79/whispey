@@ -50,11 +50,11 @@ import { FloatingActionMenu } from './FloatingActionMenu'
 import { useDynamicFields } from '../hooks/useDynamicFields'
 // JWT auth is handled at the page level
 import CustomTotalsBuilder from './CustomTotalBuilds'
-import { CustomTotalsService } from '@/services/customTotalService'
+import { CustomTotalsService } from '@/services/customTotalServiceClient'
 import { CustomTotalConfig, CustomTotalResult } from '../types/customTotals'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
-import { fetchFromTable } from '@/lib/db-service' // TODO: Replace with API calls
+import { useApiClient } from '../hooks/useApiClient'
 import Papa from 'papaparse'
 
 
@@ -130,6 +130,9 @@ const Overview: React.FC<OverviewProps> = ({
   const [customTotalResults, setCustomTotalResults] = useState<CustomTotalResult[]>([])
   const [loadingCustomTotals, setLoadingCustomTotals] = useState(false)
   const [roleLoading, setRoleLoading] = useState(true) // Add loading state for role
+  
+  // Use API client for database operations
+  const { fetchFromTable } = useApiClient()
 
   // TODO: Replace with JWT auth context when available
   // const { user } = useUser() // Removed: obsolete Clerk hook
