@@ -142,11 +142,13 @@ export async function getAvailableJsonFields<T = any>(params: {
 export async function refreshCallSummary() {
   try {
     // Refresh materialized view if it exists, otherwise return success
+    console.log('🔍 CALLING REAL refreshCallSummary - PostgreSQL function');
     await query('REFRESH MATERIALIZED VIEW CONCURRENTLY call_summary_materialized');
+    console.log('✅ refreshCallSummary - SUCCESS with real data');
     return { data: [{ success: true }], error: null };
   } catch (error: any) {
     // If materialized view doesn't exist, just return success (non-critical)
-    console.warn('Materialized view refresh skipped:', error.message);
+    console.warn('❌ FAKE FALLBACK refreshCallSummary triggered:', error.message);
     return { data: [{ success: true }], error: null };
   }
 }
