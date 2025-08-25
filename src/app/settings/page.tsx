@@ -16,9 +16,12 @@ import {
   AlertTriangle,
   CheckCircle,
   RefreshCw,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  AlertCircle,
+  X
 } from 'lucide-react'
-// Using native browser alerts instead of external toast library
+
+// Using unified Alert UI system - no ad-hoc helpers needed
 
 interface Project {
   id: string
@@ -34,12 +37,53 @@ interface APIKey {
   hint: string
 }
 
+interface NotificationState {
+  show: boolean
+  message: string
+  type: 'success' | 'error'
+}
+
+interface ConfirmState {
+  show: boolean
+  message: string
+  projectId: string | null
+}
+
 export default function SettingsPage() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState<string | null>(null)
   const [newApiKey, setNewApiKey] = useState<APIKey | null>(null)
   const [showToken, setShowToken] = useState(false)
+  
+  // Unified notification system using Alert UI components
+  const [notification, setNotification] = useState<NotificationState>({
+    show: false,
+    message: '',
+    type: 'success'
+  })
+  
+  // Unified confirmation system using Alert UI components
+  const [confirmation, setConfirmation] = useState<ConfirmState>({
+    show: false,
+    message: '',
+    projectId: null
+  })
+
+  // Helper functions for unified notification system
+  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ show: true, message, type })
+    // Auto-hide after 5 seconds
+    setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 5000)
+  }
+
+  const showConfirmation = (message: string, projectId: string) => {
+    setConfirmation({ show: true, message, projectId })
+  }
+
+  const hideConfirmation = () => {
+    setConfirmation({ show: false, message: '', projectId: null })
+  }
 
   // Load projects and API keys
   useEffect(() => {
@@ -55,11 +99,11 @@ export default function SettingsPage() {
       if (data.success) {
         setProjects(data.projects)
       } else {
-        alert('❌ Erreur lors du chargement des projets')
+        showNotification('Erreur lors du chargement des projets', 'error')
       }
     } catch (error) {
       console.error('Error fetching projects:', error)
-      alert('❌ Erreur de connexion')
+      showNotification('Erreur de connexion', 'error')
     } finally {
       setLoading(false)
     }
@@ -84,23 +128,29 @@ export default function SettingsPage() {
           projectId: data.projectId,
           hint: data.hint
         })
-        alert('✅ API key créée avec succès !')
+        showNotification('API key créée avec succès !', 'success')
         await fetchProjects() // Refresh the list
       } else {
-        alert('❌ ' + (data.message || 'Erreur lors de la création'))
+        showNotification(data.message || 'Erreur lors de la création', 'error')
       }
     } catch (error) {
       console.error('Error creating API key:', error)
-      toast.error('Erreur de connexion')
+      showNotification('Erreur de connexion', 'error')
     } finally {
       setCreating(null)
     }
   }
 
   const revokeAPIKey = async (projectId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir révoquer cette API key ? Cette action est irréversible.')) {
-      return
-    }
+    showConfirmation('Êtes-vous sûr de vouloir révoquer cette API key ? Cette action est irréversible.', projectId)
+    return
+  }
+
+  const handleConfirmRevoke = async () => {
+    const projectId = confirmation.projectId
+    if (!projectId) return
+    
+    hideConfirmation()
 
     try {
       const response = await fetch('/api/api-keys', {
@@ -114,20 +164,20 @@ export default function SettingsPage() {
       const data = await response.json()
 
       if (data.success) {
-        alert('✅ API key révoquée avec succès')
+        showNotification('API key révoquée avec succès', 'success')
         await fetchProjects() // Refresh the list
       } else {
-        alert('❌ ' + (data.message || 'Erreur lors de la révocation'))
+        showNotification(data.message || 'Erreur lors de la révocation', 'error')
       }
     } catch (error) {
       console.error('Error revoking API key:', error)
-      toast.error('Erreur de connexion')
+      showNotification('Erreur de connexion', 'error')
     }
   }
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    alert('📋 Token copié dans le presse-papiers !')
+    showNotification('Token copié dans le presse-papiers !', 'success')
   }
 
   const closeNewKeyModal = () => {
@@ -156,6 +206,53 @@ export default function SettingsPage() {
         <SettingsIcon className="h-6 w-6" />
         <h1 className="text-2xl font-bold">Settings</h1>
       </div>
+
+      {/* Unified Notification System */}
+      {notification.show && (
+        <Alert variant={notification.type === 'error' ? 'destructive' : 'default'} className="mb-6">
+          {notification.type === 'error' ? (
+            <AlertCircle className="h-4 w-4" />
+          ) : (
+            <CheckCircle className="h-4 w-4" />
+          )}
+          <div className="flex items-center justify-between w-full">
+            <AlertDescription>{notification.message}</AlertDescription>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setNotification({ show: false, message: '', type: 'success' })}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </Alert>
+      )}
+
+      {/* Unified Confirmation System */}
+      {confirmation.show && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertTriangle className="h-4 w-4" />
+          <div className="space-y-3">
+            <AlertDescription>{confirmation.message}</AlertDescription>
+            <div className="flex space-x-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleConfirmRevoke}
+              >
+                Oui, révoquer
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={hideConfirmation}
+              >
+                Annuler
+              </Button>
+            </div>
+          </div>
+        </Alert>
+      )}
 
       {/* API Keys Section */}
       <Card className="mb-6">
