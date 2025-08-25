@@ -51,23 +51,17 @@ export async function calculateCustomTotal<T = any>(params: {
   date_from?: string | null,
   date_to?: string | null
 }) {
-  try {
-    // Try to call the RPC function if it exists
-    return await callRPC<T>('calculate_custom_total', {
-      p_agent_id: params.agent_id,
-      p_aggregation: params.aggregation,
-      p_column_name: params.column_name,
-      p_json_field: params.json_field,
-      p_filters: params.filters,
-      p_filter_logic: params.filter_logic,
-      p_date_from: params.date_from || null,
-      p_date_to: params.date_to || null
-    });
-  } catch (error: any) {
-    // If the function doesn't exist, return zero result gracefully
-    console.warn('calculate_custom_total RPC not found, returning zero result:', error.message);
-    return { data: [{ total: 0 }] as T[], error: null };
-  }
+  // This function exists in PostgreSQL - use it directly
+  return callRPC<T>('calculate_custom_total', {
+    p_agent_id: params.agent_id,
+    p_aggregation: params.aggregation,
+    p_column_name: params.column_name,
+    p_json_field: params.json_field,
+    p_filters: params.filters,
+    p_filter_logic: params.filter_logic,
+    p_date_from: params.date_from || null,
+    p_date_to: params.date_to || null
+  });
 }
 
 /**
