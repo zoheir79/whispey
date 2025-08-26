@@ -100,23 +100,31 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
   // Date range for API calls
   const apiDateRange = React.useMemo(() => {
+    console.log('🔍 Dashboard apiDateRange MEMO recalculating:', { quickFilter, isCustomRange, dateRange })
+    
     if (isCustomRange && dateRange.from && dateRange.to) {
-      return {
+      const result = {
         from: formatDateISO(dateRange.from),
         to: formatDateISO(dateRange.to)
       }
+      console.log('🔍 Dashboard apiDateRange CUSTOM result:', result)
+      return result
     }
     
     const days = quickFilters.find(f => f.id === quickFilter)?.days || 7
     const endDate = new Date()
     const startDate = subDays(endDate, days)
-    return {
+    const result = {
       from: formatDateISO(startDate),
       to: formatDateISO(endDate)
     }
+    console.log('🔍 Dashboard apiDateRange QUICK result:', result)
+    return result
   }, [quickFilter, dateRange, isCustomRange])
 
   const handleQuickFilter = (filterId: string) => {
+    console.log('🔍 Dashboard handleQuickFilter CLICKED:', filterId)
+    
     setQuickFilter(filterId)
     setIsCustomRange(false)
     
@@ -124,6 +132,13 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
     const endDate = new Date()
     const startDate = subDays(endDate, days)
     setDateRange({ from: startDate, to: endDate })
+    
+    console.log('🔍 Dashboard NEW DATE RANGE SET:', {
+      filterId,
+      days,
+      startDate: formatDateISO(startDate),
+      endDate: formatDateISO(endDate)
+    })
   }
 
   const handleDateRangeSelect = (range: DateRange | undefined) => {
@@ -615,6 +630,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
       <div className="flex-1 overflow-y-auto">
         {activeTab === 'overview' && agent?.id && (
           <Overview 
+            key={`overview-${quickFilter}-${apiDateRange.from}-${apiDateRange.to}`}
             project={project} 
             agent={agent}
             dateRange={apiDateRange}

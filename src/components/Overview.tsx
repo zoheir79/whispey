@@ -125,6 +125,22 @@ const Overview: React.FC<OverviewProps> = ({
   dateRange
 }) => {
 
+  // Function to format date range display
+  const getDateRangeDisplay = () => {
+    if (!dateRange?.from || !dateRange?.to) return 'All time'
+    
+    const fromDate = new Date(dateRange.from)
+    const toDate = new Date(dateRange.to)
+    
+    // If same date
+    if (dateRange.from === dateRange.to) {
+      return formatDateDisplay(fromDate)
+    }
+    
+    // If different dates
+    return `${formatDateDisplay(fromDate)} - ${formatDateDisplay(toDate)}`
+  }
+
   const [role, setRole] = useState<string | null>(null)
   const [customTotals, setCustomTotals] = useState<CustomTotalConfig[]>([])
   const [customTotalResults, setCustomTotalResults] = useState<CustomTotalResult[]>([])
@@ -141,11 +157,19 @@ const Overview: React.FC<OverviewProps> = ({
 
 
 
+  // 🔍 DEBUG: Log dateRange changes
+  console.log('🔍 Overview RENDER - dateRange received:', dateRange)
+  console.log('🔍 Overview RENDER - agent?.id:', agent?.id)
+
   const { data: analytics, loading, error } = useOverviewQuery({
     agentId: agent?.id,
     dateFrom: dateRange.from,
     dateTo: dateRange.to
   })
+
+  // 🔍 DEBUG: Log analytics data
+  console.log('🔍 Overview RENDER - analytics:', analytics)
+  console.log('🔍 Overview RENDER - loading:', loading)
 
   const { 
     metadataFields, 
@@ -577,7 +601,7 @@ const Overview: React.FC<OverviewProps> = ({
                           return String(totalCalls).replace(/^0+/, '') || '0';
                         })()}
                       </p>
-                      <p className="text-xs text-gray-400 font-medium">All time</p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -608,7 +632,7 @@ const Overview: React.FC<OverviewProps> = ({
                           return isNaN(rounded) ? '0' : rounded.toLocaleString();
                         })()}
                       </p>
-                      <p className="text-xs text-gray-400 font-medium">Duration</p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -630,7 +654,7 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="space-y-1">
                         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Cost</h3>
                         <p className="text-2xl font-light text-gray-900 tracking-tight">₹{analytics?.totalCost?.toFixed(2) || '0.00'}</p>
-                        <p className="text-xs text-gray-400 font-medium">Cumulative</p>
+                        <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                       </div>
                     </div>
                   </div>
@@ -653,7 +677,7 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="space-y-1">
                         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Response Time</h3>
                         <p className="text-2xl font-light text-gray-900 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-400 ml-1">s</span></p>
-                        <p className="text-xs text-gray-400 font-medium">Performance</p>
+                        <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                       </div>
                     </div>
                   </div>
@@ -680,7 +704,7 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Successful</h3>
                       <p className="text-2xl font-light text-green-600 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
-                      <p className="text-xs text-gray-400 font-medium">Completed calls</p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -706,7 +730,7 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Failed</h3>
                       <p className="text-2xl font-light text-red-600 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
-                      <p className="text-xs text-gray-400 font-medium">Incomplete calls</p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>

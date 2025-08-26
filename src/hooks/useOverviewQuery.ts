@@ -150,7 +150,7 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
     } else {
       console.log('❌ CONDITIONS NOT MET - fetchOverviewData NOT called')
     }
-  }, [agentId, dateFrom, dateTo])
+  }, [agentId, dateFrom, dateTo, callRPC, fetchFromTable])
 
   return { data, loading, error }
 }
