@@ -542,6 +542,13 @@ const Overview: React.FC<OverviewProps> = ({
     )
   }
 
+  // Debug all analytics data
+  console.log('🔍 DEBUG Overview - Full analytics:', analytics);
+  console.log('🔍 DEBUG Overview - Loading:', loading);
+  console.log('🔍 DEBUG Overview - Error:', error);
+  console.log('🔍 DEBUG Overview - Agent ID:', agent?.id);
+  console.log('🔍 DEBUG Overview - Date Range:', dateRange);
+
   return (
     <div className="h-full" style={{ backgroundColor: '#fafafa' }}>
       <div className="p-8 space-y-8">
@@ -563,8 +570,11 @@ const Overview: React.FC<OverviewProps> = ({
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Calls</h3>
                       <p className="text-2xl font-light text-gray-900 tracking-tight">
                         {(() => {
-                          console.log('🔍 DEBUG Overview - analytics.totalCalls:', analytics?.totalCalls);
-                          return analytics?.totalCalls?.toLocaleString() || '0';
+                          const totalCalls = analytics?.totalCalls || 0;
+                          console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
+                          console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
+                          console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
+                          return String(totalCalls).replace(/^0+/, '') || '0';
                         })()}
                       </p>
                       <p className="text-xs text-gray-400 font-medium">All time</p>
@@ -589,7 +599,15 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Minutes</h3>
-                      <p className="text-2xl font-light text-gray-900 tracking-tight">{analytics?.totalMinutes ? Math.round(analytics.totalMinutes).toLocaleString() : '0'}</p>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {(() => {
+                          const totalMinutes = analytics?.totalMinutes || 0;
+                          console.log('🔍 DEBUG Overview - analytics.totalMinutes raw:', analytics?.totalMinutes);
+                          console.log('🔍 DEBUG Overview - totalMinutes processed:', totalMinutes);
+                          const rounded = Math.round(totalMinutes);
+                          return isNaN(rounded) ? '0' : rounded.toLocaleString();
+                        })()}
+                      </p>
                       <p className="text-xs text-gray-400 font-medium">Duration</p>
                     </div>
                   </div>

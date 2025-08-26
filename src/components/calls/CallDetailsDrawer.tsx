@@ -100,13 +100,44 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
         return null
       }
       
-      return transcript.map((item: any, index: number) => ({
-        id: `basic-${index}`,
-        role: item.role || (item.user_transcript ? 'user' : 'assistant'),
-        content: item.content || item.user_transcript || item.agent_response,
-        timestamp: item.timestamp,
-        turn_id: item.turn_id || (index + 1)
-      }))
+      // Handle transcript_with_metrics format (each item has user_transcript AND agent_response)
+      const messages: any[] = [];
+      
+      transcript.forEach((item: any, index: number) => {
+        if (item.user_transcript) {
+          messages.push({
+            id: `user-${item.turn_id || index}`,
+            role: 'user',
+            content: item.user_transcript,
+            timestamp: item.timestamp,
+            turn_id: item.turn_id || (index + 1)
+          });
+        }
+        
+        if (item.agent_response) {
+          messages.push({
+            id: `agent-${item.turn_id || index}`,
+            role: 'assistant',
+            content: item.agent_response,
+            timestamp: item.timestamp,
+            turn_id: item.turn_id || (index + 1)
+          });
+        }
+        
+        // Fallback for simple transcript_json format
+        if (item.content && !item.user_transcript && !item.agent_response) {
+          messages.push({
+            id: `basic-${index}`,
+            role: item.role || 'user',
+            content: item.content,
+            timestamp: item.timestamp,
+            turn_id: item.turn_id || (index + 1)
+          });
+        }
+      });
+      
+      console.log('🔍 DEBUG - processed messages:', messages);
+      return messages;
     } catch (e) {
       console.error('Error parsing transcript_json:', e)
       return null
