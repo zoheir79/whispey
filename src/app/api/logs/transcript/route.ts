@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       if (userGlobalRole.permissions.canViewAllCalls) {
         // Admin can access all call transcripts
         sql = `
-          SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds, project_id
+          SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds
           FROM pype_voice_call_logs 
           WHERE call_id = $1 
           LIMIT 1
@@ -58,14 +58,12 @@ export async function GET(request: NextRequest) {
       } else {
         // Regular users - only access calls from their projects
         sql = `
-          SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds, cl.project_id
+          SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds
           FROM pype_voice_call_logs cl
-          WHERE cl.project_id IN (
-            SELECT epm.project_id 
-            FROM pype_voice_email_project_mapping epm
-            INNER JOIN pype_voice_users u ON u.email = epm.email
-            WHERE u.user_id = $2
-          ) AND cl.call_id = $1
+          INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+          INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+          INNER JOIN pype_voice_users u ON u.email = epm.email
+          WHERE u.user_id = $2 AND cl.call_id = $1
           LIMIT 1
         `;
         params = [session_id, authResult.userId];
@@ -95,7 +93,7 @@ export async function GET(request: NextRequest) {
         if (userGlobalRole.permissions.canViewAllCalls) {
           // Admin can access all call transcripts  
           sql = `
-            SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds, project_id
+            SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds
             FROM pype_voice_call_logs 
             WHERE call_id LIKE $1 
             LIMIT 1
@@ -104,14 +102,12 @@ export async function GET(request: NextRequest) {
         } else {
           // Regular users - only access calls from their projects
           sql = `
-            SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds, cl.project_id
+            SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds
             FROM pype_voice_call_logs cl
-            WHERE cl.project_id IN (
-              SELECT epm.project_id 
-              FROM pype_voice_email_project_mapping epm
-              INNER JOIN pype_voice_users u ON u.email = epm.email
-              WHERE u.user_id = $2
-            ) AND cl.call_id LIKE $1
+            INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+            INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+            INNER JOIN pype_voice_users u ON u.email = epm.email
+            WHERE u.user_id = $2 AND cl.call_id LIKE $1
             LIMIT 1
           `;
           params = [`${session_id}%`, authResult.userId];
@@ -144,7 +140,7 @@ export async function GET(request: NextRequest) {
         if (userGlobalRole.permissions.canViewAllCalls) {
           // Admin can access all call transcripts
           sql = `
-            SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds, project_id
+            SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds
             FROM pype_voice_call_logs 
             WHERE id = $1 
             LIMIT 1
@@ -153,14 +149,12 @@ export async function GET(request: NextRequest) {
         } else {
           // Regular users - only access calls from their projects
           sql = `
-            SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds, cl.project_id
+            SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds
             FROM pype_voice_call_logs cl
-            WHERE cl.project_id IN (
-              SELECT epm.project_id 
-              FROM pype_voice_email_project_mapping epm
-              INNER JOIN pype_voice_users u ON u.email = epm.email
-              WHERE u.user_id = $2
-            ) AND cl.id = $1
+            INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+            INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+            INNER JOIN pype_voice_users u ON u.email = epm.email
+            WHERE u.user_id = $2 AND cl.id = $1
             LIMIT 1
           `;
           params = [session_id, authResult.userId];
