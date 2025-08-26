@@ -11,6 +11,7 @@ import { useState, useEffect } from "react"
 import AudioPlayer from "../AudioPlayer"
 import { extractS3Key } from "../../utils/s3"
 import { cn } from "@/lib/utils"
+import ReactMarkdown from "react-markdown"
 
 interface TranscriptLog {
   id: string
@@ -337,7 +338,17 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
           {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-2xl font-bold">{transcriptLogs?.length || 0}</div>
+              <div className="text-2xl font-bold">
+                {(() => {
+                  const totalTurns = (transcriptLogs?.length || 0) + (basicTranscript?.length || 0);
+                  console.log('🔍 DEBUG - Turns calculation:', {
+                    transcriptLogs: transcriptLogs?.length || 0,
+                    basicTranscript: basicTranscript?.length || 0,
+                    totalTurns
+                  });
+                  return totalTurns;
+                })()}
+              </div>
               <div className="text-sm text-muted-foreground">Turns</div>
             </div>
             <div className="text-center">
@@ -537,7 +548,9 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                                 Agent
                               </Badge>
                             </div>
-                            <p className="text-sm leading-relaxed">{log.agent_response}</p>
+                            <div className="text-sm leading-relaxed prose prose-sm max-w-none">
+                              <ReactMarkdown>{log.agent_response}</ReactMarkdown>
+                            </div>
 
                             {/* Agent Metrics */}
                             <div className="flex gap-3 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">

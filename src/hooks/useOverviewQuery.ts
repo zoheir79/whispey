@@ -89,9 +89,14 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         // Conversion du tableau any[] en tableau typé
         const typedDailyStats = Array.isArray(dailyStats) ? dailyStats as unknown as DailyStatRow[] : [];
         
-        const totalCalls = typedDailyStats.reduce((sum, day) => sum + day.calls, 0)
-        const successfulCalls = typedDailyStats.reduce((sum, day) => sum + day.successful_calls, 0)
-        const totalCost = typedDailyStats.reduce((sum, day) => sum + day.total_cost, 0)
+        // 🔧 Force numeric conversion to prevent concatenation
+        const totalCalls = typedDailyStats.reduce((sum, day) => sum + Number(day.calls || 0), 0)
+        const successfulCalls = typedDailyStats.reduce((sum, day) => sum + Number(day.successful_calls || 0), 0)
+        const totalCost = typedDailyStats.reduce((sum, day) => sum + Number(day.total_cost || 0), 0)
+        
+        console.log('🔍 DEBUG - PostgreSQL raw data:', typedDailyStats);
+        console.log('🔍 DEBUG - Individual calls values:', typedDailyStats.map(d => ({ calls: d.calls, type: typeof d.calls })));
+        console.log('🔍 DEBUG - Calculated totals:', { totalCalls, successfulCalls, totalCost });
 
 
     
