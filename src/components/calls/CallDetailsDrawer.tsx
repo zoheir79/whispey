@@ -12,6 +12,7 @@ import AudioPlayer from "../AudioPlayer"
 import { extractS3Key } from "../../utils/s3"
 import { cn } from "@/lib/utils"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 interface TranscriptLog {
   id: string
@@ -550,6 +551,7 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                             </div>
                             <div className="text-sm leading-relaxed markdown-content">
                               <ReactMarkdown 
+                                remarkPlugins={[remarkGfm]}
                                 components={{
                                   h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2" {...props} />,
                                   h2: ({node, ...props}) => <h2 className="text-md font-semibold mb-2" {...props} />,
@@ -560,10 +562,12 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                                   li: ({node, ...props}) => <li className="ml-2" {...props} />,
                                   strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
                                   em: ({node, ...props}) => <em className="italic" {...props} />,
-                                  table: ({node, ...props}) => <table className="border-collapse border border-gray-300 w-full mb-2" {...props} />,
+                                  table: ({node, ...props}) => <table className="border-collapse border border-gray-300 w-full mb-4 text-xs" {...props} />,
                                   thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
-                                  th: ({node, ...props}) => <th className="border border-gray-300 px-2 py-1 text-xs font-medium" {...props} />,
-                                  td: ({node, ...props}) => <td className="border border-gray-300 px-2 py-1 text-xs" {...props} />
+                                  tbody: ({node, ...props}) => <tbody {...props} />,
+                                  tr: ({node, ...props}) => <tr className="border-b border-gray-200" {...props} />,
+                                  th: ({node, ...props}) => <th className="border border-gray-300 px-3 py-2 text-xs font-semibold text-left bg-gray-50" {...props} />,
+                                  td: ({node, ...props}) => <td className="border border-gray-300 px-3 py-2 text-xs" {...props} />
                                 }}
                               >
                                 {log.agent_response}
@@ -632,11 +636,7 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                 </div>
               ) : basicTranscript?.length ? (
                 <div className="space-y-6">
-                  {/* Basic transcript display */}
-                  <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                    <p className="text-blue-800 text-sm font-medium">Basic Transcript</p>
-                    <p className="text-blue-700 text-xs">Simple conversation format without detailed metrics</p>
-                  </div>
+                  {/* Basic transcript display - no header needed */}
                   {basicTranscript.map((item: any) => (
                     <div key={item.id} className="space-y-4">
                       <div className="flex gap-4">
@@ -657,6 +657,7 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                           </div>
                           <div className="text-sm leading-relaxed markdown-content">
                             <ReactMarkdown 
+                              remarkPlugins={[remarkGfm]}
                               components={{
                                 h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2" {...props} />,
                                 h2: ({node, ...props}) => <h2 className="text-md font-semibold mb-2" {...props} />,
@@ -667,10 +668,12 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                                 li: ({node, ...props}) => <li className="ml-2" {...props} />,
                                 strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
                                 em: ({node, ...props}) => <em className="italic" {...props} />,
-                                table: ({node, ...props}) => <table className="border-collapse border border-gray-300 w-full mb-2" {...props} />,
+                                table: ({node, ...props}) => <table className="border-collapse border border-gray-300 w-full mb-4 text-xs" {...props} />,
                                 thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
-                                th: ({node, ...props}) => <th className="border border-gray-300 px-2 py-1 text-xs font-medium" {...props} />,
-                                td: ({node, ...props}) => <td className="border border-gray-300 px-2 py-1 text-xs" {...props} />
+                                tbody: ({node, ...props}) => <tbody {...props} />,
+                                tr: ({node, ...props}) => <tr className="border-b border-gray-200" {...props} />,
+                                th: ({node, ...props}) => <th className="border border-gray-300 px-3 py-2 text-xs font-semibold text-left bg-gray-50" {...props} />,
+                                td: ({node, ...props}) => <td className="border border-gray-300 px-3 py-2 text-xs" {...props} />
                               }}
                             >
                               {item.content}
