@@ -254,7 +254,8 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
       }
       
       const data = await response.json()
-      setCalls(data || [])
+      // API returns { calls: [...], total: number, userRole: string }
+      setCalls(data.calls || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred')
       setCalls([])
