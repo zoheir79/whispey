@@ -14,30 +14,40 @@ SELECT
     ) as success_rate,
     -- Global call time (traditional duration_seconds)
     SUM(COALESCE(duration_seconds, 0)) / 60.0 as total_call_minutes,
-    -- AI processing time - Use transcript_with_metrics (has ttft) or transcript_json (has total_time)
-    SUM(
+    -- Calcul des durées AI (STT + LLM + TTS) avec gestion des trois formats
+    ROUND(
         CASE 
-            -- Try transcript_with_metrics first (uses llm_metrics.ttft)
-            WHEN transcript_with_metrics IS NOT NULL AND jsonb_typeof(transcript_with_metrics) = 'array' THEN (
-                SELECT COALESCE(SUM(
-                    COALESCE((turn->'stt_metrics'->>'duration')::numeric, 0) +
-                    COALESCE((turn->'llm_metrics'->>'ttft')::numeric, 0) +
-                    COALESCE((turn->'tts_metrics'->>'duration')::numeric, 0)
-                ), 0)
-                FROM jsonb_array_elements(transcript_with_metrics) as turn
-            )
-            -- Fallback to transcript_json (uses llm_metrics.total_time)
-            WHEN transcript_json IS NOT NULL AND jsonb_typeof(transcript_json) = 'array' THEN (
-                SELECT COALESCE(SUM(
-                    COALESCE((turn->'stt_metrics'->>'duration')::numeric, 0) +
-                    COALESCE((turn->'llm_metrics'->>'total_time')::numeric, 0) +
-                    COALESCE((turn->'tts_metrics'->>'duration')::numeric, 0)
-                ), 0)
-                FROM jsonb_array_elements(transcript_json) as turn
-            )
+            -- Si transcript_with_metrics existe et est un array
+            WHEN transcript_with_metrics IS NOT NULL AND jsonb_typeof(transcript_with_metrics) = 'array' THEN
+                COALESCE(
+                    (SELECT SUM(
+                        COALESCE((turn->'stt_metrics'->>'duration')::numeric, 0) +
+                        COALESCE((turn->'llm_metrics'->>'ttft')::numeric, 0) +
+                        COALESCE((turn->'tts_metrics'->>'duration')::numeric, 0)
+                    ) FROM jsonb_array_elements(transcript_with_metrics) AS turn), 0
+                ) / 60.0
+            -- Si transcript_json existe et est un array  
+            WHEN transcript_json IS NOT NULL AND jsonb_typeof(transcript_json) = 'array' THEN
+                COALESCE(
+                    (SELECT SUM(
+                        COALESCE((turn->'stt_metrics'->>'duration')::numeric, 0) +
+                        COALESCE((turn->'llm_metrics'->>'total_time')::numeric, 0) +
+                        COALESCE((turn->'tts_metrics'->>'duration')::numeric, 0)
+                    ) FROM jsonb_array_elements(transcript_json) AS turn), 0
+                ) / 60.0
+            -- Si transcript_json est un object, essayer d'extraire les métriques directement
+            WHEN transcript_json IS NOT NULL AND jsonb_typeof(transcript_json) = 'object' THEN
+                COALESCE(
+                    (COALESCE((transcript_json->'stt_duration')::text::numeric, 0) +
+                     COALESCE((transcript_json->'llm_duration')::text::numeric, 0) +
+                     COALESCE((transcript_json->'tts_duration')::text::numeric, 0) +
+                     -- Fallback: chercher dans metrics si présent
+                     COALESCE((transcript_json->'metrics'->'total_processing_time')::text::numeric, 0)
+                    ) / 60.0, 0
+                )
             ELSE 0
-        END
-    ) / 60.0 as total_ai_processing_minutes,
+        END, 2
+    ) as total_ai_processing_minutes,
     AVG(COALESCE(avg_latency, 0)) as avg_latency,
     COUNT(DISTINCT customer_number) as unique_customers,
     SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost,
