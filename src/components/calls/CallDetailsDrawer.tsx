@@ -548,8 +548,26 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                                 Agent
                               </Badge>
                             </div>
-                            <div className="text-sm leading-relaxed prose prose-sm max-w-none">
-                              <ReactMarkdown>{log.agent_response}</ReactMarkdown>
+                            <div className="text-sm leading-relaxed markdown-content">
+                              <ReactMarkdown 
+                                components={{
+                                  h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2" {...props} />,
+                                  h2: ({node, ...props}) => <h2 className="text-md font-semibold mb-2" {...props} />,
+                                  h3: ({node, ...props}) => <h3 className="text-sm font-medium mb-1" {...props} />,
+                                  p: ({node, ...props}) => <p className="mb-2" {...props} />,
+                                  ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
+                                  ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
+                                  li: ({node, ...props}) => <li className="ml-2" {...props} />,
+                                  strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
+                                  em: ({node, ...props}) => <em className="italic" {...props} />,
+                                  table: ({node, ...props}) => <table className="border-collapse border border-gray-300 w-full mb-2" {...props} />,
+                                  thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
+                                  th: ({node, ...props}) => <th className="border border-gray-300 px-2 py-1 text-xs font-medium" {...props} />,
+                                  td: ({node, ...props}) => <td className="border border-gray-300 px-2 py-1 text-xs" {...props} />
+                                }}
+                              >
+                                {log.agent_response}
+                              </ReactMarkdown>
                             </div>
 
                             {/* Agent Metrics */}
@@ -637,7 +655,27 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                               {item.role === 'user' ? 'User' : item.role === 'assistant' ? 'Assistant' : item.role}
                             </Badge>
                           </div>
-                          <p className="text-sm leading-relaxed">{item.content}</p>
+                          <div className="text-sm leading-relaxed markdown-content">
+                            <ReactMarkdown 
+                              components={{
+                                h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2" {...props} />,
+                                h2: ({node, ...props}) => <h2 className="text-md font-semibold mb-2" {...props} />,
+                                h3: ({node, ...props}) => <h3 className="text-sm font-medium mb-1" {...props} />,
+                                p: ({node, ...props}) => <p className="mb-2" {...props} />,
+                                ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
+                                ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
+                                li: ({node, ...props}) => <li className="ml-2" {...props} />,
+                                strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
+                                em: ({node, ...props}) => <em className="italic" {...props} />,
+                                table: ({node, ...props}) => <table className="border-collapse border border-gray-300 w-full mb-2" {...props} />,
+                                thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
+                                th: ({node, ...props}) => <th className="border border-gray-300 px-2 py-1 text-xs font-medium" {...props} />,
+                                td: ({node, ...props}) => <td className="border border-gray-300 px-2 py-1 text-xs" {...props} />
+                              }}
+                            >
+                              {item.content}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       </div>
                     </div>

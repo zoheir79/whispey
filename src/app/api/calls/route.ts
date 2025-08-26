@@ -59,6 +59,7 @@ export async function GET(request: NextRequest) {
         COALESCE(cl.total_tts_cost, 0) as total_tts_cost,
         COALESCE(cl.total_stt_cost, 0) as total_stt_cost,
         cl.transcript_json,
+        cl.transcript_with_metrics,
         cl.metadata,
         cl.transcription_metrics
       FROM pype_voice_call_logs cl
