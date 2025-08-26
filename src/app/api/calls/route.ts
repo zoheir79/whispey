@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     
     console.log(' CALLS API: Raw query result:', result);
 
-    // Transform calls data - NO HARDCODED FIELDS
+    // Transform calls data - INCLUDE transcript fields for CallDetailsDrawer
     const calls = callsData.map((call: any) => ({
       id: call.id,
       call_id: call.call_id,
@@ -89,7 +89,12 @@ export async function GET(request: NextRequest) {
       created_at: call.created_at,
       updated_at: call.updated_at,
       call_started_at: call.call_started_at,
-      has_transcript: !!call.transcript_json
+      has_transcript: !!call.transcript_json,
+      // 🔧 ADD missing transcript fields for CallDetailsDrawer
+      transcript_json: call.transcript_json,
+      transcript_with_metrics: call.transcript_with_metrics,
+      metadata: call.metadata,
+      transcription_metrics: call.transcription_metrics
     }));
 
     console.log(' CALLS API: Found', calls.length, 'REAL calls for', userGlobalRole.global_role);

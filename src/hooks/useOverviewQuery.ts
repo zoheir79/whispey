@@ -103,7 +103,7 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         const typedData: OverviewData = {
           totalCalls,
           totalCost,
-          totalMinutes: typedDailyStats.reduce((sum, day) => sum + day.total_minutes, 0),
+          totalMinutes: typedDailyStats.reduce((sum, day) => sum + Number(day.total_minutes || 0), 0),
           successfulCalls,
           successRate: totalCalls > 0 ? (successfulCalls / totalCalls) * 100 : 0,
           averageLatency: typedDailyStats.length > 0
