@@ -649,7 +649,7 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AI Processing</h3>
                       <p className="text-2xl font-light text-gray-900 tracking-tight">
-                        {Math.round(analytics?.totalAiProcessingMinutes || 0).toLocaleString()}
+                        {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
                       </p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>

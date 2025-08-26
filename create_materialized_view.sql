@@ -51,10 +51,21 @@ SELECT
     AVG(COALESCE(avg_latency, 0)) as avg_latency,
     COUNT(DISTINCT customer_number) as unique_customers,
     SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost,
-    -- Extract and sum tokens from transcription_metrics JSONB (use llm_prompt_tokens/llm_completion_tokens)
+    -- Extract and sum tokens from transcript_with_metrics JSONB (since transcription_metrics = NULL)
     SUM(
-        COALESCE((transcription_metrics->>'llm_prompt_tokens')::integer, 0) + 
-        COALESCE((transcription_metrics->>'llm_completion_tokens')::integer, 0)
+        CASE 
+            -- Extract tokens from transcript_with_metrics array
+            WHEN transcript_with_metrics IS NOT NULL AND jsonb_typeof(transcript_with_metrics) = 'array' THEN
+                COALESCE(
+                    (SELECT SUM(
+                        COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0) +
+                        COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0)
+                    ) FROM jsonb_array_elements(transcript_with_metrics) AS turn), 0
+                )
+            -- Fallback: try transcription_metrics if available (legacy)
+            ELSE COALESCE((transcription_metrics->>'llm_prompt_tokens')::integer, 0) + 
+                 COALESCE((transcription_metrics->>'llm_completion_tokens')::integer, 0)
+        END
     ) as total_tokens
 FROM pype_voice_call_logs 
 WHERE call_started_at IS NOT NULL
