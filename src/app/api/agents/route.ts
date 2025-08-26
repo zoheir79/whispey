@@ -202,19 +202,40 @@ export async function GET(request: NextRequest) {
       }
     } else {
       // Regular users can only see agents from projects they have access to
-      if (!projectId) {
-        return NextResponse.json(
-          { error: 'Project ID is required for non-admin users' },
-          { status: 400 }
-        );
+      if (projectId) {
+        // If specific project is requested, filter by it
+        filters.push({ column: 'project_id', operator: 'eq', value: projectId });
+      } else {
+        // Get all projects user has access to
+        const { data: userProjects, error: projectsError } = await fetchFromTable({
+          table: 'pype_voice_email_project_mapping',
+          select: 'project_id',
+          filters: [
+            { column: 'email', operator: 'eq', value: userGlobalRole.email },
+            { column: 'is_active', operator: 'eq', value: true }
+          ]
+        });
+
+        if (projectsError) {
+          console.error('Error fetching user projects:', projectsError);
+          return NextResponse.json(
+            { error: 'Failed to fetch user projects' },
+            { status: 500 }
+          );
+        }
+
+        const projectIds = userProjects?.map((p: any) => p.project_id) || [];
+        
+        if (projectIds.length === 0) {
+          return NextResponse.json({ 
+            agents: [],
+            userRole: userGlobalRole.global_role,
+            canViewAll: false
+          });
+        }
+
+        filters.push({ column: 'project_id', operator: 'in', value: projectIds });
       }
-      
-      // TODO: Check if user has access to this specific project
-      // For now, we'll filter by project_id and user_id if available
-      filters.push({ column: 'project_id', operator: 'eq', value: projectId });
-      
-      // Optional: Add user_id filter if agents table has user_id column
-      // filters.push({ column: 'user_id', operator: 'eq', value: userId });
     }
 
     const { data: agents, error } = await fetchFromTable({

@@ -26,23 +26,17 @@ export default function CallsPage() {
   useEffect(() => {
     const fetchCalls = async () => {
       try {
-        // For now, we'll fetch from a simple API that returns call logs
-        const response = await fetch('/api/logs/transcript?limit=50');
+        // Fetch calls data from the dedicated calls API
+        const response = await fetch('/api/calls?limit=100');
         if (!response.ok) {
-          throw new Error('Failed to fetch calls');
+          throw new Error(`Failed to fetch calls: ${response.status}`);
         }
         
-        // Since we don't have a dedicated calls API yet, we'll simulate the data structure
-        // In a real implementation, you'd have a dedicated /api/calls endpoint
         const data = await response.json();
-        
-        // Transform the response to match our Call interface
-        const transformedCalls: Call[] = []; // We'll populate this when we have real data
-        setCalls(transformedCalls);
+        setCalls(data.calls || []);
       } catch (err: any) {
-        console.log('Error fetching calls:', err.message);
-        // For now, show empty state instead of error since this is expected
-        setCalls([]);
+        console.error('Error fetching calls:', err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -167,12 +161,7 @@ export default function CallsPage() {
                 : 'You don\'t have access to any call records yet.'
               }
             </p>
-            <div className="bg-blue-50 rounded-lg p-4">
-              <p className="text-sm text-blue-800">
-                <strong>Note:</strong> This page will display call records once the calls API is fully implemented.
-                For now, you can view individual call transcripts through the dashboard.
-              </p>
-            </div>
+
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
