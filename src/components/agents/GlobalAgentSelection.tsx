@@ -92,7 +92,8 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
       }
       
       const data = await response.json()
-      setAgents(data || [])
+      // API returns { agents: [...], userRole: string }
+      setAgents(data.agents || [])
     } catch (error) {
       console.error('Error loading global agents:', error)
       setAgentsError(error instanceof Error ? error.message : 'Unknown error occurred')

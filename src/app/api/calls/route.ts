@@ -51,7 +51,6 @@ export async function GET(request: NextRequest) {
         cl.agent_id, 
         cl.duration_seconds, 
         cl.created_at, 
-        cl.updated_at, 
         cl.call_ended_reason, 
         cl.customer_number, 
         cl.call_started_at,
