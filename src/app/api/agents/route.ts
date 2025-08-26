@@ -1,9 +1,10 @@
 // src/app/api/agents/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-import { encryptApiKey } from '@/lib/vapi-encryption'
-import { fetchFromTable, insertIntoTable } from '@/lib/db-service'
-import { verifyUserAuth } from '@/lib/auth'
-import { getUserGlobalRole } from '@/services/getGlobalRole'
+import { NextRequest, NextResponse } from 'next/server';
+import { encryptApiKey } from '@/lib/vapi-encryption';
+import { fetchFromTable, insertIntoTable } from '@/lib/db-service';
+import { query } from '@/lib/db';
+import { verifyUserAuth } from '@/lib/auth';
+import { getUserGlobalRole } from '@/services/getGlobalRole';
 
 export async function POST(request: NextRequest) {
   try {
@@ -190,74 +191,82 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('project_id')
 
-    let filters: any[] = [
-      { column: 'is_active', operator: 'eq', value: true }
-    ];
+    let sql: string;
+    let params: any[];
 
-    // If user is admin, they can see all agents
+    // Build SQL query based on user role
     if (userGlobalRole.permissions.canViewAllAgents) {
-      // Admin can see all agents, optionally filtered by project
+      // Admin/Super Admin: see ALL agents from ALL projects
       if (projectId) {
-        filters.push({ column: 'project_id', operator: 'eq', value: projectId });
+        // Optional filter by specific project
+        sql = `
+          SELECT a.*, p.name as project_name
+          FROM pype_voice_agents a
+          LEFT JOIN pype_voice_projects p ON a.project_id = p.id
+          WHERE a.is_active = true AND a.project_id = $1
+          ORDER BY a.created_at DESC
+        `;
+        params = [projectId];
+      } else {
+        // All agents from all projects
+        sql = `
+          SELECT a.*, p.name as project_name
+          FROM pype_voice_agents a
+          LEFT JOIN pype_voice_projects p ON a.project_id = p.id
+          WHERE a.is_active = true
+          ORDER BY a.created_at DESC
+        `;
+        params = [];
       }
     } else {
-      // Regular users can only see agents from projects they have access to
+      // Owner: see ALL agents from ALL their accessible projects
       if (projectId) {
-        // If specific project is requested, filter by it
-        filters.push({ column: 'project_id', operator: 'eq', value: projectId });
+        // Specific project (with access check)
+        sql = `
+          SELECT a.*, p.name as project_name
+          FROM pype_voice_agents a
+          LEFT JOIN pype_voice_projects p ON a.project_id = p.id
+          INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+          INNER JOIN pype_voice_users u ON u.email = epm.email
+          WHERE a.is_active = true AND a.project_id = $1 AND u.user_id = $2 AND epm.is_active = true
+          ORDER BY a.created_at DESC
+        `;
+        params = [projectId, userId];
       } else {
-        // Get all projects user has access to
-        const { data: userProjects, error: projectsError } = await fetchFromTable({
-          table: 'pype_voice_email_project_mapping',
-          select: 'project_id',
-          filters: [
-            { column: 'email', operator: 'eq', value: userGlobalRole.email },
-            { column: 'is_active', operator: 'eq', value: true }
-          ]
-        });
-
-        if (projectsError) {
-          console.error('Error fetching user projects:', projectsError);
-          return NextResponse.json(
-            { error: 'Failed to fetch user projects' },
-            { status: 500 }
-          );
-        }
-
-        const projectIds = userProjects?.map((p: any) => p.project_id) || [];
-        
-        if (projectIds.length === 0) {
-          return NextResponse.json({ 
-            agents: [],
-            userRole: userGlobalRole.global_role,
-            canViewAll: false
-          });
-        }
-
-        filters.push({ column: 'project_id', operator: 'in', value: projectIds });
+        // ALL agents from ALL accessible projects
+        sql = `
+          SELECT DISTINCT a.*, p.name as project_name
+          FROM pype_voice_agents a
+          LEFT JOIN pype_voice_projects p ON a.project_id = p.id
+          INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+          INNER JOIN pype_voice_users u ON u.email = epm.email
+          WHERE a.is_active = true AND u.user_id = $1 AND epm.is_active = true
+          ORDER BY a.created_at DESC
+        `;
+        params = [userId];
       }
     }
 
-    const { data: agents, error } = await fetchFromTable({
-      table: 'pype_voice_agents',
-      select: '*',
-      filters,
-      orderBy: { column: 'created_at', ascending: false }
-    });
-
-    if (error) {
-      console.error('Error fetching agents:', error)
+    console.log('🤖 AGENTS API: Executing SQL for', userGlobalRole.global_role, 'role');
+    
+    try {
+      const result = await query(sql, params);
+      const agents = result.rows || [];
+      
+      console.log('🤖 AGENTS API: Found', agents.length, 'agents for', userGlobalRole.global_role);
+      
+      return NextResponse.json({ 
+        agents,
+        userRole: userGlobalRole.global_role,
+        canViewAll: userGlobalRole.permissions.canViewAllAgents
+      });
+    } catch (error) {
+      console.error('Error fetching agents:', error);
       return NextResponse.json(
         { error: 'Failed to fetch agents' },
         { status: 500 }
       );
     }
-
-    return NextResponse.json({ 
-      agents,
-      userRole: userGlobalRole.global_role,
-      canViewAll: userGlobalRole.permissions.canViewAllAgents
-    });
 
   } catch (error) {
     console.error('Unexpected error fetching agents:', error)

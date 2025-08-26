@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchFromTable } from '@/lib/db-service';
+import { query } from '@/lib/db';
 import { verifyUserAuth } from '@/lib/auth';
 import { getUserGlobalRole } from '@/services/getGlobalRole';
 
 export async function GET(request: NextRequest) {
   try {
     // Verify user authentication
-    const authResult = await verifyUserAuth(request);
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
     
-    if (!authResult.isAuthenticated || !authResult.userId) {
+    if (!isAuthenticated || !userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's global role and permissions
-    const userGlobalRole = await getUserGlobalRole(authResult.userId);
+    const userGlobalRole = await getUserGlobalRole(userId);
     
     if (!userGlobalRole) {
       return NextResponse.json(
@@ -26,100 +26,107 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = parseInt(searchParams.get('limit') || '100');
     const projectId = searchParams.get('project_id');
 
-    let filters: any[] = [];
+    let sql: string;
+    let params: any[];
 
-    // Apply role-based filtering
+    // Build SQL query based on user role
     if (userGlobalRole.permissions.canViewAllCalls) {
-      // Admin can see all calls, optionally filtered by project
+      // Admin/Super Admin: see ALL calls from ALL projects
       if (projectId) {
-        filters.push({ column: 'project_id', operator: 'eq', value: projectId });
+        // Optional filter by specific project
+        sql = `
+          SELECT cl.id, cl.call_id, cl.project_id, cl.duration_seconds, cl.created_at, cl.updated_at, 
+                 cl.transcript_json, p.name as project_name
+          FROM pype_voice_call_logs cl
+          LEFT JOIN pype_voice_projects p ON cl.project_id = p.id
+          WHERE cl.project_id = $1
+          ORDER BY cl.created_at DESC
+          LIMIT $2
+        `;
+        params = [projectId, limit];
+      } else {
+        // All calls from all projects
+        sql = `
+          SELECT cl.id, cl.call_id, cl.project_id, cl.duration_seconds, cl.created_at, cl.updated_at, 
+                 cl.transcript_json, p.name as project_name
+          FROM pype_voice_call_logs cl
+          LEFT JOIN pype_voice_projects p ON cl.project_id = p.id
+          ORDER BY cl.created_at DESC
+          LIMIT $1
+        `;
+        params = [limit];
       }
     } else {
-      // Regular users can only see calls from projects they have access to
+      // Owner: see ALL calls from ALL their accessible projects
       if (projectId) {
-        // If specific project is requested, filter by it
-        filters.push({ column: 'project_id', operator: 'eq', value: projectId });
+        // Specific project (with access check)
+        sql = `
+          SELECT cl.id, cl.call_id, cl.project_id, cl.duration_seconds, cl.created_at, cl.updated_at, 
+                 cl.transcript_json, p.name as project_name
+          FROM pype_voice_call_logs cl
+          LEFT JOIN pype_voice_projects p ON cl.project_id = p.id
+          INNER JOIN pype_voice_email_project_mapping epm ON cl.project_id = epm.project_id
+          INNER JOIN pype_voice_users u ON u.email = epm.email
+          WHERE cl.project_id = $1 AND u.user_id = $2 AND epm.is_active = true
+          ORDER BY cl.created_at DESC
+          LIMIT $3
+        `;
+        params = [projectId, userId, limit];
       } else {
-        // Get all projects user has access to
-        const { data: userProjects, error: projectsError } = await fetchFromTable({
-          table: 'pype_voice_email_project_mapping',
-          select: 'project_id',
-          filters: [
-            { column: 'email', operator: 'eq', value: userGlobalRole.email },
-            { column: 'is_active', operator: 'eq', value: true }
-          ]
-        });
-
-        if (projectsError) {
-          console.error('Error fetching user projects:', projectsError);
-          return NextResponse.json(
-            { error: 'Failed to fetch user projects' },
-            { status: 500 }
-          );
-        }
-
-        const projectIds = userProjects?.map((p: any) => p.project_id) || [];
-        
-        if (projectIds.length === 0) {
-          return NextResponse.json({ 
-            calls: [],
-            total: 0,
-            userRole: userGlobalRole.global_role,
-            canViewAll: false
-          });
-        }
-
-        filters.push({ column: 'project_id', operator: 'in', value: projectIds });
+        // ALL calls from ALL accessible projects
+        sql = `
+          SELECT DISTINCT cl.id, cl.call_id, cl.project_id, cl.duration_seconds, cl.created_at, cl.updated_at, 
+                          cl.transcript_json, p.name as project_name
+          FROM pype_voice_call_logs cl
+          LEFT JOIN pype_voice_projects p ON cl.project_id = p.id
+          INNER JOIN pype_voice_email_project_mapping epm ON cl.project_id = epm.project_id
+          INNER JOIN pype_voice_users u ON u.email = epm.email
+          WHERE u.user_id = $1 AND epm.is_active = true
+          ORDER BY cl.created_at DESC
+          LIMIT $2
+        `;
+        params = [userId, limit];
       }
     }
 
-    // Fetch calls from call logs table
-    const { data: calls, error } = await fetchFromTable({
-      table: 'pype_voice_call_logs',
-      select: 'id, call_id, project_id, duration_seconds, created_at, updated_at, transcript_json',
-      filters,
-      orderBy: { column: 'created_at', ascending: false },
-      limit,
-      offset
-    });
+    console.log('📞 CALLS API: Executing SQL for', userGlobalRole.global_role, 'role');
+    
+    try {
+      const result = await query(sql, params);
+      const callsData = result.rows || [];
 
-    if (error) {
+      // Transform calls data
+      const calls = callsData.map((call: any) => ({
+        id: call.id,
+        call_id: call.call_id,
+        project_id: call.project_id,
+        project_name: call.project_name,
+        duration_seconds: call.duration_seconds || 0,
+        status: 'completed',
+        created_at: call.created_at,
+        updated_at: call.updated_at,
+        has_transcript: !!call.transcript_json
+      }));
+
+      console.log('📞 CALLS API: Found', calls.length, 'calls for', userGlobalRole.global_role);
+
+      return NextResponse.json({ 
+        calls,
+        total: calls.length,
+        userRole: userGlobalRole.global_role,
+        canViewAll: userGlobalRole.permissions.canViewAllCalls
+      });
+
+    } catch (error) {
       console.error('Error fetching calls:', error);
       return NextResponse.json(
         { error: 'Failed to fetch calls' },
         { status: 500 }
       );
     }
-
-    // Transform calls data to include additional metadata
-    const transformedCalls = (calls || []).map((call: any) => ({
-      id: call.id,
-      call_id: call.call_id,
-      project_id: call.project_id,
-      duration_seconds: call.duration_seconds || 0,
-      status: 'completed', // Default status
-      created_at: call.created_at,
-      updated_at: call.updated_at,
-      has_transcript: !!call.transcript_json
-    }));
-
-    // Get total count for pagination (simplified for now)
-    let total = transformedCalls.length;
-    if (limit > 0 && transformedCalls.length === limit) {
-      // If we got a full page, there might be more - approximate
-      total = offset + limit + 1;
-    }
-
-    return NextResponse.json({ 
-      calls: transformedCalls,
-      total,
-      userRole: userGlobalRole.global_role,
-      canViewAll: userGlobalRole.permissions.canViewAllCalls
-    });
 
   } catch (error) {
     console.error('Unexpected error fetching calls:', error);
