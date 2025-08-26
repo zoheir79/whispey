@@ -10,13 +10,19 @@ import { CallLog } from "../../types/logs"
 import { useGlobalRole } from "@/hooks/useGlobalRole"
 import { Card, CardContent } from "@/components/ui/card"
 
+// Extended CallLog type for global context with project info
+interface GlobalCallLog extends CallLog {
+  project_name?: string
+  project_id?: string
+}
+
 interface GlobalCallLogsProps {}
 
 const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
-  const [calls, setCalls] = useState<CallLog[]>([])
+  const [calls, setCalls] = useState<GlobalCallLog[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedCall, setSelectedCall] = useState<CallLog | null>(null)
+  const [selectedCall, setSelectedCall] = useState<GlobalCallLog | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   
@@ -344,7 +350,7 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
       {/* Call Details Drawer */}
       {selectedCall && (
         <CallDetailsDrawer
-          call={selectedCall}
+          callData={selectedCall}
           isOpen={!!selectedCall}
           onClose={() => setSelectedCall(null)}
         />
