@@ -51,22 +51,21 @@ SELECT
     AVG(COALESCE(avg_latency, 0)) as avg_latency,
     COUNT(DISTINCT customer_number) as unique_customers,
     SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost,
-    -- Extract and sum tokens from transcript_with_metrics JSONB (since transcription_metrics = NULL)
-    SUM(
-        CASE 
-            -- Check if transcript_with_metrics is valid array
-            WHEN transcript_with_metrics IS NOT NULL AND jsonb_typeof(transcript_with_metrics) = 'array' THEN
-                COALESCE((SELECT SUM(
-                    COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0) +
-                    COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0)
-                ) FROM jsonb_array_elements(transcript_with_metrics) AS turn), 0)
-            -- Fallback: try transcription_metrics if available (legacy)
-            WHEN transcription_metrics IS NOT NULL THEN 
-                COALESCE((transcription_metrics->>'llm_prompt_tokens')::integer, 0) + 
-                COALESCE((transcription_metrics->>'llm_completion_tokens')::integer, 0)
-            ELSE 0
-        END
-    ) as total_tokens
+    -- Extract and sum tokens from transcript_with_metrics JSONB array elements
+    -- Use string aggregation to avoid GROUP BY issues, then convert to integer
+    COALESCE(SUM(
+        COALESCE(
+            -- Convert JSONB array to token sum using string functions to avoid GROUP BY conflicts
+            (SELECT SUM((elem->'llm_metrics'->>'prompt_tokens')::integer + (elem->'llm_metrics'->>'completion_tokens')::integer)
+             FROM jsonb_array_elements(
+                CASE WHEN jsonb_typeof(transcript_with_metrics) = 'array' 
+                     THEN transcript_with_metrics 
+                     ELSE '[]'::jsonb END
+             ) AS elem
+             WHERE (elem->'llm_metrics'->>'prompt_tokens') IS NOT NULL
+            ), 0
+        )
+    ), 0) as total_tokens
 FROM pype_voice_call_logs 
 WHERE call_started_at IS NOT NULL
 GROUP BY agent_id, DATE(call_started_at)
