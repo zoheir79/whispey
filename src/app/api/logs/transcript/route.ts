@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchFromTable } from '@/lib/db-service';
+import { query } from '@/lib/db';
 import { verifyUserAuth } from '@/lib/auth';
 import { getUserGlobalRole } from '@/services/getGlobalRole';
 
@@ -35,30 +36,44 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'session_id is required' }, { status: 400 });
     }
 
-    // Build filters based on role permissions
-    let filters = [
-      { column: 'call_id', operator: '=', value: session_id }
-    ];
-
-    // If user is NOT an admin, restrict access to call logs from their projects only
-    if (!userGlobalRole.permissions.canViewAllCalls) {
-      filters.push({
-        column: 'project_id',
-        operator: 'in',
-        value: `SELECT project_id FROM pype_voice_email_project_mapping WHERE email = (SELECT email FROM pype_voice_users WHERE user_id = '${authResult.userId}')`
-      });
-    }
-    // Admin users can access all call transcripts without additional filters
-
-    // Fetch transcript data from the database using call_id (session_id)
-    // Try exact match first, then try UUID pattern match if not found
+    // Use direct SQL query for role-based filtering (fetchFromTable can't handle complex subqueries)
     console.log('🔍 TRANSCRIPT API: Trying exact match for call_id:', session_id, 'with role:', userGlobalRole.global_role);
-    let { data: transcriptData, error: queryError } = await fetchFromTable({
-      table: 'pype_voice_call_logs',
-      select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds, project_id',
-      filters,
-      limit: 1
-    });
+    
+    let transcriptData: any[] = [];
+    let queryError: any = null;
+    
+    try {
+      let sql = '';
+      let params: any[] = [];
+      
+      if (userGlobalRole.permissions.canViewAllCalls) {
+        // Admin can access all call transcripts
+        sql = `
+          SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds, project_id
+          FROM pype_voice_call_logs 
+          WHERE call_id = $1 
+          LIMIT 1
+        `;
+        params = [session_id];
+      } else {
+        // Regular users - only access calls from their projects
+        sql = `
+          SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds, cl.project_id
+          FROM pype_voice_call_logs cl
+          INNER JOIN pype_voice_email_project_mapping epm ON cl.project_id = epm.project_id
+          INNER JOIN pype_voice_users u ON u.email = epm.email
+          WHERE cl.call_id = $1 AND u.user_id = $2
+          LIMIT 1
+        `;
+        params = [session_id, authResult.userId];
+      }
+      
+      const result = await query(sql, params);
+      transcriptData = result.rows || [];
+    } catch (error) {
+      console.error('🔍 TRANSCRIPT API: Query error:', error);
+      queryError = error;
+    }
 
     console.log('🔍 TRANSCRIPT API: Exact match result:', {
       found: transcriptData?.length || 0,
@@ -69,39 +84,93 @@ export async function GET(request: NextRequest) {
     // If no exact match found, try searching by UUID pattern (for cases where frontend passes UUID only)
     if (!queryError && (!transcriptData || transcriptData.length === 0)) {
       console.log('🔍 TRANSCRIPT API: Trying pattern match for call_id LIKE:', `${session_id}%`);
-      ({ data: transcriptData, error: queryError } = await fetchFromTable({
-        table: 'pype_voice_call_logs',
-        select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds',
-        filters: [
-          { column: 'call_id', operator: 'like', value: `${session_id}%` }
-        ],
-        limit: 1
-      }));
       
-      console.log('🔍 TRANSCRIPT API: Pattern match result:', {
-        found: transcriptData?.length || 0,
-        error: queryError,
-        data: transcriptData
-      });
+      try {
+        let sql = '';
+        let params: any[] = [];
+        
+        if (userGlobalRole.permissions.canViewAllCalls) {
+          // Admin can access all call transcripts  
+          sql = `
+            SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds, project_id
+            FROM pype_voice_call_logs 
+            WHERE call_id LIKE $1 
+            LIMIT 1
+          `;
+          params = [`${session_id}%`];
+        } else {
+          // Regular users - only access calls from their projects
+          sql = `
+            SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds, cl.project_id
+            FROM pype_voice_call_logs cl
+            INNER JOIN pype_voice_email_project_mapping epm ON cl.project_id = epm.project_id
+            INNER JOIN pype_voice_users u ON u.email = epm.email
+            WHERE cl.call_id LIKE $1 AND u.user_id = $2
+            LIMIT 1
+          `;
+          params = [`${session_id}%`, authResult.userId];
+        }
+        
+        const result = await query(sql, params);
+        const patternData = result.rows || [];
+        
+        console.log('🔍 TRANSCRIPT API: Pattern match result:', {
+          found: patternData?.length || 0,
+          data: patternData
+        });
+        
+        if (patternData && patternData.length > 0) {
+          transcriptData = patternData;
+        }
+      } catch (error) {
+        console.error('🔍 TRANSCRIPT API: Pattern match error:', error);
+      }
     }
 
-    // If still no match, try searching by id field (primary key - frontend may pass id instead of call_id)
+    // Third fallback: try searching by 'id' field (as per memory of previous fix)
     if (!queryError && (!transcriptData || transcriptData.length === 0)) {
-      console.log('🔍 TRANSCRIPT API: Trying id field match for id =:', session_id);
-      ({ data: transcriptData, error: queryError } = await fetchFromTable({
-        table: 'pype_voice_call_logs',
-        select: 'transcript_json, transcript_with_metrics, call_id, duration_seconds',
-        filters: [
-          { column: 'id', operator: '=', value: session_id }
-        ],
-        limit: 1
-      }));
+      console.log('🔍 TRANSCRIPT API: Trying fallback search by id field:', session_id);
       
-      console.log('🔍 TRANSCRIPT API: ID match result:', {
-        found: transcriptData?.length || 0,
-        error: queryError,
-        data: transcriptData
-      });
+      try {
+        let sql = '';
+        let params: any[] = [];
+        
+        if (userGlobalRole.permissions.canViewAllCalls) {
+          // Admin can access all call transcripts
+          sql = `
+            SELECT transcript_json, transcript_with_metrics, call_id, duration_seconds, project_id
+            FROM pype_voice_call_logs 
+            WHERE id = $1 
+            LIMIT 1
+          `;
+          params = [session_id];
+        } else {
+          // Regular users - only access calls from their projects
+          sql = `
+            SELECT DISTINCT cl.transcript_json, cl.transcript_with_metrics, cl.call_id, cl.duration_seconds, cl.project_id
+            FROM pype_voice_call_logs cl
+            INNER JOIN pype_voice_email_project_mapping epm ON cl.project_id = epm.project_id
+            INNER JOIN pype_voice_users u ON u.email = epm.email
+            WHERE cl.id = $1 AND u.user_id = $2
+            LIMIT 1
+          `;
+          params = [session_id, authResult.userId];
+        }
+        
+        const result = await query(sql, params);
+        const idData = result.rows || [];
+        
+        console.log('🔍 TRANSCRIPT API: ID fallback result:', {
+          found: idData?.length || 0,
+          data: idData
+        });
+        
+        if (idData && idData.length > 0) {
+          transcriptData = idData;
+        }
+      } catch (error) {
+        console.error('🔍 TRANSCRIPT API: ID fallback error:', error);
+      }
     }
 
     if (queryError) {

@@ -139,7 +139,7 @@ function Header({ breadcrumb }: HeaderProps) {
 
                 {/* Agents Access */}
                 <Link
-                  href="/agents"
+                  href="/dashboard"
                   className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-green-600 transition-all duration-200 rounded-lg hover:bg-green-50/50 border border-transparent hover:border-green-100"
                 >
                   <Bot className="w-4 h-4 transition-transform group-hover:scale-110" />
@@ -149,9 +149,9 @@ function Header({ breadcrumb }: HeaderProps) {
                   <span className="sm:hidden">Agents</span>
                 </Link>
 
-                {/* Calls Access */}
+                {/* Calls Access - For now redirect to dashboard until calls page is created */}
                 <Link
-                  href="/calls"
+                  href="/dashboard"
                   className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-purple-600 transition-all duration-200 rounded-lg hover:bg-purple-50/50 border border-transparent hover:border-purple-100"
                 >
                   <Phone className="w-4 h-4 transition-transform group-hover:scale-110" />
