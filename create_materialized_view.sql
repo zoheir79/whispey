@@ -14,14 +14,15 @@ SELECT
     ) as success_rate,
     -- Global call time (traditional duration_seconds)
     SUM(COALESCE(duration_seconds, 0)) / 60.0 as total_call_minutes,
-    -- AI processing time - temporarily simplified to fix GROUP BY errors
-    ROUND(0.0, 2
-    ) as total_ai_processing_minutes,
+    -- AI processing time using extract function 
+    extract_ai_processing_time(transcript_with_metrics) as total_ai_processing_minutes,
+    -- Combined minutes for chart display (AI processing time)
+    extract_ai_processing_time(transcript_with_metrics) as total_minutes,
     AVG(COALESCE(avg_latency, 0)) as avg_latency,
     COUNT(DISTINCT customer_number) as unique_customers,
     SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost,
-    -- Extract and sum tokens - simple approach to avoid GROUP BY issues
-    0 as total_tokens
+    -- Extract and sum tokens using extract function
+    extract_tokens_from_transcript(transcript_with_metrics) as total_tokens
 FROM pype_voice_call_logs 
 WHERE call_started_at IS NOT NULL
 GROUP BY agent_id, DATE(call_started_at)
