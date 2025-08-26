@@ -72,19 +72,25 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   }, [sessionId])
 
   
-  // Parse basic transcript_json if no metrics are available
+  // Parse transcript data from transcript_with_metrics or transcript_json
   const basicTranscript = useMemo(() => {
     console.log('🔍 DEBUG - callData.transcript_json:', callData?.transcript_json);
+    console.log('🔍 DEBUG - callData.transcript_with_metrics:', callData?.transcript_with_metrics);
     console.log('🔍 DEBUG - transcriptLogs length:', transcriptLogs?.length);
     
-    if (!callData?.transcript_json || transcriptLogs?.length > 0) return null
+    // Use transcript_with_metrics if transcript_json is empty
+    const transcriptData = (callData?.transcript_json && Array.isArray(callData.transcript_json) && callData.transcript_json.length > 0) 
+      ? callData.transcript_json 
+      : callData?.transcript_with_metrics;
+    
+    if (!transcriptData || transcriptLogs?.length > 0) return null
     
     try {
-      const transcript = Array.isArray(callData.transcript_json) 
-        ? callData.transcript_json 
-        : (typeof callData.transcript_json === 'string' 
-           ? JSON.parse(callData.transcript_json)
-           : callData.transcript_json)
+      const transcript = Array.isArray(transcriptData) 
+        ? transcriptData 
+        : (typeof transcriptData === 'string' 
+           ? JSON.parse(transcriptData)
+           : transcriptData)
       
       console.log('🔍 DEBUG - parsed transcript:', transcript);
       
@@ -96,16 +102,16 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       
       return transcript.map((item: any, index: number) => ({
         id: `basic-${index}`,
-        role: item.role,
-        content: item.content,
+        role: item.role || (item.user_transcript ? 'user' : 'assistant'),
+        content: item.content || item.user_transcript || item.agent_response,
         timestamp: item.timestamp,
-        turn_id: index + 1
+        turn_id: item.turn_id || (index + 1)
       }))
     } catch (e) {
       console.error('Error parsing transcript_json:', e)
       return null
     }
-  }, [callData?.transcript_json, transcriptLogs])
+  }, [callData?.transcript_json, callData?.transcript_with_metrics, transcriptLogs])
   
   // Calculate conversation metrics
   const conversationMetrics = useMemo(() => {
