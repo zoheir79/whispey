@@ -435,15 +435,24 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-44 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-lg shadow-lg">
-                        <DropdownMenuItem onClick={(e) => e.stopPropagation()} className="text-sm">
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/agents/${agent.id}?tab=overview`)
+                        }} className="text-sm">
                           <Eye className="h-4 w-4 mr-3 text-gray-500" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => e.stopPropagation()} className="text-sm">
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/agents/${agent.id}?tab=analytics`)
+                        }} className="text-sm">
                           <BarChart3 className="h-4 w-4 mr-3 text-gray-500" />
                           Analytics
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => e.stopPropagation()} className="text-sm">
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/agents/${agent.id}?tab=settings`)
+                        }} className="text-sm">
                           <Settings className="h-4 w-4 mr-3 text-gray-500" />
                           Settings
                         </DropdownMenuItem>
@@ -508,11 +517,24 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem onClick={(e) => e.stopPropagation()} className="text-sm">
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/agents/${agent.id}?tab=overview`)
+                        }} className="text-sm">
                           <Eye className="h-4 w-4 mr-2" />
                           View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => e.stopPropagation()} className="text-sm">
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/agents/${agent.id}?tab=analytics`)
+                        }} className="text-sm">
+                          <BarChart3 className="h-4 w-4 mr-2" />
+                          Analytics
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/agents/${agent.id}?tab=settings`)
+                        }} className="text-sm">
                           <Settings className="h-4 w-4 mr-2" />
                           Settings
                         </DropdownMenuItem>
