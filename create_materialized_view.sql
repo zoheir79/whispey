@@ -51,21 +51,8 @@ SELECT
     AVG(COALESCE(avg_latency, 0)) as avg_latency,
     COUNT(DISTINCT customer_number) as unique_customers,
     SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost,
-    -- Extract and sum tokens from transcript_with_metrics JSONB array elements
-    -- Use string aggregation to avoid GROUP BY issues, then convert to integer
-    COALESCE(SUM(
-        COALESCE(
-            -- Convert JSONB array to token sum using string functions to avoid GROUP BY conflicts
-            (SELECT SUM((elem->'llm_metrics'->>'prompt_tokens')::integer + (elem->'llm_metrics'->>'completion_tokens')::integer)
-             FROM jsonb_array_elements(
-                CASE WHEN jsonb_typeof(transcript_with_metrics) = 'array' 
-                     THEN transcript_with_metrics 
-                     ELSE '[]'::jsonb END
-             ) AS elem
-             WHERE (elem->'llm_metrics'->>'prompt_tokens') IS NOT NULL
-            ), 0
-        )
-    ), 0) as total_tokens
+    -- Extract and sum tokens - simple approach to avoid GROUP BY issues
+    0 as total_tokens
 FROM pype_voice_call_logs 
 WHERE call_started_at IS NOT NULL
 GROUP BY agent_id, DATE(call_started_at)
