@@ -25,6 +25,8 @@ import {
 import Overview from './Overview'
 import CallLogs from './calls/CallLogs'
 import CampaignLogs from './campaigns/CampaignLogs'
+import AgentSettings from './agents/AgentSettings'
+import AgentAnalytics from './agents/AgentAnalytics'
 import Header from '@/components/shared/Header'
 import FieldExtractorDialog from './FieldExtractorLogs'
 import { 
@@ -288,7 +290,9 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'logs', label: 'Call Logs', icon: List },
-    ...(isEnhancedProject ? [{ id: 'campaign-logs', label: 'Campaign Logs', icon: Database }] : [])
+    ...(isEnhancedProject ? [{ id: 'campaign-logs', label: 'Campaign Logs', icon: Database }] : []),
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'settings', label: 'Settings', icon: Settings }
   ]
 
   // Prepare breadcrumb data for Header
@@ -623,6 +627,12 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
         )}
         {activeTab === 'campaign-logs' && isEnhancedProject && agent?.id && (
           <CampaignLogs project={project} agent={agent} onBack={handleBack} />
+        )}
+        {activeTab === 'analytics' && agent?.id && (
+          <AgentAnalytics agent={agent} />
+        )}
+        {activeTab === 'settings' && agent?.id && (
+          <AgentSettings agent={agent} onAgentUpdate={refetchAgent} />
         )}
       </div>
     </div>
