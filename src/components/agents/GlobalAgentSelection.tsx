@@ -451,12 +451,13 @@ const GlobalAgentSelection: React.FC = () => {
       {/* Agent Creation Dialog */}
       {showCreateDialog && (
         <AgentCreationDialog
-          open={showCreateDialog}
+          isOpen={showCreateDialog}
           onClose={() => setShowCreateDialog(false)}
           onAgentCreated={(newAgent) => {
             setAgents(prev => [...prev, newAgent])
             setShowCreateDialog(false)
           }}
+          projectId="" // Global context - will be handled in dialog
         />
       )}
     </div>
