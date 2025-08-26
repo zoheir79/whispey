@@ -625,6 +625,7 @@ const Overview: React.FC<OverviewProps> = ({
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Call Duration</h3>
                       <p className="text-2xl font-light text-gray-900 tracking-tight">
                         {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
+                        <span className="text-lg text-gray-500 ml-1">min</span>
                       </p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
@@ -650,6 +651,7 @@ const Overview: React.FC<OverviewProps> = ({
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AI Processing</h3>
                       <p className="text-2xl font-light text-gray-900 tracking-tight">
                         {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
+                        <span className="text-lg text-gray-500 ml-1">min</span>
                       </p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
