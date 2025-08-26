@@ -3,7 +3,9 @@ import { useApiClient } from './useApiClient'
 
 interface OverviewData {
   totalCalls: number
-  totalMinutes: number
+  totalCallMinutes: number // Global call duration (duration_seconds)
+  totalAiProcessingMinutes: number // AI processing time (STT+LLM+TTS)
+  totalMinutes: number // Keep for backward compatibility
   successfulCalls: number
   successRate: number
   averageLatency: number
@@ -79,7 +81,9 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         type DailyStatRow = {
           call_date: string;
           calls: number;
-          total_minutes: number;
+          total_call_minutes: number; // Global call duration
+          total_ai_processing_minutes: number; // AI processing time
+          total_minutes: number; // Keep for backward compatibility
           avg_latency: number;
           unique_customers: number;
           successful_calls: number;
@@ -106,6 +110,8 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         const typedData: OverviewData = {
           totalCalls,
           totalCost,
+          totalCallMinutes: typedDailyStats.reduce((sum, day) => sum + Number(day.total_call_minutes || 0), 0),
+          totalAiProcessingMinutes: typedDailyStats.reduce((sum, day) => sum + Number(day.total_ai_processing_minutes || 0), 0),
           totalMinutes: typedDailyStats.reduce((sum, day) => sum + Number(day.total_minutes || 0), 0),
           successfulCalls,
           successRate: totalCalls > 0 ? (successfulCalls / totalCalls) * 100 : 0,

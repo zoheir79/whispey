@@ -607,7 +607,7 @@ const Overview: React.FC<OverviewProps> = ({
                 </div>
               </div>
 
-              {/* Total Minutes */}
+              {/* Global Call Duration */}
               <div className="group">
                 <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
                   <div className="p-5">
@@ -617,20 +617,39 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                       <div className="text-right">
                         <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
-                          {analytics?.totalCalls && analytics?.totalMinutes ? Math.round(analytics.totalMinutes / analytics.totalCalls) : 0}m avg
+                          {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
                         </span>
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Minutes</h3>
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Call Duration</h3>
                       <p className="text-2xl font-light text-gray-900 tracking-tight">
-                        {(() => {
-                          const totalMinutes = analytics?.totalMinutes || 0;
-                          console.log('🔍 DEBUG Overview - analytics.totalMinutes raw:', analytics?.totalMinutes);
-                          console.log('🔍 DEBUG Overview - totalMinutes processed:', totalMinutes);
-                          const rounded = Math.round(totalMinutes);
-                          return isNaN(rounded) ? '0' : rounded.toLocaleString();
-                        })()}
+                        {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Processing Time */}
+              <div className="group">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
+                        <Activity weight="regular" className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                          STT+LLM+TTS
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AI Processing</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {Math.round(analytics?.totalAiProcessingMinutes || 0).toLocaleString()}
                       </p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
