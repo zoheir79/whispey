@@ -85,3 +85,21 @@ SELECT
 FROM call_summary_materialized
 WHERE total_call_minutes > 0
 LIMIT 10;
+
+-- DIAGNOSTIC: Analyser les données manquantes par date
+SELECT 
+    DATE(call_started_at) as call_date,
+    COUNT(*) as total_calls,
+    COUNT(duration_seconds) as has_duration_seconds,
+    COUNT(CASE WHEN duration_seconds > 0 THEN 1 END) as has_nonzero_duration,
+    COUNT(transcript_json) as has_transcript_json,
+    COUNT(transcript_with_metrics) as has_transcript_with_metrics,
+    COUNT(transcription_metrics) as has_transcription_metrics,
+    COUNT(CASE WHEN jsonb_typeof(transcript_json) = 'array' THEN 1 END) as valid_transcript_json,
+    COUNT(CASE WHEN jsonb_typeof(transcript_with_metrics) = 'array' THEN 1 END) as valid_transcript_with_metrics
+FROM pype_voice_call_logs 
+WHERE agent_id = '5109fd4b-a99c-4754-89ee-3f9bfaaa0482'
+  AND call_started_at >= '2025-08-25'
+  AND call_started_at < '2025-08-27'
+GROUP BY DATE(call_started_at)
+ORDER BY call_date;
