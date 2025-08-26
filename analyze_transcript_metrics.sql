@@ -1,28 +1,35 @@
--- 📊 ANALYSE COMPLETE DES METRICS TRANSCRIPT_JSON ET TRANSCRIPT_WITH_METRICS
+-- 📊 ANALYSE EXPLICITE DES METRICS TRANSCRIPT_JSON ET TRANSCRIPT_WITH_METRICS
 -- Pour l'agent 5109fd4b-a99c-4754-89ee-3f9bfaaa0482
 
--- 🔍 1. VUE D'ENSEMBLE DES DONNEES
+-- 🔍 1. PROBLEMES IDENTIFIES - TRANSCRIPTS "OBJECT" AU LIEU D'ARRAY
 SELECT 
     call_id,
     DATE(call_started_at) as call_date,
-    call_started_at,
     duration_seconds,
-    jsonb_typeof(transcript_json) as transcript_json_type,
-    jsonb_typeof(transcript_with_metrics) as transcript_with_metrics_type,
-    jsonb_typeof(transcription_metrics) as transcription_metrics_type,
-    CASE 
-        WHEN transcript_json IS NOT NULL AND jsonb_typeof(transcript_json) = 'array' 
-        THEN jsonb_array_length(transcript_json) 
-        ELSE 0 
-    END as transcript_json_count,
-    CASE 
-        WHEN transcript_with_metrics IS NOT NULL AND jsonb_typeof(transcript_with_metrics) = 'array' 
-        THEN jsonb_array_length(transcript_with_metrics) 
-        ELSE 0 
-    END as transcript_with_metrics_count
+    '=== TRANSCRIPT_JSON TYPE OBJECT (INVALIDE) ===' as issue,
+    LEFT(transcript_json::text, 200) as transcript_json_preview
 FROM pype_voice_call_logs 
 WHERE agent_id = '5109fd4b-a99c-4754-89ee-3f9bfaaa0482'
   AND call_started_at >= '2025-08-25'
+  AND jsonb_typeof(transcript_json) = 'object'
+ORDER BY call_started_at;
+
+-- 🔍 2. TRANSCRIPTS VALIDES (ARRAYS) - AVEC CONTENU
+SELECT 
+    call_id,
+    DATE(call_started_at) as call_date,
+    duration_seconds,
+    jsonb_array_length(transcript_json) as json_turns,
+    CASE WHEN transcript_with_metrics IS NOT NULL 
+         THEN jsonb_array_length(transcript_with_metrics) 
+         ELSE 0 END as metrics_turns,
+    '=== PREVIEW FIRST TURN ===' as separator,
+    transcript_json->0 as first_turn_json,
+    transcript_with_metrics->0 as first_turn_metrics
+FROM pype_voice_call_logs 
+WHERE agent_id = '5109fd4b-a99c-4754-89ee-3f9bfaaa0482'
+  AND call_started_at >= '2025-08-25'
+  AND jsonb_typeof(transcript_json) = 'array'
 ORDER BY call_started_at;
 
 -- 🔍 2. DETAILS TRANSCRIPT_JSON (avec métriques)
