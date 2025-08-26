@@ -116,17 +116,17 @@ export async function POST(request: NextRequest) {
 
     console.log("calculated avgLatency", avgLatency)
 
-    // Prepare log data for Supabase
+    // Prepare log data for Supabase (serialize JSON fields)
     const logData = {
       call_id,
       agent_id,
       customer_number,
       call_ended_reason,
       transcript_type,
-      transcript_json,
-      transcript_with_metrics,
+      transcript_json: transcript_json ? JSON.stringify(transcript_json) : null,
+      transcript_with_metrics: transcript_with_metrics ? JSON.stringify(transcript_with_metrics) : null,
       avg_latency: avgLatency,
-      metadata,
+      metadata: metadata ? JSON.stringify(metadata) : null,
       dynamic_variables,
       environment,
       call_started_at,
