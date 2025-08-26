@@ -74,6 +74,9 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   
   // Parse basic transcript_json if no metrics are available
   const basicTranscript = useMemo(() => {
+    console.log('🔍 DEBUG - callData.transcript_json:', callData?.transcript_json);
+    console.log('🔍 DEBUG - transcriptLogs length:', transcriptLogs?.length);
+    
     if (!callData?.transcript_json || transcriptLogs?.length > 0) return null
     
     try {
@@ -82,6 +85,8 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
         : (typeof callData.transcript_json === 'string' 
            ? JSON.parse(callData.transcript_json)
            : callData.transcript_json)
+      
+      console.log('🔍 DEBUG - parsed transcript:', transcript);
       
       // Ensure we have an array before mapping
       if (!Array.isArray(transcript)) {
