@@ -359,7 +359,7 @@ const Overview: React.FC<OverviewProps> = ({
       // Appel à fetchFromTable avec les paramètres appropriés
       const { data, error } = await fetchFromTable({
         table: 'pype_voice_call_logs',
-        select: 'id,agent_id,customer_number,call_id,call_ended_reason,call_started_at,call_ended_at,duration_seconds,metadata,transcription_metrics,avg_latency,created_at',
+        select: 'id,agent_id,customer_number,call_id,call_ended_reason,call_started_at,call_ended_at,duration_seconds,metadata,transcript_json,transcript_with_metrics,transcription_metrics,avg_latency,created_at',
         filters,
         orderBy: { column: 'created_at', ascending: false },
         limit: 2000

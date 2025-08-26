@@ -470,6 +470,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
       'environment',
       'transcript_type',
       'transcript_json',
+      'transcript_with_metrics',
       'created_at',
       'transcription_metrics',
       'total_llm_cost',
