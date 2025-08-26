@@ -124,6 +124,7 @@ export async function POST(request: NextRequest) {
       call_ended_reason,
       transcript_type,
       transcript_json,
+      transcript_with_metrics,
       avg_latency: avgLatency,
       metadata,
       dynamic_variables,
