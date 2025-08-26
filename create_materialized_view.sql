@@ -18,7 +18,7 @@ SELECT
     SUM(
         CASE 
             -- Try transcript_with_metrics first (uses llm_metrics.ttft)
-            WHEN transcript_with_metrics IS NOT NULL AND jsonb_array_length(COALESCE(transcript_with_metrics, '[]'::jsonb)) > 0 THEN (
+            WHEN transcript_with_metrics IS NOT NULL AND jsonb_typeof(transcript_with_metrics) = 'array' THEN (
                 SELECT COALESCE(SUM(
                     COALESCE((turn->'stt_metrics'->>'duration')::numeric, 0) +
                     COALESCE((turn->'llm_metrics'->>'ttft')::numeric, 0) +
@@ -27,7 +27,7 @@ SELECT
                 FROM jsonb_array_elements(transcript_with_metrics) as turn
             )
             -- Fallback to transcript_json (uses llm_metrics.total_time)
-            WHEN transcript_json IS NOT NULL AND jsonb_array_length(COALESCE(transcript_json, '[]'::jsonb)) > 0 THEN (
+            WHEN transcript_json IS NOT NULL AND jsonb_typeof(transcript_json) = 'array' THEN (
                 SELECT COALESCE(SUM(
                     COALESCE((turn->'stt_metrics'->>'duration')::numeric, 0) +
                     COALESCE((turn->'llm_metrics'->>'total_time')::numeric, 0) +
