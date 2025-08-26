@@ -719,7 +719,7 @@ const Overview: React.FC<OverviewProps> = ({
                         <XCircle weight="regular" className="w-5 h-5 text-red-600" />
                       </div>
                       <div className="text-right">
-                        <div className="flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md border border-red-100">
+                        <div className="flex items-center gap-1 text-red-600">
                           <ArrowDown weight="bold" className="w-3 h-3 text-red-600" />
                           <span className="text-xs font-bold text-red-600">
                             {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
@@ -736,6 +736,30 @@ const Overview: React.FC<OverviewProps> = ({
                 </div>
               </div>
 
+              {/* Total Tokens */}
+              <div className="group">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                        <Activity weight="regular" className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                          {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Tokens</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {analytics?.totalTokens?.toLocaleString() || '0'}
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
             {customTotals.map((config) => {
               const result = customTotalResults.find(r => r.configId === config.id)

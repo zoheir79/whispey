@@ -15,7 +15,12 @@ SELECT
     SUM(COALESCE(duration_seconds, 0)) / 60.0 as total_minutes,
     AVG(COALESCE(avg_latency, 0)) as avg_latency,
     COUNT(DISTINCT customer_number) as unique_customers,
-    SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost
+    SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost,
+    -- Extract and sum tokens from transcription_metrics JSONB
+    SUM(
+        COALESCE((transcription_metrics->>'prompt_tokens')::integer, 0) + 
+        COALESCE((transcription_metrics->>'completion_tokens')::integer, 0)
+    ) as total_tokens
 FROM pype_voice_call_logs 
 WHERE call_started_at IS NOT NULL
 GROUP BY agent_id, DATE(call_started_at)

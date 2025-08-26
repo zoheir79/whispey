@@ -9,6 +9,7 @@ interface OverviewData {
   averageLatency: number
   totalCost:number
   uniqueCustomers: number
+  totalTokens: number
   dailyData: Array<{
     date: string
     dateKey: string
@@ -84,6 +85,7 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
           successful_calls: number;
           success_rate: number;
           total_cost: number;
+          total_tokens: number;
         };
         
         // Conversion du tableau any[] en tableau typé
@@ -93,6 +95,7 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         const totalCalls = typedDailyStats.reduce((sum, day) => sum + Number(day.calls || 0), 0)
         const successfulCalls = typedDailyStats.reduce((sum, day) => sum + Number(day.successful_calls || 0), 0)
         const totalCost = typedDailyStats.reduce((sum, day) => sum + Number(day.total_cost || 0), 0)
+        const totalTokens = typedDailyStats.reduce((sum, day) => sum + Number(day.total_tokens || 0), 0)
         
         console.log('🔍 DEBUG - PostgreSQL raw data:', typedDailyStats);
         console.log('🔍 DEBUG - Individual calls values:', typedDailyStats.map(d => ({ calls: d.calls, type: typeof d.calls })));
@@ -110,6 +113,7 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
             ? typedDailyStats.reduce((sum, day) => sum + day.avg_latency, 0) / typedDailyStats.length
             : 0,
           uniqueCustomers: typedDailyStats.reduce((sum, day) => sum + day.unique_customers, 0),
+          totalTokens,
           dailyData: typedDailyStats.map(day => ({
             date: day.call_date,
             dateKey: day.call_date,
