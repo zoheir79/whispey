@@ -490,6 +490,19 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Verify authentication
+    const authResult = await verifyUserAuth(request);
+    if (!authResult.isAuthenticated || !authResult.userId) {
+      return createErrorResponse('Unauthorized', 401);
+    }
+
+    // Get user's global role and permissions
+    const userGlobalRole = await getUserGlobalRole(authResult.userId);
+    
+    if (!userGlobalRole) {
+      return createErrorResponse('User not found', 404);
+    }
+
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('project_id')
     const confirmToken = searchParams.get('confirm')
@@ -499,7 +512,7 @@ export async function DELETE(request: NextRequest) {
       return createErrorResponse('Missing project_id parameter', 400)
     }
 
-    if (!validateProjectAccess(projectId)) {
+    if (!await validateProjectAccess(projectId, authResult.userId)) {
       return createErrorResponse('Campaign logs deletion not available for this project', 403)
     }
 
