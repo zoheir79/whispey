@@ -173,9 +173,17 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   
   // Calculate conversation metrics
   const conversationMetrics = useMemo(() => {
-    // Use transcript_with_metrics for detailed metrics, fallback to basic calculation
-    const metricsSource = transcriptLogs?.length > 0 ? transcriptLogs : null
+    // CORRECTED: Use callData.transcript_with_metrics directly (not transcriptLogs from API)
+    const transcriptWithMetrics = callData?.transcript_with_metrics
+    const metricsSource = transcriptWithMetrics?.length > 0 ? transcriptWithMetrics : null
     const hasBasicTranscript = basicTranscript && basicTranscript.length > 0
+    
+    console.log('🔍 DEBUG - Metrics source analysis:', {
+      transcriptWithMetrics: transcriptWithMetrics?.length || 0,
+      transcriptLogs: transcriptLogs?.length || 0,
+      hasBasicTranscript: hasBasicTranscript,
+      usingSource: metricsSource ? 'transcript_with_metrics' : 'basicTranscript'
+    })
     
     if (!metricsSource && !hasBasicTranscript) return null
   
@@ -192,61 +200,116 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   
     if (metricsSource) {
       // Use detailed metrics from transcript_with_metrics
-      metricsSource.forEach((log: TranscriptLog) => {
-      // Individual component latencies
-      if (log.stt_metrics?.duration) metrics.stt.push(log.stt_metrics.duration)
-      if (log.llm_metrics?.ttft) metrics.llm.push(log.llm_metrics.ttft)
-      if (log.tts_metrics?.ttfb) metrics.tts.push(log.tts_metrics.ttfb)
-      if (log.eou_metrics?.end_of_utterance_delay) metrics.eou.push(log.eou_metrics.end_of_utterance_delay)
-  
-      // CORRECTED: Agent response time should include TTS duration, not just TTFB
-      if (log.user_transcript && log.agent_response && log.llm_metrics?.ttft && log.tts_metrics) {
-        const llmTime = log.llm_metrics.ttft || 0
-        const ttsTime = (log.tts_metrics.ttfb || 0) + (log.tts_metrics.duration || 0) // Include full TTS time
-        const agentResponseTime = llmTime + ttsTime
-        metrics.agentResponseLatencies.push(agentResponseTime)
-      }
-  
-      // NEW: Calculate total turn latency (STT + LLM + TTS)
-      if (log.stt_metrics && log.tts_metrics) {
-        const sttTime = log.stt_metrics?.duration || 0
-        const llmTime = log.llm_metrics?.ttft || 0
-        const ttsTime = (log.tts_metrics?.ttfb || 0) + (log.tts_metrics?.duration || 0)
-        const totalTurnTime = llmTime + ttsTime + sttTime
+      console.log('🔍 DEBUG - Processing transcript_with_metrics:', metricsSource)
+      
+      metricsSource.forEach((log: any, index: number) => {
+        console.log(`🔍 DEBUG - Processing metrics item ${index}:`, {
+          hasSTT: !!log.stt_metrics,
+          hasLLM: !!log.llm_metrics,
+          hasTTS: !!log.tts_metrics,
+          hasEOU: !!log.eou_metrics,
+          sttDuration: log.stt_metrics?.duration,
+          llmTTFT: log.llm_metrics?.ttft,
+          ttsTTFB: log.tts_metrics?.ttfb,
+          ttsDuration: log.tts_metrics?.duration,
+          log: log
+        })
+        
+        // Individual component latencies (in seconds)
+        if (log.stt_metrics?.duration) metrics.stt.push(log.stt_metrics.duration)
+        if (log.llm_metrics?.ttft) metrics.llm.push(log.llm_metrics.ttft)
+        if (log.tts_metrics?.ttfb) metrics.tts.push(log.tts_metrics.ttfb)
+        if (log.eou_metrics?.end_of_utterance_delay) metrics.eou.push(log.eou_metrics.end_of_utterance_delay)
 
-        if(totalTurnTime > 0)
-        {
-          metrics.totalTurnLatencies.push(totalTurnTime)
+        // Agent response time (LLM + TTS)
+        if (log.llm_metrics?.ttft && log.tts_metrics) {
+          const llmTime = log.llm_metrics.ttft || 0
+          const ttsTime = (log.tts_metrics.ttfb || 0) + (log.tts_metrics.duration || 0)
+          const agentResponseTime = llmTime + ttsTime
+          metrics.agentResponseLatencies.push(agentResponseTime)
+          
+          console.log(`🔍 DEBUG - Agent response calculation:`, {
+            llmTime: llmTime.toFixed(3),
+            ttsTime: ttsTime.toFixed(3),
+            agentResponseTime: agentResponseTime.toFixed(3)
+          })
         }
-      }
-  
-      // NEW: Calculate end-to-end latency (includes EOU detection)
-      if (log.eou_metrics?.end_of_utterance_delay && log.stt_metrics?.duration && 
-          log.llm_metrics?.ttft && log.tts_metrics) {
-        const eouTime = log.eou_metrics.end_of_utterance_delay || 0
-        const sttTime = log.stt_metrics.duration || 0
-        const llmTime = log.llm_metrics.ttft || 0
-        const ttsTime = (log.tts_metrics.ttfb || 0) + (log.tts_metrics.duration || 0)
-        const endToEndTime = eouTime + sttTime + llmTime + ttsTime
-        metrics.endToEndLatencies.push(endToEndTime)
-      }
-    })
+
+        // Total turn latency (STT + LLM + TTS)
+        if (log.stt_metrics || log.llm_metrics || log.tts_metrics) {
+          const sttTime = log.stt_metrics?.duration || 0
+          const llmTime = log.llm_metrics?.ttft || 0
+          const ttsTime = (log.tts_metrics?.ttfb || 0) + (log.tts_metrics?.duration || 0)
+          const totalTurnTime = sttTime + llmTime + ttsTime
+
+          if (totalTurnTime > 0) {
+            metrics.totalTurnLatencies.push(totalTurnTime)
+            
+            console.log(`🔍 DEBUG - Total turn calculation:`, {
+              sttTime: sttTime.toFixed(3),
+              llmTime: llmTime.toFixed(3), 
+              ttsTime: ttsTime.toFixed(3),
+              totalTurnTime: totalTurnTime.toFixed(3)
+            })
+          }
+        }
+
+        // End-to-end latency (EOU + STT + LLM + TTS)
+        if (log.eou_metrics?.end_of_utterance_delay) {
+          const eouTime = log.eou_metrics.end_of_utterance_delay || 0
+          const sttTime = log.stt_metrics?.duration || 0
+          const llmTime = log.llm_metrics?.ttft || 0
+          const ttsTime = (log.tts_metrics?.ttfb || 0) + (log.tts_metrics?.duration || 0)
+          const endToEndTime = eouTime + sttTime + llmTime + ttsTime
+          metrics.endToEndLatencies.push(endToEndTime)
+        }
+      })
+      
+      console.log('🔍 DEBUG - Final metrics from transcript_with_metrics:', {
+        stt: metrics.stt,
+        llm: metrics.llm,
+        tts: metrics.tts,
+        agentResponse: metrics.agentResponseLatencies,
+        totalTurn: metrics.totalTurnLatencies
+      })
     } else if (hasBasicTranscript) {
       // Fallback: Estimate latency from basic transcript timing
-      // Calculate average time between messages as a rough latency estimate
+      console.log('🔍 DEBUG - Using basic transcript for latency calculation')
+      console.log('🔍 DEBUG - basicTranscript timestamps:', basicTranscript.map(item => ({
+        speaker: item.speaker,
+        timestamp: item.timestamp,
+        text: item.content?.substring(0, 50) + '...'
+      })))
+      
       for (let i = 0; i < basicTranscript.length - 1; i++) {
         const current = basicTranscript[i]
         const next = basicTranscript[i + 1]
         
         if (current.speaker === 'customer' && next.speaker === 'agent' && 
             current.timestamp && next.timestamp) {
-          const responseTime = (next.timestamp - current.timestamp) * 1000 // Convert to ms
-          if (responseTime > 0 && responseTime < 30000) { // Reasonable bounds (0-30s)
-            metrics.agentResponseLatencies.push(responseTime)
-            metrics.totalTurnLatencies.push(responseTime)
+          // Calculate response time in seconds (timestamps are already in Unix seconds)
+          const responseTimeSeconds = next.timestamp - current.timestamp
+          const responseTimeMs = responseTimeSeconds * 1000
+          
+          console.log(`🔍 DEBUG - Response time calculation:`, {
+            customerMessage: current.content?.substring(0, 30) + '...',
+            customerTimestamp: current.timestamp,
+            agentTimestamp: next.timestamp,
+            responseTimeSeconds: responseTimeSeconds.toFixed(2),
+            responseTimeMs: responseTimeMs.toFixed(0)
+          })
+          
+          if (responseTimeMs > 0 && responseTimeMs < 30000) { // Reasonable bounds (0-30s)
+            metrics.agentResponseLatencies.push(responseTimeMs)
+            metrics.totalTurnLatencies.push(responseTimeMs)
           }
         }
       }
+      
+      console.log('🔍 DEBUG - Final latency metrics:', {
+        agentResponseLatencies: metrics.agentResponseLatencies,
+        totalTurnLatencies: metrics.totalTurnLatencies
+      })
     }
   
     const calculateStats = (values: number[]) => {
