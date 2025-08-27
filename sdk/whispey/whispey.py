@@ -144,11 +144,18 @@ def generate_whispey_data(session_id: str, status: str = "in_progress", error: s
         }
     }
 
+    # Extract transcript data from session
+    transcript_data = safe_extract_transcript_data(session_data)
+    if transcript_data and 'transcript_with_metrics' in transcript_data:
+        whispey_data["transcript_with_metrics"] = transcript_data['transcript_with_metrics']
+        logger.info(f"📊 Extracted {len(transcript_data['transcript_with_metrics'])} conversation turns")
+        logger.info(f"📊 DEBUG: First turn sample: {transcript_data['transcript_with_metrics'][0] if transcript_data['transcript_with_metrics'] else 'EMPTY'}")
+    else:
+        logger.warning(f"⚠️ NO transcript_with_metrics extracted! transcript_data: {transcript_data}")
+        logger.warning(f"⚠️ Session data keys: {list(session_data.keys()) if session_data else 'NO SESSION DATA'}")
+
     # Add transcript data if available
     if session_data:
-        # transcript_with_metrics: Advanced format with performance metrics
-        whispey_data["transcript_with_metrics"] = session_data.get("transcript_with_metrics", [])
-        
         # transcript_json: Simple format (speaker, text, timestamp)
         # Build simple format from user/agent messages
         if session_data.get("user_messages") or session_data.get("agent_messages"):
