@@ -44,12 +44,17 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         
         console.log('🔍 About to call callRPC with refreshCallSummary')
     
-        // 🔄 Call the PostgreSQL function to refresh the materialized view
+        // ✅ First refresh the materialized view to get latest data
+        console.log('🔍 About to call callRPC with refreshCallSummary')
         const refreshResult = await callRPC('refreshCallSummary', {})
         console.log('🔍 callRPC RESPONSE received:', refreshResult)
+        
         if (refreshResult.error) throw refreshResult.error
 
         console.log('✅ refreshCallSummary SUCCESS - Now fetching data from materialized view')
+        
+        // ✅ Small delay to ensure materialized view is fully refreshed
+        await new Promise(resolve => setTimeout(resolve, 100))
     
         // ✅ Then query the refreshed materialized view
         console.log('🔍 About to call fetchFromTable with:', {
