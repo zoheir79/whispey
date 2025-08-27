@@ -256,7 +256,6 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   console.log(conversationMetrics)
   
   // CORRECTED: Update the color thresholds and usage
-{{ ... }}
   const getLatencyColor = (value: number, type: "stt" | "llm" | "tts" | "eou" | "total" | "e2e") => {
     const thresholds = {
       stt: { good: 1, fair: 2 },
