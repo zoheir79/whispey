@@ -235,6 +235,9 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       return { avg, min, max, count: values.length, p95 }
     }
   
+    const endToEndStats = calculateStats(metrics.endToEndLatencies)
+    const totalTurnStats = calculateStats(metrics.totalTurnLatencies)
+    
     return {
       ...metrics,
       sttStats: calculateStats(metrics.stt),
@@ -242,14 +245,13 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       ttsStats: calculateStats(metrics.tts),
       eouStats: calculateStats(metrics.eou),
       agentResponseStats: calculateStats(metrics.agentResponseLatencies),
-      totalTurnStats: calculateStats(metrics.totalTurnLatencies), // NEW
-      endToEndStats: calculateStats(metrics.endToEndLatencies), // NEW
+      totalTurnStats,
+      endToEndStats,
       
-      // CORRECTED: Average total latency should be from actual turn calculations
-      avgTotalLatency: calculateStats(metrics.totalTurnLatencies).avg,
+      // Calculated averages
+      avgTotalLatency: totalTurnStats.avg,
       avgAgentResponseTime: calculateStats(metrics.agentResponseLatencies).avg,
       avgEndToEndLatency: endToEndStats.avg,
-      avgTotalLatency: totalTurnStats.avg, // This combines all processing steps
     }
   }, [transcriptLogs, basicTranscript])
 
