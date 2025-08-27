@@ -67,6 +67,10 @@ export async function registerUser(
     );
 
     const user = result.rows[0];
+    
+    // Link user to any pending workspace invitations
+    await linkPendingInvitations(user.id, email);
+    
     const token = generateToken(user);
 
     return {
@@ -173,5 +177,29 @@ export async function getUserById(userId: string): Promise<User | null> {
   } catch (error) {
     console.error('Get user error:', error);
     return null;
+  }
+}
+
+// Function to link newly registered users to pending workspace invitations
+async function linkPendingInvitations(userId: string, email: string): Promise<void> {
+  try {
+    // Find all pending invitations for this email (where user_id is null)
+    const pendingInvitations = await query(
+      'SELECT id FROM pype_voice_email_project_mapping WHERE email = $1 AND user_id IS NULL AND is_active = true',
+      [email]
+    );
+
+    // Update each pending invitation to link it to the new user
+    for (const invitation of pendingInvitations.rows) {
+      await query(
+        'UPDATE pype_voice_email_project_mapping SET user_id = $1 WHERE id = $2',
+        [userId, invitation.id]
+      );
+    }
+
+    console.log(`Linked ${pendingInvitations.rows.length} pending invitations to user ${userId}`);
+  } catch (error) {
+    console.error('Error linking pending invitations:', error);
+    // Don't throw error here to avoid blocking registration
   }
 }
