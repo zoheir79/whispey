@@ -779,16 +779,21 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
   }
 
   const formatToIndianDateTime = (timestamp: any) => {
-    const date = new Date(timestamp)
-    const indianTime = new Date(date.getTime() + (5.5 * 60 * 60 * 1000))
+    console.log('🔍 DEBUG - formatToIndianDateTime input:', timestamp, typeof timestamp)
     
-    return indianTime.toLocaleString('en-IN', {
+    const date = new Date(timestamp)
+    console.log('🔍 DEBUG - parsed date:', date.toString())
+    console.log('🔍 DEBUG - date UTC:', date.toISOString())
+    
+    // Don't add timezone offset - let the browser handle local time display
+    return date.toLocaleString('en-IN', {
       year: 'numeric',
-      month: 'short',
+      month: 'short', 
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: 'Europe/Paris' // Use Paris timezone (UTC+1)
     })
   }
 

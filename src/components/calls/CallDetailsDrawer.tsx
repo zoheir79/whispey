@@ -85,7 +85,7 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       ? callData.transcript_json 
       : callData?.transcript_with_metrics;
     
-    if (!transcriptData || transcriptLogs?.length > 0) return null
+    if (!transcriptData) return null
     
     try {
       const transcript = Array.isArray(transcriptData) 
@@ -148,7 +148,11 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   
   // Calculate conversation metrics
   const conversationMetrics = useMemo(() => {
-    if (!transcriptLogs?.length) return null
+    // Use transcript_with_metrics for detailed metrics, fallback to basic calculation
+    const metricsSource = transcriptLogs?.length > 0 ? transcriptLogs : null
+    const hasBasicTranscript = basicTranscript && basicTranscript.length > 0
+    
+    if (!metricsSource && !hasBasicTranscript) return null
   
     const metrics = {
       stt: [] as number[],
@@ -158,10 +162,12 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       agentResponseLatencies: [] as number[],
       totalTurnLatencies: [] as number[], // NEW: Complete turn latency
       endToEndLatencies: [] as number[], // NEW: User speak to agent speak
-      totalTurns: transcriptLogs.length,
+      totalTurns: metricsSource ? metricsSource.length : (hasBasicTranscript ? basicTranscript.length : 0),
     }
   
-    transcriptLogs.forEach((log: TranscriptLog) => {
+    if (metricsSource) {
+      // Use detailed metrics from transcript_with_metrics
+      metricsSource.forEach((log: TranscriptLog) => {
       // Individual component latencies
       if (log.stt_metrics?.duration) metrics.stt.push(log.stt_metrics.duration)
       if (log.llm_metrics?.ttft) metrics.llm.push(log.llm_metrics.ttft)
@@ -200,6 +206,23 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
         metrics.endToEndLatencies.push(endToEndTime)
       }
     })
+    } else if (hasBasicTranscript) {
+      // Fallback: Estimate latency from basic transcript timing
+      // Calculate average time between messages as a rough latency estimate
+      for (let i = 0; i < basicTranscript.length - 1; i++) {
+        const current = basicTranscript[i]
+        const next = basicTranscript[i + 1]
+        
+        if (current.speaker === 'customer' && next.speaker === 'agent' && 
+            current.timestamp && next.timestamp) {
+          const responseTime = (next.timestamp - current.timestamp) * 1000 // Convert to ms
+          if (responseTime > 0 && responseTime < 30000) { // Reasonable bounds (0-30s)
+            metrics.agentResponseLatencies.push(responseTime)
+            metrics.totalTurnLatencies.push(responseTime)
+          }
+        }
+      }
+    }
   
     const calculateStats = (values: number[]) => {
       if (values.length === 0) return { avg: 0, min: 0, max: 0, count: 0, p95: 0 }
@@ -225,14 +248,15 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       // CORRECTED: Average total latency should be from actual turn calculations
       avgTotalLatency: calculateStats(metrics.totalTurnLatencies).avg,
       avgAgentResponseTime: calculateStats(metrics.agentResponseLatencies).avg,
-      avgEndToEndLatency: calculateStats(metrics.endToEndLatencies).avg, // NEW
+      avgEndToEndLatency: endToEndStats.avg,
+      avgTotalLatency: totalTurnStats.avg, // This combines all processing steps
     }
-  }, [transcriptLogs])
-
+  }, [transcriptLogs, basicTranscript])
 
   console.log(conversationMetrics)
   
   // CORRECTED: Update the color thresholds and usage
+{{ ... }}
   const getLatencyColor = (value: number, type: "stt" | "llm" | "tts" | "eou" | "total" | "e2e") => {
     const thresholds = {
       stt: { good: 1, fair: 2 },
