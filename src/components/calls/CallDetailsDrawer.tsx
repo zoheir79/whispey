@@ -106,6 +106,16 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
       const messages: any[] = [];
       
       transcript.forEach((item: any, index: number) => {
+        console.log(`🔍 DEBUG - Processing item ${index}:`, {
+          hasUserTranscript: !!item.user_transcript,
+          hasAgentResponse: !!item.agent_response,
+          hasContent: !!item.content,
+          hasRole: !!item.role,
+          hasSpeaker: !!item.speaker,
+          keys: Object.keys(item),
+          item: item
+        });
+        
         if (item.user_transcript) {
           messages.push({
             id: `user-${item.turn_id || index}`,
@@ -136,10 +146,25 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
             turn_id: item.turn_id || (index + 1)
           });
         }
+        
+        // Handle the actual format: {text, speaker, timestamp}
+        if (item.text && item.speaker && !item.user_transcript && !item.agent_response && !item.content) {
+          messages.push({
+            id: `speaker-${index}`,
+            role: item.speaker === 'agent' ? 'assistant' : (item.speaker === 'customer' ? 'user' : 'user'),
+            content: item.text,
+            timestamp: item.timestamp,
+            turn_id: item.turn_id || (index + 1),
+            speaker: item.speaker
+          });
+        }
       });
       
       console.log('🔍 DEBUG - processed messages:', messages);
-      return messages;
+      console.log('🔍 DEBUG - messages.length:', messages.length);
+      
+      // Return messages array (not null if empty)
+      return messages.length > 0 ? messages : [];
     } catch (e) {
       console.error('Error parsing transcript_json:', e)
       return null
