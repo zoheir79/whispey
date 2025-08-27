@@ -341,11 +341,13 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
             <div className="text-center">
               <div className="text-2xl font-bold">
                 {(() => {
-                  const totalTurns = (transcriptLogs?.length || 0) + (basicTranscript?.length || 0);
+                  // Correct: Use transcriptLogs if available, otherwise basicTranscript (avoid double counting)
+                  const totalTurns = transcriptLogs?.length || basicTranscript?.length || 0;
                   console.log('🔍 DEBUG - Turns calculation:', {
                     transcriptLogs: transcriptLogs?.length || 0,
                     basicTranscript: basicTranscript?.length || 0,
-                    totalTurns
+                    totalTurns,
+                    source: transcriptLogs?.length ? 'transcriptLogs' : 'basicTranscript'
                   });
                   return totalTurns;
                 })()}
@@ -363,10 +365,10 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
               <div
                 className={cn(
                   "text-2xl font-bold",
-                  conversationMetrics ? getLatencyColor(conversationMetrics.avgEndToEndLatency, "total") : "",
+                  conversationMetrics ? getLatencyColor(conversationMetrics.avgTotalLatency, "total") : "",
                 )}
               >
-                {conversationMetrics ? formatDuration(conversationMetrics.avgEndToEndLatency) : "N/A"}
+                {conversationMetrics ? formatDuration(conversationMetrics.avgTotalLatency) : "N/A"}
               </div>
               <div className="text-sm text-muted-foreground">Avg Latency</div>
             </div>

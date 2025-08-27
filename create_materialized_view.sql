@@ -16,8 +16,8 @@ SELECT
     SUM(COALESCE(duration_seconds, 0)) / 60.0 as total_call_minutes,
     -- AI processing time using extract function 
     extract_ai_processing_time(transcript_with_metrics) as total_ai_processing_minutes,
-    -- Combined minutes for chart display (AI processing time)
-    extract_ai_processing_time(transcript_with_metrics) as total_minutes,
+    -- Combined minutes for chart display (now using global call time)
+    SUM(COALESCE(duration_seconds, 0)) / 60.0 as total_minutes,
     AVG(COALESCE(avg_latency, 0)) as avg_latency,
     COUNT(DISTINCT customer_number) as unique_customers,
     SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost,
