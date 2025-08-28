@@ -5,6 +5,7 @@ import { query } from './db';
 // Types
 export interface User {
   id: string;
+  user_id?: string;
   email: string;
   first_name?: string;
   last_name?: string;
@@ -23,7 +24,7 @@ export interface AuthResult {
 // JWT functions
 export function generateToken(user: User): string {
   const payload = {
-    sub: user.id,
+    sub: user.user_id || user.id, // Use user_id if available, fallback to id
     email: user.email,
     name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
   };
@@ -107,6 +108,7 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
       success: true,
       user: {
         id: user.id,
+        user_id: user.user_id,
         email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
