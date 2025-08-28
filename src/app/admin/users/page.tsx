@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Search, Users, Clock, Check, X, Mail, UserCheck, UserX, AlertCircle, Loader2 } from 'lucide-react'
+import { Search, Users, Clock, UserCheck, UserX, AlertCircle, Loader2, Shield, ShieldOff, Check, X, Mail } from 'lucide-react'
 import Header from '@/components/shared/Header'
 import { useGlobalRole } from '@/hooks/useGlobalRole'
 import { useRouter } from 'next/navigation'
@@ -16,10 +16,10 @@ interface User {
   first_name?: string
   last_name?: string
   global_role: string
-  status: 'pending' | 'active' | 'rejected'
+  status: 'active' | 'suspended'
   created_at: string
-  approved_at?: string
-  approved_by?: string
+  updated_at?: string
+  updated_by?: string
 }
 
 export default function AdminUsersPage() {
@@ -29,12 +29,12 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState<'all' | 'pending' | 'active' | 'rejected'>('all')
+  const [selectedStatus, setSelectedStatus] = useState<'all' | 'active' | 'suspended'>('all')
   const [processingUser, setProcessingUser] = useState<string | null>(null)
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
     user: User | null
-    action: 'approve' | 'reject' | null
+    action: 'suspend' | 'unsuspend' | null
   }>({ isOpen: false, user: null, action: null })
 
   // Redirect non-super-admins
@@ -65,7 +65,7 @@ export default function AdminUsersPage() {
     }
   }, [isSuperAdmin])
 
-  const handleUserAction = async (userId: string, action: 'approve' | 'reject') => {
+  const handleUserAction = async (userId: string, action: 'suspend' | 'unsuspend') => {
     setProcessingUser(userId)
     try {
       const res = await fetch(`/api/admin/users/${userId}`, {
@@ -85,7 +85,7 @@ export default function AdminUsersPage() {
     }
   }
 
-  const openConfirmDialog = (user: User, action: 'approve' | 'reject') => {
+  const openConfirmDialog = (user: User, action: 'suspend' | 'unsuspend') => {
     setConfirmDialog({ isOpen: true, user, action })
   }
 
@@ -101,11 +101,9 @@ export default function AdminUsersPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-50 text-yellow-700 border-yellow-200'
       case 'active':
         return 'bg-green-50 text-green-700 border-green-200'
-      case 'rejected':
+      case 'suspended':
         return 'bg-red-50 text-red-700 border-red-200'
       default:
         return 'bg-gray-50 text-gray-700 border-gray-200'
@@ -155,12 +153,12 @@ export default function AdminUsersPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Pending</p>
-                    <p className="text-2xl font-semibold text-yellow-600">
-                      {users.filter(u => u.status === 'pending').length}
+                    <p className="text-sm text-gray-600">Suspended</p>
+                    <p className="text-2xl font-semibold text-red-600">
+                      {users.filter(u => u.status === 'suspended').length}
                     </p>
                   </div>
-                  <Clock className="w-8 h-8 text-yellow-500" />
+                  <ShieldOff className="w-8 h-8 text-red-500" />
                 </div>
               </CardContent>
             </Card>
@@ -183,12 +181,12 @@ export default function AdminUsersPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Rejected</p>
-                    <p className="text-2xl font-semibold text-red-600">
-                      {users.filter(u => u.status === 'rejected').length}
+                    <p className="text-sm text-gray-600">All Users</p>
+                    <p className="text-2xl font-semibold text-blue-600">
+                      {users.length}
                     </p>
                   </div>
-                  <UserX className="w-8 h-8 text-red-500" />
+                  <Users className="w-8 h-8 text-blue-500" />
                 </div>
               </CardContent>
             </Card>
@@ -223,7 +221,7 @@ export default function AdminUsersPage() {
               </div>
               
               <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                {(['all', 'pending', 'active', 'rejected'] as const).map((status) => (
+                {(['all', 'active', 'suspended'] as const).map((status) => (
                   <button
                     key={status}
                     onClick={() => setSelectedStatus(status)}
@@ -291,43 +289,48 @@ export default function AdminUsersPage() {
                             <Clock className="w-4 h-4" />
                             Registered {formatDate(user.created_at)}
                           </div>
-                          {user.approved_at && (
-                            <div className="flex items-center gap-1 text-green-600">
-                              <Check className="w-4 h-4" />
-                              Approved {formatDate(user.approved_at)}
+                          {user.updated_at && (
+                            <div className="flex items-center gap-1 text-blue-600">
+                              <Clock className="w-4 h-4" />
+                              Updated {formatDate(user.updated_at)}
                             </div>
                           )}
                         </div>
                       </div>
                     </div>
                     
-                    {user.status === 'pending' && (
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      {user.status === 'active' ? (
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => openConfirmDialog(user, 'reject')}
+                          onClick={() => openConfirmDialog(user, 'suspend')}
                           disabled={processingUser === user.user_id}
                           className="text-red-600 border-red-200 hover:bg-red-50"
                         >
-                          <X className="w-4 h-4 mr-1" />
-                          Reject
+                          {processingUser === user.user_id ? (
+                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                          ) : (
+                            <ShieldOff className="w-4 h-4 mr-1" />
+                          )}
+                          Suspend
                         </Button>
+                      ) : (
                         <Button
                           size="sm"
-                          onClick={() => openConfirmDialog(user, 'approve')}
+                          onClick={() => openConfirmDialog(user, 'unsuspend')}
                           disabled={processingUser === user.user_id}
                           className="bg-green-600 hover:bg-green-700 text-white"
                         >
                           {processingUser === user.user_id ? (
                             <Loader2 className="w-4 h-4 mr-1 animate-spin" />
                           ) : (
-                            <Check className="w-4 h-4 mr-1" />
+                            <Shield className="w-4 h-4 mr-1" />
                           )}
-                          Approve
+                          Unsuspend
                         </Button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -356,12 +359,12 @@ export default function AdminUsersPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {confirmDialog.action === 'approve' ? 'Approve User' : 'Reject User'}
+              {confirmDialog.action === 'suspend' ? 'Suspend User' : 'Unsuspend User'}
             </DialogTitle>
             <DialogDescription>
-              {confirmDialog.action === 'approve' 
-                ? `Approve ${confirmDialog.user?.email} to access the platform?`
-                : `Reject ${confirmDialog.user?.email}'s registration request?`
+              {confirmDialog.action === 'suspend' 
+                ? `Suspend ${confirmDialog.user?.email}'s access to the platform?`
+                : `Restore ${confirmDialog.user?.email}'s access to the platform?`
               }
             </DialogDescription>
           </DialogHeader>
@@ -377,7 +380,7 @@ export default function AdminUsersPage() {
               onClick={() => confirmDialog.user && confirmDialog.action && handleUserAction(confirmDialog.user.user_id, confirmDialog.action)}
               disabled={processingUser !== null}
               className={`flex-1 ${
-                confirmDialog.action === 'approve' 
+                confirmDialog.action === 'unsuspend' 
                   ? 'bg-green-600 hover:bg-green-700' 
                   : 'bg-red-600 hover:bg-red-700'
               } text-white`}
@@ -385,7 +388,7 @@ export default function AdminUsersPage() {
               {processingUser ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               ) : null}
-              {confirmDialog.action === 'approve' ? 'Approve' : 'Reject'}
+              {confirmDialog.action === 'suspend' ? 'Suspend' : 'Unsuspend'}
             </Button>
           </div>
         </DialogContent>

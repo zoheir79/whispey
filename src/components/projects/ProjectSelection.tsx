@@ -397,21 +397,27 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation()
-                          setSelectedProjectForDialog(project)
-                          setShowAddMemberDialog(true)
-                        }}>
-                          <Users className="h-4 w-4 mr-2" />
-                          Manage access
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation()
-                          setShowSettingsDialog(project)
-                        }}>
-                          <Settings className="h-4 w-4 mr-2" />
-                          Settings
-                        </DropdownMenuItem>
+                        {/* Manage access - only for super_admin */}
+                        {isSuperAdmin && (
+                          <DropdownMenuItem onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedProjectForDialog(project)
+                            setShowAddMemberDialog(true)
+                          }}>
+                            <Users className="h-4 w-4 mr-2" />
+                            Manage access
+                          </DropdownMenuItem>
+                        )}
+                        {/* Settings - only for super_admin */}
+                        {isSuperAdmin && (
+                          <DropdownMenuItem onClick={(e) => {
+                            e.stopPropagation()
+                            setShowSettingsDialog(project)
+                          }}>
+                            <Settings className="h-4 w-4 mr-2" />
+                            Settings
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()

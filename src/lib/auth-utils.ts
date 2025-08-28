@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 import { query } from './db';
 
 // Types
@@ -9,6 +10,7 @@ export interface User {
   email: string;
   first_name?: string;
   last_name?: string;
+  global_role?: string;
   profile_image_url?: string;
   created_at: Date;
   updated_at?: Date;
@@ -61,22 +63,33 @@ export async function registerUser(
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Insert user with pending status
+    // Generate unique user_id
+    const user_id = uuidv4();
+
+    // Insert user with active status
     const result = await query(
-      'INSERT INTO pype_voice_users (email, password_hash, first_name, last_name, status, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, first_name, last_name, created_at, status',
-      [email, hashedPassword, firstName || null, lastName || null, 'pending', new Date().toISOString()]
+      'INSERT INTO pype_voice_users (user_id, email, password_hash, first_name, last_name, global_role, status, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING user_id, email, first_name, last_name, global_role, status, created_at',
+      [user_id, email, hashedPassword, firstName || null, lastName || null, 'user', 'active', new Date().toISOString()]
     );
 
     const user = result.rows[0];
     
-    // Link user to any pending workspace invitations
-    await linkPendingInvitations(user.id, email);
+    // Create automatic workspace for the user
+    await createUserWorkspace(user.user_id, email);
     
     const token = generateToken(user);
 
     return {
       success: true,
-      user,
+      user: {
+        id: user.user_id,
+        user_id: user.user_id,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        global_role: user.global_role,
+        created_at: new Date(user.created_at)
+      },
       token,
     };
   } catch (error) {
@@ -98,7 +111,9 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
 
     // Check if user account is active
     if (user.status && user.status !== 'active') {
-      if (user.status === 'pending') {
+      if (user.status === 'suspended') {
+        return { success: false, message: 'Your account has been suspended. Please contact an administrator.' };
+      } else if (user.status === 'pending') {
         return { success: false, message: 'Your account is pending approval. Please wait for an administrator to approve your account.' };
       } else if (user.status === 'rejected') {
         return { success: false, message: 'Your account has been rejected. Please contact an administrator.' };
@@ -111,20 +126,21 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
     if (!isValidPassword) {
       return { success: false, message: 'Invalid password' };
     }
-
-    // Generate token
+    
     const token = generateToken(user);
 
     return {
       success: true,
       user: {
+        id: user.user_id,
         user_id: user.user_id,
         email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
-        global_role: user.global_role
+        global_role: user.global_role,
+        created_at: new Date(user.created_at)
       },
-      token
+      token,
     };
   } catch (error) {
     console.error('Login error:', error);
@@ -190,26 +206,48 @@ export async function getUserById(userId: string): Promise<User | null> {
   }
 }
 
-// Function to link newly registered users to pending workspace invitations
+// Function to link newly registered users to pending workspace invitations  
 async function linkPendingInvitations(userId: string, email: string): Promise<void> {
   try {
-    // Find all pending invitations for this email (where user_id is null)
-    const pendingInvitations = await query(
-      'SELECT id FROM pype_voice_email_project_mapping WHERE email = $1 AND user_id IS NULL AND is_active = true',
-      [email]
+    const result = await query(
+      'UPDATE pype_voice_email_project_mapping SET user_id = $1 WHERE email = $2 AND user_id IS NULL',
+      [userId, email]
     );
-
-    // Update each pending invitation to link it to the new user
-    for (const invitation of pendingInvitations.rows) {
-      await query(
-        'UPDATE pype_voice_email_project_mapping SET user_id = $1 WHERE id = $2',
-        [userId, invitation.id]
-      );
-    }
-
-    console.log(`Linked ${pendingInvitations.rows.length} pending invitations to user ${userId}`);
+    console.log(`Linked ${result.rowCount} pending invitations for user ${userId}`);
   } catch (error) {
     console.error('Error linking pending invitations:', error);
-    // Don't throw error here to avoid blocking registration
+  }
+}
+
+// Generate workspace code from user_id (8 chars)
+function generateWorkspaceCode(user_id: string): string {
+  // Create MD5 hash of user_id and take first 8 chars
+  const crypto = require('crypto');
+  return crypto.createHash('md5').update(user_id).digest('hex').slice(0, 8).toUpperCase();
+}
+
+// Create automatic workspace for new user
+export async function createUserWorkspace(user_id: string, email: string) {
+  try {
+    const workspaceCode = generateWorkspaceCode(user_id);
+    const workspaceName = `${workspaceCode}-MySpace`;
+    const workspace_id = uuidv4();
+    
+    // Create workspace
+    const workspaceResult = await query(
+      'INSERT INTO pype_voice_projects (id, name, description, environment, is_active, owner_user_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+      [workspace_id, workspaceName, `Personal workspace for ${email}`, 'development', true, user_id, new Date().toISOString()]
+    );
+    
+    // Add user as viewer to their workspace
+    await query(
+      'INSERT INTO pype_voice_email_project_mapping (email, project_id, role, user_id, added_by_user_id, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+      [email, workspace_id, 'viewer', user_id, user_id, new Date().toISOString()]
+    );
+    
+    console.log(`Created workspace ${workspaceName} for user ${user_id}`);
+  } catch (error) {
+    console.error('Error creating user workspace:', error);
+    // Don't throw error to avoid breaking registration
   }
 }

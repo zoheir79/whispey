@@ -283,7 +283,7 @@ function Header({ breadcrumb }: HeaderProps) {
                     </div>
                     <div className="py-1">
                       <DropdownMenuItem asChild>
-                        <Link href="/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                        <Link href="/profile" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
                           <User className="w-4 h-4 mr-3 text-gray-600" />
                           <span className="font-medium text-gray-900">Profile</span>
                         </Link>
@@ -294,6 +294,14 @@ function Header({ breadcrumb }: HeaderProps) {
                           <span className="font-medium text-gray-900">Settings</span>
                         </Link>
                       </DropdownMenuItem>
+                      {isSuperAdmin && (
+                        <DropdownMenuItem asChild>
+                          <Link href="/admin/users" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                            <Users className="w-4 h-4 mr-3 text-blue-600" />
+                            <span className="font-medium text-gray-900">Admin Users</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                     </div>
                     <DropdownMenuSeparator className="bg-gray-100" />
                     <div className="py-1">

@@ -239,6 +239,10 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
+    // Check if request includes scope=all parameter for super_admin
+    const url = new URL(request.url);
+    const scope = url.searchParams.get('scope');
+    
     // Get user's global role and permissions
     const userGlobalRole = await getUserGlobalRole(userId);
     
@@ -247,19 +251,30 @@ export async function GET(request: NextRequest) {
       userEmail: user.email,
       userGlobalRole: userGlobalRole?.global_role,
       canViewAllProjects: userGlobalRole?.permissions?.canViewAllProjects,
+      scope,
       permissions: userGlobalRole?.permissions
     });
     
     let mappings: any[] = [];
     let error: any = null;
     
-    // If user is admin or super_admin, they can see all projects
+    // If user is super_admin, they can see ALL projects (active and inactive)
     if (userGlobalRole?.permissions?.canViewAllProjects) {
-      // Admin/Super Admin can see all projects - get all active projects
+      let projectFilters: Array<{ column: string; operator: string; value: any }> = [];
+      
+      // Super admin can see ALL projects (including inactive ones)
+      if (userGlobalRole.global_role === 'super_admin' && scope === 'all') {
+        // No filter - get all projects
+        projectFilters = [];
+      } else {
+        // Regular admin or super_admin without scope=all - only active projects
+        projectFilters = [{ column: 'is_active', operator: '=', value: true }];
+      }
+      
       const { data: allProjects, error: projectsError } = await fetchFromTable({
         table: 'pype_voice_projects',
         select: 'id as project_id, name',
-        filters: [{ column: 'is_active', operator: '=', value: true }]
+        filters: projectFilters
       });
       
       if (projectsError) {

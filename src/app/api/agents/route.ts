@@ -42,18 +42,18 @@ export async function POST(request: NextRequest) {
 
     // Check if user has permission to create agents in this project
     if (!userGlobalRole.permissions.canViewAllAgents) {
-      // For regular users, verify they have access to this specific project
+      // For regular users, verify they have access to this specific project with member role or higher
       const accessCheck = await query(`
         SELECT epm.id 
         FROM pype_voice_email_project_mapping epm
         INNER JOIN pype_voice_users u ON u.email = epm.email
         WHERE u.user_id = $1 AND epm.project_id = $2 AND epm.is_active = true
-        AND epm.role IN ('admin', 'owner')
+        AND epm.role IN ('member', 'admin', 'owner')
       `, [userId, project_id]);
 
       if (!accessCheck.rows || accessCheck.rows.length === 0) {
         return NextResponse.json(
-          { error: 'You do not have permission to create agents in this project' },
+          { error: 'You need at least member role to create agents in this project' },
           { status: 403 }
         );
       }

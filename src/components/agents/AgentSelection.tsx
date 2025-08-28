@@ -79,9 +79,44 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   const [agentsLoading, setAgentsLoading] = useState(true)
   const [agentsError, setAgentsError] = useState<string | null>(null)
 
+  // State for user permissions
+  const [userRole, setUserRole] = useState<string>('viewer')
+  const [globalRole, setGlobalRole] = useState<string>('user')
+
   const router = useRouter()
 
   const project = projects?.[0]
+
+  // Fetch user role and permissions
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const userData = await response.json();
+          setGlobalRole(userData.global_role || 'user');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    
+    const fetchProjectRole = async () => {
+      if (!projectId) return;
+      try {
+        const response = await fetch(`/api/projects/${projectId}/role`);
+        if (response.ok) {
+          const roleData = await response.json();
+          setUserRole(roleData.role || 'viewer');
+        }
+      } catch (error) {
+        console.error('Error fetching project role:', error);
+      }
+    };
+
+    fetchUserRole();
+    fetchProjectRole();
+  }, [projectId]);
 
   // Fetch project data
   useEffect(() => {
@@ -162,6 +197,11 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }
 
   const handleCreateAgent = () => {
+    // Only allow member role or higher to create agents
+    if (userRole === 'viewer') {
+      alert('You need at least member role to create agents');
+      return;
+    }
     setShowCreateDialog(true)
   }
 
@@ -374,13 +414,16 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
               </button>
             </div>
             
-            <Button 
-              onClick={handleCreateAgent}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm font-medium"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Agent
-            </Button>
+            {/* Only show Create Agent button for member role or higher */}
+            {(userRole === 'member' || userRole === 'admin' || userRole === 'owner' || globalRole === 'super_admin') && (
+              <Button 
+                onClick={handleCreateAgent}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm font-medium"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Agent
+              </Button>
+            )}
           </div>
         </div>
 
@@ -461,13 +504,16 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                           <BarChart3 className="h-4 w-4 mr-3 text-gray-500" />
                           Analytics
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation()
-                          router.push(`/agents/${agent.id}?tab=settings`)
-                        }} className="text-sm">
-                          <Settings className="h-4 w-4 mr-3 text-gray-500" />
-                          Settings
-                        </DropdownMenuItem>
+                        {/* Settings - only for members and above */}
+                        {(userRole === 'member' || userRole === 'admin' || userRole === 'owner' || globalRole === 'super_admin') && (
+                          <DropdownMenuItem onClick={(e) => {
+                            e.stopPropagation()
+                            router.push(`/agents/${agent.id}?tab=settings`)
+                          }} className="text-sm">
+                            <Settings className="h-4 w-4 mr-3 text-gray-500" />
+                            Settings
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
@@ -476,14 +522,19 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                           <Copy className="h-4 w-4 mr-3 text-gray-500" />
                           Copy ID
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation()
-                          setShowDeleteConfirm(agent)
-                        }} className="text-red-600 focus:text-red-600 text-sm">
-                          <Trash2 className="h-4 w-4 mr-3" />
-                          Delete
-                        </DropdownMenuItem>
+                        {/* Delete - only for members and above */}
+                        {(userRole === 'member' || userRole === 'admin' || userRole === 'owner' || globalRole === 'super_admin') && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={(e) => {
+                              e.stopPropagation()
+                              setShowDeleteConfirm(agent)
+                            }} className="text-red-600 focus:text-red-600 text-sm">
+                              <Trash2 className="h-4 w-4 mr-3" />
+                              Delete
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
