@@ -8,6 +8,16 @@ import { getUserGlobalRole } from '@/services/getGlobalRole';
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify user authentication and permissions
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    
+    if (!isAuthenticated || !userId) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json()
     const { name, agent_type, configuration, project_id, environment, platform } = body
 
@@ -16,8 +26,38 @@ export async function POST(request: NextRequest) {
       agent_type, 
       platform,
       project_id,
-      environment
+      environment,
+      userId
     })
+
+    // Check user permissions for agent creation
+    const userGlobalRole = await getUserGlobalRole(userId);
+    
+    if (!userGlobalRole) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if user has permission to create agents in this project
+    if (!userGlobalRole.permissions.canViewAllAgents) {
+      // For regular users, verify they have access to this specific project
+      const accessCheck = await query(`
+        SELECT epm.id 
+        FROM pype_voice_email_project_mapping epm
+        INNER JOIN pype_voice_users u ON u.email = epm.email
+        WHERE u.user_id = $1 AND epm.project_id = $2 AND epm.is_active = true
+        AND epm.role IN ('admin', 'owner')
+      `, [userId, project_id]);
+
+      if (!accessCheck.rows || accessCheck.rows.length === 0) {
+        return NextResponse.json(
+          { error: 'You do not have permission to create agents in this project' },
+          { status: 403 }
+        );
+      }
+    }
 
     // Validation
     if (!name || !name.trim()) {

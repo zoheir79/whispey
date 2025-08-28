@@ -1,8 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { query } from '@/lib/db'
+import { verifyUserAuth } from '@/lib/auth'
+import { getUserGlobalRole } from '@/services/getGlobalRole'
 
 export async function GET(request: NextRequest) {
   try {
+    // Verify user authentication
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    
+    if (!isAuthenticated || !userId) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Check user permissions for global metrics
+    const userGlobalRole = await getUserGlobalRole(userId);
+    
+    if (!userGlobalRole?.permissions?.canViewAllCalls) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions to view global metrics' },
+        { status: 403 }
+      );
+    }
+
+    console.log(`🔓 GLOBAL METRICS ACCESS: ${userGlobalRole.global_role} accessing global metrics`);
+
     // Get all calls across all projects with agent project_id for global view
     const sql = `
       SELECT cl.*, a.project_id

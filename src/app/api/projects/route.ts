@@ -113,6 +113,47 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Auto-add all super_admin users as admin to new project
+    try {
+      const superAdminsResult = await fetchFromTable({
+        table: 'pype_voice_users',
+        select: 'email',
+        filters: [{ column: 'global_role', operator: '=', value: 'super_admin' }]
+      });
+
+      if (superAdminsResult.data && Array.isArray(superAdminsResult.data)) {
+        for (const superAdmin of superAdminsResult.data as any[]) {
+          // Skip if it's the same as creator to avoid duplicate
+          if (superAdmin.email !== userEmail) {
+            const { error: superAdminMappingError } = await insertIntoTable({
+              table: 'pype_voice_email_project_mapping',
+              data: {
+                email: superAdmin.email,
+                project_id: project.id,
+                role: 'admin',
+                permissions: {
+                  read: true,
+                  write: true,
+                  delete: true,
+                  admin: false
+                },
+                added_by_user_id: userId
+              }
+            });
+
+            if (superAdminMappingError) {
+              console.error(`Error adding super_admin ${superAdmin.email} to project ${project.id}:`, superAdminMappingError);
+            } else {
+              console.log(`🔓 AUTO-ADDED super_admin ${superAdmin.email} as admin to project ${project.id}`);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error auto-adding super_admins to project:', error);
+      // Don't fail the whole operation, just log
+    }
+
     // Return project data with the unhashed token
     const response = {
       ...project,
@@ -203,9 +244,9 @@ export async function GET(request: NextRequest) {
     let mappings: any[] = [];
     let error: any = null;
     
-    // If user is admin, they can see all projects
+    // If user is admin or super_admin, they can see all projects
     if (userGlobalRole?.permissions?.canViewAllProjects) {
-      // Admin can see all projects - get all active projects
+      // Admin/Super Admin can see all projects - get all active projects
       const { data: allProjects, error: projectsError } = await fetchFromTable({
         table: 'pype_voice_projects',
         select: 'id as project_id, name',
@@ -213,14 +254,16 @@ export async function GET(request: NextRequest) {
       });
       
       if (projectsError) {
-        console.error('Error fetching all projects for admin:', projectsError)
+        console.error('Error fetching all projects for admin/super_admin:', projectsError)
         return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
       }
       
-      // Convert to mapping format with admin role
+      console.log(`🔓 SUPER_ADMIN ACCESS: Found ${allProjects?.length || 0} projects for ${userGlobalRole.global_role}`);
+      
+      // Convert to mapping format with owner role for super_admin
       mappings = (allProjects || []).map((project: any) => ({
         project_id: project.project_id,
-        role: 'admin' // Admin has admin role on all projects
+        role: userGlobalRole.global_role === 'super_admin' ? 'owner' : 'admin'
       }));
     } else {
       // Regular users - get project mappings for this user's email

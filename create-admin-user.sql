@@ -46,7 +46,7 @@ INSERT INTO public.pype_voice_users (
     updated_at
 ) VALUES (
     gen_random_uuid(),
-    'superadmin@whispey.com',           -- Remplacez par votre email
+    'djennanezoheir@gmail.com',           -- Remplacez par votre email
     'Super Administrator',               -- Nom d'affichage
     'super_admin',                      -- Rôle global super admin
     NOW(),

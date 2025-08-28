@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { query } from '@/lib/db'
+import { verifyUserAuth } from '@/lib/auth'
+import { getUserGlobalRole } from '@/services/getGlobalRole'
 
 export async function GET(
   request: NextRequest,
@@ -7,6 +9,46 @@ export async function GET(
 ) {
   try {
     const { id: projectId } = await params
+
+    // Verify user authentication
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    
+    if (!isAuthenticated || !userId) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Check user permissions for project metrics
+    const userGlobalRole = await getUserGlobalRole(userId);
+    
+    if (!userGlobalRole) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if user has permission to view project metrics
+    if (!userGlobalRole.permissions.canViewAllProjects) {
+      // For regular users, verify they have access to this specific project
+      const accessCheck = await query(`
+        SELECT epm.id 
+        FROM pype_voice_email_project_mapping epm
+        INNER JOIN pype_voice_users u ON u.email = epm.email
+        WHERE u.user_id = $1 AND epm.project_id = $2 AND epm.is_active = true
+      `, [userId, projectId]);
+
+      if (!accessCheck.rows || accessCheck.rows.length === 0) {
+        return NextResponse.json(
+          { error: 'You do not have permission to view metrics for this project' },
+          { status: 403 }
+        );
+      }
+    }
+
+    console.log(`🔓 PROJECT METRICS ACCESS: ${userGlobalRole.global_role} accessing project ${projectId} metrics`);
 
     // Calculate workspace metrics using JOIN since pype_voice_call_logs doesn't have project_id
     const sql = `

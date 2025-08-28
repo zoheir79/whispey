@@ -40,33 +40,141 @@ export async function GET(request: NextRequest) {
     let sql: string;
     let params: any[];
 
-    // Simplified SQL query for debugging - start with basic calls only
-    console.log(' CALLS API: Starting with basic query for debugging...');
-    
-    // First, just get basic calls data without complex joins
-    sql = `
-      SELECT 
-        cl.id, 
-        cl.call_id, 
-        cl.agent_id, 
-        cl.duration_seconds, 
-        cl.created_at, 
-        cl.call_ended_reason, 
-        cl.customer_number, 
-        cl.call_started_at,
-        COALESCE(cl.avg_latency, 0) as avg_latency,
-        COALESCE(cl.total_llm_cost, 0) as total_llm_cost,
-        COALESCE(cl.total_tts_cost, 0) as total_tts_cost,
-        COALESCE(cl.total_stt_cost, 0) as total_stt_cost,
-        cl.transcript_json,
-        cl.transcript_with_metrics,
-        cl.metadata,
-        cl.transcription_metrics
-      FROM pype_voice_call_logs cl
-      ORDER BY cl.created_at DESC
-      LIMIT $1
-    `;
-    params = [limit];
+    // Build SQL query based on user role and permissions
+    if (userGlobalRole.permissions.canViewAllCalls) {
+      // Super Admin/Admin: see ALL calls from ALL projects
+      console.log('🔓 SUPER_ADMIN/ADMIN ACCESS: Fetching all calls');
+      
+      if (projectId) {
+        // Optional filter by specific project
+        sql = `
+          SELECT 
+            cl.id, 
+            cl.call_id, 
+            cl.agent_id, 
+            cl.duration_seconds, 
+            cl.created_at, 
+            cl.call_ended_reason, 
+            cl.customer_number, 
+            cl.call_started_at,
+            COALESCE(cl.avg_latency, 0) as avg_latency,
+            COALESCE(cl.total_llm_cost, 0) as total_llm_cost,
+            COALESCE(cl.total_tts_cost, 0) as total_tts_cost,
+            COALESCE(cl.total_stt_cost, 0) as total_stt_cost,
+            cl.transcript_json,
+            cl.transcript_with_metrics,
+            cl.metadata,
+            cl.transcription_metrics,
+            a.project_id,
+            p.name as project_name
+          FROM pype_voice_call_logs cl
+          INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+          INNER JOIN pype_voice_projects p ON a.project_id = p.id
+          WHERE a.project_id = $1
+          ORDER BY cl.created_at DESC
+          LIMIT $2
+        `;
+        params = [projectId, limit];
+      } else {
+        // All calls from all projects
+        sql = `
+          SELECT 
+            cl.id, 
+            cl.call_id, 
+            cl.agent_id, 
+            cl.duration_seconds, 
+            cl.created_at, 
+            cl.call_ended_reason, 
+            cl.customer_number, 
+            cl.call_started_at,
+            COALESCE(cl.avg_latency, 0) as avg_latency,
+            COALESCE(cl.total_llm_cost, 0) as total_llm_cost,
+            COALESCE(cl.total_tts_cost, 0) as total_tts_cost,
+            COALESCE(cl.total_stt_cost, 0) as total_stt_cost,
+            cl.transcript_json,
+            cl.transcript_with_metrics,
+            cl.metadata,
+            cl.transcription_metrics,
+            a.project_id,
+            p.name as project_name
+          FROM pype_voice_call_logs cl
+          INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+          INNER JOIN pype_voice_projects p ON a.project_id = p.id
+          ORDER BY cl.created_at DESC
+          LIMIT $1
+        `;
+        params = [limit];
+      }
+    } else {
+      // Regular users: see only calls from their accessible projects
+      console.log('👤 USER ACCESS: Fetching calls from accessible projects');
+      
+      if (projectId) {
+        // Specific project (with access check)
+        sql = `
+          SELECT 
+            cl.id, 
+            cl.call_id, 
+            cl.agent_id, 
+            cl.duration_seconds, 
+            cl.created_at, 
+            cl.call_ended_reason, 
+            cl.customer_number, 
+            cl.call_started_at,
+            COALESCE(cl.avg_latency, 0) as avg_latency,
+            COALESCE(cl.total_llm_cost, 0) as total_llm_cost,
+            COALESCE(cl.total_tts_cost, 0) as total_tts_cost,
+            COALESCE(cl.total_stt_cost, 0) as total_stt_cost,
+            cl.transcript_json,
+            cl.transcript_with_metrics,
+            cl.metadata,
+            cl.transcription_metrics,
+            a.project_id,
+            p.name as project_name
+          FROM pype_voice_call_logs cl
+          INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+          INNER JOIN pype_voice_projects p ON a.project_id = p.id
+          INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+          INNER JOIN pype_voice_users u ON u.email = epm.email
+          WHERE a.project_id = $1 AND u.user_id = $2 AND epm.is_active = true
+          ORDER BY cl.created_at DESC
+          LIMIT $3
+        `;
+        params = [projectId, userId, limit];
+      } else {
+        // All calls from all accessible projects
+        sql = `
+          SELECT DISTINCT
+            cl.id, 
+            cl.call_id, 
+            cl.agent_id, 
+            cl.duration_seconds, 
+            cl.created_at, 
+            cl.call_ended_reason, 
+            cl.customer_number, 
+            cl.call_started_at,
+            COALESCE(cl.avg_latency, 0) as avg_latency,
+            COALESCE(cl.total_llm_cost, 0) as total_llm_cost,
+            COALESCE(cl.total_tts_cost, 0) as total_tts_cost,
+            COALESCE(cl.total_stt_cost, 0) as total_stt_cost,
+            cl.transcript_json,
+            cl.transcript_with_metrics,
+            cl.metadata,
+            cl.transcription_metrics,
+            a.project_id,
+            p.name as project_name
+          FROM pype_voice_call_logs cl
+          INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+          INNER JOIN pype_voice_projects p ON a.project_id = p.id
+          INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+          INNER JOIN pype_voice_users u ON u.email = epm.email
+          WHERE u.user_id = $1 AND epm.is_active = true
+          ORDER BY cl.created_at DESC
+          LIMIT $2
+        `;
+        params = [userId, limit];
+      }
+    }
 
     console.log(' CALLS API: Executing SQL for', userGlobalRole.global_role, 'role');
     console.log(' CALLS API: SQL Query:', sql);

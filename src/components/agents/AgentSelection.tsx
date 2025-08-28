@@ -288,6 +288,26 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
       <Header breadcrumb={breadcrumb} />
       
       <main className="max-w-6xl mx-auto px-8 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Voice Agents</h1>
+              <p className="text-gray-600 mt-1">
+                Manage AI voice agents for this workspace. Create, configure, and monitor your conversational AI assistants.
+              </p>
+            </div>
+            <Button
+              onClick={handleCreateAgent}
+              disabled={agentsLoading}
+              className="gap-2 bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300"
+            >
+              <Plus className="w-4 h-4" />
+              New Agent
+            </Button>
+          </div>
+        </div>
+
         {/* Apple-Style Clean Toolbar */}
         <div className="flex items-center justify-between mb-8">
           {/* Left: Simple Search */}
