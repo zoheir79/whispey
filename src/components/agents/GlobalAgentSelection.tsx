@@ -286,56 +286,82 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Agents</p>
-                <p className="text-2xl font-semibold text-gray-900 mt-1">{agents.length}</p>
-              </div>
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                <Bot className="h-5 w-5 text-gray-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Active</p>
-                <p className="text-2xl font-semibold text-gray-900 mt-1">
-                  {agents.filter(a => a.is_active).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                <CheckCircle2 className="h-5 w-5 text-gray-600" />
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                    <Bot className="w-5 h-5 text-blue-600" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Agents</h3>
+                  <p className="text-2xl font-light text-gray-900 tracking-tight">{agents.length}</p>
+                  <p className="text-xs text-gray-400 font-medium">All workspaces</p>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Inactive</p>
-                <p className="text-2xl font-semibold text-gray-900 mt-1">
-                  {agents.filter(a => !a.is_active).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                <Pause className="h-5 w-5 text-gray-600" />
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-green-50 rounded-lg border border-green-100">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-xs font-bold text-green-600">Running</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Active</h3>
+                  <p className="text-2xl font-light text-green-600 tracking-tight">{agents.filter(a => a.is_active).length}</p>
+                  <p className="text-xs text-gray-400 font-medium">Online agents</p>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Workspaces</p>
-                <p className="text-2xl font-semibold text-gray-900 mt-1">
-                  {new Set(agents.map(a => a.project_id)).size}
-                </p>
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-red-50 rounded-lg border border-red-100">
+                    <Pause className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <span className="text-xs font-medium text-gray-500">Stopped</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Inactive</h3>
+                  <p className="text-2xl font-light text-red-600 tracking-tight">{agents.filter(a => !a.is_active).length}</p>
+                  <p className="text-xs text-gray-400 font-medium">Offline agents</p>
+                </div>
               </div>
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                <BarChart3 className="h-5 w-5 text-gray-600" />
+            </div>
+          </div>
+
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                    <Globe className="w-5 h-5 text-indigo-600" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Workspaces</h3>
+                  <p className="text-2xl font-light text-gray-900 tracking-tight">{new Set(agents.map(a => a.project_id)).size}</p>
+                  <p className="text-xs text-gray-400 font-medium">Different projects</p>
+                </div>
               </div>
             </div>
           </div>
@@ -461,12 +487,13 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
             {filteredAgents.map((agent) => (
               <div
                 key={agent.id}
-                className={`group bg-white border border-gray-200 rounded-lg hover:shadow-sm cursor-pointer transition-all duration-200 ${
-                  selectedAgent === agent.id ? 'ring-1 ring-blue-500 border-blue-300' : 'hover:border-gray-300'
+                className={`group cursor-pointer transition-all duration-300 ${
+                  selectedAgent === agent.id ? 'ring-1 ring-blue-500' : ''
                 }`}
                 onClick={() => handleAgentClick(agent)}
               >
-                <div className="p-6">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -544,6 +571,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                     <span className={`font-medium ${agent.is_active ? 'text-green-600' : 'text-gray-500'}`}>
                       {agent.is_active ? 'Active' : 'Inactive'}
                     </span>
+                  </div>
                   </div>
                 </div>
               </div>

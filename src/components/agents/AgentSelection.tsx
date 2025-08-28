@@ -484,12 +484,13 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
             {filteredAgents.map((agent) => (
               <div
                 key={agent.id}
-                className={`group bg-white border border-gray-200 rounded-lg hover:shadow-sm cursor-pointer transition-all duration-200 ${
-                  selectedAgent === agent.id ? 'ring-1 ring-blue-500 border-blue-300' : 'hover:border-gray-300'
+                className={`group cursor-pointer transition-all duration-300 ${
+                  selectedAgent === agent.id ? 'ring-1 ring-blue-500' : ''
                 }`}
                 onClick={() => handleAgentClick(agent)}
               >
-                <div className="p-6">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -602,6 +603,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                     <div className={`font-medium ${agent.is_active ? 'text-green-600' : 'text-gray-500'}`}>
                       {agent.is_active ? 'Active' : 'Inactive'}
                     </div>
+                  </div>
                   </div>
                 </div>
               </div>

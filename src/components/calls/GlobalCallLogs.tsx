@@ -379,8 +379,9 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
           </p>
         </div>
       ) : (
-        <div className="border rounded-lg bg-white">
-          <Table>
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <Table>
             <TableHeader>
               <TableRow>
                 {getFilteredBasicColumns.map((column) => (
@@ -466,6 +467,7 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
               ))}
             </TableBody>
           </Table>
+          </div>
         </div>
       )}
 

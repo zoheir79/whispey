@@ -14,6 +14,7 @@ import MemberManagementDialog from '../MemberManagmentDialog'
 import WorkspaceSettings from './WorkspaceSettings'
 import WorkspaceMetrics from '../workspace/WorkspaceMetrics'
 import Header from '../shared/Header'
+import { useGlobalRole } from '@/hooks/useGlobalRole'
 
 interface Project {
   id: string
@@ -47,13 +48,16 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const { isSuperAdmin, isLoading: roleLoading } = useGlobalRole()
   const router = useRouter()
 
   const fetchProjects = async () => {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/projects')
+      // Role-based API endpoint - superadmins see all, users see only their workspaces
+      const endpoint = isSuperAdmin ? '/api/projects?scope=all' : '/api/projects'
+      const res = await fetch(endpoint)
       if (!res.ok) throw new Error('Failed to fetch projects')
       const data = await res.json()
       setProjects(data)
@@ -65,8 +69,11 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
   }
 
   useEffect(() => {
-    fetchProjects()
-  }, [])
+    // Only fetch projects after role is determined
+    if (!roleLoading) {
+      fetchProjects()
+    }
+  }, [roleLoading, isSuperAdmin])
 
 
   const refetch = fetchProjects;
@@ -263,21 +270,27 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                   Organize your voice agents by department or team. Each workspace provides isolated access control and dedicated analytics.
                 </p>
               </div>
-              <Button 
-                onClick={handleCreateProject}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2.5 text-sm"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                New Workspace
-              </Button>
+              {isSuperAdmin && (
+                <Button 
+                  onClick={handleCreateProject}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2.5 text-sm"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Workspace
+                </Button>
+              )}
             </div>
 
             {/* Workspace Metrics */}
-            {projects.length > 0 && (
-              <div className="mb-8">
-                <WorkspaceMetrics projectId={selectedProject || projects[0]?.id || 'global'} />
-              </div>
-            )}
+            <div className="mb-8">
+              {isSuperAdmin ? (
+                <WorkspaceMetrics />
+              ) : (
+                projects.length > 0 && (
+                  <WorkspaceMetrics projectId={selectedProject || projects[0]?.id} />
+                )
+              )}
+            </div>
 
             {/* Controls */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
