@@ -21,7 +21,7 @@ function CallbackComponent() {
 
     // With our JWT system, we can simply set the token in a cookie and redirect
     // The middleware will handle validation on subsequent requests
-    document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+    document.cookie = `auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
     router.replace(redirect);
     
   }, [searchParams, router]);
