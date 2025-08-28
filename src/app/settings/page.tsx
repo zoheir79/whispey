@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useGlobalRole } from '@/hooks/useGlobalRole'
+import { useRouter } from 'next/navigation'
 import { 
   Key, 
   Plus, 
@@ -51,12 +53,21 @@ interface ConfirmState {
 }
 
 export default function SettingsPage() {
+  const { isSuperAdmin, isLoading: roleLoading } = useGlobalRole()
+  const router = useRouter()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState<string | null>(null)
   const [newApiKey, setNewApiKey] = useState<APIKey | null>(null)
   const [showToken, setShowToken] = useState(false)
   
+  // Redirect non-super-admins
+  useEffect(() => {
+    if (!roleLoading && !isSuperAdmin) {
+      router.push('/profile')
+    }
+  }, [isSuperAdmin, roleLoading, router])
+
   // Unified notification system using Alert UI components
   const [notification, setNotification] = useState<NotificationState>({
     show: false,
@@ -86,10 +97,12 @@ export default function SettingsPage() {
     setConfirmation({ show: false, message: '', projectId: null })
   }
 
-  // Load projects and API keys
+  // Load projects and API keys - only for super admins
   useEffect(() => {
-    fetchProjects()
-  }, [])
+    if (isSuperAdmin) {
+      fetchProjects()
+    }
+  }, [isSuperAdmin])
 
   const fetchProjects = async () => {
     try {

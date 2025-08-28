@@ -288,19 +288,21 @@ function Header({ breadcrumb }: HeaderProps) {
                           <span className="font-medium text-gray-900">Profile</span>
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
-                          <Settings className="w-4 h-4 mr-3 text-gray-600" />
-                          <span className="font-medium text-gray-900">Settings</span>
-                        </Link>
-                      </DropdownMenuItem>
                       {isSuperAdmin && (
-                        <DropdownMenuItem asChild>
-                          <Link href="/admin/users" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
-                            <Users className="w-4 h-4 mr-3 text-blue-600" />
-                            <span className="font-medium text-gray-900">Admin Users</span>
-                          </Link>
-                        </DropdownMenuItem>
+                        <>
+                          <DropdownMenuItem asChild>
+                            <Link href="/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                              <Settings className="w-4 h-4 mr-3 text-gray-600" />
+                              <span className="font-medium text-gray-900">Settings</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin/users" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                              <Users className="w-4 h-4 mr-3 text-blue-600" />
+                              <span className="font-medium text-gray-900">Admin Users</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        </>
                       )}
                     </div>
                     <DropdownMenuSeparator className="bg-gray-100" />

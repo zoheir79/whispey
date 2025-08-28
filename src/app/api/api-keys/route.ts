@@ -33,6 +33,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Only super_admin can access API key management
+    if (userGlobalRole.global_role !== 'super_admin') {
+      return NextResponse.json(
+        { success: false, message: 'Forbidden - Super admin access required' },
+        { status: 403 }
+      );
+    }
+
     // Get projects with API tokens based on role permissions
     let queryStr = '';
     let queryParams: any[] = [];
@@ -105,6 +113,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get user's global role and permissions
+    const userGlobalRole = await getUserGlobalRole(userId);
+    
+    if (!userGlobalRole) {
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Only super_admin can create API keys
+    if (userGlobalRole.global_role !== 'super_admin') {
+      return NextResponse.json(
+        { success: false, message: 'Forbidden - Super admin access required' },
+        { status: 403 }
+      );
+    }
+
     const { projectId, name } = await request.json()
 
     if (!projectId) {
@@ -169,6 +195,24 @@ export async function DELETE(request: NextRequest) {
         { success: false, message: 'Unauthorized' },
         { status: 401 }
       )
+    }
+
+    // Get user's global role and permissions
+    const userGlobalRole = await getUserGlobalRole(userId);
+    
+    if (!userGlobalRole) {
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Only super_admin can delete API keys
+    if (userGlobalRole.global_role !== 'super_admin') {
+      return NextResponse.json(
+        { success: false, message: 'Forbidden - Super admin access required' },
+        { status: 403 }
+      );
     }
 
     const { projectId } = await request.json()
