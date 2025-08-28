@@ -167,7 +167,7 @@ export async function verifyAuth(request: Request): Promise<AuthResult> {
 export async function getUserById(userId: string): Promise<User | null> {
   try {
     const result = await query(
-      'SELECT id, email, first_name, last_name, profile_image_url, created_at, updated_at FROM pype_voice_users WHERE id = $1',
+      'SELECT id, user_id, email, first_name, last_name, profile_image_url, created_at, updated_at FROM pype_voice_users WHERE user_id = $1',
       [userId]
     );
 
