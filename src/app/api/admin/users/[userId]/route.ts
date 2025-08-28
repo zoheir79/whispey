@@ -4,19 +4,21 @@ import { query } from '@/lib/db'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
     const { action } = await request.json()
+    const { userId } = await context.params
     
     // Verify authentication and super_admin role
-    const token = request.cookies.get('auth-token')?.value
+    const token = request.headers.get('authorization')?.replace('Bearer ', '') || 
+                  request.cookies.get('token')?.value
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const payload = verifyToken(token)
-    if (!payload || !payload.userId) {
+    if (!payload.valid || !payload.userId) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
@@ -30,12 +32,10 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden - Super admin access required' }, { status: 403 })
     }
 
-    // Validate action
-    if (!['approve', 'reject'].includes(action)) {
+    // Validate action - update to support suspend/unsuspend
+    if (!['suspend', 'unsuspend'].includes(action)) {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
     }
-
-    const { userId } = params
 
     // Check if user exists
     const userResult = await query(
@@ -50,20 +50,19 @@ export async function PATCH(
     const user = userResult.rows[0]
 
     // Update user status
-    const newStatus = action === 'approve' ? 'active' : 'rejected'
+    const newStatus = action === 'unsuspend' ? 'active' : 'suspended'
     
     const updateResult = await query(`
       UPDATE pype_voice_users 
       SET 
         status = $1,
-        approved_at = $2,
-        approved_by = $3
-      WHERE user_id = $4
+        updated_at = CURRENT_TIMESTAMP,
+        updated_by = $2
+      WHERE user_id = $3
       RETURNING user_id, email, status
     `, [
       newStatus,
-      action === 'approve' ? new Date().toISOString() : null,
-      action === 'approve' ? payload.userId : null,
+      payload.userId,
       userId
     ])
 
