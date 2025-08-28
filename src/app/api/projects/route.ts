@@ -123,29 +123,27 @@ export async function POST(request: NextRequest) {
 
       if (superAdminsResult.data && Array.isArray(superAdminsResult.data)) {
         for (const superAdmin of superAdminsResult.data as any[]) {
-          // Skip if it's the same as creator to avoid duplicate
-          if (superAdmin.email !== userEmail) {
-            const { error: superAdminMappingError } = await insertIntoTable({
-              table: 'pype_voice_email_project_mapping',
-              data: {
-                email: superAdmin.email,
-                project_id: project.id,
-                role: 'admin',
-                permissions: {
-                  read: true,
-                  write: true,
-                  delete: true,
-                  admin: false
-                },
-                added_by_user_id: userId
-              }
-            });
-
-            if (superAdminMappingError) {
-              console.error(`Error adding super_admin ${superAdmin.email} to project ${project.id}:`, superAdminMappingError);
-            } else {
-              console.log(`🔓 AUTO-ADDED super_admin ${superAdmin.email} as admin to project ${project.id}`);
+          // Add all super_admins as owners (including the creator if they're super_admin)
+          const { error: superAdminMappingError } = await insertIntoTable({
+            table: 'pype_voice_email_project_mapping',
+            data: {
+              email: superAdmin.email,
+              project_id: project.id,
+              role: 'owner',
+              permissions: {
+                read: true,
+                write: true,
+                delete: true,
+                admin: true
+              },
+              added_by_user_id: userId
             }
+          });
+
+          if (superAdminMappingError) {
+            console.error(`Error adding super_admin ${superAdmin.email} to project ${project.id}:`, superAdminMappingError);
+          } else {
+            console.log(`🔓 AUTO-ADDED super_admin ${superAdmin.email} as owner to project ${project.id}`);
           }
         }
       }
