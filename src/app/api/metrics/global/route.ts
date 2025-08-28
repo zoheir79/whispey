@@ -1,18 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchFromTable } from '@/lib/db-service'
+import { query } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
-    // Get all calls across all projects (for superadmin global view)
-    const { data: calls, error: callsError } = await fetchFromTable({
-      table: 'pype_voice_call_logs',
-      select: '*'
-    })
-
-    if (callsError) {
-      console.error('Error fetching global calls:', callsError)
+    // Get all calls across all projects with agent project_id for global view
+    const sql = `
+      SELECT cl.*, a.project_id
+      FROM pype_voice_call_logs cl
+      INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+    `
+    
+    const callsResult = await query(sql, [])
+    
+    if (!callsResult || !callsResult.rows) {
+      console.error('Error fetching global calls:', callsResult)
       return NextResponse.json({ error: 'Failed to fetch calls' }, { status: 500 })
     }
+
+    const calls = callsResult.rows || []
 
     // Calculate global metrics
     const callsList = Array.isArray(calls) ? calls : []
@@ -55,19 +60,15 @@ export async function GET(request: NextRequest) {
     
     const weeklyGrowth = totalCalls > 0 ? Math.round((lastWeekCalls / totalCalls) * 100) : 0
 
-    // Get all active agents across all projects
-    const { data: agents, error: agentsError } = await fetchFromTable({
-      table: 'pype_voice_agents',
-      select: 'id',
-      filters: [{ column: 'is_active', operator: '=', value: true }]
-    })
-
-    if (agentsError) {
-      console.error('Error fetching global agents:', agentsError)
-    }
-
-    const agentsList = Array.isArray(agents) ? agents : []
-    const activeAgents = agentsList.length || 0
+    // Get all active agents across all projects using direct SQL
+    const agentsSql = `
+      SELECT id
+      FROM pype_voice_agents
+      WHERE is_active = true
+    `
+    
+    const agentsResult = await query(agentsSql, [])
+    const activeAgents = (agentsResult?.rows || []).length
 
     // Get unique projects count
     const uniqueProjects = callsList ? [...new Set(callsList.map((call: any) => call.project_id))].length : 0

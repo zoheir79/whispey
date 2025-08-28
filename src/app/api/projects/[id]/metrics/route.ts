@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchFromTable } from '@/lib/db-service'
+import { query } from '@/lib/db'
 
 export async function GET(
   request: NextRequest,
@@ -8,17 +8,23 @@ export async function GET(
   try {
     const { id: projectId } = await params
 
-    // Calculate workspace metrics
-    const { data: calls, error: callsError } = await fetchFromTable({
-      table: 'pype_voice_call_logs',
-      select: '*',
-      filters: [{ column: 'project_id', operator: '=', value: projectId }]
-    })
-
-    if (callsError) {
-      console.error('Error fetching calls:', callsError)
+    // Calculate workspace metrics using JOIN since pype_voice_call_logs doesn't have project_id
+    const sql = `
+      SELECT cl.*
+      FROM pype_voice_call_logs cl
+      INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+      WHERE a.project_id = $1
+    `
+    
+    const callsResult = await query(sql, [projectId])
+    
+    // Handle query errors (query function returns { rows, error })
+    if (!callsResult || !callsResult.rows) {
+      console.error('Error fetching calls:', callsResult)
       return NextResponse.json({ error: 'Failed to fetch calls' }, { status: 500 })
     }
+
+    const calls = callsResult.rows || []
 
     // Calculate metrics
     const callsList = Array.isArray(calls) ? calls : []
@@ -61,22 +67,15 @@ export async function GET(
     
     const weeklyGrowth = totalCalls > 0 ? Math.round((lastWeekCalls / totalCalls) * 100) : 0
 
-    // Get active agents count for this project
-    const { data: agents, error: agentsError } = await fetchFromTable({
-      table: 'pype_voice_agents',
-      select: 'id',
-      filters: [
-        { column: 'project_id', operator: '=', value: projectId },
-        { column: 'is_active', operator: '=', value: true }
-      ]
-    })
-
-    if (agentsError) {
-      console.error('Error fetching agents:', agentsError)
-    }
-
-    const agentsList = Array.isArray(agents) ? agents : []
-    const activeAgents = agentsList.length || 0
+    // Get active agents count for this project using direct SQL
+    const agentsSql = `
+      SELECT id
+      FROM pype_voice_agents
+      WHERE project_id = $1 AND is_active = true
+    `
+    
+    const agentsResult = await query(agentsSql, [projectId])
+    const activeAgents = (agentsResult?.rows || []).length
 
     const metrics = {
       totalCalls,
