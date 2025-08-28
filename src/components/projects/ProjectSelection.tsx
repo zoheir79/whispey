@@ -12,6 +12,7 @@ import ProjectCreationDialog from './ProjectCreationDialog'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import MemberManagementDialog from '../MemberManagmentDialog'
 import WorkspaceSettings from './WorkspaceSettings'
+import WorkspaceMetrics from '../workspace/WorkspaceMetrics'
 import Header from '../shared/Header'
 
 interface Project {
@@ -270,6 +271,13 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                 New Workspace
               </Button>
             </div>
+
+            {/* Workspace Metrics */}
+            {projects.length > 0 && (
+              <div className="mb-8">
+                <WorkspaceMetrics projectId={selectedProject || projects[0]?.id || 'global'} />
+              </div>
+            )}
 
             {/* Controls */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">

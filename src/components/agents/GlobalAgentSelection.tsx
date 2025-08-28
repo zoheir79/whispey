@@ -204,19 +204,19 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-8">
-      {/* Main Content */}
-      <div className="px-6 py-8">
+    <div className="min-h-screen" style={{ backgroundColor: '#fafafa' }}>
+      <Header />
+      <main className="max-w-6xl mx-auto px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">All Agents</h1>
-          <p className="text-gray-600">
-            Manage agents across all projects. {filteredAgents.length} of {agents.length} agents
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">All Agents</h1>
+          <p className="text-sm text-gray-500">
+            Manage agents across all workspaces. {filteredAgents.length} of {agents.length} agents
           </p>
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="flex items-center justify-between mb-6 bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center gap-4 flex-1">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
@@ -226,7 +226,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                 placeholder="Search agents..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg bg-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
               />
             </div>
 
@@ -286,67 +286,59 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Bot className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Agents</p>
-                  <p className="text-2xl font-bold text-gray-900">{agents.length}</p>
-                </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Total Agents</p>
+                <p className="text-2xl font-semibold text-gray-900 mt-1">{agents.length}</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                <Bot className="h-5 w-5 text-gray-600" />
+              </div>
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Active</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {agents.filter(a => a.is_active).length}
-                  </p>
-                </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Active</p>
+                <p className="text-2xl font-semibold text-gray-900 mt-1">
+                  {agents.filter(a => a.is_active).length}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                <CheckCircle2 className="h-5 w-5 text-gray-600" />
+              </div>
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <Pause className="w-5 h-5 text-gray-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Inactive</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {agents.filter(a => !a.is_active).length}
-                  </p>
-                </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Inactive</p>
+                <p className="text-2xl font-semibold text-gray-900 mt-1">
+                  {agents.filter(a => !a.is_active).length}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                <Pause className="h-5 w-5 text-gray-600" />
+              </div>
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="flex items-center p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Projects</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {new Set(agents.map(a => a.project_id)).size}
-                  </p>
-                </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-sm transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Workspaces</p>
+                <p className="text-2xl font-semibold text-gray-900 mt-1">
+                  {new Set(agents.map(a => a.project_id)).size}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                <BarChart3 className="h-5 w-5 text-gray-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Agents List */}
@@ -558,7 +550,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
             ))}
           </div>
         )}
-      </div>
+      </main>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!showDeleteConfirm} onOpenChange={() => setShowDeleteConfirm(null)}>
