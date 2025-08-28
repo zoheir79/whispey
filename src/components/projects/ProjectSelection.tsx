@@ -11,6 +11,7 @@ import { ChevronRight, Settings, Loader2, AlertCircle, Search, Plus, FolderOpen,
 import ProjectCreationDialog from './ProjectCreationDialog'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import MemberManagementDialog from '../MemberManagmentDialog'
+import WorkspaceSettings from './WorkspaceSettings'
 import Header from '../shared/Header'
 
 interface Project {
@@ -40,6 +41,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
   const [tokenCopied, setTokenCopied] = useState(false)
   const [projectSelected, setSelectedProjectForDialog] = useState<any>(null)
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState<Project | null>(null)
+  const [showSettingsDialog, setShowSettingsDialog] = useState<Project | null>(null)
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -384,6 +386,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
+                          setShowSettingsDialog(project)
                         }}>
                           <Settings className="h-4 w-4 mr-2" />
                           Settings
@@ -584,6 +587,15 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
           isOpen={membersDialog}
           onClose={setShowAddMemberDialog}
           project={projectSelected}
+        />
+
+        <WorkspaceSettings
+          isOpen={showSettingsDialog !== null}
+          onClose={() => setShowSettingsDialog(null)}
+          project={showSettingsDialog}
+          onProjectUpdate={(updatedProject) => {
+            setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p))
+          }}
         />
       </div>
     </div>

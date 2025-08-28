@@ -215,6 +215,40 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
           log: log
         })
         
+        // VERIFICATION: Timestamps vs Latency logic
+        if (log.stt_metrics && log.llm_metrics && log.unix_timestamp) {
+          const turnStartTime = log.unix_timestamp
+          const sttDuration = log.stt_metrics.duration || 0
+          const expectedLLMStartTime = turnStartTime + (sttDuration * 1000) // Convert to ms
+          
+          console.log(`⏰ TIMESTAMP VERIFICATION - Turn ${index}:`, {
+            turnStartTime: new Date(turnStartTime).toISOString(),
+            sttDuration: `${sttDuration.toFixed(3)}s`,
+            expectedLLMStartTime: new Date(expectedLLMStartTime).toISOString(),
+            actualLLMTimestamp: log.llm_metrics.timestamp ? new Date(log.llm_metrics.timestamp).toISOString() : 'N/A',
+            timeDifference: log.llm_metrics.timestamp ? 
+              Math.abs(expectedLLMStartTime - log.llm_metrics.timestamp) : 'N/A',
+            formula: 'LLM_start = turn_start + STT_duration'
+          })
+        }
+        
+        // VERIFICATION: TTS timestamp logic  
+        if (log.llm_metrics && log.tts_metrics && log.llm_metrics.timestamp) {
+          const llmStartTime = log.llm_metrics.timestamp
+          const llmTTFT = log.llm_metrics.ttft || 0
+          const expectedTTSStartTime = llmStartTime + (llmTTFT * 1000) // Convert to ms
+          
+          console.log(`🔊 TTS TIMESTAMP VERIFICATION - Turn ${index}:`, {
+            llmStartTime: new Date(llmStartTime).toISOString(),
+            llmTTFT: `${llmTTFT.toFixed(3)}s`,
+            expectedTTSStartTime: new Date(expectedTTSStartTime).toISOString(),
+            actualTTSTimestamp: log.tts_metrics.timestamp ? new Date(log.tts_metrics.timestamp).toISOString() : 'N/A',
+            timeDifference: log.tts_metrics.timestamp ? 
+              Math.abs(expectedTTSStartTime - log.tts_metrics.timestamp) : 'N/A',
+            formula: 'TTS_start = LLM_start + LLM_ttft'
+          })
+        }
+        
         // Individual component latencies (in seconds)
         if (log.stt_metrics?.duration) metrics.stt.push(log.stt_metrics.duration)
         if (log.llm_metrics?.ttft) metrics.llm.push(log.llm_metrics.ttft)
