@@ -179,6 +179,24 @@ WHERE added_by_user_id = 'b781ff78-76a6-46d1-870a-f73d62924a46';
 DELETE FROM pype_voice_users 
 WHERE user_id = 'b781ff78-76a6-46d1-870a-f73d62924a46';
 
+-- ========================================
+-- 8. Ajouter système d'approbation utilisateurs
+-- ========================================
+
+-- Ajouter colonne status à la table users
+ALTER TABLE pype_voice_users 
+ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active',
+ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP,
+ADD COLUMN IF NOT EXISTS approved_by VARCHAR(255);
+
+-- Mettre tous les utilisateurs existants comme 'active'
+UPDATE pype_voice_users 
+SET status = 'active' 
+WHERE status IS NULL;
+
+-- Index pour performance
+CREATE INDEX IF NOT EXISTS idx_users_status ON pype_voice_users(status);
+
 -- 3. Vérifier qu'il reste seulement le bon utilisateur
 SELECT 
     user_id,

@@ -61,10 +61,10 @@ export async function registerUser(
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Insert new user
+    // Insert user with pending status
     const result = await query(
-      'INSERT INTO pype_voice_users (email, password_hash, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING id, email, first_name, last_name, created_at',
-      [email, hashedPassword, firstName || null, lastName || null]
+      'INSERT INTO pype_voice_users (email, password_hash, first_name, last_name, status, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, first_name, last_name, created_at, status',
+      [email, hashedPassword, firstName || null, lastName || null, 'pending', new Date().toISOString()]
     );
 
     const user = result.rows[0];
@@ -87,36 +87,44 @@ export async function registerUser(
 
 export async function loginUser(email: string, password: string): Promise<AuthResult> {
   try {
-    // Find user by email
+    // Get user by email
     const result = await query('SELECT * FROM pype_voice_users WHERE email = $1', [email]);
+    
     if (result.rows.length === 0) {
-      return { success: false, message: 'Invalid email or password' };
+      return { success: false, message: 'User not found' };
     }
 
     const user = result.rows[0];
 
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-    if (!isPasswordValid) {
-      return { success: false, message: 'Invalid email or password' };
+    // Check if user account is active
+    if (user.status && user.status !== 'active') {
+      if (user.status === 'pending') {
+        return { success: false, message: 'Your account is pending approval. Please wait for an administrator to approve your account.' };
+      } else if (user.status === 'rejected') {
+        return { success: false, message: 'Your account has been rejected. Please contact an administrator.' };
+      }
+      return { success: false, message: 'Your account is not active. Please contact an administrator.' };
     }
 
-    // Generate JWT token
+    // Check password
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+    if (!isValidPassword) {
+      return { success: false, message: 'Invalid password' };
+    }
+
+    // Generate token
     const token = generateToken(user);
 
     return {
       success: true,
       user: {
-        id: user.id,
         user_id: user.user_id,
         email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
-        profile_image_url: user.profile_image_url,
-        created_at: user.created_at,
-        updated_at: user.updated_at,
+        global_role: user.global_role
       },
-      token,
+      token
     };
   } catch (error) {
     console.error('Login error:', error);

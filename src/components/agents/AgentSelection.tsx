@@ -297,14 +297,6 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 Manage AI voice agents for this workspace. Create, configure, and monitor your conversational AI assistants.
               </p>
             </div>
-            <Button
-              onClick={handleCreateAgent}
-              disabled={agentsLoading}
-              className="gap-2 bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300"
-            >
-              <Plus className="w-4 h-4" />
-              New Agent
-            </Button>
           </div>
         </div>
 

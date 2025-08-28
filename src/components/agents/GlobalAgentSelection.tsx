@@ -205,7 +205,6 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#fafafa' }}>
-      <Header />
       <main className="max-w-6xl mx-auto px-8 py-8">
         {/* Header */}
         <div className="mb-8">

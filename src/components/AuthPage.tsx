@@ -44,8 +44,14 @@ export default function AuthPage() {
       // Set auth token in cookie
       document.cookie = `auth-token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
 
-      // Redirect to dashboard or requested page
-      router.push(redirectUrl);
+      // Check user role and redirect accordingly
+      if (isLogin) {
+        // Login: redirect to requested page or dashboard
+        router.push(redirectUrl);
+      } else {
+        // Signup: redirect to onboarding/waiting page for normal users
+        router.push('/onboarding');
+      }
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
     } finally {

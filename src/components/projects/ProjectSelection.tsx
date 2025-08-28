@@ -491,18 +491,20 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                 Organize your voice agents by department or team. Each workspace provides isolated access control, 
                 dedicated analytics, and team-specific agent management.
               </p>
-              <div className="space-y-4">
-                <Button 
-                  onClick={handleCreateProject}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create workspace
-                </Button>
-                <div className="text-xs text-gray-500 max-w-sm mx-auto">
-                  <p><strong>Example:</strong> Create "Sales Department" to organize all sales-related voice agents and provide access to your sales team.</p>
+              {isSuperAdmin && (
+                <div className="space-y-4">
+                  <Button 
+                    onClick={handleCreateProject}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create workspace
+                  </Button>
+                  <div className="text-xs text-gray-500 max-w-sm mx-auto">
+                    <p><strong>Example:</strong> Create "Sales Department" to organize all sales-related voice agents and provide access to your sales team.</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </main>
