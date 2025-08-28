@@ -174,7 +174,10 @@ export async function GET(request: NextRequest) {
     // Check authentication (now reads JWT from cookies)
     const { isAuthenticated, userId } = await verifyUserAuth()
     
+    console.log('🔐 AUTH DEBUG:', { isAuthenticated, userId });
+    
     if (!isAuthenticated || !userId) {
+      console.log('❌ AUTH FAILED:', { isAuthenticated, userId });
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
