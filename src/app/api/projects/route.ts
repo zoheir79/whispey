@@ -239,6 +239,14 @@ export async function GET(request: NextRequest) {
     // Get user's global role and permissions
     const userGlobalRole = await getUserGlobalRole(userId);
     
+    console.log('🔍 DEBUG API PROJECTS:', {
+      userId,
+      userEmail: user.email,
+      userGlobalRole: userGlobalRole?.global_role,
+      canViewAllProjects: userGlobalRole?.permissions?.canViewAllProjects,
+      permissions: userGlobalRole?.permissions
+    });
+    
     let mappings: any[] = [];
     let error: any = null;
     
