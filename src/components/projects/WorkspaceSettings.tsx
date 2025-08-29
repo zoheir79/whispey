@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { AlertCircle, Check, Loader2, Save, Settings, X } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import WorkspaceNameInput from '@/components/ui/WorkspaceNameInput'
 
 interface Project {
   id: string
@@ -186,12 +187,10 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="name">Workspace Name</Label>
-                  <Input
-                    id="name"
+                  <WorkspaceNameInput
                     value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    onChange={(value) => handleInputChange('name', value)}
                     placeholder="Enter workspace name"
-                    className="mt-1"
                   />
                 </div>
 

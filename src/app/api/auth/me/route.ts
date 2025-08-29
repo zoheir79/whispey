@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // Get user data by user_id
     const result = await query(
-      'SELECT user_id, email, first_name, last_name, global_role, status FROM pype_voice_users WHERE user_id = $1',
+      'SELECT user_id, email, first_name, last_name, global_role, status, created_at FROM pype_voice_users WHERE user_id = $1',
       [userId]
     );
 
@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
         last_name: user.last_name,
         global_role: user.global_role,
         status: user.status,
+        created_at: user.created_at,
       },
     });
   } catch (error) {

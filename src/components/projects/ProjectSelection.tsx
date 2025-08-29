@@ -48,8 +48,25 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const { isSuperAdmin, isLoading: roleLoading } = useGlobalRole()
+  const { globalRole, permissions, isAdmin, isSuperAdmin, isLoading: roleLoading } = useGlobalRole()
   const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+
+  // Fetch user data for welcome message
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData.user);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const fetchProjects = async () => {
     setLoading(true)
@@ -263,12 +280,31 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl font-semibold text-gray-900">Workspaces</h1>
-                </div>
-                <p className="text-sm text-gray-600">
-                  Organize your voice agents by department or team. Each workspace provides isolated access control and dedicated analytics.
-                </p>
+                {isSuperAdmin ? (
+                  <>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-2xl font-semibold text-gray-900">Workspaces</h1>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Organize your voice agents by department or team. Each workspace provides isolated access control and dedicated analytics.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="mb-4">
+                      <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                        Welcome back, {user?.first_name && user?.last_name 
+                          ? `${user.first_name} ${user.last_name}` 
+                          : user?.first_name || user?.email?.split('@')[0] || 'User'}!
+                      </h1>
+                      {projects.length > 0 && (
+                        <p className="text-sm text-gray-600">
+                          Working in: <span className="font-medium text-gray-900">{projects[0].name}</span>
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
               {isSuperAdmin && (
                 <Button 

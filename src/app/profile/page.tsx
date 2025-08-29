@@ -47,10 +47,11 @@ export default function ProfilePage() {
         if (!res.ok) throw new Error('Failed to load profile')
         
         const data = await res.json()
-        setUserProfile(data)
-        setFirstName(data.first_name || '')
-        setLastName(data.last_name || '')
-        setEmail(data.email || '')
+        const userData = data.user || data
+        setUserProfile(userData)
+        setFirstName(userData.first_name || '')
+        setLastName(userData.last_name || '')
+        setEmail(userData.email || '')
       } catch (err) {
         setMessage({ type: 'error', text: 'Failed to load profile' })
         console.error('Profile load error:', err)
@@ -88,7 +89,8 @@ export default function ProfilePage() {
       const updatedRes = await fetch('/api/auth/me')
       if (updatedRes.ok) {
         const updatedData = await updatedRes.json()
-        setUserProfile(updatedData)
+        const userData = updatedData.user || updatedData
+        setUserProfile(userData)
       }
     } catch (err) {
       setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Update failed' })
