@@ -29,7 +29,9 @@ import {
   Timer,
   Calendar,
   Star,
-  DollarSign
+  DollarSign,
+  Building2,
+  CheckCircle
 } from 'lucide-react'
 
 interface MetricsData {
@@ -200,69 +202,211 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-2xl shadow-lg mb-4">
-          <Activity className="w-8 h-8" />
-          <h1 className="text-2xl font-bold">Tableau de Bord</h1>
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-lg font-semibold text-gray-900">Global Metrics</h1>
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Building2 className="w-4 h-4" />
+            <span>{workspace?.name || 'Current workspace'}</span>
+          </div>
         </div>
-        <p className="text-gray-600">
-          Statistiques en temps réel pour <span className="font-semibold text-blue-600">{workspace?.name || 'votre workspace'}</span>
+        <p className="text-sm text-gray-500">
+          Across all workspaces
         </p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-600 text-sm font-medium">Appels Totaux</p>
-                <p className="text-3xl font-bold text-blue-900">{metrics?.totalCalls.toLocaleString() || '0'}</p>
-                <p className="text-xs text-blue-600 mt-1">+{metrics?.todayCalls || 0} aujourd'hui</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Calls */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                  <Phone className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                    +0 today
+                  </span>
+                </div>
               </div>
-              <Phone className="w-12 h-12 text-blue-600" />
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">TOTAL CALLS (ALL)</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics?.totalCalls || 0}</p>
+                <p className="text-xs text-gray-400 font-medium">Current period</p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-600 text-sm font-medium">Durée Moyenne</p>
-                <p className="text-3xl font-bold text-green-900">{Math.floor((metrics?.averageDuration || 0) / 60)}:{Math.floor((metrics?.averageDuration || 0) % 60).toString().padStart(2, '0')}</p>
-                <p className="text-xs text-green-600 mt-1">Par conversation</p>
+        {/* Success Rate */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-green-50 rounded-lg border border-green-100">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                    <TrendingUp className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-bold text-green-600">Excellent</span>
+                  </div>
+                </div>
               </div>
-              <Clock className="w-12 h-12 text-green-600" />
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">SUCCESS RATE</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics?.successRate || 0}%</p>
+                <p className="text-xs text-gray-400 font-medium">Call completion rate</p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-600 text-sm font-medium">Agents Actifs</p>
-                <p className="text-3xl font-bold text-purple-900">{metrics?.activeAgents || 0}</p>
-                <p className="text-xs text-purple-600 mt-1">Temps de réponse: {metrics?.avgResponseTime || 0}s</p>
+        {/* Average Duration */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                  <Clock className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                    +100% week
+                  </span>
+                </div>
               </div>
-              <Headphones className="w-12 h-12 text-purple-600" />
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AVG DURATION</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">
+                  {Math.floor((metrics?.averageDuration || 0) / 60)}:{Math.floor((metrics?.averageDuration || 0) % 60).toString().padStart(2, '0')}
+                </p>
+                <p className="text-xs text-gray-400 font-medium">Per conversation</p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 hover:shadow-lg transition-all">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-amber-600 text-sm font-medium">Taux de Réussite</p>
-                <p className="text-3xl font-bold text-amber-900">{metrics?.successRate || 0}%</p>
-                <p className="text-xs text-amber-600 mt-1">Performance excellente</p>
+        {/* Total Cost */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
+                  <DollarSign className="w-5 h-5 text-amber-600" />
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-medium text-gray-500">USD</span>
+                </div>
               </div>
-              <TrendingUp className="w-12 h-12 text-amber-600" />
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">TOTAL COST</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">${metrics?.totalCost?.toFixed(2) || '0.00'}</p>
+                <p className="text-xs text-gray-400 font-medium">This month</p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Active Agents */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                  <Users className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-xs font-medium text-green-600">All running</span>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">ACTIVE AGENTS</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics?.activeAgents || 0}</p>
+                <p className="text-xs text-gray-400 font-medium">Voice assistants</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Response Time */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
+                  <Activity className="w-5 h-5 text-purple-600" />
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                    <Activity className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-bold text-green-600">Fast</span>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AVG RESPONSE</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics?.avgResponseTime || 0}s</p>
+                <p className="text-xs text-gray-400 font-medium">Processing speed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Cost Per Call */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
+                  <DollarSign className="w-5 h-5 text-orange-600" />
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-1 text-red-600">
+                    <TrendingUp className="w-3 h-3 text-red-600" />
+                    <span className="text-xs font-bold text-red-600">Monitor</span>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">COST PER CALL</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">
+                  ${((metrics?.totalCost || 0) / (metrics?.totalCalls || 1)).toFixed(2)}
+                </p>
+                <p className="text-xs text-gray-400 font-medium">Average cost</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Weekly Growth */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                  <TrendingUp className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                    <TrendingUp className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-bold text-green-600">Growing</span>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">WEEKLY GROWTH</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">+{metrics?.weeklyGrowth || 0}%</p>
+                <p className="text-xs text-gray-400 font-medium">This week</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Period Selector */}
@@ -285,33 +429,53 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
       </div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Calls Trend */}
-        <Card className="bg-white shadow-xl border-0">
-          <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-            <CardTitle className="flex items-center gap-2">
-              <BarChart className="w-5 h-5" />
-              Évolution des Appels (7 derniers jours)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Call Volume */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
+                  <BarChart className="w-4 h-4 text-blue-600" />
+                </div>
+                <h3 className="text-sm font-semibold text-gray-900">Daily Call Volume</h3>
+              </div>
+              <div className="flex items-center gap-1">
+                <TrendingUp className="w-3 h-3 text-gray-400" />
+                <span className="text-xs text-gray-500">Last 7 days period</span>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={timeSeriesData}>
                 <defs>
                   <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
                     <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="date" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+                <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#94a3b8" 
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis 
+                  stroke="#94a3b8" 
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1f2937', 
-                    border: 'none', 
-                    borderRadius: '8px',
-                    color: 'white' 
+                    backgroundColor: 'white', 
+                    border: '1px solid #e2e8f0', 
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                   }} 
                 />
                 <Area 
@@ -320,163 +484,276 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                   stroke="#3B82F6" 
                   fillOpacity={1} 
                   fill="url(#colorCalls)"
-                  strokeWidth={3}
+                  strokeWidth={2}
+                  dot={{ fill: '#3B82F6', r: 3 }}
+                  activeDot={{ r: 4, fill: '#1d4ed8' }}
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Cost Breakdown */}
-        <Card className="bg-white shadow-xl border-0">
-          <CardHeader className="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-t-lg">
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5" />
-              Répartition des Coûts
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={timeSeriesData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="date" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+        {/* Success Analysis */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-green-50 rounded flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                </div>
+                <h3 className="text-sm font-semibold text-gray-900">Success Analysis</h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <div className="text-xs text-gray-500">Success Rate</div>
+                  <div className="text-lg font-semibold text-gray-900">{metrics?.successRate || 0}%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  <Cell fill="#3B82F6" />
+                  <Cell fill="#E5E7EB" />
+                </Pie>
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1f2937', 
-                    border: 'none', 
-                    borderRadius: '8px',
-                    color: 'white' 
+                    backgroundColor: 'white', 
+                    border: '1px solid #e2e8f0', 
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                   }} 
                 />
-                <Line type="monotone" dataKey="total_cost" stroke="#10B981" strokeWidth={2} name="Coût Total" />
-                <Line type="monotone" dataKey="llm_cost" stroke="#3B82F6" strokeWidth={2} name="LLM" />
-                <Line type="monotone" dataKey="tts_cost" stroke="#F59E0B" strokeWidth={2} name="TTS" />
-                <Line type="monotone" dataKey="stt_cost" stroke="#EF4444" strokeWidth={2} name="STT" />
-              </LineChart>
+              </PieChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        {/* LLM Usage */}
-        <Card className="bg-white shadow-xl border-0">
-          <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-t-lg">
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5" />
-              Usage LLM (Tokens)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={timeSeriesData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="date" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1f2937', 
-                    border: 'none', 
-                    borderRadius: '8px',
-                    color: 'white' 
-                  }} 
-                />
-                <Bar dataKey="llm_tokens_input" stackId="a" fill="#8B5CF6" name="Tokens Input" />
-                <Bar dataKey="llm_tokens_output" stackId="a" fill="#A855F7" name="Tokens Output" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* TTS/STT Usage */}
-        <Card className="bg-white shadow-xl border-0">
-          <CardHeader className="bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-t-lg">
-            <CardTitle className="flex items-center gap-2">
-              <Headphones className="w-5 h-5" />
-              Usage TTS/STT
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
+            <div className="flex justify-center gap-4 mt-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <span className="text-xs text-gray-600">Successful</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                <span className="text-xs text-gray-600">Failed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Usage Minutes */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-blue-600" />
+                </div>
+                <h3 className="text-sm font-semibold text-gray-900">Usage Minutes</h3>
+              </div>
+              <div className="flex items-center gap-1">
+                <TrendingUp className="w-3 h-3 text-gray-400" />
+                <span className="text-xs text-gray-500">Daily conversation duration</span>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={timeSeriesData}>
                 <defs>
-                  <linearGradient id="colorTTS" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#F59E0B" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorSTT" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
+                  <linearGradient id="colorMinutes" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="date" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+                <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#94a3b8" 
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis 
+                  stroke="#94a3b8" 
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1f2937', 
-                    border: 'none', 
-                    borderRadius: '8px',
-                    color: 'white' 
+                    backgroundColor: 'white', 
+                    border: '1px solid #e2e8f0', 
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                   }} 
                 />
-                <Area type="monotone" dataKey="tts_characters" stackId="1" stroke="#F59E0B" fill="url(#colorTTS)" name="TTS Caractères" />
-                <Area type="monotone" dataKey="stt_duration" stackId="2" stroke="#EF4444" fill="url(#colorSTT)" name="STT Durée (s)" />
+                <Area 
+                  type="monotone" 
+                  dataKey="total_call_duration" 
+                  stroke="#3B82F6" 
+                  fill="url(#colorMinutes)" 
+                  strokeWidth={2}
+                  dot={{ fill: '#3B82F6', r: 3 }}
+                  activeDot={{ r: 4, fill: '#1d4ed8' }}
+                />
               </AreaChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Response Performance */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-purple-50 rounded flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-purple-600" />
+                </div>
+                <h3 className="text-sm font-semibold text-gray-900">Response Performance</h3>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-500">Average latency metrics</span>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={timeSeriesData}>
+                <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#94a3b8" 
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis 
+                  stroke="#94a3b8" 
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'white', 
+                    border: '1px solid #e2e8f0', 
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }} 
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="avg_response_time" 
+                  stroke="#8B5CF6" 
+                  strokeWidth={2} 
+                  dot={{ fill: '#8B5CF6', r: 3 }}
+                  activeDot={{ r: 4, fill: '#7C3AED' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
 
       {/* Agents Performance Table */}
-      <Card className="bg-white shadow-xl border-0">
-        <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-t-lg">
-          <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            Performance des Agents
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Agent</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Appels</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Satisfaction</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Durée Moy.</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {agentsComparison.map((agent: AgentComparison, index: number) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                          {agent.agent_name.charAt(0)}
-                        </div>
-                        <span className="font-medium text-gray-900">{agent.agent_name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 font-medium">
-                        {agent.metrics.total_calls}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="font-semibold text-gray-900">{agent.metrics.user_satisfaction}/5</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-gray-600">{Math.floor(agent.metrics.avg_duration / 60)} min</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-purple-50 rounded flex items-center justify-center">
+                <Users className="w-4 h-4 text-purple-600" />
+              </div>
+              <h3 className="text-sm font-semibold text-gray-900">Agent Performance</h3>
+            </div>
+            <div className="text-xs text-gray-500">
+              {agentsData.length} active agents
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Agent</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Calls</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Success Rate</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Duration</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Total Cost</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {agentsData.map((agent, index) => (
+                <tr key={index} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-4 px-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-semibold">
+                          {agent.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{agent.name}</div>
+                        <div className="text-xs text-gray-500">Active</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="text-sm text-gray-900">{agent.calls.toLocaleString()}</div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                        agent.successRate >= 90 
+                          ? 'bg-green-100 text-green-800' 
+                          : agent.successRate >= 70 
+                          ? 'bg-yellow-100 text-yellow-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {agent.successRate}%
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="text-sm text-gray-900">{agent.avgDuration}s</div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="text-sm font-medium text-gray-900">${agent.totalCost}</div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="flex items-center gap-2">
+                      {agent.trend === 'up' ? (
+                        <TrendingUp className="w-4 h-4 text-green-500" />
+                      ) : agent.trend === 'down' ? (
+                        <TrendingDown className="w-4 h-4 text-red-500" />
+                      ) : (
+                        <div className="w-4 h-4 bg-gray-300 rounded-full" />
+                      )}
+                      <span className={`text-xs font-medium ${
+                        agent.trend === 'up' ? 'text-green-600' : 
+                        agent.trend === 'down' ? 'text-red-600' : 'text-gray-500'
+                      }`}>
+                        {agent.trendValue > 0 ? '+' : ''}{agent.trendValue}%
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   )
 }
