@@ -78,7 +78,8 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
       const res = await fetch(endpoint)
       if (!res.ok) throw new Error('Failed to fetch projects')
       const data = await res.json()
-      setProjects(data)
+      // Handle both direct array response and wrapped object response
+      setProjects(Array.isArray(data) ? data : data.projects || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
