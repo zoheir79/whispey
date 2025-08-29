@@ -181,6 +181,17 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
     { name: 'Échec', value: 100 - metrics.successRate }
   ] : []
 
+  // Transform agents comparison data for the table
+  const agentsData = agentsComparison.map(agent => ({
+    name: agent.agent_name,
+    calls: agent.metrics.total_calls,
+    successRate: Math.round((agent.metrics.successful_calls / agent.metrics.total_calls) * 100) || 0,
+    avgDuration: Math.round(agent.metrics.avg_duration),
+    totalCost: agent.metrics.total_cost.toFixed(2),
+    trend: agent.metrics.completion_rate > 80 ? 'up' : agent.metrics.completion_rate < 50 ? 'down' : 'stable',
+    trendValue: Math.round((agent.metrics.completion_rate - 70) / 2) // Mock trend calculation
+  }))
+
   if (loading) {
     return (
       <div className="space-y-6">
