@@ -197,11 +197,16 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }
 
   const handleCreateAgent = () => {
+    console.log('handleCreateAgent - userRole:', userRole, 'globalRole:', globalRole);
+    
     // Only allow member role or higher to create agents, but super_admin can always create
     if (userRole === 'viewer' && globalRole !== 'super_admin') {
+      console.log('Access denied - userRole is viewer and globalRole is not super_admin');
       alert('You need at least member role to create agents');
       return;
     }
+    
+    console.log('Access granted - opening create dialog');
     setShowCreateDialog(true);
   };
 

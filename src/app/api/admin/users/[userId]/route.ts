@@ -19,6 +19,7 @@ export async function PATCH(
 
     const payload = verifyToken(token)
     if (!payload.valid || !payload.userId) {
+      console.error('Token verification failed:', payload)
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
@@ -48,26 +49,35 @@ export async function PATCH(
     }
 
     const user = userResult.rows[0]
+    console.log('Found user:', user)
 
     // Update user status
     const newStatus = action === 'unsuspend' ? 'active' : 'suspended'
     
-    const updateResult = await query(`
-      UPDATE pype_voice_users 
-      SET 
-        status = $1,
-        updated_at = CURRENT_TIMESTAMP,
-        updated_by = $2
-      WHERE user_id = $3
-      RETURNING user_id, email, status
-    `, [
-      newStatus,
-      payload.userId,
-      userId
-    ])
+    console.log('Attempting to update user:', { userId, newStatus, currentStatus: user.status })
+    
+    // Try different approaches for the update
+    let updateResult;
+    try {
+      // First try with updated_at only
+      updateResult = await query(`
+        UPDATE pype_voice_users 
+        SET status = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = $2
+        RETURNING user_id, email, status
+      `, [newStatus, userId])
+      
+      console.log('Update query executed, rows affected:', updateResult.rowCount)
+      console.log('Update result:', updateResult.rows)
+      
+    } catch (updateError: any) {
+      console.error('Update error:', updateError)
+      return NextResponse.json({ error: 'Database update failed: ' + (updateError?.message || 'Unknown error') }, { status: 500 })
+    }
 
     if (updateResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Failed to update user status' }, { status: 500 })
+      console.error('No rows returned after update for userId:', userId)
+      return NextResponse.json({ error: 'Failed to update user status - no rows affected' }, { status: 500 })
     }
 
     return NextResponse.json({
