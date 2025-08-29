@@ -128,44 +128,11 @@ export async function GET(request: NextRequest) {
     const result = await query(sql, params)
     
     if (!result || !result.rows) {
-      // Fallback to mock data if query fails
-      console.warn('Database query failed, using mock data')
-      const days = Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-      const data = []
-
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date(now)
-        date.setDate(now.getDate() - i)
-        const timestamp = date.getTime()
-        const dateStr = date.toISOString().split('T')[0]
-
-        const baseValue = Math.floor(Math.random() * 50) + 20
-        const weekendReduction = date.getDay() === 0 || date.getDay() === 6 ? 0.7 : 1
-
-        data.push({
-          date: dateStr,
-          timestamp,
-          calls: Math.floor(baseValue * weekendReduction * (1 + Math.random() * 0.3)),
-          total_cost: +(baseValue * 0.12 * weekendReduction * (1 + Math.random() * 0.4)).toFixed(2),
-          llm_cost: +(baseValue * 0.08 * weekendReduction * (1 + Math.random() * 0.4)).toFixed(2),
-          tts_cost: +(baseValue * 0.02 * weekendReduction * (1 + Math.random() * 0.3)).toFixed(2),
-          stt_cost: +(baseValue * 0.02 * weekendReduction * (1 + Math.random() * 0.3)).toFixed(2),
-          llm_tokens_input: Math.floor(baseValue * 150 * weekendReduction * (1 + Math.random() * 0.5)),
-          llm_tokens_output: Math.floor(baseValue * 80 * weekendReduction * (1 + Math.random() * 0.5)),
-          tts_characters: Math.floor(baseValue * 200 * weekendReduction * (1 + Math.random() * 0.4)),
-          stt_duration: Math.floor(baseValue * 30 * weekendReduction * (1 + Math.random() * 0.4)),
-          total_call_duration: Math.floor(baseValue * 120 * weekendReduction * (1 + Math.random() * 0.3)),
-          avg_response_time: +(1.2 + Math.random() * 1.8).toFixed(2),
-          completion_rate: Math.min(95, Math.floor(85 + Math.random() * 15))
-        })
-      }
-
-      return NextResponse.json({
-        data,
-        period,
-        projectId,
-        metric
-      })
+      console.error('Database query failed for timeseries metrics');
+      return NextResponse.json(
+        { error: 'Failed to fetch metrics data' },
+        { status: 500 }
+      );
     }
 
     // Transform database results to match expected format

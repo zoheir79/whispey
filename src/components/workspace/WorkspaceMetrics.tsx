@@ -160,6 +160,10 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
           targetProjectId = selectedWorkspace || projectId || null;
           if (targetProjectId && targetProjectId !== 'ALL') {
             response = await fetch(`/api/projects/${targetProjectId}/metrics`)
+          } else if (!isSuperAdmin && projectId) {
+            // For regular users, always use their assigned projectId
+            targetProjectId = projectId;
+            response = await fetch(`/api/projects/${projectId}/metrics`)
           } else {
             throw new Error('No workspace specified')
           }
@@ -193,20 +197,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         }
 
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
-        // Mock data for development - adapt based on role and workspace selection
-        const isGlobalView = isSuperAdmin && (selectedWorkspace === 'ALL' || !selectedWorkspace);
-        const mockData = {
-          totalCalls: isGlobalView ? 5420 : 1247,
-          successRate: isGlobalView ? 92.8 : 94.2,
-          averageDuration: 156,
-          totalCost: isGlobalView ? 342.18 : 89.45,
-          activeAgents: isGlobalView ? 48 : 12,
-          todayCalls: isGlobalView ? 89 : 23,
-          weeklyGrowth: 12.5,
-          avgResponseTime: 1.2
-        }
-        setMetrics(mockData)
+        setError(err instanceof Error ? err.message : 'Failed to fetch metrics data')
+        console.error('Failed to fetch workspace metrics:', err)
       } finally {
         setLoading(false)
       }

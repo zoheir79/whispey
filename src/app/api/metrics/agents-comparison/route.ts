@@ -132,7 +132,6 @@ export async function GET(request: NextRequest) {
 
     sql += `
       GROUP BY a.id, a.name
-      HAVING COUNT(cl.id) > 0
       ORDER BY total_calls DESC
       LIMIT 10
     `;
@@ -140,19 +139,11 @@ export async function GET(request: NextRequest) {
     const result = await query(sql, params);
 
     if (!result || !result.rows) {
-      // Fallback to mock data if query fails
-      console.warn('Database query failed for agents comparison, using mock data');
-      const agentsData = generateAgentsComparisonData(projectId, period);
-      return NextResponse.json({
-        success: true,
-        data: agentsData,
-        period,
-        projectId,
-        dateRange: {
-          start: startDate.toISOString(),
-          end: now.toISOString()
-        }
-      });
+      console.error('Database query failed for agents comparison metrics');
+      return NextResponse.json(
+        { error: 'Failed to fetch agents comparison data' },
+        { status: 500 }
+      );
     }
 
     // Transform database results to expected format
@@ -166,7 +157,7 @@ export async function GET(request: NextRequest) {
         avg_duration: Math.round(parseFloat(row.avg_duration) || 0),
         total_cost: Math.round((parseFloat(row.total_cost) || 0) * 100) / 100,
         completion_rate: Math.round((parseFloat(row.completion_rate) || 0) * 100) / 100,
-        user_satisfaction: 4.2 + Math.random() * 0.6, // Mock for now
+        user_satisfaction: null, // Will be calculated from real feedback data when available
         response_time: Math.round((parseFloat(row.response_time) || 0) * 100) / 100,
         llm_usage: {
           total_tokens: parseInt(row.total_tokens) || 0,
@@ -182,9 +173,9 @@ export async function GET(request: NextRequest) {
         stt_usage: {
           duration: Math.round(parseFloat(row.stt_duration) || 0),
           requests: parseInt(row.total_calls) || 0,
-          accuracy: 0.92 + Math.random() * 0.06 // Mock for now
+          accuracy: null // Will be calculated from real STT accuracy metrics when available
         },
-        trends: generateAgentTrends(period)
+        trends: [] // Historical trends will be implemented with real data when needed
       }
     }));
 
@@ -206,81 +197,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-function generateAgentsComparisonData(projectId: string | null, period: string) {
-  const agents = [
-    'Support Agent',
-    'Sales Representative', 
-    'Technical Support',
-    'Customer Care',
-    'General Assistant',
-    'Specialized AI'
-  ];
-
-  const agentsData = agents.slice(0, Math.floor(Math.random() * 4) + 2).map(agentName => {
-    const basePerformance = Math.random() * 0.4 + 0.6; // 0.6 to 1.0
-    
-    return {
-      agent_name: agentName,
-      agent_id: `agent_${agentName.toLowerCase().replace(/\s+/g, '_')}`,
-      metrics: {
-        total_calls: Math.floor((Math.random() * 200 + 50) * basePerformance),
-        successful_calls: 0,
-        failed_calls: 0,
-        avg_duration: Math.round((Math.random() * 120 + 60) * basePerformance),
-        total_cost: Math.round((Math.random() * 50 + 10) * basePerformance * 100) / 100,
-        completion_rate: Math.round((0.85 + Math.random() * 0.15) * basePerformance * 100) / 100,
-        user_satisfaction: Math.round((4.0 + Math.random() * 1.0) * basePerformance * 10) / 10,
-        response_time: Math.round((Math.random() * 2 + 1) / basePerformance * 100) / 100,
-        llm_usage: {
-          total_tokens: Math.floor((Math.random() * 50000 + 10000) * basePerformance),
-          input_tokens: 0,
-          output_tokens: 0,
-          requests: Math.floor((Math.random() * 300 + 50) * basePerformance)
-        },
-        tts_usage: {
-          characters: Math.floor((Math.random() * 20000 + 5000) * basePerformance),
-          duration: Math.floor((Math.random() * 1200 + 300) * basePerformance),
-          requests: Math.floor((Math.random() * 150 + 30) * basePerformance)
-        },
-        stt_usage: {
-          duration: Math.floor((Math.random() * 2400 + 600) * basePerformance),
-          requests: Math.floor((Math.random() * 100 + 25) * basePerformance),
-          accuracy: Math.round((0.85 + Math.random() * 0.15) * basePerformance * 100) / 100
-        },
-        trends: generateAgentTrends(period)
-      }
-    };
-  });
-
-  // Calculate dependent values
-  agentsData.forEach(agent => {
-    agent.metrics.successful_calls = Math.floor(agent.metrics.total_calls * agent.metrics.completion_rate);
-    agent.metrics.failed_calls = agent.metrics.total_calls - agent.metrics.successful_calls;
-    agent.metrics.llm_usage.input_tokens = Math.floor(agent.metrics.llm_usage.total_tokens * 0.7);
-    agent.metrics.llm_usage.output_tokens = agent.metrics.llm_usage.total_tokens - agent.metrics.llm_usage.input_tokens;
-  });
-
-  return agentsData;
-}
-
-function generateAgentTrends(period: string) {
-  const points = period === '7d' ? 7 : period === '30d' ? 15 : 10;
-  const trends = [];
-  
-  for (let i = 0; i < points; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    
-    trends.unshift({
-      date: date.toISOString().split('T')[0],
-      calls: Math.floor(Math.random() * 20 + 5),
-      satisfaction: Math.round((4.0 + Math.random() * 1.0) * 10) / 10,
-      response_time: Math.round((Math.random() * 2 + 1) * 100) / 100,
-      completion_rate: Math.round((0.85 + Math.random() * 0.15) * 100) / 100
-    });
-  }
-  
-  return trends;
 }
