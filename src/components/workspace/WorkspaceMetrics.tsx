@@ -147,8 +147,9 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         try {
           const response = await fetch('/api/projects')
           if (response.ok) {
-            const workspaces = await response.json()
-            setAvailableWorkspaces(workspaces)
+            const data = await response.json()
+            // Handle both direct array response and wrapped object response
+            setAvailableWorkspaces(Array.isArray(data) ? data : data.projects || [])
           }
         } catch (error) {
           console.error('Error fetching workspaces:', error)
