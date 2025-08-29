@@ -92,6 +92,7 @@ export async function GET(request: NextRequest) {
       WHERE 1=1
     `;
 
+    
     const params = [startDate.toISOString(), now.toISOString()];
     let paramIndex = 2;
 
