@@ -7,11 +7,18 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    console.log('🔍 PROJECT ROLE API: Starting authentication check');
+    
     // Verify authentication
     const authResult = await verifyAuth(request);
+    console.log('🔍 PROJECT ROLE API: Auth result:', { success: authResult.success, hasUser: !!authResult.user, message: authResult.message });
+    
     if (!authResult.success || !authResult.user) {
+      console.log('🔍 PROJECT ROLE API: Authentication failed, returning 401');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    
+    console.log('🔍 PROJECT ROLE API: User authenticated:', { user_id: authResult.user.user_id, email: authResult.user.email });
 
     const { id: projectId } = await context.params;
 
