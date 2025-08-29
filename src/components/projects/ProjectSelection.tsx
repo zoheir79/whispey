@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import TokenRegenerationConfirmDialog from '../TokenRegenerationConfirmDialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
-import { ChevronRight, Settings, Loader2, AlertCircle, Search, Plus, FolderOpen, MoreHorizontal, Trash2, Key, Copy, Eye, EyeOff, RefreshCw, Users, Clock, Filter, SortDesc, Grid3X3, List, ExternalLink, Building2, Folder } from 'lucide-react'
+import { Plus, Building2, Users, Settings, MoreVertical, Eye, Trash2, Copy, ExternalLink, Grid, List, Filter, Search, X, AlertCircle, SortDesc, Grid3X3, FolderOpen, Key, MoreHorizontal, Loader2, RefreshCw, Clock, ChevronRight, EyeOff } from 'lucide-react'
+import WorkspaceDashboard from '@/components/dashboard/WorkspaceDashboard'
 import ProjectCreationDialog from './ProjectCreationDialog'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import MemberManagementDialog from '../MemberManagmentDialog'
@@ -522,8 +523,8 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
             </div>
           )}
 
-          {/* Empty State for No Workspaces */}
-          {projects.length === 0 && !loading && !error && (
+          {/* Dashboard for users with workspaces OR Empty State for Super Admins */}
+          {projects.length === 0 && !loading && !error && isSuperAdmin && (
             <div className="text-center py-20">
               <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Building2 className="h-8 w-8 text-blue-600" />
@@ -533,21 +534,24 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                 Organize your voice agents by department or team. Each workspace provides isolated access control, 
                 dedicated analytics, and team-specific agent management.
               </p>
-              {isSuperAdmin && (
-                <div className="space-y-4">
-                  <Button 
-                    onClick={handleCreateProject}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create workspace
-                  </Button>
-                  <div className="text-xs text-gray-500 max-w-sm mx-auto">
-                    <p><strong>Example:</strong> Create "Sales Department" to organize all sales-related voice agents and provide access to your sales team.</p>
-                  </div>
+              <div className="space-y-4">
+                <Button 
+                  onClick={handleCreateProject}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create workspace
+                </Button>
+                <div className="text-xs text-gray-500 max-w-sm mx-auto">
+                  <p><strong>Example:</strong> Create "Sales Department" to organize all sales-related voice agents and provide access to your sales team.</p>
                 </div>
-              )}
+              </div>
             </div>
+          )}
+
+          {/* Dashboard for Regular Users */}
+          {!isSuperAdmin && (
+            <WorkspaceDashboard workspace={projects.length > 0 ? projects[0] : null} />
           )}
         </main>
 

@@ -125,17 +125,19 @@ function Header({ breadcrumb }: HeaderProps) {
             {/* Navigation Menu - Role-based Access */}
             {!roleLoading && (
               <div className="flex items-center gap-1">
-                {/* Projects/Workspaces Access - Only for Admins */}
-                {isAdmin && (
-                  <Link
-                    href="/"
-                    className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-blue-600 transition-all duration-200 rounded-lg hover:bg-blue-50/50 border border-transparent hover:border-blue-100"
-                  >
-                    <Folders className="w-4 h-4 transition-transform group-hover:scale-110" />
-                    <span className="hidden sm:inline">All Workspaces</span>
-                    <span className="sm:hidden">Workspaces</span>
-                  </Link>
-                )}
+                {/* Workspaces Access - Differentiated for Admins vs Users */}
+                <Link
+                  href="/"
+                  className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-blue-600 transition-all duration-200 rounded-lg hover:bg-blue-50/50 border border-transparent hover:border-blue-100"
+                >
+                  <Folders className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  <span className="hidden sm:inline">
+                    {isAdmin ? 'All Workspaces' : 'My Workspace'}
+                  </span>
+                  <span className="sm:hidden">
+                    {isAdmin ? 'Workspaces' : 'Workspace'}
+                  </span>
+                </Link>
 
                 {/* Agents Access */}
                 <Link
