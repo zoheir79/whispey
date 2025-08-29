@@ -150,12 +150,28 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
 
 export async function verifyAuth(request: Request): Promise<AuthResult> {
   try {
+    // Try to get token from authorization header first, then from cookies
     const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return { success: false, message: 'No valid authorization header' };
+    let token = '';
+    
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else {
+      // Fallback to cookie-based auth
+      const cookieHeader = request.headers.get('cookie');
+      if (cookieHeader) {
+        const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, string>);
+        token = cookies.token || '';
+      }
     }
 
-    const token = authHeader.substring(7);
+    if (!token) {
+      return { success: false, message: 'No valid authorization token' };
+    }
     const secret = process.env.JWT_SECRET;
     if (!secret) {
       throw new Error('JWT_SECRET not configured');

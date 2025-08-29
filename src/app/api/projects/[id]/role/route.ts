@@ -17,8 +17,9 @@ export async function GET(
 
     // Get user role in this specific project
     const result = await query(
-      `SELECT role FROM pype_voice_email_project_mapping 
-       WHERE project_id = $1 AND user_id = $2`,
+      `SELECT epm.role FROM pype_voice_email_project_mapping epm
+       INNER JOIN pype_voice_users u ON u.email = epm.email
+       WHERE epm.project_id = $1 AND u.user_id = $2 AND epm.is_active = true`,
       [projectId, authResult.user.user_id]
     );
 
