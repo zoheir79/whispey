@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth-utils'
+import { verifyUserAuth } from '@/lib/auth'
 import { query } from '@/lib/db'
 import * as bcrypt from 'bcrypt'
 
 export async function PATCH(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '') || 
-                  request.cookies.get('token')?.value
-
-    if (!token) {
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    if (!isAuthenticated || !userId) {
       return NextResponse.json({ message: 'Authentication required' }, { status: 401 })
-    }
-
-    const verification = verifyToken(token)
-    if (!verification.valid || !verification.userId) {
-      return NextResponse.json({ message: 'Invalid token' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -31,7 +24,7 @@ export async function PATCH(request: NextRequest) {
     // Get current user data
     const userResult = await query(
       'SELECT user_id, email, password_hash, status FROM pype_voice_users WHERE user_id = $1',
-      [verification.userId]
+      [userId]
     )
 
     if (userResult.rows.length === 0) {
@@ -58,7 +51,7 @@ export async function PATCH(request: NextRequest) {
     // Update password
     const updateResult = await query(
       'UPDATE pype_voice_users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE user_id = $2',
-      [newPasswordHash, verification.userId]
+      [newPasswordHash, userId]
     )
 
     if (updateResult.rowCount === 0) {

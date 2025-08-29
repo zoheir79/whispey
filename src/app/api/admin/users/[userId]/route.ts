@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth-utils'
+import { verifyUserAuth } from '@/lib/auth'
+import { getUserGlobalRole } from '@/services/getGlobalRole'
 import { query } from '@/lib/db'
 
 export async function PATCH(
@@ -10,26 +11,15 @@ export async function PATCH(
     const { action } = await request.json()
     const { userId } = await context.params
     
-    // Verify authentication and super_admin role
-    const token = request.headers.get('authorization')?.replace('Bearer ', '') || 
-                  request.cookies.get('token')?.value
-    if (!token) {
+    // Verify authentication
+    const { isAuthenticated, userId: adminUserId } = await verifyUserAuth(request);
+    if (!isAuthenticated || !adminUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const payload = verifyToken(token)
-    if (!payload.valid || !payload.userId) {
-      console.error('Token verification failed:', payload)
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
-    // Get admin user role
-    const adminResult = await query(
-      'SELECT global_role FROM pype_voice_users WHERE user_id = $1',
-      [payload.userId]
-    )
-
-    if (adminResult.rows.length === 0 || adminResult.rows[0].global_role !== 'super_admin') {
+    // Check if admin user has super_admin role
+    const adminGlobalRole = await getUserGlobalRole(adminUserId);
+    if (!adminGlobalRole || adminGlobalRole.global_role !== 'super_admin') {
       return NextResponse.json({ error: 'Forbidden - Super admin access required' }, { status: 403 })
     }
 

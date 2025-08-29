@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth-utils'
+import { verifyUserAuth } from '@/lib/auth'
 import { query } from '@/lib/db'
 
 export async function PATCH(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '') || 
-                  request.cookies.get('token')?.value
-
-    if (!token) {
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    if (!isAuthenticated || !userId) {
       return NextResponse.json({ message: 'Authentication required' }, { status: 401 })
-    }
-
-    const verification = verifyToken(token)
-    if (!verification.valid || !verification.userId) {
-      return NextResponse.json({ message: 'Invalid token' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -28,7 +21,7 @@ export async function PATCH(request: NextRequest) {
     if (email) {
       const existingUser = await query(
         'SELECT user_id FROM pype_voice_users WHERE email = $1 AND user_id != $2',
-        [email, verification.userId]
+        [email, userId]
       )
       
       if (existingUser.rows.length > 0) {
@@ -42,7 +35,7 @@ export async function PATCH(request: NextRequest) {
        SET first_name = $1, last_name = $2, email = $3, updated_at = CURRENT_TIMESTAMP 
        WHERE user_id = $4 
        RETURNING user_id, email, first_name, last_name, global_role, status, created_at, updated_at`,
-      [first_name || null, last_name || null, email, verification.userId]
+      [first_name || null, last_name || null, email, userId]
     )
 
     if (updateResult.rows.length === 0) {

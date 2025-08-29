@@ -1,24 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth-utils';
+import { verifyUserAuth } from '@/lib/auth';
 import { query } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get JWT token from cookies
-    const token = request.cookies.get('auth-token')?.value;
-    
-    if (!token) {
+    // Verify authentication
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    if (!isAuthenticated || !userId) {
       return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Verify JWT token
-    const payload = verifyToken(token);
-    if (!payload || !payload.userId) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid token' },
+        { success: false, message: 'Authentication required' },
         { status: 401 }
       );
     }
@@ -26,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Get user data by user_id
     const result = await query(
       'SELECT user_id, email, first_name, last_name, global_role, status FROM pype_voice_users WHERE user_id = $1',
-      [payload.userId]
+      [userId]
     );
 
     if (result.rows.length === 0) {
