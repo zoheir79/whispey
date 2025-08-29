@@ -23,6 +23,7 @@ import {
   Clock, 
   Users, 
   TrendingUp, 
+  TrendingDown,
   Activity, 
   Headphones,
   MessageSquare,
