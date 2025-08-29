@@ -197,13 +197,13 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }
 
   const handleCreateAgent = () => {
-    // Only allow member role or higher to create agents
-    if (userRole === 'viewer') {
+    // Only allow member role or higher to create agents, but super_admin can always create
+    if (userRole === 'viewer' && globalRole !== 'super_admin') {
       alert('You need at least member role to create agents');
       return;
     }
-    setShowCreateDialog(true)
-  }
+    setShowCreateDialog(true);
+  };
 
   const handleAgentCreated = (agentData: any) => {
     fetchAgents()

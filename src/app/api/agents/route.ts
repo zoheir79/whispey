@@ -41,7 +41,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user has permission to create agents in this project
-    if (!userGlobalRole.permissions.canViewAllAgents) {
+    // Super admin can always create agents, otherwise check project membership
+    if (userGlobalRole.global_role !== 'super_admin') {
       // For regular users, verify they have access to this specific project with member role or higher
       const accessCheck = await query(`
         SELECT epm.id 
