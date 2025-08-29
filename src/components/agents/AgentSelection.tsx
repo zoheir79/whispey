@@ -31,8 +31,7 @@ import {
   Eye,
   Globe,
   MonitorSpeaker,
-  ExternalLink,
-  ChevronRight
+  ExternalLink
 } from 'lucide-react'
 // Removed direct db-service import - using API calls instead
 import AgentCreationDialog from './AgentCreationDialog'
@@ -62,8 +61,6 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   const [copiedAgentId, setCopiedAgentId] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(12)
   const [breadcrumb, setBreadcrumb] = useState<{
     project?: string;
     item?: string;
@@ -289,18 +286,6 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
     return matchesSearch && matchesStatus
   })
 
-  // Pagination calculations
-  const totalPages = Math.ceil(filteredAgents.length / itemsPerPage)
-  const paginatedAgents = filteredAgents.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
-
-  // Reset to page 1 when search changes
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [searchQuery, statusFilter])
-
   const loading = projectLoading || agentsLoading
   const error = projectError || agentsError
 
@@ -376,12 +361,6 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
           {/* Right: Minimal Controls */}
           <div className="flex items-center gap-4">
-            {/* Results Count */}
-            <div className="text-sm text-gray-500">
-              {filteredAgents.length} agent{filteredAgents.length !== 1 ? 's' : ''}
-              {searchQuery && ` found`}
-            </div>
-
             {/* Clean Filter Toggle */}
             <div className="flex items-center bg-gray-100 rounded-lg p-1">
               <button
@@ -456,7 +435,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
         {/* Apple-Style Agent List */}
         {viewMode === 'list' ? (
           <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            {paginatedAgents.map((agent, index) => (
+            {filteredAgents.map((agent, index) => (
               <div
                 key={agent.id}
                 className={`group px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0 ${
@@ -570,7 +549,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
           </div>
         ) : (
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-            {paginatedAgents.map((agent) => (
+            {filteredAgents.map((agent) => (
               <div
                 key={agent.id}
                 className={`group cursor-pointer transition-all duration-300 ${
@@ -697,70 +676,6 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {filteredAgents.length > itemsPerPage && (
-          <div className="flex items-center justify-between mt-8 px-4">
-            <div className="text-sm text-gray-500">
-              Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAgents.length)} of {filteredAgents.length} agents
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="h-9 px-3 text-sm border-gray-300"
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Previous
-              </Button>
-              
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNumber;
-                  if (totalPages <= 5) {
-                    pageNumber = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNumber = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNumber = totalPages - 4 + i;
-                  } else {
-                    pageNumber = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <Button
-                      key={pageNumber}
-                      variant={currentPage === pageNumber ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setCurrentPage(pageNumber)}
-                      className={`h-9 w-9 p-0 text-sm ${
-                        currentPage === pageNumber 
-                          ? 'bg-blue-500 text-white border-blue-500' 
-                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {pageNumber}
-                    </Button>
-                  );
-                })}
-              </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="h-9 px-3 text-sm border-gray-300"
-              >
-                Next
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </div>
           </div>
         )}
 

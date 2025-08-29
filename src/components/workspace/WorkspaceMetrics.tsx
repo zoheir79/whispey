@@ -20,16 +20,14 @@ import {
   AreaChart
 } from 'recharts'
 import { 
-  Users, 
-  DollarSign, 
-  Phone, 
-  Clock, 
-  TrendingUp, 
-  TrendingDown, 
   Activity, 
-  Zap, 
+  Phone, 
+  DollarSign, 
+  Users, 
+  TrendingUp, 
+  TrendingDown,
+  Clock, 
   CheckCircle, 
-  XCircle, 
   AlertCircle, 
   BarChart3, 
   Building, 
@@ -37,17 +35,9 @@ import {
   Timer,
   Calendar,
   Star,
-  Headphones,
-  Search,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  Bot,
-  Globe
+  Headphones
 } from 'lucide-react'
 import { useGlobalRole } from '@/hooks/useGlobalRole'
-import { Button } from '@/components/ui/button'
 
 interface WorkspaceMetricsProps {
   projectId?: string
@@ -123,63 +113,36 @@ interface AgentComparison {
 }
 
 const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspaceFilter }) => {
-  const [selectedWorkspace, setSelectedWorkspace] = useState<string>('ALL')
-  const [selectedPeriod, setSelectedPeriod] = useState('7d')
-  const [selectedAgent, setSelectedAgent] = useState<string>('')
-  const [workspaceSearch, setWorkspaceSearch] = useState('')
-  const [agentSearch, setAgentSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(10)
-  const [workspaces, setWorkspaces] = useState<any[]>([])
-  const [agents, setAgents] = useState<any[]>([])
-  const [metrics, setMetrics] = useState<any>(null)
-  const [timeSeriesData, setTimeSeriesData] = useState<any[]>([])
-  const [agentsComparison, setAgentsComparison] = useState<any[]>([])
+  const [metrics, setMetrics] = useState<MetricsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [timeSeriesData, setTimeSeriesData] = useState<TimeSeriesData[]>([])
+  const [agentsComparison, setAgentsComparison] = useState<AgentComparison[]>([])
+  const [selectedPeriod, setSelectedPeriod] = useState('7d')
   const [availableWorkspaces, setAvailableWorkspaces] = useState<any[]>([])
+  const [selectedWorkspace, setSelectedWorkspace] = useState(workspaceFilter || projectId || 'ALL')
   const { isSuperAdmin, isLoading: roleLoading } = useGlobalRole()
 
-  // Fetch available workspaces and agents for selectors
+  // Fetch available workspaces for super_admin workspace selector
   useEffect(() => {
     const fetchWorkspaces = async () => {
       if (isSuperAdmin) {
         try {
           const response = await fetch('/api/projects')
           if (response.ok) {
-            const data = await response.json()
-            // Handle both direct array response and wrapped object response
-            setAvailableWorkspaces(Array.isArray(data) ? data : data.projects || [])
+            const workspaces = await response.json()
+            setAvailableWorkspaces(workspaces)
           }
-        } catch (error) {
-          console.error('Error fetching workspaces:', error)
+        } catch (err) {
+          console.error('Failed to fetch workspaces:', err)
         }
-      }
-    }
-
-    const fetchAgents = async () => {
-      try {
-        const endpoint = selectedWorkspace && selectedWorkspace !== 'ALL' 
-          ? `/api/agents?projectId=${selectedWorkspace}`
-          : '/api/agents'
-        const response = await fetch(endpoint)
-        if (response.ok) {
-          const agentsData = await response.json()
-          setAgents(agentsData)
-        }
-      } catch (error) {
-        console.error('Error fetching agents:', error)
       }
     }
 
     if (!roleLoading && isSuperAdmin) {
       fetchWorkspaces()
     }
-    
-    if (!roleLoading) {
-      fetchAgents()
-    }
-  }, [isSuperAdmin, roleLoading, selectedWorkspace])
+  }, [isSuperAdmin, roleLoading])
 
   // Main data fetching effect
   useEffect(() => {
@@ -225,8 +188,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         // Fetch agents comparison data  
         const agentsUrl = targetProjectId
-          ? `/api/metrics/agents-comparison?projectId=${targetProjectId}&period=${selectedPeriod}${selectedAgent ? `&agentId=${selectedAgent}` : ''}`
-          : `/api/metrics/agents-comparison?period=${selectedPeriod}${selectedAgent ? `&agentId=${selectedAgent}` : ''}`;
+          ? `/api/metrics/agents-comparison?projectId=${targetProjectId}&period=${selectedPeriod}`
+          : `/api/metrics/agents-comparison?period=${selectedPeriod}`;
         const agentsResponse = await fetch(agentsUrl)
         if (agentsResponse.ok) {
           const agentsResult = await agentsResponse.json()
@@ -244,28 +207,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
     if (!roleLoading && (projectId || isSuperAdmin || selectedWorkspace)) {
       fetchDashboardData()
     }
-  }, [projectId, isSuperAdmin, roleLoading, selectedWorkspace, selectedPeriod, selectedAgent])
-
-  // Filtered and paginated agents data
-  const filteredAgents = agentsComparison.filter(agent =>
-    agent.agent_name.toLowerCase().includes(agentSearch.toLowerCase())
-  )
-
-  const paginatedAgents = filteredAgents.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
-
-  const totalPages = Math.ceil(filteredAgents.length / itemsPerPage)
-
-  // Filtered workspaces for search
-  const filteredWorkspaces = availableWorkspaces.filter(workspace =>
-    workspace.name.toLowerCase().includes(workspaceSearch.toLowerCase())
-  )
-
-  const filteredAgentsList = agents.filter(agent =>
-    agent.name.toLowerCase().includes(agentSearch.toLowerCase())
-  )
+  }, [projectId, isSuperAdmin, roleLoading, selectedWorkspace, selectedPeriod])
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
@@ -359,143 +301,29 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         <p className="text-sm text-gray-500">{metricsDescription}</p>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Period Selector */}
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Period:
-            </span>
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-              {['7d', '30d', '90d'].map((period) => (
-                <button
-                  key={period}
-                  onClick={() => setSelectedPeriod(period)}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                    selectedPeriod === period
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-                  }`}
-                >
-                  {period === '7d' ? '7 Days' : period === '30d' ? '30 Days' : '90 Days'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Workspace Selector for Super Admin */}
-          {isSuperAdmin && (
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                <Building className="w-4 h-4" />
-                Workspace:
-              </span>
-              <div className="relative min-w-64">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search workspaces..."
-                    value={workspaceSearch}
-                    onChange={(e) => setWorkspaceSearch(e.target.value)}
-                    className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                  <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
-                </div>
-                
-                {workspaceSearch && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-                    <div 
-                      className="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm"
-                      onClick={() => {
-                        setSelectedWorkspace('ALL')
-                        setWorkspaceSearch('')
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-blue-500" />
-                        <span className="font-medium">All Workspaces</span>
-                      </div>
-                    </div>
-                    {filteredWorkspaces.map((workspace) => (
-                      <div
-                        key={workspace.id}
-                        className="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm border-t border-gray-100"
-                        onClick={() => {
-                          setSelectedWorkspace(workspace.id)
-                          setWorkspaceSearch('')
-                        }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Building className="w-4 h-4 text-gray-500" />
-                          <span>{workspace.name}</span>
-                        </div>
-                      </div>
-                    ))}
-                    {filteredWorkspaces.length === 0 && (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        No workspaces found
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {!workspaceSearch && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-                    <div 
-                      className={`px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm ${selectedWorkspace === 'ALL' ? 'bg-blue-50 text-blue-700' : ''}`}
-                      onClick={() => setSelectedWorkspace('ALL')}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-blue-500" />
-                        <span className="font-medium">All Workspaces</span>
-                      </div>
-                    </div>
-                    {availableWorkspaces.map((workspace) => (
-                      <div
-                        key={workspace.id}
-                        className={`px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm border-t border-gray-100 ${selectedWorkspace === workspace.id ? 'bg-blue-50 text-blue-700' : ''}`}
-                        onClick={() => setSelectedWorkspace(workspace.id)}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Building className="w-4 h-4 text-gray-500" />
-                          <span>{workspace.name}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Agent Filter */}
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <Bot className="w-4 h-4" />
-              Agent:
-            </span>
-            <div className="relative">
-              <select
-                value={selectedAgent}
-                onChange={(e) => setSelectedAgent(e.target.value)}
-                className="appearance-none px-4 py-2 pr-8 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-48"
-              >
-                <option value="">All Agents</option>
-                {filteredAgentsList.map((agent) => (
-                  <option key={agent.id} value={agent.id}>
-                    {agent.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 text-gray-400 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-            </div>
-          </div>
+      {/* Period Selector */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4 h-4 text-gray-400" />
+          <span className="text-sm font-medium text-gray-700">Time Period</span>
+        </div>
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          {['7d', '30d', '90d'].map((period) => (
+            <button
+              key={period}
+              onClick={() => setSelectedPeriod(period)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                selectedPeriod === period
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              {period === '7d' ? '7 jours' : period === '30d' ? '30 jours' : '90 jours'}
+            </button>
+          ))}
         </div>
       </div>
-
+      
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Calls */}
@@ -928,7 +756,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       {/* Agents Performance Table */}
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
         <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 bg-purple-50 rounded flex items-center justify-center">
                 <Users className="w-4 h-4 text-purple-600" />
@@ -936,58 +764,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
               <h3 className="text-sm font-semibold text-gray-900">Agent Performance</h3>
             </div>
             <div className="text-xs text-gray-500">
-              {filteredAgents.length} agents found
-            </div>
-          </div>
-          
-          {/* Search and Pagination Controls */}
-          <div className="flex items-center justify-between">
-            <div className="relative">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search agents..."
-                value={agentSearch}
-                onChange={(e) => {
-                  setAgentSearch(e.target.value)
-                  setCurrentPage(1)
-                }}
-                className="pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            
-            {/* Pagination Info */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">
-                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAgents.length)} of {filteredAgents.length}
-              </span>
-              
-              {/* Pagination Controls */}
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                
-                <span className="px-3 py-1 text-sm font-medium bg-blue-50 text-blue-700 rounded-md">
-                  {currentPage}
-                </span>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
+              {agentsData.length} active agents
             </div>
           </div>
         </div>
@@ -1004,48 +781,57 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {paginatedAgents.map((agent, index) => (
+              {agentsData.map((agent, index) => (
                 <tr key={index} className="hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs font-semibold">
-                          {agent.agent_name?.charAt(0) || 'A'}
+                          {agent.name.charAt(0)}
                         </span>
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{agent.agent_name || 'Unknown Agent'}</div>
+                        <div className="text-sm font-medium text-gray-900">{agent.name}</div>
                         <div className="text-xs text-gray-500">Active</div>
                       </div>
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="text-sm text-gray-900">{agent.total_calls || 0}</div>
+                    <div className="text-sm text-gray-900">{agent.calls.toLocaleString()}</div>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        (agent.success_rate || 0) >= 90 
+                        agent.successRate >= 90 
                           ? 'bg-green-100 text-green-800' 
-                          : (agent.success_rate || 0) >= 70 
+                          : agent.successRate >= 70 
                           ? 'bg-yellow-100 text-yellow-800' 
                           : 'bg-red-100 text-red-800'
                       }`}>
-                        {agent.success_rate || 0}%
+                        {agent.successRate}%
                       </span>
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="text-sm text-gray-900">{agent.avg_duration || 0}s</div>
+                    <div className="text-sm text-gray-900">{agent.avgDuration}s</div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="text-sm font-medium text-gray-900">${(agent.total_cost || 0).toFixed(2)}</div>
+                    <div className="text-sm font-medium text-gray-900">${agent.totalCost}</div>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-green-500" />
-                      <span className="text-xs font-medium text-green-600">
-                        +5%
+                      {agent.trend === 'up' ? (
+                        <TrendingUp className="w-4 h-4 text-green-500" />
+                      ) : agent.trend === 'down' ? (
+                        <TrendingDown className="w-4 h-4 text-red-500" />
+                      ) : (
+                        <div className="w-4 h-4 bg-gray-300 rounded-full" />
+                      )}
+                      <span className={`text-xs font-medium ${
+                        agent.trend === 'up' ? 'text-green-600' : 
+                        agent.trend === 'down' ? 'text-red-600' : 'text-gray-500'
+                      }`}>
+                        {agent.trendValue > 0 ? '+' : ''}{agent.trendValue}%
                       </span>
                     </div>
                   </td>

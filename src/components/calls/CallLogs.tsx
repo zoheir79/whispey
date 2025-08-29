@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Phone, Clock, CheckCircle, XCircle, Loader2, AlertCircle, RefreshCw, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Phone, Clock, CheckCircle, XCircle, Loader2, AlertCircle, RefreshCw } from "lucide-react"
 import { useInfiniteScrollWithFetch } from "@/hooks/useInfiniteScrollWithFetch"
 import CallDetailsDrawer from "./CallDetailsDrawer"
 import CallFilter, { FilterRule } from "../CallFilter"
@@ -244,9 +244,6 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     const [roleLoading, setRoleLoading] = useState(true) // Add loading state for role
   const [selectedCall, setSelectedCall] = useState<CallLog | null>(null)
   const [activeFilters, setActiveFilters] = useState<FilterRule[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(25)
   const [role, setRole] = useState<string | null>(null)
   const [visibleColumns, setVisibleColumns] = useState<{
     basic: string[]
@@ -261,7 +258,6 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
   console.log(dynamicColumnsKey)
 
 
-// ... (rest of the code remains the same)
 
   const getFilteredBasicColumns = useMemo(() => {
     return basicColumns.filter(col => 
@@ -270,17 +266,8 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
   }, [role])
 
   // Convert FilterRule[] to fetchFromTable filter format
-  const convertToFetchFilters = (filters: FilterRule[], searchQuery?: string) => {
+  const convertToFetchFilters = (filters: FilterRule[]) => {
     const fetchFilters = [{ column: "agent_id", operator: "=", value: agent?.id }]
-    
-    // Add search filter if present
-    if (searchQuery?.trim()) {
-      fetchFilters.push({
-        column: "customer_number",
-        operator: "ilike",
-        value: `%${searchQuery.trim()}%`
-      })
-    }
     
     filters.forEach(filter => {
       // Determine the column name (with JSONB path if applicable)
@@ -503,12 +490,11 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
 
     return {
       select: selectColumns.join(','),
-      filters: convertToFetchFilters(activeFilters, searchQuery),
+      filters: convertToFetchFilters(activeFilters),
       orderBy: { column: "created_at", ascending: false },
-      limit: itemsPerPage,
-      offset: (currentPage - 1) * itemsPerPage,
+      limit: 50,
     }
-  }, [agent?.id, activeFilters, role, searchQuery, currentPage, itemsPerPage])
+  }, [agent?.id, activeFilters, role])
 
   
 
@@ -576,7 +562,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
       const queryOptions = {
         table: "pype_voice_call_logs",
         select: selectColumns.join(','),
-        filters: convertToFetchFilters(activeFilters, searchQuery),
+        filters: convertToFetchFilters(activeFilters),
         orderBy: { column: "created_at", ascending: false }
       };
       
@@ -752,12 +738,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
 
   useEffect(() => {
     refresh()
-  }, [activeFilters, searchQuery, currentPage])
-
-  // Reset to page 1 when search or filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [searchQuery, activeFilters])
+  }, [activeFilters])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -858,92 +839,42 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
       {/* Header with Filters and Column Selector */}
       <div className="flex-none p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex flex-col gap-4">
-          {/* First row: Filters and controls */}
-          <div className="flex items-center justify-between">
-            <CallFilter 
-              onFiltersChange={handleFiltersChange}
-              onClear={handleClearFilters}
-              availableMetadataFields={dynamicColumns.metadata}
-              availableTranscriptionFields={dynamicColumnsKey}
+        <div className="flex items-center justify-between">
+          <CallFilter 
+            onFiltersChange={handleFiltersChange}
+            onClear={handleClearFilters}
+            availableMetadataFields={dynamicColumns.metadata}
+            availableTranscriptionFields={dynamicColumnsKey}
+          />
+          
+          <div className="flex items-center gap-2">
+          <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadCSV}
+              disabled={loading}
+            >
+              Download CSV
+            </Button>
+            <ColumnSelector
+              basicColumns={basicColumns.map((col) => col.key)}
+              basicColumnLabels={Object.fromEntries(basicColumns.filter(col => !col.hidden).map((col) => [col.key, col.label]))}
+              metadataColumns={dynamicColumns.metadata}
+              transcriptionColumns={dynamicColumnsKey}
+              visibleColumns={visibleColumns}
+              onColumnChange={handleColumnChange}
+              onSelectAll={handleSelectAll}
             />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={loading}
+              className="gap-2 h-8 w-8 p-0"
+            >
+              <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
             
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDownloadCSV}
-                disabled={loading}
-              >
-                Download CSV
-              </Button>
-              <ColumnSelector
-                basicColumns={basicColumns.map((col) => col.key)}
-                basicColumnLabels={Object.fromEntries(basicColumns.filter(col => !col.hidden).map((col) => [col.key, col.label]))}
-                metadataColumns={dynamicColumns.metadata}
-                transcriptionColumns={dynamicColumnsKey}
-                visibleColumns={visibleColumns}
-                onColumnChange={handleColumnChange}
-                onSelectAll={handleSelectAll}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={loading}
-                className="gap-2 h-8 w-8 p-0"
-              >
-                <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
-              </Button>
-            </div>
-          </div>
-
-          {/* Second row: Search and pagination info */}
-          <div className="flex items-center justify-between">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <input
-                type="search"
-                placeholder="Search by phone number..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-72 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
-
-            {/* Results info and pagination controls */}
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-500">
-                Page {currentPage} • {calls.length} calls loaded
-                {searchQuery && ` • Search: "${searchQuery}"`}
-              </div>
-              
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1 || loading}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                
-                <span className="px-3 py-1 text-sm font-medium bg-blue-50 text-blue-700 rounded-md min-w-[60px] text-center">
-                  {currentPage}
-                </span>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={!hasMore || loading}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
           </div>
         </div>
       </div>

@@ -81,18 +81,17 @@ export async function GET(request: NextRequest) {
           (COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) * 100.0 / NULLIF(COUNT(cl.id), 0)), 2
         ) as completion_rate,
         AVG(COALESCE(cl.avg_latency, 0)) as response_time,
-        0 as total_tokens,
-        0 as input_tokens,
-        0 as output_tokens,
-        0 as tts_characters,
-        0 as stt_duration
+        SUM(COALESCE(cl.llm_tokens_input, 0) + COALESCE(cl.llm_tokens_output, 0)) as total_tokens,
+        SUM(COALESCE(cl.llm_tokens_input, 0)) as input_tokens,
+        SUM(COALESCE(cl.llm_tokens_output, 0)) as output_tokens,
+        SUM(COALESCE(cl.tts_characters, 0)) as tts_characters,
+        SUM(COALESCE(cl.stt_duration, 0)) as stt_duration
       FROM pype_voice_agents a
       LEFT JOIN pype_voice_call_logs cl ON a.id = cl.agent_id 
         AND cl.call_started_at >= $1 AND cl.call_started_at <= $2
       WHERE 1=1
     `;
 
-    
     const params = [startDate.toISOString(), now.toISOString()];
     let paramIndex = 2;
 
