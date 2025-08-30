@@ -81,11 +81,23 @@ export async function GET(request: NextRequest) {
           (COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) * 100.0 / NULLIF(COUNT(cl.id), 0)), 2
         ) as completion_rate,
         AVG(COALESCE(cl.avg_latency, 0)) as response_time,
-        SUM(COALESCE(cl.llm_tokens_input, 0) + COALESCE(cl.llm_tokens_output, 0)) as total_tokens,
-        SUM(COALESCE(cl.llm_tokens_input, 0)) as input_tokens,
-        SUM(COALESCE(cl.llm_tokens_output, 0)) as output_tokens,
-        SUM(COALESCE(cl.tts_characters, 0)) as tts_characters,
-        SUM(COALESCE(cl.stt_duration, 0)) as stt_duration
+        SUM(COALESCE((
+          SELECT SUM(
+            COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0) +
+            COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0)
+          ) FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
+        ), 0)) as total_tokens,
+        SUM(COALESCE((
+          SELECT SUM(COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0))
+          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
+        ), 0)) as input_tokens,
+        SUM(COALESCE((
+          SELECT SUM(COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0))
+          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
+        ), 0)) as output_tokens
       FROM pype_voice_agents a
       LEFT JOIN pype_voice_call_logs cl ON a.id = cl.agent_id 
         AND cl.call_started_at >= $1 AND cl.call_started_at <= $2
@@ -166,12 +178,12 @@ export async function GET(request: NextRequest) {
           requests: parseInt(row.total_calls) || 0
         },
         tts_usage: {
-          characters: parseInt(row.tts_characters) || 0,
-          duration: Math.round(parseFloat(row.stt_duration) || 0),
+          characters: 0, // Data not available in current schema
+          duration: 0, // Data not available in current schema
           requests: parseInt(row.total_calls) || 0
         },
         stt_usage: {
-          duration: Math.round(parseFloat(row.stt_duration) || 0),
+          duration: 0, // Data not available in current schema
           requests: parseInt(row.total_calls) || 0,
           accuracy: null // Will be calculated from real STT accuracy metrics when available
         },

@@ -74,12 +74,20 @@ export async function GET(request: NextRequest) {
         SUM(COALESCE(cl.total_llm_cost, 0)) as llm_cost,
         SUM(COALESCE(cl.total_tts_cost, 0)) as tts_cost,
         SUM(COALESCE(cl.total_stt_cost, 0)) as stt_cost,
-        SUM(COALESCE(cl.llm_tokens_input, 0)) as llm_tokens_input,
-        SUM(COALESCE(cl.llm_tokens_output, 0)) as llm_tokens_output,
-        SUM(COALESCE(cl.tts_characters, 0)) as tts_characters,
-        SUM(COALESCE(cl.stt_duration, 0)) as stt_duration,
         SUM(COALESCE(cl.duration_seconds, 0)) as total_call_duration,
         AVG(COALESCE(cl.avg_latency, 0)) as avg_response_time,
+        SUM(COALESCE((
+          SELECT SUM(
+            COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0) +
+            COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0)
+          ) FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
+        ), 0)) as llm_tokens_input,
+        SUM(COALESCE((
+          SELECT SUM(COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0))
+          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
+        ), 0)) as llm_tokens_output,
         ROUND(
           (COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) * 100.0 / COUNT(*)), 2
         ) as completion_rate
@@ -144,10 +152,12 @@ export async function GET(request: NextRequest) {
       llm_cost: parseFloat(row.llm_cost) || 0,
       tts_cost: parseFloat(row.tts_cost) || 0,
       stt_cost: parseFloat(row.stt_cost) || 0,
-      llm_tokens_input: parseInt(row.llm_tokens_input) || 0,
-      llm_tokens_output: parseInt(row.llm_tokens_output) || 0,
-      tts_characters: parseInt(row.tts_characters) || 0,
-      stt_duration: parseInt(row.stt_duration) || 0,
+      llm_usage: {
+        total_tokens: (parseInt(row.llm_tokens_input) || 0) + (parseInt(row.llm_tokens_output) || 0),
+        input_tokens: parseInt(row.llm_tokens_input) || 0,
+        output_tokens: parseInt(row.llm_tokens_output) || 0,
+        requests: parseInt(row.calls) || 0
+      },
       total_call_duration: parseInt(row.total_call_duration) || 0,
       avg_response_time: parseFloat(row.avg_response_time) || 0,
       completion_rate: parseFloat(row.completion_rate) || 0
