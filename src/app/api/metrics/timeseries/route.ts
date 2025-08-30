@@ -87,11 +87,7 @@ export async function GET(request: NextRequest) {
           WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
         ), 0)) as llm_tokens_output,
         SUM(COALESCE(cl.stt_audio_duration, 0)) as stt_duration,
-        SUM(COALESCE((
-          SELECT SUM(LENGTH(turn->>'agent_response'))
-          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
-          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
-        ), 0)) as tts_characters,
+        SUM(COALESCE((cl.transcription_metrics->>'tts_characters')::integer, 0)) as tts_characters,
         ROUND(
           (COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) * 100.0 / COUNT(*)), 2
         ) as completion_rate
