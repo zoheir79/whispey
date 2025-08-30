@@ -65,12 +65,12 @@ export async function GET(request: NextRequest) {
     const successfulCalls = callsList.filter((call: any) => call.call_ended_reason === 'completed').length || 0
     const successRate = totalCalls > 0 ? Math.round((successfulCalls / totalCalls) * 100) : 0
     
-    // Total duration in minutes
-    const totalDurationMinutes = callsList.reduce((sum: number, call: any) => {
+    // Total duration in seconds
+    const totalDurationSeconds = callsList.reduce((sum: number, call: any) => {
       return sum + (Number(call.duration_seconds) || 0)
-    }, 0) / 60 || 0
+    }, 0) || 0
     
-    const averageDuration = totalCalls > 0 ? totalDurationMinutes / totalCalls : 0
+    const averageDuration = totalCalls > 0 ? totalDurationSeconds / totalCalls : 0
 
     // Today's calls
     const today = new Date()
@@ -92,13 +92,21 @@ export async function GET(request: NextRequest) {
       return sum + (parseFloat(call.avg_latency || 0))
     }, 0) / (totalCalls || 1) || 0
 
-    // Weekly growth calculation
+    // Weekly growth calculation - compare this week vs previous week
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    const lastWeekCalls = callsList.filter((call: any) => 
+    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+    
+    const thisWeekCalls = callsList.filter((call: any) => 
       call.call_started_at && new Date(call.call_started_at) >= oneWeekAgo
     ).length || 0
     
-    const weeklyGrowth = totalCalls > 0 ? Math.round((lastWeekCalls / totalCalls) * 100) : 0
+    const lastWeekCalls = callsList.filter((call: any) => 
+      call.call_started_at && 
+      new Date(call.call_started_at) >= twoWeeksAgo && 
+      new Date(call.call_started_at) < oneWeekAgo
+    ).length || 0
+    
+    const weeklyGrowth = lastWeekCalls > 0 ? Math.round(((thisWeekCalls - lastWeekCalls) / lastWeekCalls) * 100) : (thisWeekCalls > 0 ? 100 : 0)
 
     // Get active agents based on user permissions
     let agentsSql;
