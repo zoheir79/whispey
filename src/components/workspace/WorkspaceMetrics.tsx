@@ -261,6 +261,10 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
     totalCost: timeSeriesData.reduce((sum, item) => sum + (item.total_cost || 0), 0)
   }
 
+  // Debug: log the data to see what's available
+  console.log('📊 TimeSeriesData sample:', timeSeriesData.slice(0, 2))
+  console.log('📊 Usage metrics calculated:', usageMetrics)
+
   // Transform agents comparison data for the table
   const agentsData = agentsComparison.map(agent => ({
     name: agent.agent_name,
@@ -309,7 +313,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
   const metricsDescription = isGlobalView ? 'Across all workspaces' : 'Current workspace'
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8">{/* Fixed JSX structure */}
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
@@ -362,9 +366,139 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         </div>
       </div>
       
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Calls */}
+      {/* Usage Metrics Grid */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <h2 className="text-sm font-semibold text-gray-700">Usage Metrics</h2>
+          <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Usage LLM - Tokens & Cost */}
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-cyan-50 rounded-lg border border-cyan-100">
+                    <Cpu className="w-5 h-5 text-cyan-600" />
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-medium text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md border border-cyan-100">
+                      LLM
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage LLM</h3>
+                  <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.llm.totalTokens)}</p>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-gray-400 font-medium">Tokens</span>
+                    <div className="flex items-center gap-1">
+                      <DollarSign className="w-3 h-3 text-gray-400" />
+                      <span className="text-xs text-gray-900 font-semibold">{formatCurrency(usageMetrics.llm.cost)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Usage STT - Duration & Cost */}
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-rose-50 rounded-lg border border-rose-100">
+                    <Mic className="w-5 h-5 text-rose-600" />
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md border border-rose-100">
+                      STT
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage STT</h3>
+                  <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.stt.duration)}s</p>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-gray-400 font-medium">Speech duration</span>
+                    <div className="flex items-center gap-1">
+                      <DollarSign className="w-3 h-3 text-gray-400" />
+                      <span className="text-xs text-gray-900 font-semibold">{formatCurrency(usageMetrics.stt.cost)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Usage TTS - Characters & Cost */}
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-violet-50 rounded-lg border border-violet-100">
+                    <Volume2 className="w-5 h-5 text-violet-600" />
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-md border border-violet-100">
+                      TTS
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage TTS</h3>
+                  <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.tts.characters)}</p>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-gray-400 font-medium">Characters</span>
+                    <div className="flex items-center gap-1">
+                      <DollarSign className="w-3 h-3 text-gray-400" />
+                      <span className="text-xs text-gray-900 font-semibold">{formatCurrency(usageMetrics.tts.cost)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Usage Minutes & Total Cost */}
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+              <div className="p-5">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-2 bg-teal-50 rounded-lg border border-teal-100">
+                    <Timer className="w-5 h-5 text-teal-600" />
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-medium text-teal-600 bg-teal-50 px-2 py-1 rounded-md border border-teal-100">
+                      Total
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage Minutes</h3>
+                  <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.totalMinutes)}min</p>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-gray-400 font-medium">Total duration</span>
+                    <div className="flex items-center gap-1">
+                      <DollarSign className="w-3 h-3 text-gray-400" />
+                      <span className="text-xs text-gray-900 font-semibold">{formatCurrency(usageMetrics.totalCost)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* General Metrics Grid */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <h2 className="text-sm font-semibold text-gray-700">General Metrics</h2>
+          <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Total Calls */}
         <div className="group">
           <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
             <div className="p-5">
@@ -546,98 +680,6 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Weekly Growth</h3>
                 <p className="text-2xl font-light text-gray-900 tracking-tight">+{metrics.weeklyGrowth}%</p>
                 <p className="text-xs text-gray-400 font-medium">This week</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Usage LLM - Tokens & Cost */}
-        <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-            <div className="p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-2 bg-cyan-50 rounded-lg border border-cyan-100">
-                  <Cpu className="w-5 h-5 text-cyan-600" />
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-medium text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md border border-cyan-100">
-                    LLM
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage LLM</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.llm.totalTokens)}</p>
-                <p className="text-xs text-gray-400 font-medium">Tokens • {formatCurrency(usageMetrics.llm.cost)}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Usage STT - Duration & Cost */}
-        <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-            <div className="p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-2 bg-rose-50 rounded-lg border border-rose-100">
-                  <Mic className="w-5 h-5 text-rose-600" />
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md border border-rose-100">
-                    STT
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage STT</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.stt.duration)}s</p>
-                <p className="text-xs text-gray-400 font-medium">Speech duration • {formatCurrency(usageMetrics.stt.cost)}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Usage TTS - Characters & Cost */}
-        <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-            <div className="p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-2 bg-violet-50 rounded-lg border border-violet-100">
-                  <Volume2 className="w-5 h-5 text-violet-600" />
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-md border border-violet-100">
-                    TTS
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage TTS</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.tts.characters)}</p>
-                <p className="text-xs text-gray-400 font-medium">Characters • {formatCurrency(usageMetrics.tts.cost)}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Usage Minutes & Total Cost */}
-        <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-            <div className="p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-2 bg-teal-50 rounded-lg border border-teal-100">
-                  <Timer className="w-5 h-5 text-teal-600" />
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-medium text-teal-600 bg-teal-50 px-2 py-1 rounded-md border border-teal-100">
-                    Total
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage Minutes</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.totalMinutes)}min</p>
-                <p className="text-xs text-gray-400 font-medium">Total duration • {formatCurrency(usageMetrics.totalCost)}</p>
               </div>
             </div>
           </div>
