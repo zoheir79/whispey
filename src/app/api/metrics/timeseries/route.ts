@@ -118,6 +118,7 @@ export async function GET(request: NextRequest) {
     if (agentId) {
       sql += ` AND cl.agent_id = $${++paramIndex}`
       params.push(agentId)
+      console.log('🎯 Agent filter applied:', agentId)
     }
 
     sql += `
@@ -131,12 +132,17 @@ export async function GET(request: NextRequest) {
     const result = await query(sql, params);
     
     // Debug: Log raw database results
-    console.log(' Raw DB results (first row):', result.rows[0])
+    console.log('🔍 Raw DB results count:', result.rows.length)
+    console.log('🔍 Raw DB results (first row):', result.rows[0])
+    if (agentId) {
+      console.log('🎯 Agent filter results for agentId:', agentId)
+      console.log('🎯 Found', result.rows.length, 'rows for this agent')
+    }
     if (result.rows[0]) {
-      console.log(' STT Debug - stt_duration from DB:', result.rows[0].stt_duration)
-      console.log(' TTS Debug - tts_characters from DB:', result.rows[0].tts_characters)  
-      console.log(' LLM Debug - llm_tokens_input from DB:', result.rows[0].llm_tokens_input)
-      console.log(' LLM Debug - llm_tokens_output from DB:', result.rows[0].llm_tokens_output)
+      console.log('🎤 STT Debug - stt_duration from DB:', result.rows[0].stt_duration)
+      console.log('🔊 TTS Debug - tts_characters from DB:', result.rows[0].tts_characters)  
+      console.log('🧠 LLM Debug - llm_tokens_input from DB:', result.rows[0].llm_tokens_input)
+      console.log('🧠 LLM Debug - llm_tokens_output from DB:', result.rows[0].llm_tokens_output)
     }
     
     if (!result || !result.rows) {
