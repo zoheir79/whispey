@@ -73,11 +73,11 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         const response = await fetch(url)
         const data = await response.json()
         console.log('📊 AgentAnalytics - API Response:', data)
-        if (data.success) {
-          setTimeSeriesData(data.data || [])
-          console.log('✅ AgentAnalytics - Data set:', data.data?.length, 'items')
+        if (data.data && Array.isArray(data.data)) {
+          setTimeSeriesData(data.data)
+          console.log('✅ AgentAnalytics - Data set:', data.data.length, 'items')
         } else {
-          console.error('❌ AgentAnalytics - API Error:', data.error)
+          console.error('❌ AgentAnalytics - API Error or no data:', data.error || 'No data array found')
         }
       } catch (error) {
         console.error('💥 AgentAnalytics - Fetch Error:', error)
