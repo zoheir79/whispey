@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    // Calculate date range
+    // Calculate date range using system timezone
     const now = new Date();
     const startDate = new Date();
     
@@ -66,12 +66,17 @@ export async function GET(request: NextRequest) {
       default:
         startDate.setDate(now.getDate() - 30);
     }
+    
+    // Use system timezone for database queries
+    const startDateLocal = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000));
+    const endDateLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
 
     // Build SQL query based on user permissions and filters
     let sql = `
       SELECT 
         a.id as agent_id,
         a.name as agent_name,
+        a.currency as agent_currency,
         COUNT(cl.id) as total_calls,
         COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) as successful_calls,
         COUNT(CASE WHEN cl.call_ended_reason != 'completed' THEN 1 END) as failed_calls,
@@ -104,7 +109,7 @@ export async function GET(request: NextRequest) {
       WHERE 1=1
     `;
 
-    const params = [startDate.toISOString(), now.toISOString()];
+    const params = [startDateLocal.toISOString(), endDateLocal.toISOString()];
     let paramIndex = 2;
 
     // Add project filter based on permissions
@@ -162,6 +167,7 @@ export async function GET(request: NextRequest) {
     const agentsData = result.rows.map((row: any) => ({
       agent_name: row.agent_name,
       agent_id: row.agent_id,
+      currency: row.agent_currency || 'USD', // Use agent's currency or fallback to USD
       metrics: {
         total_calls: parseInt(row.total_calls) || 0,
         successful_calls: parseInt(row.successful_calls) || 0,
@@ -197,8 +203,8 @@ export async function GET(request: NextRequest) {
       period,
       projectId,
       dateRange: {
-        start: startDate.toISOString(),
-        end: now.toISOString()
+        start: startDateLocal.toISOString(),
+        end: endDateLocal.toISOString()
       }
     });
 

@@ -80,6 +80,7 @@ interface TimeSeriesData {
 interface AgentComparison {
   agent_name: string
   agent_id: string
+  currency: string
   metrics: {
     total_calls: number
     successful_calls: number
@@ -226,10 +227,10 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    return new Intl.NumberFormat(navigator.language, {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
       minimumFractionDigits: 2
     }).format(amount)
   }
@@ -298,7 +299,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       calls: agent.metrics.total_calls,
       successRate: Math.round((agent.metrics.successful_calls / agent.metrics.total_calls) * 100) || 0,
       avgDuration: Math.round(agent.metrics.avg_duration),
-      totalCost: agent.metrics.total_cost.toFixed(2),
+      totalCost: formatCurrency(agent.metrics.total_cost, agent.currency),
       trend: agent.metrics.completion_rate > 80 ? 'up' : agent.metrics.completion_rate < 50 ? 'down' : 'stable',
       trendValue: Math.round((agent.metrics.completion_rate - 70) / 2) // Mock trend calculation
     }

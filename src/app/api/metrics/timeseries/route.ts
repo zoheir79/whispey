@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    // Calculate date range based on period
+    // Calculate date range based on period using system timezone
     const now = new Date()
     const startDate = new Date()
     
@@ -65,6 +65,10 @@ export async function GET(request: NextRequest) {
       default:
         startDate.setDate(now.getDate() - 7)
     }
+    
+    // Use system timezone for database queries
+    const startDateLocal = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000))
+    const endDateLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
 
     let sql = `
       SELECT 
@@ -88,7 +92,7 @@ export async function GET(request: NextRequest) {
       WHERE cl.call_started_at >= $1 AND cl.call_started_at <= $2
     `
 
-    const params = [startDate.toISOString(), now.toISOString()]
+    const params = [startDateLocal.toISOString(), endDateLocal.toISOString()]
     let paramIndex = 2
 
     // Add project filter if specified and user has access
