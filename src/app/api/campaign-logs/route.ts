@@ -291,10 +291,12 @@ export async function GET(request: NextRequest) {
         let aValue = a[sort_by]
         let bValue = b[sort_by]
         
-        // Handle different data types
+        // Handle different data types using system timezone
         if (sort_by === 'createdAt') {
-          aValue = new Date(aValue).getTime()
-          bValue = new Date(bValue).getTime()
+          const aDate = new Date(aValue)
+          const bDate = new Date(bValue)
+          aValue = new Date(aDate.getTime() - (aDate.getTimezoneOffset() * 60000)).getTime()
+          bValue = new Date(bDate.getTime() - (bDate.getTimezoneOffset() * 60000)).getTime()
         } else if (typeof aValue === 'string' && typeof bValue === 'string') {
           aValue = aValue.toLowerCase()
           bValue = bValue.toLowerCase()
@@ -432,8 +434,10 @@ export async function POST(request: NextRequest) {
         let bValue = b[sort_by]
         
         if (sort_by === 'createdAt') {
-          aValue = new Date(aValue).getTime()
-          bValue = new Date(bValue).getTime()
+          const aDate = new Date(aValue)
+          const bDate = new Date(bValue)
+          aValue = new Date(aDate.getTime() - (aDate.getTimezoneOffset() * 60000)).getTime()
+          bValue = new Date(bDate.getTime() - (bDate.getTimezoneOffset() * 60000)).getTime()
         } else if (typeof aValue === 'string' && typeof bValue === 'string') {
           aValue = aValue.toLowerCase()
           bValue = bValue.toLowerCase()

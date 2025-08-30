@@ -48,10 +48,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const now = new Date()
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
     return NextResponse.json({ 
       success: true, 
       message: 'Webhook received successfully',
-      timestamp: new Date().toISOString()
+      timestamp: nowLocal.toISOString()
     });
 
   } catch (error) {

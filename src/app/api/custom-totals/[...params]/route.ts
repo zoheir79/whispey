@@ -85,10 +85,12 @@ export async function POST(
         return Response.json({ error: 'Missing required fields' }, { status: 400 })
       }
 
-      // Add metadata
+      // Add metadata using system timezone
+      const now = new Date()
+      const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
       config.createdBy = userId
-      config.createdAt = new Date().toISOString()
-      config.updatedAt = new Date().toISOString()
+      config.createdAt = nowLocal.toISOString()
+      config.updatedAt = nowLocal.toISOString()
 
       const result = await CustomTotalsService.saveCustomTotal(config, actualProjectId, actualAgentId)
       
@@ -123,7 +125,9 @@ export async function PUT(
 
   try {
     const updates = await request.json()
-    updates.updatedAt = new Date().toISOString()
+    const now = new Date()
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
+    updates.updatedAt = nowLocal.toISOString()
 
     const result = await CustomTotalsService.updateCustomTotal(configId, updates)
     

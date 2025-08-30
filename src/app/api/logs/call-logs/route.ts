@@ -94,7 +94,9 @@ export async function POST(request: NextRequest) {
       avgLatency = latencyCount > 0 ? latencySum / latencyCount : null;
     }
 
-    // Prepare log data
+    // Prepare log data using system timezone
+    const now = new Date()
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
     const logData = {
       call_id,
       agent_id,
@@ -111,7 +113,7 @@ export async function POST(request: NextRequest) {
       recording_url,
       duration_seconds,
       voice_recording_url,
-      created_at: new Date().toISOString()
+      created_at: nowLocal.toISOString()
     };
 
     // Insert log into database
@@ -144,7 +146,7 @@ export async function POST(request: NextRequest) {
         call_duration: duration_seconds,
         call_success: call_ended_reason !== 'error',
         lesson_completed: metadata?.lesson_completed || false,
-        created_at: new Date().toISOString(),
+        created_at: nowLocal.toISOString(),
         unix_timestamp: turn.timestamp
       }));
 

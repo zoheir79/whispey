@@ -81,9 +81,10 @@ export async function GET(
     
     const averageDuration = totalCalls > 0 ? totalDurationSeconds / totalCalls : 0
 
-    // Today's calls
+    // Today's calls using system timezone
     const today = new Date()
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000))
+    const todayStart = new Date(todayLocal.getFullYear(), todayLocal.getMonth(), todayLocal.getDate())
     const todayCalls = callsList.filter((call: any) => 
       call.call_started_at && new Date(call.call_started_at) >= todayStart
     ).length || 0
@@ -101,9 +102,11 @@ export async function GET(
       return sum + (parseFloat(call.avg_latency || 0))
     }, 0) / (totalCalls || 1) || 0
 
-    // Weekly growth calculation - compare this week vs previous week
-    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+    // Weekly growth calculation using system timezone
+    const now = new Date()
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
+    const oneWeekAgo = new Date(nowLocal.getTime() - 7 * 24 * 60 * 60 * 1000)
+    const twoWeeksAgo = new Date(nowLocal.getTime() - 14 * 24 * 60 * 60 * 1000)
     
     const thisWeekCalls = callsList.filter((call: any) => 
       call.call_started_at && new Date(call.call_started_at) >= oneWeekAgo

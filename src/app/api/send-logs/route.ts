@@ -116,7 +116,9 @@ export async function POST(request: NextRequest) {
 
     console.log("calculated avgLatency", avgLatency)
 
-    // Prepare log data for Supabase (serialize JSON fields)
+    // Prepare log data for Supabase (serialize JSON fields) using system timezone
+    const now = new Date()
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
     const logData = {
       call_id,
       agent_id,
@@ -133,7 +135,7 @@ export async function POST(request: NextRequest) {
       call_ended_at,
       recording_url,
       duration_seconds,
-      created_at: new Date().toISOString()
+      created_at: nowLocal.toISOString()
     }
 
     // Insert log into database
@@ -168,7 +170,7 @@ export async function POST(request: NextRequest) {
         call_duration: duration_seconds,
         call_success: call_ended_reason !== 'error',
         lesson_completed: metadata?.lesson_completed || false,
-        created_at: new Date().toISOString(),
+        created_at: nowLocal.toISOString(),
         unix_timestamp: turn.timestamp
       }))
  

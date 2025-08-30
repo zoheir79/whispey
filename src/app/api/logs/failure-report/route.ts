@@ -43,7 +43,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create failure report log
+    // Create failure report log using system timezone
+    const now = new Date()
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
     const failureData = {
       call_id,
       call_ended_reason: 'failure',
@@ -52,14 +54,14 @@ export async function POST(request: NextRequest) {
         error_message,
         error_type,
         stack_trace,
-        timestamp: new Date().toISOString()
+        timestamp: nowLocal.toISOString()
       },
       metadata: {
         type: 'failure_report',
-        reported_at: new Date().toISOString()
+        reported_at: nowLocal.toISOString()
       },
       environment,
-      created_at: new Date().toISOString()
+      created_at: nowLocal.toISOString()
     };
 
     const { data: insertedLog, error: insertError } = await insertIntoTable({
