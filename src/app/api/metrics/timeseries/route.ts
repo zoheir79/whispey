@@ -76,16 +76,8 @@ export async function GET(request: NextRequest) {
         SUM(COALESCE(cl.total_stt_cost, 0)) as stt_cost,
         SUM(COALESCE(cl.duration_seconds, 0)) as total_call_duration,
         AVG(COALESCE(cl.avg_latency, 0)) as avg_response_time,
-        SUM(COALESCE((
-          SELECT SUM(COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0))
-          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
-          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
-        ), 0)) as llm_tokens_input,
-        SUM(COALESCE((
-          SELECT SUM(COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0))
-          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
-          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
-        ), 0)) as llm_tokens_output,
+        SUM(COALESCE((cl.transcription_metrics->>'llm_prompt_tokens')::integer, 0)) as llm_tokens_input,
+        SUM(COALESCE((cl.transcription_metrics->>'llm_completion_tokens')::integer, 0)) as llm_tokens_output,
         SUM(COALESCE((cl.transcription_metrics->>'stt_audio_duration')::numeric, 0)) as stt_duration,
         SUM(COALESCE((cl.transcription_metrics->>'tts_characters')::integer, 0)) as tts_characters,
         ROUND(
