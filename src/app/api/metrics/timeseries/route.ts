@@ -77,8 +77,10 @@ export async function GET(request: NextRequest) {
         SUM(COALESCE(cl.duration_seconds, 0)) as total_call_duration,
         AVG(COALESCE(cl.avg_latency, 0)) as avg_response_time,
         SUM(COALESCE((
-          SELECT SUM(COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0))
-          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          SELECT SUM(
+            COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0) +
+            COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0)
+          ) FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
           WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
         ), 0)) as llm_tokens_input,
         SUM(COALESCE((

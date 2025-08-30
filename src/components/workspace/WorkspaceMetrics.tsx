@@ -244,37 +244,68 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
   }
 
   // Calculate usage metrics from time series data
+  console.log('🔍 DEBUG TimeSeriesData:', timeSeriesData)
+  console.log('🔍 DEBUG Sample item:', timeSeriesData[0])
+  
   const usageMetrics = {
     llm: {
-      totalTokens: timeSeriesData.reduce((sum, item) => sum + (item.llm_tokens_input || 0) + (item.llm_tokens_output || 0), 0),
-      cost: timeSeriesData.reduce((sum, item) => sum + (item.llm_cost || 0), 0)
+      totalTokens: timeSeriesData.reduce((sum, item) => {
+        const tokens = (item.llm_tokens_input || 0) + (item.llm_tokens_output || 0)
+        console.log(`📊 LLM tokens for ${item.date}: input=${item.llm_tokens_input}, output=${item.llm_tokens_output}, total=${tokens}`)
+        return sum + tokens
+      }, 0),
+      cost: timeSeriesData.reduce((sum, item) => {
+        console.log(`💰 LLM cost for ${item.date}: ${item.llm_cost}`)
+        return sum + (item.llm_cost || 0)
+      }, 0)
     },
     stt: {
-      duration: timeSeriesData.reduce((sum, item) => sum + (item.stt_duration || 0), 0),
-      cost: timeSeriesData.reduce((sum, item) => sum + (item.stt_cost || 0), 0)
+      duration: timeSeriesData.reduce((sum, item) => {
+        console.log(`🎤 STT duration for ${item.date}: ${item.stt_duration}`)
+        return sum + (item.stt_duration || 0)
+      }, 0),
+      cost: timeSeriesData.reduce((sum, item) => {
+        console.log(`💰 STT cost for ${item.date}: ${item.stt_cost}`)
+        return sum + (item.stt_cost || 0)
+      }, 0)
     },
     tts: {
-      characters: timeSeriesData.reduce((sum, item) => sum + (item.tts_characters || 0), 0),
-      cost: timeSeriesData.reduce((sum, item) => sum + (item.tts_cost || 0), 0)
+      characters: timeSeriesData.reduce((sum, item) => {
+        console.log(`🔊 TTS characters for ${item.date}: ${item.tts_characters}`)
+        return sum + (item.tts_characters || 0)
+      }, 0),
+      cost: timeSeriesData.reduce((sum, item) => {
+        console.log(`💰 TTS cost for ${item.date}: ${item.tts_cost}`)
+        return sum + (item.tts_cost || 0)
+      }, 0)
     },
-    totalMinutes: timeSeriesData.reduce((sum, item) => sum + (item.total_call_duration || 0), 0) / 60,
+    totalMinutes: timeSeriesData.reduce((sum, item) => {
+      console.log(`⏱️ Total duration for ${item.date}: ${item.total_call_duration}s = ${(item.total_call_duration || 0) / 60}min`)
+      return sum + (item.total_call_duration || 0)
+    }, 0) / 60,
     totalCost: timeSeriesData.reduce((sum, item) => sum + (item.total_cost || 0), 0)
   }
-
-  // Debug: log the data to see what's available
-  console.log('📊 TimeSeriesData sample:', timeSeriesData.slice(0, 2))
-  console.log('📊 Usage metrics calculated:', usageMetrics)
+  
+  console.log('📈 FINAL Usage Metrics:', usageMetrics)
 
   // Transform agents comparison data for the table
-  const agentsData = agentsComparison.map(agent => ({
-    name: agent.agent_name,
-    calls: agent.metrics.total_calls,
-    successRate: Math.round((agent.metrics.successful_calls / agent.metrics.total_calls) * 100) || 0,
-    avgDuration: Math.round((agent.metrics.avg_duration || 0) * 100) / 100, // Fixed: same precision as cards
-    totalCost: agent.metrics.total_cost.toFixed(2),
-    trend: agent.metrics.completion_rate > 80 ? 'up' : agent.metrics.completion_rate < 50 ? 'down' : 'stable',
-    trendValue: Math.round((agent.metrics.completion_rate - 70) / 2) // Mock trend calculation
-  }))
+  console.log('🔍 DEBUG AgentsComparison:', agentsComparison)
+  
+  const agentsData = agentsComparison.map(agent => {
+    console.log(`👤 Agent ${agent.agent_name}: avg_duration=${agent.metrics.avg_duration}s`)
+    return {
+      name: agent.agent_name,
+      calls: agent.metrics.total_calls,
+      successRate: Math.round((agent.metrics.successful_calls / agent.metrics.total_calls) * 100) || 0,
+      avgDuration: Math.round(agent.metrics.avg_duration),
+      totalCost: agent.metrics.total_cost.toFixed(2),
+      trend: agent.metrics.completion_rate > 80 ? 'up' : agent.metrics.completion_rate < 50 ? 'down' : 'stable',
+      trendValue: Math.round((agent.metrics.completion_rate - 70) / 2) // Mock trend calculation
+    }
+  })
+  
+  console.log('📊 DEBUG Metrics card avg_duration:', metrics?.averageDuration)
+  console.log('📋 DEBUG Table agents avg_duration:', agentsData.map(a => `${a.name}: ${a.avgDuration}s`))
 
   const pieData = metrics ? [
     { name: 'Réussi', value: metrics.successRate },
@@ -313,7 +344,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
   const metricsDescription = isGlobalView ? 'Across all workspaces' : 'Current workspace'
 
   return (
-    <div className="space-y-8">{/* Fixed JSX structure */}
+    <div className="space-y-8">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
@@ -366,124 +397,110 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         </div>
       </div>
       
-      {/* Usage Metrics Grid */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-sm font-semibold text-gray-700">Usage Metrics</h2>
-          <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+      {/* Usage Metrics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* Usage LLM - Tokens & Cost */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-cyan-50 rounded-lg border border-cyan-100">
+                  <Cpu className="w-5 h-5 text-cyan-600" />
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-medium text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md border border-cyan-100">
+                    LLM
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage LLM</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.llm.totalTokens)}</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-xs text-gray-400 font-medium">Tokens</p>
+                  <DollarSign className="w-3 h-3 text-gray-400" />
+                  <p className="text-xs text-gray-900 font-medium">{formatCurrency(usageMetrics.llm.cost)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Usage LLM - Tokens & Cost */}
-          <div className="group">
-            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-cyan-50 rounded-lg border border-cyan-100">
-                    <Cpu className="w-5 h-5 text-cyan-600" />
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-medium text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md border border-cyan-100">
-                      LLM
-                    </span>
-                  </div>
+
+        {/* Usage STT - Duration & Cost */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-rose-50 rounded-lg border border-rose-100">
+                  <Mic className="w-5 h-5 text-rose-600" />
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage LLM</h3>
-                  <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.llm.totalTokens)}</p>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-400 font-medium">Tokens</span>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-3 h-3 text-gray-400" />
-                      <span className="text-xs text-gray-900 font-semibold">{formatCurrency(usageMetrics.llm.cost)}</span>
-                    </div>
-                  </div>
+                <div className="text-right">
+                  <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md border border-rose-100">
+                    STT
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage STT</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.stt.duration)}s</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-xs text-gray-400 font-medium">Speech duration</p>
+                  <DollarSign className="w-3 h-3 text-gray-400" />
+                  <p className="text-xs text-gray-900 font-medium">{formatCurrency(usageMetrics.stt.cost)}</p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Usage STT - Duration & Cost */}
-          <div className="group">
-            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-rose-50 rounded-lg border border-rose-100">
-                    <Mic className="w-5 h-5 text-rose-600" />
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md border border-rose-100">
-                      STT
-                    </span>
-                  </div>
+        {/* Usage TTS - Characters & Cost */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-violet-50 rounded-lg border border-violet-100">
+                  <Volume2 className="w-5 h-5 text-violet-600" />
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage STT</h3>
-                  <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.stt.duration)}s</p>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-400 font-medium">Speech duration</span>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-3 h-3 text-gray-400" />
-                      <span className="text-xs text-gray-900 font-semibold">{formatCurrency(usageMetrics.stt.cost)}</span>
-                    </div>
-                  </div>
+                <div className="text-right">
+                  <span className="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-md border border-violet-100">
+                    TTS
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage TTS</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.tts.characters)}</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-xs text-gray-400 font-medium">Characters</p>
+                  <DollarSign className="w-3 h-3 text-gray-400" />
+                  <p className="text-xs text-gray-900 font-medium">{formatCurrency(usageMetrics.tts.cost)}</p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Usage TTS - Characters & Cost */}
-          <div className="group">
-            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-violet-50 rounded-lg border border-violet-100">
-                    <Volume2 className="w-5 h-5 text-violet-600" />
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-md border border-violet-100">
-                      TTS
-                    </span>
-                  </div>
+        {/* Usage Minutes & Total Cost */}
+        <div className="group">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-teal-50 rounded-lg border border-teal-100">
+                  <Timer className="w-5 h-5 text-teal-600" />
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage TTS</h3>
-                  <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.tts.characters)}</p>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-400 font-medium">Characters</span>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-3 h-3 text-gray-400" />
-                      <span className="text-xs text-gray-900 font-semibold">{formatCurrency(usageMetrics.tts.cost)}</span>
-                    </div>
-                  </div>
+                <div className="text-right">
+                  <span className="text-xs font-medium text-teal-600 bg-teal-50 px-2 py-1 rounded-md border border-teal-100">
+                    Total
+                  </span>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Usage Minutes & Total Cost */}
-          <div className="group">
-            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-teal-50 rounded-lg border border-teal-100">
-                    <Timer className="w-5 h-5 text-teal-600" />
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-medium text-teal-600 bg-teal-50 px-2 py-1 rounded-md border border-teal-100">
-                      Total
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage Minutes</h3>
-                  <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.totalMinutes)}min</p>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-400 font-medium">Total duration</span>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-3 h-3 text-gray-400" />
-                      <span className="text-xs text-gray-900 font-semibold">{formatCurrency(usageMetrics.totalCost)}</span>
-                    </div>
-                  </div>
+              <div className="space-y-1">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage Minutes</h3>
+                <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.totalMinutes)}min</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-xs text-gray-400 font-medium">Total duration</p>
+                  <DollarSign className="w-3 h-3 text-gray-400" />
+                  <p className="text-xs text-gray-900 font-medium">{formatCurrency(usageMetrics.totalCost)}</p>
                 </div>
               </div>
             </div>
@@ -491,14 +508,12 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         </div>
       </div>
 
+      {/* Separator */}
+      <div className="border-t border-gray-200 my-8"></div>
+
       {/* General Metrics Grid */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-sm font-semibold text-gray-700">General Metrics</h2>
-          <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Total Calls */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Calls */}
         <div className="group">
           <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
             <div className="p-5">
