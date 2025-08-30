@@ -77,10 +77,8 @@ export async function GET(request: NextRequest) {
         SUM(COALESCE(cl.duration_seconds, 0)) as total_call_duration,
         AVG(COALESCE(cl.avg_latency, 0)) as avg_response_time,
         SUM(COALESCE((
-          SELECT SUM(
-            COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0) +
-            COALESCE((turn->'llm_metrics'->>'completion_tokens')::integer, 0)
-          ) FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          SELECT SUM(COALESCE((turn->'llm_metrics'->>'prompt_tokens')::integer, 0))
+          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
           WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
         ), 0)) as llm_tokens_input,
         SUM(COALESCE((
@@ -88,6 +86,16 @@ export async function GET(request: NextRequest) {
           FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
           WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
         ), 0)) as llm_tokens_output,
+        SUM(COALESCE((
+          SELECT SUM(COALESCE((turn->'stt_metrics'->>'duration')::numeric, 0))
+          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
+        ), 0)) as stt_duration,
+        SUM(COALESCE((
+          SELECT SUM(LENGTH(turn->>'agent_response'))
+          FROM jsonb_array_elements(cl.transcript_with_metrics) AS turn
+          WHERE cl.transcript_with_metrics IS NOT NULL AND jsonb_typeof(cl.transcript_with_metrics) = 'array'
+        ), 0)) as tts_characters,
         ROUND(
           (COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) * 100.0 / COUNT(*)), 2
         ) as completion_rate
@@ -152,6 +160,11 @@ export async function GET(request: NextRequest) {
       llm_cost: parseFloat(row.llm_cost) || 0,
       tts_cost: parseFloat(row.tts_cost) || 0,
       stt_cost: parseFloat(row.stt_cost) || 0,
+      // Direct fields for WorkspaceMetrics compatibility
+      llm_tokens_input: parseInt(row.llm_tokens_input) || 0,
+      llm_tokens_output: parseInt(row.llm_tokens_output) || 0,
+      stt_duration: parseFloat(row.stt_duration) || 0,
+      tts_characters: parseInt(row.tts_characters) || 0,
       llm_usage: {
         total_tokens: (parseInt(row.llm_tokens_input) || 0) + (parseInt(row.llm_tokens_output) || 0),
         input_tokens: parseInt(row.llm_tokens_input) || 0,
