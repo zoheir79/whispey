@@ -180,20 +180,28 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         const timeSeriesUrl = targetProjectId 
           ? `/api/metrics/timeseries?projectId=${targetProjectId}&period=${selectedPeriod}&metric=all`
           : `/api/metrics/timeseries?period=${selectedPeriod}&metric=all`;
+        console.log('🔍 Fetching timeseries:', timeSeriesUrl)
         const timeSeriesResponse = await fetch(timeSeriesUrl)
         if (timeSeriesResponse.ok) {
           const timeSeriesResult = await timeSeriesResponse.json()
+          console.log('📊 TimeSeries data:', timeSeriesResult)
           setTimeSeriesData(timeSeriesResult.data || [])
+        } else {
+          console.error('❌ TimeSeries fetch failed:', timeSeriesResponse.status, await timeSeriesResponse.text())
         }
 
         // Fetch agents comparison data  
         const agentsUrl = targetProjectId
           ? `/api/metrics/agents-comparison?projectId=${targetProjectId}&period=${selectedPeriod}`
           : `/api/metrics/agents-comparison?period=${selectedPeriod}`;
+        console.log('🔍 Fetching agents:', agentsUrl)
         const agentsResponse = await fetch(agentsUrl)
         if (agentsResponse.ok) {
           const agentsResult = await agentsResponse.json()
+          console.log('👥 Agents data:', agentsResult)
           setAgentsComparison(agentsResult.data || [])
+        } else {
+          console.error('❌ Agents fetch failed:', agentsResponse.status, await agentsResponse.text())
         }
 
       } catch (err) {
@@ -533,49 +541,59 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
             </div>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={timeSeriesData}>
-                <defs>
-                  <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#94a3b8" 
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis 
-                  stroke="#94a3b8" 
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid #e2e8f0', 
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }} 
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="calls" 
-                  stroke="#3B82F6" 
-                  fillOpacity={1} 
-                  fill="url(#colorCalls)"
-                  strokeWidth={2}
-                  dot={{ fill: '#3B82F6', r: 3 }}
-                  activeDot={{ r: 4, fill: '#1d4ed8' }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {timeSeriesData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={timeSeriesData}>
+                  <defs>
+                    <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="date" 
+                    stroke="#94a3b8" 
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    stroke="#94a3b8" 
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0', 
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }} 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="calls" 
+                    stroke="#3B82F6" 
+                    fillOpacity={1} 
+                    fill="url(#colorCalls)"
+                    strokeWidth={2}
+                    dot={{ fill: '#3B82F6', r: 3 }}
+                    activeDot={{ r: 4, fill: '#1d4ed8' }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[200px] flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <Phone className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm">Aucun appel pour cette période</p>
+                  <p className="text-xs text-gray-400">Essayez une période plus large</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -653,48 +671,58 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
             </div>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={timeSeriesData}>
-                <defs>
-                  <linearGradient id="colorMinutes" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#94a3b8" 
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis 
-                  stroke="#94a3b8" 
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid #e2e8f0', 
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }} 
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="total_call_duration" 
-                  stroke="#3B82F6" 
-                  fill="url(#colorMinutes)" 
-                  strokeWidth={2}
-                  dot={{ fill: '#3B82F6', r: 3 }}
-                  activeDot={{ r: 4, fill: '#1d4ed8' }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {timeSeriesData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={timeSeriesData}>
+                  <defs>
+                    <linearGradient id="colorMinutes" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="date" 
+                    stroke="#94a3b8" 
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    stroke="#94a3b8" 
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0', 
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }} 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="total_call_duration" 
+                    stroke="#3B82F6" 
+                    fill="url(#colorMinutes)" 
+                    strokeWidth={2}
+                    dot={{ fill: '#3B82F6', r: 3 }}
+                    activeDot={{ r: 4, fill: '#1d4ed8' }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[200px] flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <Clock className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm">Aucune donnée de durée</p>
+                  <p className="text-xs text-gray-400">Vérifiez la période sélectionnée</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -714,41 +742,51 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
             </div>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={timeSeriesData}>
-                <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#94a3b8" 
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis 
-                  stroke="#94a3b8" 
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid #e2e8f0', 
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                  }} 
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="avg_response_time" 
-                  stroke="#8B5CF6" 
-                  strokeWidth={2} 
-                  dot={{ fill: '#8B5CF6', r: 3 }}
-                  activeDot={{ r: 4, fill: '#7C3AED' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {timeSeriesData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={timeSeriesData}>
+                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="date" 
+                    stroke="#94a3b8" 
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    stroke="#94a3b8" 
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0', 
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }} 
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="avg_response_time" 
+                    stroke="#8B5CF6" 
+                    strokeWidth={2} 
+                    dot={{ fill: '#8B5CF6', r: 3 }}
+                    activeDot={{ r: 4, fill: '#7C3AED' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[200px] flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <Activity className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm">Aucune donnée de performance</p>
+                  <p className="text-xs text-gray-400">Données de latence indisponibles</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -781,62 +819,76 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {agentsData.map((agent, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-semibold">
-                          {agent.name.charAt(0)}
+              {agentsData.length > 0 ? (
+                agentsData.map((agent, index) => (
+                  <tr key={index} className="hover:bg-gray-50 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-semibold">
+                            {agent.name.charAt(0)}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{agent.name}</div>
+                          <div className="text-xs text-gray-500">Active</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="text-sm text-gray-900">{agent.calls.toLocaleString()}</div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                          agent.successRate >= 90 
+                            ? 'bg-green-100 text-green-800' 
+                            : agent.successRate >= 70 
+                            ? 'bg-yellow-100 text-yellow-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {agent.successRate}%
                         </span>
                       </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{agent.name}</div>
-                        <div className="text-xs text-gray-500">Active</div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="text-sm text-gray-900">{formatDuration(agent.avgDuration)}</div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="text-sm font-medium text-gray-900">${agent.totalCost}</div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        {agent.trend === 'up' ? (
+                          <TrendingUp className="w-4 h-4 text-green-500" />
+                        ) : agent.trend === 'down' ? (
+                          <TrendingDown className="w-4 h-4 text-red-500" />
+                        ) : (
+                          <div className="w-4 h-4 bg-gray-300 rounded-full" />
+                        )}
+                        <span className={`text-xs font-medium ${
+                          agent.trend === 'up' ? 'text-green-600' : 
+                          agent.trend === 'down' ? 'text-red-600' : 'text-gray-500'
+                        }`}>
+                          {agent.trendValue > 0 ? '+' : ''}{agent.trendValue}%
+                        </span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="text-sm text-gray-900">{agent.calls.toLocaleString()}</div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-2">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        agent.successRate >= 90 
-                          ? 'bg-green-100 text-green-800' 
-                          : agent.successRate >= 70 
-                          ? 'bg-yellow-100 text-yellow-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {agent.successRate}%
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="text-sm text-gray-900">{formatDuration(agent.avgDuration)}</div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="text-sm font-medium text-gray-900">${agent.totalCost}</div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-2">
-                      {agent.trend === 'up' ? (
-                        <TrendingUp className="w-4 h-4 text-green-500" />
-                      ) : agent.trend === 'down' ? (
-                        <TrendingDown className="w-4 h-4 text-red-500" />
-                      ) : (
-                        <div className="w-4 h-4 bg-gray-300 rounded-full" />
-                      )}
-                      <span className={`text-xs font-medium ${
-                        agent.trend === 'up' ? 'text-green-600' : 
-                        agent.trend === 'down' ? 'text-red-600' : 'text-gray-500'
-                      }`}>
-                        {agent.trendValue > 0 ? '+' : ''}{agent.trendValue}%
-                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="py-12 px-6">
+                    <div className="text-center text-gray-500">
+                      <Headphones className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p className="text-sm font-medium">Aucun agent trouvé</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Aucune donnée d'agent disponible pour cette période ou ce workspace
+                      </p>
                     </div>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
