@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
     const metrics = {
       totalCalls,
       successRate,
-      averageDuration: Math.round(averageDuration), // Uniformisé avec agents-comparison
+      averageDuration: Math.round(averageDuration * 100) / 100,
       totalCost: Math.round(totalCost * 100) / 100,
       todayCalls,
       avgResponseTime: Math.round(avgResponseTime * 100) / 100,
