@@ -125,7 +125,19 @@ export async function GET(request: NextRequest) {
       ORDER BY DATE(cl.call_started_at) ASC
     `
 
-    const result = await query(sql, params)
+    console.log(' Executing SQL query:', sql)
+    console.log(' Query params:', params)
+
+    const result = await query(sql, params);
+    
+    // Debug: Log raw database results
+    console.log(' Raw DB results (first row):', result.rows[0])
+    if (result.rows[0]) {
+      console.log(' STT Debug - stt_duration from DB:', result.rows[0].stt_duration)
+      console.log(' TTS Debug - tts_characters from DB:', result.rows[0].tts_characters)  
+      console.log(' LLM Debug - llm_tokens_input from DB:', result.rows[0].llm_tokens_input)
+      console.log(' LLM Debug - llm_tokens_output from DB:', result.rows[0].llm_tokens_output)
+    }
     
     if (!result || !result.rows) {
       console.error('Database query failed for timeseries metrics');
