@@ -18,23 +18,39 @@ export async function GET(request: NextRequest) {
     // Check user permissions for global metrics
     const userGlobalRole = await getUserGlobalRole(userId);
     
-    if (!userGlobalRole?.permissions?.canViewAllCalls) {
+    if (!userGlobalRole) {
       return NextResponse.json(
-        { error: 'Insufficient permissions to view global metrics' },
-        { status: 403 }
+        { error: 'User not found' },
+        { status: 404 }
       );
     }
 
     console.log(`🔓 GLOBAL METRICS ACCESS: ${userGlobalRole.global_role} accessing global metrics`);
 
-    // Get all calls across all projects with agent project_id for global view
-    const sql = `
-      SELECT cl.*, a.project_id
-      FROM pype_voice_call_logs cl
-      INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
-    `
+    let sql;
+    let queryParams: any[] = [];
     
-    const callsResult = await query(sql, [])
+    if (userGlobalRole.permissions.canViewAllCalls) {
+      // Admin/Super admin - get all calls across all projects
+      sql = `
+        SELECT cl.*, a.project_id
+        FROM pype_voice_call_logs cl
+        INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+      `;
+    } else {
+      // Regular user - get only calls from their accessible projects
+      sql = `
+        SELECT cl.*, a.project_id
+        FROM pype_voice_call_logs cl
+        INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
+        INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+        INNER JOIN pype_voice_users u ON u.email = epm.email
+        WHERE u.user_id = $1 AND epm.is_active = true
+      `;
+      queryParams = [userId];
+    }
+    
+    const callsResult = await query(sql, queryParams)
     
     if (!callsResult || !callsResult.rows) {
       console.error('Error fetching global calls:', callsResult)
@@ -84,14 +100,30 @@ export async function GET(request: NextRequest) {
     
     const weeklyGrowth = totalCalls > 0 ? Math.round((lastWeekCalls / totalCalls) * 100) : 0
 
-    // Get all active agents across all projects using direct SQL
-    const agentsSql = `
-      SELECT id
-      FROM pype_voice_agents
-      WHERE is_active = true
-    `
+    // Get active agents based on user permissions
+    let agentsSql;
+    let agentsParams: any[] = [];
     
-    const agentsResult = await query(agentsSql, [])
+    if (userGlobalRole.permissions.canViewAllCalls) {
+      // Admin/Super admin - get all active agents
+      agentsSql = `
+        SELECT id
+        FROM pype_voice_agents
+        WHERE is_active = true
+      `;
+    } else {
+      // Regular user - get only agents from their accessible projects
+      agentsSql = `
+        SELECT DISTINCT a.id
+        FROM pype_voice_agents a
+        INNER JOIN pype_voice_email_project_mapping epm ON a.project_id = epm.project_id
+        INNER JOIN pype_voice_users u ON u.email = epm.email
+        WHERE u.user_id = $1 AND epm.is_active = true AND a.is_active = true
+      `;
+      agentsParams = [userId];
+    }
+    
+    const agentsResult = await query(agentsSql, agentsParams)
     const activeAgents = (agentsResult?.rows || []).length
 
     // Get unique projects count
