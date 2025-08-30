@@ -76,10 +76,10 @@ export async function GET(request: NextRequest) {
         SUM(COALESCE(cl.total_stt_cost, 0)) as stt_cost,
         SUM(COALESCE(cl.duration_seconds, 0)) as total_call_duration,
         AVG(COALESCE(cl.avg_latency, 0)) as avg_response_time,
-        SUM(COALESCE((cl.transcription_metrics->>'llm_prompt_tokens')::integer, 0)) as llm_tokens_input,
-        SUM(COALESCE((cl.transcription_metrics->>'llm_completion_tokens')::integer, 0)) as llm_tokens_output,
-        SUM(COALESCE((cl.transcription_metrics->>'stt_audio_duration')::numeric, 0)) as stt_duration,
-        SUM(COALESCE((cl.transcription_metrics->>'tts_characters')::integer, 0)) as tts_characters,
+        SUM(COALESCE((cl.metadata->'usage'->>'llm_prompt_tokens')::integer, 0)) as llm_tokens_input,
+        SUM(COALESCE((cl.metadata->'usage'->>'llm_completion_tokens')::integer, 0)) as llm_tokens_output,
+        SUM(COALESCE((cl.metadata->'usage'->>'stt_audio_duration')::numeric, 0)) as stt_duration,
+        SUM(COALESCE((cl.metadata->'usage'->>'tts_characters')::integer, 0)) as tts_characters,
         ROUND(
           (COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) * 100.0 / COUNT(*)), 2
         ) as completion_rate
