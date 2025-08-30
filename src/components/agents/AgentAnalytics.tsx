@@ -67,19 +67,30 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
     const fetchAgentMetrics = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/metrics/timeseries?period=${selectedPeriod}&agentId=${agent.id}`)
+        console.log('🚀 AgentAnalytics - Starting fetch for agent:', agent.id, 'period:', selectedPeriod)
+        const url = `/api/metrics/timeseries?period=${selectedPeriod}&agentId=${agent.id}`
+        console.log('🌍 AgentAnalytics - Fetching URL:', url)
+        const response = await fetch(url)
         const data = await response.json()
+        console.log('📊 AgentAnalytics - API Response:', data)
         if (data.success) {
           setTimeSeriesData(data.data || [])
+          console.log('✅ AgentAnalytics - Data set:', data.data?.length, 'items')
+        } else {
+          console.error('❌ AgentAnalytics - API Error:', data.error)
         }
       } catch (error) {
-        console.error('Error fetching agent metrics:', error)
+        console.error('💥 AgentAnalytics - Fetch Error:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchAgentMetrics()
+    if (agent?.id) {
+      fetchAgentMetrics()
+    } else {
+      console.warn('⚠️ AgentAnalytics - No agent.id provided:', agent)
+    }
   }, [agent.id, selectedPeriod])
 
   // Calculate usage metrics
