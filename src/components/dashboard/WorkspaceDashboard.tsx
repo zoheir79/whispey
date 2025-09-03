@@ -231,7 +231,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Calls */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
@@ -244,8 +244,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">TOTAL CALLS (ALL)</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics?.totalCalls || 0}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">TOTAL CALLS (ALL)</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{metrics?.totalCalls || 0}</p>
                 <p className="text-xs text-gray-400 font-medium">Current period</p>
               </div>
             </div>
@@ -254,7 +254,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Success Rate */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-green-50 rounded-lg border border-green-100">
@@ -268,8 +268,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">SUCCESS RATE</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics?.successRate || 0}%</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">SUCCESS RATE</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{metrics?.successRate || 0}%</p>
                 <p className="text-xs text-gray-400 font-medium">Call completion rate</p>
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Average Duration */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
@@ -291,8 +291,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AVG DURATION</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">AVG DURATION</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                   {Math.floor((metrics?.averageDuration || 0) / 60)}:{Math.floor((metrics?.averageDuration || 0) % 60).toString().padStart(2, '0')}
                 </p>
                 <p className="text-xs text-gray-400 font-medium">Per conversation</p>
@@ -303,7 +303,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Total Cost */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
@@ -314,8 +314,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">TOTAL COST</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">${metrics?.totalCost?.toFixed(2) || '0.00'}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">TOTAL COST</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">${metrics?.totalCost?.toFixed(2) || '0.00'}</p>
                 <p className="text-xs text-gray-400 font-medium">This month</p>
               </div>
             </div>
@@ -324,7 +324,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Active Agents */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
@@ -338,8 +338,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">ACTIVE AGENTS</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics?.activeAgents || 0}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">ACTIVE AGENTS</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{metrics?.activeAgents || 0}</p>
                 <p className="text-xs text-gray-400 font-medium">Voice assistants</p>
               </div>
             </div>
@@ -348,7 +348,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Response Time */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
@@ -362,8 +362,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AVG RESPONSE</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics?.avgResponseTime || 0}s</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">AVG RESPONSE</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{metrics?.avgResponseTime || 0}s</p>
                 <p className="text-xs text-gray-400 font-medium">Processing speed</p>
               </div>
             </div>
@@ -372,7 +372,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Cost Per Call */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
@@ -386,8 +386,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">COST PER CALL</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">COST PER CALL</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                   ${((metrics?.totalCost || 0) / (metrics?.totalCalls || 1)).toFixed(2)}
                 </p>
                 <p className="text-xs text-gray-400 font-medium">Average cost</p>
@@ -398,7 +398,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Weekly Growth */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
@@ -412,8 +412,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">WEEKLY GROWTH</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">+{metrics?.weeklyGrowth || 0}%</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">WEEKLY GROWTH</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">+{metrics?.weeklyGrowth || 0}%</p>
                 <p className="text-xs text-gray-400 font-medium">This week</p>
               </div>
             </div>
@@ -423,7 +423,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
       {/* Period Selector */}
       <div className="flex justify-center mb-6">
-        <div className="inline-flex bg-white border border-gray-200 rounded-lg p-1 shadow-sm">
+        <div className="inline-flex bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-1 shadow-sm">
           {['7d', '30d', '90d'].map((period) => (
             <button
               key={period}
@@ -431,7 +431,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
               className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
                 selectedPeriod === period
                   ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700'
               }`}
             >
               {period === '7d' ? '7 jours' : period === '30d' ? '30 jours' : '90 jours'}
@@ -443,14 +443,14 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Call Volume */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
-                  <BarChart className="w-4 h-4 text-blue-600" />
+                <div className="w-6 h-6 bg-blue-50 dark:bg-blue-900/20 rounded flex items-center justify-center">
+                  <BarChart className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900">Daily Call Volume</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Daily Call Volume</h3>
               </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3 text-gray-400" />
@@ -506,19 +506,19 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
         </div>
 
         {/* Success Analysis */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-green-50 rounded flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
+                <div className="w-6 h-6 bg-green-50 dark:bg-green-900/20 rounded flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900">Success Analysis</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
               </div>
               <div className="flex items-center gap-2">
                 <div className="text-right">
-                  <div className="text-xs text-gray-500">Success Rate</div>
-                  <div className="text-lg font-semibold text-gray-900">{metrics?.successRate || 0}%</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Success Rate</div>
+                  <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">{metrics?.successRate || 0}%</div>
                 </div>
               </div>
             </div>
@@ -552,24 +552,24 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
             <div className="flex justify-center gap-4 mt-4">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="text-xs text-gray-600">Successful</span>
+                <span className="text-xs text-gray-600 dark:text-gray-300">Successful</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                <span className="text-xs text-gray-600">Failed</span>
+                <div className="w-3 h-3 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                <span className="text-xs text-gray-600 dark:text-gray-300">Failed</span>
               </div>
             </div>
           </div>
         </div>
         {/* Usage Minutes */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
-                  <Activity className="w-4 h-4 text-blue-600" />
+                <div className="w-6 h-6 bg-blue-50 dark:bg-blue-900/20 rounded flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900">Usage Minutes</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
               </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3 text-gray-400" />

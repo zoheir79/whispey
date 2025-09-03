@@ -434,19 +434,19 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
         {/* Apple-Style Agent List */}
         {viewMode === 'list' ? (
-          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
             {filteredAgents.map((agent, index) => (
               <div
                 key={agent.id}
-                className={`group px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0 ${
-                  selectedAgent === agent?.id ? 'bg-blue-50' : ''
+                className={`group px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
+                  selectedAgent === agent?.id ? 'bg-blue-50 dark:bg-blue-900/50' : ''
                 }`}
                 onClick={() => handleAgentClick(agent)}
               >
                 <div className="flex items-center justify-between">
                   {/* Left: Agent Info */}
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
                       {getAgentTypeIcon(agent.agent_type)}
                       <div className={`absolute w-3 h-3 rounded-full border-2 border-white -bottom-0.5 -right-0.5 ${
                         agent.is_active ? 'bg-green-500' : 'bg-gray-300'
@@ -454,8 +454,8 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-medium text-gray-900 truncate">{agent.name}</h3>
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{agent.name}</h3>
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                           {agent.agent_type}
                         </span>
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-md ${
@@ -468,7 +468,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                           {agent.environment}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                         <span>ID: {agent?.id?.slice(0, 8)}...{agent?.id?.slice(-4)}</span>
                         <span>Created {formatDate(agent.created_at)}</span>
                       </div>
@@ -494,7 +494,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-44 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-lg shadow-lg">
+                      <DropdownMenuContent align="end" className="w-44 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
                           router.push(`/agents/${agent.id}?tab=overview`)
@@ -557,20 +557,20 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 }`}
                 onClick={() => handleAgentClick(agent)}
               >
-                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
                   <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 relative">
+                      <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 relative">
                         {getAgentTypeIcon(agent.agent_type)}
                         <div className={`absolute w-3 h-3 rounded-full border-2 border-white -bottom-0.5 -right-0.5 ${
                           agent.is_active ? 'bg-green-500' : 'bg-gray-300'
                         }`}></div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-gray-900 truncate">{agent.name}</h3>
-                        <p className="text-sm text-gray-500 mt-0.5">{agent.agent_type}</p>
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{agent.name}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{agent.agent_type}</p>
                       </div>
                     </div>
                     
@@ -585,7 +585,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
+                      <DropdownMenuContent align="end" className="w-40 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
                           router.push(`/agents/${agent.id}?tab=overview`)
