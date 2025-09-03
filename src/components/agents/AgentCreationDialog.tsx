@@ -800,7 +800,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                         </Badge>
                       </div>
                     </div>
-                  </div>
+                </div>
 
                 {/* Webhook Status for Vapi Agents */}
                 {selectedPlatform === 'vapi' && webhookSetupStatus && (
