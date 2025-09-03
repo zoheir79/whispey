@@ -469,8 +469,8 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                 </div>
               </div>
 
-              {/* Futuristic Tab Navigation - Responsive */}
-              <div className="flex items-center gap-2 bg-slate-900/50 backdrop-blur-xl rounded-2xl p-2 ml-2 md:ml-8 overflow-x-auto scrollbar-hide border border-cyan-500/20 shadow-xl shadow-cyan-500/10">
+              {/* Refined Tab Navigation - Responsive */}
+              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 ml-2 md:ml-8 overflow-x-auto scrollbar-hide">
                 {tabs.map((tab) => {
                   const Icon = tab.icon
                   const isActive = activeTab === tab.id
@@ -478,22 +478,14 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                     <button
                       key={tab.id}
                       onClick={() => handleTabChange(tab.id)}
-                      className={`group flex items-center gap-2 px-3 sm:px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 whitespace-nowrap relative overflow-hidden ${
+                      className={`flex items-center gap-2 px-2 sm:px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
                         isActive
-                          ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 shadow-lg shadow-cyan-500/20 border border-cyan-400/40'
-                          : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/60 border border-transparent hover:border-cyan-500/30'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                       }`}
                     >
-                      {/* Animated background for active tab */}
-                      {isActive && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-cyan-500/10 animate-pulse"></div>
-                      )}
-                      <Icon className={`w-5 h-5 transition-all duration-300 relative z-10 ${isActive ? 'text-cyan-300' : 'group-hover:scale-110'}`} />
-                      <span className="hidden sm:inline relative z-10 tracking-wide">{tab.label}</span>
-                      {/* Glow effect */}
-                      {isActive && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-purple-400/20 blur-lg -z-10"></div>
-                      )}
+                      <Icon className="w-4 h-4" />
+                      <span className="hidden sm:inline">{tab.label}</span>
                     </button>
                   )
                 })}

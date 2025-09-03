@@ -348,63 +348,54 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen">
-      {/* Futuristic Header */}
-      <div className="flex items-center justify-between p-6 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-cyan-500/20 shadow-2xl shadow-cyan-500/10">
-        <div className="relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-cyan-600 via-purple-600 to-cyan-600 rounded-lg blur opacity-20 animate-pulse"></div>
-          <div className="relative">
-            <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 tracking-tight">
-              🚀 All Calls
-            </h2>
-            <p className="text-cyan-300/70 font-medium mt-1">
-              Monitoring {calls.length} calls across all projects
-            </p>
-          </div>
+    <div className="space-y-4 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">All Calls</h2>
+          <p className="text-muted-foreground">
+            Viewing {calls.length} calls across all projects
+          </p>
         </div>
         
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             onClick={fetchGlobalCalls}
-            className="bg-slate-800/50 border-cyan-500/30 hover:border-cyan-400/60 text-cyan-300 hover:text-cyan-200 hover:bg-slate-700/70 backdrop-blur-sm transition-all duration-300 shadow-lg hover:shadow-cyan-500/20"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            🔄 Refresh
+            Refresh
           </Button>
         </div>
       </div>
 
-      {/* Futuristic Calls Table */}
+      {/* Calls Table */}
       {calls.length === 0 ? (
-        <div className="text-center py-16 bg-slate-900/30 backdrop-blur-xl rounded-2xl border border-cyan-500/20">
-          <div className="relative inline-block">
-            <AlertCircle className="w-16 h-16 text-cyan-400/60 mx-auto mb-4 animate-pulse" />
-            <div className="absolute inset-0 bg-cyan-400/20 blur-xl rounded-full"></div>
-          </div>
-          <h3 className="text-2xl font-bold text-cyan-300 mb-3">No calls detected</h3>
-          <p className="text-cyan-300/60 text-lg">
-            🔍 No calls have been made yet across all projects
+        <div className="text-center py-12">
+          <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-medium mb-2">No calls found</h3>
+          <p className="text-muted-foreground">
+            No calls have been made yet across all projects.
           </p>
         </div>
       ) : (
         <div className="group">
-          <div className="bg-slate-900/40 backdrop-blur-xl border border-cyan-500/20 rounded-2xl shadow-2xl shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-500 overflow-hidden">
+          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
             <Table>
-              <TableHeader>
-                <TableRow className="border-cyan-500/20 bg-slate-800/50">
-                  {getFilteredBasicColumns.map((column) => (
-                    <TableHead key={column.key} className="font-bold text-cyan-300 tracking-wide">
-                      {column.label}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {calls.map((call, index) => (
+            <TableHeader>
+              <TableRow>
+                {getFilteredBasicColumns.map((column) => (
+                  <TableHead key={column.key} className="font-semibold">
+                    {column.label}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {calls.map((call) => (
                 <TableRow
                   key={call.id}
-                  className="cursor-pointer hover:bg-slate-800/50 border-slate-700/50 text-slate-300 hover:text-cyan-300 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 group"
+                  className="cursor-pointer hover:bg-muted/50"
                   onClick={() => setSelectedCall(call)}
                 >
                   {visibleColumns.basic.map((key) => {

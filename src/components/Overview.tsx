@@ -574,148 +574,290 @@ const Overview: React.FC<OverviewProps> = ({
   console.log('🔍 DEBUG Overview - Date Range:', dateRange);
 
   return (
-    <div className="px-6 py-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen relative">
-      {/* Animated background grid */}
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: 'linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px)',
-        backgroundSize: '4rem 4rem'
-      }}></div>
-      
-      {analytics ? (
-        <React.Fragment>
-          {/* Top Metrics Grid - Futuristic Design */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 relative z-10">
-            {/* Total Calls - Futuristic */}
-            <div className="group">
-              <div className="bg-slate-900/40 backdrop-blur-xl border border-cyan-500/20 rounded-2xl shadow-2xl shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-500 relative overflow-hidden">
-                {/* Animated background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 animate-pulse"></div>
-                
-                <div className="p-4 md:p-6 relative z-10">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 rounded-xl border border-cyan-400/30 relative">
-                      <Phone className="w-6 h-6 text-cyan-300" />
-                      <div className="absolute inset-0 bg-cyan-400/10 blur-lg rounded-xl"></div>
+    <div className="h-full" style={{ backgroundColor: '#fafafa' }}>
+      <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
+        {analytics ? (
+          <>
+            {/* Responsive Metrics Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
+              {/* Total Calls */}
+              <div className="group">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                        <Phone weight="regular" className="w-5 h-5 text-blue-600" />
+                      </div>
+                      
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xs font-bold text-cyan-300/80 uppercase tracking-wider">📞 Total Calls</h3>
-                    <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 tracking-tight">
-                      {(() => {
-                        const totalCalls = analytics?.totalCalls || 0;
-                        console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
-                        console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
-                        console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
-                        return String(totalCalls).replace(/^0+/, '') || '0';
-                      })()}
-                    </p>
-                    <p className="text-xs text-cyan-300/60 font-medium">{getDateRangeDisplay()}</p>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Calls</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {(() => {
+                          const totalCalls = analytics?.totalCalls || 0;
+                          console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
+                          console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
+                          console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
+                          return String(totalCalls).replace(/^0+/, '') || '0';
+                        })()}
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Global Call Duration - Futuristic */}
-            <div className="group">
-              <div className="bg-slate-900/40 backdrop-blur-xl border border-emerald-500/20 rounded-2xl shadow-2xl shadow-emerald-500/10 hover:shadow-emerald-500/20 transition-all duration-500 relative overflow-hidden">
-                {/* Animated background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 animate-pulse"></div>
-                
-                <div className="p-4 md:p-6 relative z-10">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl border border-emerald-400/30 relative">
-                      <Clock className="w-6 h-6 text-emerald-300" />
-                      <div className="absolute inset-0 bg-emerald-400/10 blur-lg rounded-xl"></div>
+              {/* Global Call Duration */}
+              <div className="group">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                        <Clock weight="regular" className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                          {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider">⏱️ Call Duration</h3>
-                    <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 tracking-tight">
-                      {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
-                      <span className="text-lg text-emerald-300/60 ml-1">min</span>
-                    </p>
-                    <p className="text-xs text-emerald-300/60 font-medium">{getDateRangeDisplay()}</p>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Call Duration</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
+                        <span className="text-lg text-gray-500 ml-1">min</span>
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Custom Totals Grid */}
-          {customTotals.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 relative z-10">
-              {customTotals.map((config) => {
-                const result = customTotalResults.find(r => r.configId === config.id)
-                const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
-                const colorClass = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES] || COLOR_CLASSES.blue
+              {/* AI Processing Time */}
+              <div className="group">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
+                        <Activity weight="regular" className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                          STT+LLM+TTS
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AI Processing</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
+                        <span className="text-lg text-gray-500 ml-1">min</span>
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                return (
-                  <div key={config.id} className="group">
-                    <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                      <div className="p-4 md:p-5">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className={`p-2 ${colorClass.replace('bg-', 'bg-').replace('text-', 'border-')} rounded-lg border`}>
-                            <IconComponent weight="regular" className={`w-5 h-5 ${colorClass.split(' ')[1]}`} />
-                          </div>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0 hover:bg-gray-100"
-                              onClick={() => handleDownloadCustomTotal(config)}
-                              title="Download matching logs"
-                            >
-                              <Download className="h-3 w-3 text-gray-400" />
-                            </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="h-6 w-6 p-0 hover:bg-gray-100"
-                                >
-                                  <MoreHorizontal className="h-3 w-3 text-gray-400" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
+              {/* Total Cost */}
+              {role !== 'user' && (
+                <div className="group">
+                  <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                    <div className="p-4 md:p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
+                          <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600" />
                         </div>
-                        <div className="space-y-1">
-                          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" title={config.name}>
-                            {config.name}
-                          </h3>
-                          <p className="text-2xl font-light text-gray-900 tracking-tight">
-                            {loadingCustomTotals || !result ? (
-                              <Loader2 className="w-5 h-5 animate-spin" />
-                            ) : (
-                              formatCustomTotalValue(result, config)
-                            )}
-                          </p>
-                          <p className="text-xs text-gray-400 font-medium">
-                            {config.filters.length > 0 
-                              ? `${config.filters.length} filter${config.filters.length > 1 ? 's' : ''} (${config.filterLogic})`
-                              : 'No filters'
-                            }
-                          </p>
-                          {result?.error && (
-                            <p className="text-xs text-red-500 mt-1">
-                              {result.error}
-                            </p>
-                          )}
+                        <div className="text-right">
+                          <span className="text-xs font-medium text-gray-500">INR</span>
                         </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Cost</h3>
+                        <p className="text-2xl font-light text-gray-900 tracking-tight">₹{analytics?.totalCost?.toFixed(2) || '0.00'}</p>
+                        <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                       </div>
                     </div>
                   </div>
-                )
-              })}
+                </div>
+              )}
+
+              {/* Average Latency */}
+              {role !== 'user' && (
+                <div className="group">
+                  <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                    <div className="p-4 md:p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
+                          <Lightning weight="regular" className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">avg</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Response Time</h3>
+                        <p className="text-2xl font-light text-gray-900 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-400 ml-1">s</span></p>
+                        <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Successful Calls */}
+              <div className="group">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-green-50 rounded-lg border border-green-100">
+                        <CheckCircle weight="regular" className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                          <ArrowUp weight="bold" className="w-3 h-3 text-green-600" />
+                          <span className="text-xs font-bold text-green-600">
+                            {analytics ? successRate.toFixed(1) : '0.0'}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Successful</h3>
+                      <p className="text-2xl font-light text-green-600 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Failed Calls */}
+              <div className="group">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-red-50 rounded-lg border border-red-100">
+                        <XCircle weight="regular" className="w-5 h-5 text-red-600" />
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 text-red-600">
+                          <ArrowDown weight="bold" className="w-3 h-3 text-red-600" />
+                          <span className="text-xs font-bold text-red-600">
+                            {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Failed</h3>
+                      <p className="text-2xl font-light text-red-600 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Tokens */}
+              <div className="group">
+                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                        <Activity weight="regular" className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                          {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Tokens</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {analytics?.totalTokens?.toLocaleString() || '0'}
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            {customTotals.map((config) => {
+              const result = customTotalResults.find(r => r.configId === config.id)
+
+              const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
+              const colorClass = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES] || COLOR_CLASSES.blue
+
+              return (
+                <div key={config.id} className="group">
+                  <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+                    <div className="p-4 md:p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`p-2 ${colorClass.replace('bg-', 'bg-').replace('text-', 'border-')} rounded-lg border`}>
+                          <IconComponent weight="regular" className={`w-5 h-5 ${colorClass.split(' ')[1]}`} />
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 hover:bg-gray-100"
+                            onClick={() => handleDownloadCustomTotal(config)}
+                            title="Download matching logs"
+                          >
+                            <Download className="h-3 w-3 text-gray-400" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 hover:bg-gray-100"
+                              >
+                                <MoreHorizontal className="h-3 w-3 text-gray-400" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" title={config.name}>
+                          {config.name}
+                        </h3>
+                        <p className="text-2xl font-light text-gray-900 tracking-tight">
+                          {loadingCustomTotals || !result ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            formatCustomTotalValue(result, config)
+                          )}
+                        </p>
+                        <p className="text-xs text-gray-400 font-medium">
+                          {config.filters.length > 0 
+                            ? `${config.filters.length} filter${config.filters.length > 1 ? 's' : ''} (${config.filterLogic})`
+                            : 'No filters'
+                          }
+                        </p>
+                        {result?.error && (
+                          <p className="text-xs text-red-500 mt-1">
+                            {result.error}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+
             </div>
-          )}
 
             {process.env.NODE_ENV === 'development' && (
               <Card className="border-yellow-200 bg-yellow-50">
@@ -1103,22 +1245,23 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
-        </React.Fragment>
-      ) : (
-        <div className="h-full flex items-center justify-center">
-          <div className="text-center space-y-8">
-            <div className="w-20 h-20 bg-white rounded-2xl border border-gray-200 flex items-center justify-center mx-auto shadow-sm">
-              <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-medium text-gray-900">No Data Available</h3>
-              <p className="text-sm text-gray-500 max-w-sm mx-auto leading-relaxed">
-                No calls found for the selected time period. Try adjusting your date range or check back later.
-              </p>
+          </>
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center space-y-8">
+              <div className="w-20 h-20 bg-white rounded-2xl border border-gray-200 flex items-center justify-center mx-auto shadow-sm">
+                <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-medium text-gray-900">No Data Available</h3>
+                <p className="text-sm text-gray-500 max-w-sm mx-auto leading-relaxed">
+                  No calls found for the selected time period. Try adjusting your date range or check back later.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

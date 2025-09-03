@@ -98,23 +98,18 @@ function Header({ breadcrumb }: HeaderProps) {
   if (!user) return null;
 
   return (
-    <header className="bg-gradient-to-r from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl border-b border-cyan-500/20 sticky top-0 z-50 shadow-2xl shadow-cyan-500/10">
-      <div className="px-6 py-4 relative">
-        {/* Futuristic glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-cyan-500/5 animate-pulse"></div>
-        <div className="flex items-center justify-between max-w-[1600px] mx-auto relative z-10">
+    <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200/60 sticky top-0 z-50 shadow-sm">
+      <div className="px-6 py-3">
+        <div className="flex items-center justify-between max-w-[1600px] mx-auto">
           {/* Logo & Brand Section */}
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <Image src="/logo.png" alt="Pype AI Logo" width={48} height={48} className="group-hover:scale-110 transition-all duration-300 drop-shadow-lg" />
-                <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-lg group-hover:bg-cyan-400/40 transition-all duration-300"></div>
-              </div>
+              <Image src="/logo.png" alt="Pype AI Logo" width={48} height={48} className="group-hover:scale-110 transition-transform duration-200" />
               <div>
-                <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 group-hover:from-cyan-300 group-hover:to-purple-300 transition-all duration-300 tracking-tight">
+                <h1 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-200 tracking-tight">
                   Whispey
                 </h1>
-                <p className="text-xs text-cyan-300/70 -mt-0.5 font-medium tracking-wide">LiveKit Observability Platform</p>
+                <p className="text-xs text-gray-500 -mt-0.5 font-medium">LiveKit Observability Platform</p>
               </div>
             </Link>
 
@@ -154,39 +149,38 @@ function Header({ breadcrumb }: HeaderProps) {
 
           {/* Desktop Navigation - Hidden on mobile */}
           {!roleLoading && (
-            <div className="hidden md:flex items-center gap-2">
-              {/* Workspaces Access - Futuristic Design */}
+            <div className="hidden md:flex items-center gap-1">
+              {/* Workspaces Access - Differentiated for Admins vs Users */}
               <Link
                 href="/"
-                className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-cyan-300/80 hover:text-cyan-300 transition-all duration-300 rounded-xl bg-slate-800/50 hover:bg-slate-700/70 border border-cyan-500/20 hover:border-cyan-400/40 backdrop-blur-sm hover:shadow-lg hover:shadow-cyan-500/20"
+                className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-blue-600 transition-all duration-200 rounded-lg hover:bg-blue-50/50 border border-transparent hover:border-blue-100"
               >
-                <Folders className="w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:text-cyan-300" />
-                <span className="font-semibold tracking-wide">{isAdmin ? 'All Workspaces' : 'My Workspace'}</span>
+                <Folders className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>{isAdmin ? 'All Workspaces' : 'My Workspace'}</span>
               </Link>
 
               {/* Agents Access */}
               <Link
                 href="/agents"
-                className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-300/80 hover:text-emerald-300 transition-all duration-300 rounded-xl bg-slate-800/50 hover:bg-slate-700/70 border border-emerald-500/20 hover:border-emerald-400/40 backdrop-blur-sm hover:shadow-lg hover:shadow-emerald-500/20"
+                className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-green-600 transition-all duration-200 rounded-lg hover:bg-green-50/50 border border-transparent hover:border-green-100"
               >
-                <Bot className="w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:text-emerald-300" />
-                <span className="font-semibold tracking-wide">{isAdmin ? 'All Agents' : 'My Agents'}</span>
+                <Bot className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>{isAdmin ? 'All Agents' : 'My Agents'}</span>
               </Link>
 
-              {/* Global Calls Access (Admin/Super Admin only) */}
+              {/* Calls Access */}
+              <Link
+                href="/calls"
+                className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-purple-600 transition-all duration-200 rounded-lg hover:bg-purple-50/50 border border-transparent hover:border-purple-100"
+              >
+                <Phone className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>{isAdmin ? 'All Calls' : 'My Calls'}</span>
+              </Link>
+
+              {/* Admin Badge */}
               {isAdmin && (
-                <Link
-                  href="/calls"
-                  className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-300/80 hover:text-purple-300 transition-all duration-300 rounded-xl bg-slate-800/50 hover:bg-slate-700/70 border border-purple-500/20 hover:border-purple-400/40 backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/20"
-                >
-                  <Phone className="w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:text-purple-300" />
-                  <span className="font-semibold tracking-wide">All Calls</span>
-                </Link>
-              )}
-              {/* Admin Badge - Futuristic */}
-              {isAdmin && (
-                <Badge className="ml-3 px-3 py-1 text-xs font-bold bg-gradient-to-r from-amber-400/20 to-orange-400/20 text-amber-300 border border-amber-400/30 backdrop-blur-sm shadow-lg shadow-amber-500/20 animate-pulse">
-                  {isSuperAdmin ? '⚡ SUPER ADMIN' : '🔑 ADMIN'}
+                <Badge variant="outline" className="ml-2 text-xs font-medium bg-blue-50 text-blue-700 border-blue-200">
+                  {isSuperAdmin ? 'Super Admin' : 'Admin'}
                 </Badge>
               )}
             </div>
