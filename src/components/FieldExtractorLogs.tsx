@@ -57,7 +57,7 @@ const FieldExtractorDialog: React.FC<FieldExtractorDialogProps> = ({ initialData
         {/* The single, refined "sparkle" button */}
         <MagicButton />
       </DialogTrigger>
-      <DialogContent className="max-w-2xl rounded-lg shadow-xl flex flex-col h-[80vh] max-h-[600px] p-0">
+      <DialogContent className="max-w-2xl rounded-lg shadow-xl flex flex-col h-[80vh] max-h-[600px] p-0 dark:bg-blue-900 dark:border-blue-700">
         <DialogHeader className="p-6 pb-4 flex-shrink-0">
           <DialogTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
             Field Extractor Config

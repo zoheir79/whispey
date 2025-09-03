@@ -380,7 +380,7 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
         </div>
       ) : (
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <Table>
             <TableHeader>
               <TableRow>

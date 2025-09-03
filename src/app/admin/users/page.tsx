@@ -137,11 +137,11 @@ export default function AdminUsersPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900 flex items-center gap-3">
+              <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-3">
                 <Users className="w-6 h-6" />
                 User Management
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
                 Approve new user registrations and manage user access.
               </p>
             </div>
@@ -149,11 +149,11 @@ export default function AdminUsersPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card>
+            <Card className="dark:bg-blue-900 dark:border-blue-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Suspended</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Suspended</p>
                     <p className="text-2xl font-semibold text-red-600">
                       {users.filter(u => u.status === 'suspended').length}
                     </p>
@@ -163,11 +163,11 @@ export default function AdminUsersPage() {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="dark:bg-blue-900 dark:border-blue-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Active</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Active</p>
                     <p className="text-2xl font-semibold text-green-600">
                       {users.filter(u => u.status === 'active').length}
                     </p>
@@ -177,11 +177,11 @@ export default function AdminUsersPage() {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="dark:bg-blue-900 dark:border-blue-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">All Users</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">All Users</p>
                     <p className="text-2xl font-semibold text-blue-600">
                       {users.length}
                     </p>
@@ -191,12 +191,12 @@ export default function AdminUsersPage() {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="dark:bg-blue-900 dark:border-blue-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Total</p>
-                    <p className="text-2xl font-semibold text-gray-900">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Total</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                       {users.length}
                     </p>
                   </div>
@@ -220,15 +220,15 @@ export default function AdminUsersPage() {
                 />
               </div>
               
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-blue-800 rounded-lg p-1">
                 {(['all', 'active', 'suspended'] as const).map((status) => (
                   <button
                     key={status}
                     onClick={() => setSelectedStatus(status)}
                     className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                       selectedStatus === status
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                        ? 'bg-white dark:bg-blue-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-blue-700/50'
                     }`}
                   >
                     {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -255,7 +255,7 @@ export default function AdminUsersPage() {
         ) : (
           <div className="space-y-4">
             {filteredUsers.map((user) => (
-              <Card key={user.user_id} className="hover:shadow-sm transition-shadow">
+              <Card key={user.user_id} className="dark:bg-blue-900 dark:border-blue-700 hover:shadow-sm transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -265,7 +265,7 @@ export default function AdminUsersPage() {
                       
                       <div>
                         <div className="flex items-center gap-3 mb-1">
-                          <h3 className="font-semibold text-gray-900">
+                          <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                             {user.first_name && user.last_name 
                               ? `${user.first_name} ${user.last_name}` 
                               : user.email}
@@ -280,7 +280,7 @@ export default function AdminUsersPage() {
                             {user.global_role}
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
                           <div className="flex items-center gap-1">
                             <Mail className="w-4 h-4" />
                             {user.email}
@@ -339,10 +339,10 @@ export default function AdminUsersPage() {
             {filteredUsers.length === 0 && (
               <div className="text-center py-20">
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                   {searchQuery ? 'No users found' : 'No users yet'}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   {searchQuery 
                     ? 'Try adjusting your search criteria'
                     : 'New user registrations will appear here for approval'

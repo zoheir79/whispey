@@ -371,12 +371,12 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
   }, [checkVapiStatus, isVapiAgent, agent?.id])
 
 
-  if (!shouldFetch) {
+  if (agentError || projectError || !agent) {
     return (
       <div className="h-screen flex flex-col bg-gray-50">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 max-w-md text-center">
+          <div className="bg-white dark:bg-blue-900 rounded-2xl border border-gray-200 dark:border-blue-700 shadow-sm p-6 max-w-md text-center">
             <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-6 h-6 text-red-500" />
             </div>
@@ -398,7 +398,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
         <Header />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-3">
-            <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 bg-white dark:bg-blue-900 rounded-xl border border-gray-200 dark:border-blue-700 shadow-sm flex items-center justify-center mx-auto">
               <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
             </div>
             <div>
@@ -411,33 +411,12 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
     )
   }
 
-  if (agentError || projectError || !agent) {
-    return (
-      <div className="h-screen flex flex-col bg-gray-50">
-        <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 max-w-md text-center">
-            <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-6 h-6 text-red-500" />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Agent not found</h2>
-            <p className="text-sm text-gray-500 mb-4">{agentError || projectError || 'Agent not found'}</p>
-            <Button onClick={handleBack} variant="outline" className="w-full border-gray-200">
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Go Back
-            </Button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       <Header breadcrumb={breadcrumb} />
 
       {/* Polished Apple Header */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="bg-white dark:bg-blue-900 border-b border-gray-200 dark:border-blue-700 shadow-sm">
         <div className="px-8 py-3">
           <div className="flex items-center justify-between">
             {/* Left: Navigation & Identity */}
@@ -480,8 +459,8 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       onClick={() => handleTabChange(tab.id)}
                       className={`flex items-center gap-2 px-2 sm:px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
                         isActive
-                          ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-gray-700/50'
+                          ? 'bg-white dark:bg-blue-800 text-gray-900 dark:text-gray-100 shadow-sm'
+                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-blue-800/50'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -551,8 +530,8 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       onClick={() => handleQuickFilter(filter.id)}
                       className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                         quickFilter === filter.id && !isCustomRange
-                          ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-gray-700/50'
+                          ? 'bg-white dark:bg-blue-800 text-gray-900 dark:text-gray-100 shadow-sm'
+                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-blue-800/50'
                       }`}
                     >
                       {filter.label}

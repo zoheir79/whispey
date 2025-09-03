@@ -223,9 +223,9 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Activity */}
-            <div className="bg-white border border-gray-200 rounded-lg">
-              <div className="p-6 border-b border-gray-100">
-                <h3 className="font-medium text-gray-900 flex items-center gap-2">
+            <div className="bg-white dark:bg-blue-900 border border-gray-200 dark:border-blue-700 rounded-lg">
+              <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <Activity className="h-5 w-5" />
                   Recent Activity
                 </h3>
@@ -258,9 +258,9 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
             </div>
 
             {/* Top Performing Agents */}
-            <div className="bg-white border border-gray-200 rounded-lg">
-              <div className="p-6 border-b border-gray-100">
-                <h3 className="font-medium text-gray-900 flex items-center gap-2">
+            <div className="bg-white dark:bg-blue-900 border border-gray-200 dark:border-blue-700 rounded-lg">
+              <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
                   Top Performers
                 </h3>

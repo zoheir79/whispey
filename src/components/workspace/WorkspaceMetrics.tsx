@@ -356,7 +356,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
               <select 
                 value={selectedWorkspace}
                 onChange={(e) => setSelectedWorkspace(e.target.value)}
-                className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="text-sm border border-gray-300 dark:border-blue-600 rounded-md px-3 py-1.5 bg-white dark:bg-blue-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="ALL">All Workspaces</option>
                 {availableWorkspaces.map((workspace) => (
@@ -402,7 +402,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {/* Usage LLM - Tokens & Cost */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-cyan-50 rounded-lg border border-cyan-100">
@@ -429,7 +429,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Usage STT - Duration & Cost */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-rose-50 rounded-lg border border-rose-100">
@@ -456,7 +456,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Usage TTS - Characters & Cost */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-violet-50 rounded-lg border border-violet-100">
@@ -483,7 +483,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Usage Minutes & Total Cost */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-teal-50 rounded-lg border border-teal-100">
@@ -516,7 +516,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Calls */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
@@ -539,7 +539,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Success Rate */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-green-50 rounded-lg border border-green-100">
@@ -563,7 +563,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Average Duration */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
@@ -586,7 +586,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Total Cost */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
@@ -607,7 +607,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Active Agents */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
@@ -631,7 +631,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Response Time */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
@@ -655,7 +655,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Cost Per Call */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
@@ -679,7 +679,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Weekly Growth */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
