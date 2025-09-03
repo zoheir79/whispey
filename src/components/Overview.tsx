@@ -80,12 +80,12 @@ const ICON_COMPONENTS = {
 }
 
 const COLOR_CLASSES = {
-  blue: 'bg-blue-100 text-blue-600',
-  green: 'bg-green-100 text-green-600',
-  purple: 'bg-purple-100 text-purple-600',
-  orange: 'bg-orange-100 text-orange-600',
-  red: 'bg-red-100 text-red-600',
-  emerald: 'bg-emerald-100 text-emerald-600'
+  blue: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+  green: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800',
+  purple: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800',
+  orange: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 border-orange-200 dark:border-orange-800',
+  red: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800',
+  emerald: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
 }
 
 const subDays = (date: Date, days: number) => {
@@ -586,7 +586,7 @@ const Overview: React.FC<OverviewProps> = ({
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                        <Phone weight="regular" className="w-5 h-5 text-blue-600" />
+                        <Phone weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       
                     </div>
@@ -613,7 +613,7 @@ const Overview: React.FC<OverviewProps> = ({
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
-                        <Clock weight="regular" className="w-5 h-5 text-emerald-600" />
+                        <Clock weight="regular" className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                       </div>
                       <div className="text-right">
                         <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
@@ -638,11 +638,11 @@ const Overview: React.FC<OverviewProps> = ({
                 <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
-                        <Activity weight="regular" className="w-5 h-5 text-purple-600" />
+                      <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
+                        <Activity weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                           STT+LLM+TTS
                         </span>
                       </div>
@@ -651,7 +651,7 @@ const Overview: React.FC<OverviewProps> = ({
                       <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">AI Processing</h3>
                       <p className="text-2xl font-light text-gray-900 tracking-tight">
                         {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
-                        <span className="text-lg text-gray-500 ml-1">min</span>
+                        <span className="text-lg text-gray-500 dark:text-gray-400 ml-1">min</span>
                       </p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
@@ -662,14 +662,14 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Total Cost */}
               {role !== 'user' && (
                 <div className="group">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
-                        <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
-                          <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600" />
+                        <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
+                          <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                         </div>
                         <div className="text-right">
-                          <span className="text-xs font-medium text-gray-500">INR</span>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400">INR</span>
                         </div>
                       </div>
                       <div className="space-y-1">
@@ -685,19 +685,19 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Average Latency */}
               {role !== 'user' && (
                 <div className="group">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
-                        <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
-                          <Lightning weight="regular" className="w-5 h-5 text-purple-600" />
+                        <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
+                          <Lightning weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                         </div>
                         <div className="text-right">
-                          <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">avg</span>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">avg</span>
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Response Time</h3>
-                        <p className="text-2xl font-light text-gray-900 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-400 ml-1">s</span></p>
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Response Time</h3>
+                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-500 dark:text-gray-400 ml-1">s</span></p>
                         <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                       </div>
                     </div>
@@ -707,24 +707,24 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Successful Calls */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-green-50 rounded-lg border border-green-100">
-                        <CheckCircle weight="regular" className="w-5 h-5 text-green-600" />
+                        <CheckCircle weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                       </div>
                       <div className="text-right">
-                        <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md border border-green-100">
-                          <ArrowUp weight="bold" className="w-3 h-3 text-green-600" />
-                          <span className="text-xs font-bold text-green-600">
+                        <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-md border border-green-100 dark:border-green-800">
+                          <ArrowUp weight="bold" className="w-3 h-3 text-green-600 dark:text-green-400" />
+                          <span className="text-xs font-bold text-green-600 dark:text-green-400">
                             {analytics ? successRate.toFixed(1) : '0.0'}%
                           </span>
                         </div>
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Successful</h3>
-                      <p className="text-2xl font-light text-green-600 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Successful</h3>
+                      <p className="text-2xl font-light text-green-600 dark:text-green-400 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
@@ -733,32 +733,24 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Failed Calls */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
-                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Call Volume</h3>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">Total Calls</span>
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-100 dark:border-red-800">
+                        <XCircle weight="regular" className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-md border border-red-100 dark:border-red-800">
+                          <ArrowDown weight="bold" className="w-3 h-3 text-red-600 dark:text-red-400" />
+                          <span className="text-xs font-bold text-red-600 dark:text-red-400">
+                            {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
+                          </span>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Success Rate</h3>
-                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                          {isNaN(successRate) ? '0' : successRate.toFixed(1)}%
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-6">
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Failed</h3>
-                      <p className="text-2xl font-light text-red-600 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
+                      <p className="text-2xl font-light text-red-600 dark:text-red-400 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
@@ -767,14 +759,14 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Total Tokens */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
-                        <Activity weight="regular" className="w-5 h-5 text-indigo-600" />
+                      <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                        <Activity weight="regular" className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                           {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
                         </span>
                       </div>
@@ -798,11 +790,11 @@ const Overview: React.FC<OverviewProps> = ({
 
               return (
                 <div key={config.id} className="group">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
-                        <div className={`p-2 ${colorClass.replace('bg-', 'bg-').replace('text-', 'border-')} rounded-lg border`}>
-                          <IconComponent weight="regular" className={`w-5 h-5 ${colorClass.split(' ')[1]}`} />
+                        <div className={`p-2 ${colorClass} rounded-lg border`}>
+                          <IconComponent weight="regular" className={`w-5 h-5`} />
                         </div>
 
                         {/* Actions */}

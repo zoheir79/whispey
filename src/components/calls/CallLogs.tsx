@@ -123,7 +123,7 @@ const DynamicJsonCell: React.FC<{
     
     return (
       <div 
-        className="w-full max-w-full overflow-hidden border rounded-md bg-muted/20"
+        className="w-full max-w-full overflow-hidden border rounded-md bg-muted/20 dark:bg-slate-700"
         style={{ maxWidth }}
       >
         <div className="p-1.5 w-full overflow-hidden">
@@ -941,7 +941,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   {calls.map((call: CallLog) => (
                     <TableRow
                       key={call.id}
-                      className="cursor-pointer hover:bg-muted/50"
+                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
                       onClick={() => setSelectedCall(call)}
                     >
               {visibleColumns.basic.map((key) => {
@@ -951,16 +951,16 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   case "customer_number":
                     value = (
                       <div className="flex w-full items-center gap-3">
-                        <div className="w-10 h-8 rounded-full  flex items-center justify-center">
+                        <div className="w-10 h-8 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center">
                           <Phone className="w-4 h-4 text-primary" />
                         </div>
-                        <span className="font-medium">{call.customer_number}</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">{call.customer_number}</span>
                       </div>
                     )
                     break
                   case "call_id":
                     value = (
-                      <code className="text-xs bg-muted/60 px-3 py-1.5 rounded-md font-mono">
+                      <code className="text-xs bg-gray-100 text-gray-800 dark:bg-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-md font-mono">
                         {call.call_id.slice(-8)}
                       </code>
                     )
@@ -968,8 +968,13 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   case "call_ended_reason":
                     value = (
                       <Badge
-                        variant={call.call_ended_reason === "completed" ? "default" : "destructive"}
-                        className="text-xs font-medium px-2.5 py-1"
+                        variant="outline"
+                        className={cn(
+                          "text-xs font-medium px-2.5 py-1",
+                          call.call_ended_reason === "completed"
+                            ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800"
+                            : "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800"
+                        )}
                       >
                         {call.call_ended_reason === "completed" ? (
                           <CheckCircle className="w-3 h-3 mr-1.5" />
@@ -984,16 +989,22 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                     value = (
                       <div className="flex items-center gap-2 text-sm font-medium">
                         <Clock className="w-3 h-3 text-muted-foreground" />
-                        {formatDuration(call.duration_seconds)}
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {formatDuration(call.duration_seconds)}
+                        </p>
                       </div>
                     )
                     break
                   case "call_started_at":
-                    value = formatToIndianDateTime(call.call_started_at)
+                    value = (
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {formatToIndianDateTime(call.call_started_at)}
+                      </p>
+                    )
                     break
                   case "avg_latency":
                     value = call?.avg_latency ? (
-                      <span className="font-mono">{call.avg_latency.toFixed(2)}s</span>
+                      <span className="font-mono text-gray-900 dark:text-gray-100">{call.avg_latency.toFixed(2)}s</span>
                     ) : "-"
                     break
                   case "total_cost":

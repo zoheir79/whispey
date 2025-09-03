@@ -2,16 +2,15 @@
 
 import type React from "react"
 import { useMemo } from "react"
-import { X, Bot, Clock, Brain, Volume2, Mic, Activity, Download } from "lucide-react"
+import { X, Bot, Clock, Brain, Volume2, Mic, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useState, useEffect } from "react"
-// Removed unused db-service import - already using API endpoints
 import AudioPlayer from "../AudioPlayer"
 import { extractS3Key } from "../../utils/s3"
 import { cn } from "@/lib/utils"
-import ReactMarkdown from "react-markdown"
+import ReactMarkdown, { Options } from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 interface TranscriptLog {
@@ -48,18 +47,13 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   useEffect(() => {
     const fetchTranscriptLogs = async () => {
       if (!sessionId) return
-      
       setLoading(true)
       setError(null)
-      
       try {
         const response = await fetch(`/api/logs/transcript?session_id=${sessionId}`, {
           method: 'GET',
-          headers: {
-            'authorization': localStorage.getItem('token') || ''
-          }
+          headers: { 'authorization': localStorage.getItem('token') || '' }
         })
-
         if (!response.ok) throw new Error('Failed to fetch transcript logs')
         const data = await response.json()
         setTranscriptLogs(Array.isArray(data) ? data : [])
@@ -69,344 +63,63 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
         setLoading(false)
       }
     }
-
     fetchTranscriptLogs()
   }, [sessionId])
 
-  
-  // Parse transcript data from transcript_with_metrics or transcript_json
   const basicTranscript = useMemo(() => {
-    console.log('🔍 DEBUG - callData.transcript_json:', callData?.transcript_json);
-    console.log('🔍 DEBUG - callData.transcript_with_metrics:', callData?.transcript_with_metrics);
-    console.log('🔍 DEBUG - transcriptLogs length:', transcriptLogs?.length);
-    
-    // Use transcript_with_metrics if transcript_json is empty
-    const transcriptData = (callData?.transcript_json && Array.isArray(callData.transcript_json) && callData.transcript_json.length > 0) 
-      ? callData.transcript_json 
-      : callData?.transcript_with_metrics;
-    
+    const transcriptData = (callData?.transcript_json?.length > 0) ? callData.transcript_json : callData?.transcript_with_metrics;
     if (!transcriptData) return null
-    
     try {
-      const transcript = Array.isArray(transcriptData) 
-        ? transcriptData 
-        : (typeof transcriptData === 'string' 
-           ? JSON.parse(transcriptData)
-           : transcriptData)
-      
-      console.log('🔍 DEBUG - parsed transcript:', transcript);
-      
-      // Ensure we have an array before mapping
-      if (!Array.isArray(transcript)) {
-        console.warn('transcript_json is not an array:', transcript)
-        return null
-      }
-      
-      // Handle transcript_with_metrics format (each item has user_transcript AND agent_response)
-      const messages: any[] = [];
-      
+      const transcript = Array.isArray(transcriptData) ? transcriptData : JSON.parse(transcriptData)
+      if (!Array.isArray(transcript)) return null
+      const messages: any[] = []
       transcript.forEach((item: any, index: number) => {
-        console.log(`🔍 DEBUG - Processing item ${index}:`, {
-          hasUserTranscript: !!item.user_transcript,
-          hasAgentResponse: !!item.agent_response,
-          hasContent: !!item.content,
-          hasRole: !!item.role,
-          hasSpeaker: !!item.speaker,
-          keys: Object.keys(item),
-          item: item
-        });
-        
-        if (item.user_transcript) {
-          messages.push({
-            id: `user-${item.turn_id || index}`,
-            role: 'user',
-            content: item.user_transcript,
-            timestamp: item.timestamp,
-            turn_id: item.turn_id || (index + 1)
-          });
-        }
-        
-        if (item.agent_response) {
-          messages.push({
-            id: `agent-${item.turn_id || index}`,
-            role: 'assistant',
-            content: item.agent_response,
-            timestamp: item.timestamp,
-            turn_id: item.turn_id || (index + 1)
-          });
-        }
-        
-        // Fallback for simple transcript_json format
-        if (item.content && !item.user_transcript && !item.agent_response) {
-          messages.push({
-            id: `basic-${index}`,
-            role: item.role || 'user',
-            content: item.content,
-            timestamp: item.timestamp,
-            turn_id: item.turn_id || (index + 1)
-          });
-        }
-        
-        // Handle the actual format: {text, speaker, timestamp}
-        if (item.text && item.speaker && !item.user_transcript && !item.agent_response && !item.content) {
-          messages.push({
-            id: `speaker-${index}`,
-            role: item.speaker === 'agent' ? 'assistant' : (item.speaker === 'customer' ? 'user' : 'user'),
-            content: item.text,
-            timestamp: item.timestamp,
-            turn_id: item.turn_id || (index + 1),
-            speaker: item.speaker
-          });
-        }
+        if (item.user_transcript) messages.push({ id: `user-${item.turn_id || index}`, role: 'user', content: item.user_transcript, timestamp: item.timestamp });
+        if (item.agent_response) messages.push({ id: `agent-${item.turn_id || index}`, role: 'assistant', content: item.agent_response, timestamp: item.timestamp });
+        if (item.content) messages.push({ id: `basic-${index}`, role: item.role || 'user', content: item.content, timestamp: item.timestamp });
+        if (item.text && item.speaker) messages.push({ id: `speaker-${index}`, role: item.speaker === 'agent' ? 'assistant' : 'user', content: item.text, timestamp: item.timestamp, speaker: item.speaker });
       });
-      
-      console.log('🔍 DEBUG - processed messages:', messages);
-      console.log('🔍 DEBUG - messages.length:', messages.length);
-      
-      // Return messages array (not null if empty)
       return messages.length > 0 ? messages : [];
     } catch (e) {
-      console.error('Error parsing transcript_json:', e)
       return null
     }
-  }, [callData?.transcript_json, callData?.transcript_with_metrics, transcriptLogs])
-  
-  // Calculate conversation metrics
+  }, [callData?.transcript_json, callData?.transcript_with_metrics])
+
   const conversationMetrics = useMemo(() => {
-    // CORRECTED: Use callData.transcript_with_metrics directly (not transcriptLogs from API)
-    const transcriptWithMetrics = callData?.transcript_with_metrics
-    const metricsSource = transcriptWithMetrics?.length > 0 ? transcriptWithMetrics : null
-    const hasBasicTranscript = basicTranscript && basicTranscript.length > 0
-    
-    console.log('🔍 DEBUG - Metrics source analysis:', {
-      transcriptWithMetrics: transcriptWithMetrics?.length || 0,
-      transcriptLogs: transcriptLogs?.length || 0,
-      hasBasicTranscript: hasBasicTranscript,
-      usingSource: metricsSource ? 'transcript_with_metrics' : 'basicTranscript'
+    const metricsSource = callData?.transcript_with_metrics?.length > 0 ? callData.transcript_with_metrics : null
+    if (!metricsSource) return null
+    const metrics = { stt: [] as number[], llm: [] as number[], tts: [] as number[], eou: [] as number[], totalTurnLatencies: [] as number[] }
+    metricsSource.forEach((log: any) => {
+      if (log.stt_metrics?.duration) metrics.stt.push(log.stt_metrics.duration)
+      if (log.llm_metrics?.ttft) metrics.llm.push(log.llm_metrics.ttft)
+      if (log.tts_metrics?.ttfb) metrics.tts.push(log.tts_metrics.ttfb)
+      if (log.eou_metrics?.end_of_utterance_delay) metrics.eou.push(log.eou_metrics.end_of_utterance_delay)
+      const sttTime = log.stt_metrics?.duration || 0
+      const llmTime = log.llm_metrics?.ttft || 0
+      const ttsTime = (log.tts_metrics?.ttfb || 0) + (log.tts_metrics?.duration || 0)
+      const totalTurnTime = sttTime + llmTime + ttsTime
+      if (totalTurnTime > 0) metrics.totalTurnLatencies.push(totalTurnTime)
     })
-    
-    if (!metricsSource && !hasBasicTranscript) return null
-  
-    const metrics = {
-      stt: [] as number[],
-      llm: [] as number[],
-      tts: [] as number[],
-      eou: [] as number[],
-      agentResponseLatencies: [] as number[],
-      totalTurnLatencies: [] as number[], // NEW: Complete turn latency
-      endToEndLatencies: [] as number[], // NEW: User speak to agent speak
-      totalTurns: metricsSource ? metricsSource.length : (hasBasicTranscript ? basicTranscript.length : 0),
-    }
-  
-    if (metricsSource) {
-      // Use detailed metrics from transcript_with_metrics
-      console.log('🔍 DEBUG - Processing transcript_with_metrics:', metricsSource)
-      
-      metricsSource.forEach((log: any, index: number) => {
-        console.log(`🔍 DEBUG - Processing metrics item ${index}:`, {
-          hasSTT: !!log.stt_metrics,
-          hasLLM: !!log.llm_metrics,
-          hasTTS: !!log.tts_metrics,
-          hasEOU: !!log.eou_metrics,
-          sttDuration: log.stt_metrics?.duration,
-          llmTTFT: log.llm_metrics?.ttft,
-          ttsTTFB: log.tts_metrics?.ttfb,
-          ttsDuration: log.tts_metrics?.duration,
-          log: log
-        })
-        
-        // VERIFICATION: Timestamps vs Latency logic
-        if (log.stt_metrics && log.llm_metrics && log.unix_timestamp) {
-          const turnStartTime = log.unix_timestamp
-          const sttDuration = log.stt_metrics.duration || 0
-          const expectedLLMStartTime = turnStartTime + (sttDuration * 1000) // Convert to ms
-          
-          console.log(`⏰ TIMESTAMP VERIFICATION - Turn ${index}:`, {
-            turnStartTime: new Date(turnStartTime).toISOString(),
-            sttDuration: `${sttDuration.toFixed(3)}s`,
-            expectedLLMStartTime: new Date(expectedLLMStartTime).toISOString(),
-            actualLLMTimestamp: log.llm_metrics.timestamp ? new Date(log.llm_metrics.timestamp).toISOString() : 'N/A',
-            timeDifference: log.llm_metrics.timestamp ? 
-              Math.abs(expectedLLMStartTime - log.llm_metrics.timestamp) : 'N/A',
-            formula: 'LLM_start = turn_start + STT_duration'
-          })
-        }
-        
-        // VERIFICATION: TTS timestamp logic  
-        if (log.llm_metrics && log.tts_metrics && log.llm_metrics.timestamp) {
-          const llmStartTime = log.llm_metrics.timestamp
-          const llmTTFT = log.llm_metrics.ttft || 0
-          const expectedTTSStartTime = llmStartTime + (llmTTFT * 1000) // Convert to ms
-          
-          console.log(`🔊 TTS TIMESTAMP VERIFICATION - Turn ${index}:`, {
-            llmStartTime: new Date(llmStartTime).toISOString(),
-            llmTTFT: `${llmTTFT.toFixed(3)}s`,
-            expectedTTSStartTime: new Date(expectedTTSStartTime).toISOString(),
-            actualTTSTimestamp: log.tts_metrics.timestamp ? new Date(log.tts_metrics.timestamp).toISOString() : 'N/A',
-            timeDifference: log.tts_metrics.timestamp ? 
-              Math.abs(expectedTTSStartTime - log.tts_metrics.timestamp) : 'N/A',
-            formula: 'TTS_start = LLM_start + LLM_ttft'
-          })
-        }
-        
-        // Individual component latencies (in seconds)
-        if (log.stt_metrics?.duration) metrics.stt.push(log.stt_metrics.duration)
-        if (log.llm_metrics?.ttft) metrics.llm.push(log.llm_metrics.ttft)
-        if (log.tts_metrics?.ttfb) metrics.tts.push(log.tts_metrics.ttfb)
-        if (log.eou_metrics?.end_of_utterance_delay) metrics.eou.push(log.eou_metrics.end_of_utterance_delay)
-
-        // Agent response time (LLM + TTS)
-        if (log.llm_metrics?.ttft && log.tts_metrics) {
-          const llmTime = log.llm_metrics.ttft || 0
-          const ttsTime = (log.tts_metrics.ttfb || 0) + (log.tts_metrics.duration || 0)
-          const agentResponseTime = llmTime + ttsTime
-          metrics.agentResponseLatencies.push(agentResponseTime)
-          
-          console.log(`🔍 DEBUG - Agent response calculation:`, {
-            llmTime: llmTime.toFixed(3),
-            ttsTime: ttsTime.toFixed(3),
-            agentResponseTime: agentResponseTime.toFixed(3)
-          })
-        }
-
-        // Total turn latency (STT + LLM + TTS)
-        if (log.stt_metrics || log.llm_metrics || log.tts_metrics) {
-          const sttTime = log.stt_metrics?.duration || 0
-          const llmTime = log.llm_metrics?.ttft || 0
-          const ttsTime = (log.tts_metrics?.ttfb || 0) + (log.tts_metrics?.duration || 0)
-          const totalTurnTime = sttTime + llmTime + ttsTime
-
-          if (totalTurnTime > 0) {
-            metrics.totalTurnLatencies.push(totalTurnTime)
-            
-            console.log(`🔍 DEBUG - Total turn calculation:`, {
-              sttTime: sttTime.toFixed(3),
-              llmTime: llmTime.toFixed(3), 
-              ttsTime: ttsTime.toFixed(3),
-              totalTurnTime: totalTurnTime.toFixed(3)
-            })
-          }
-        }
-
-        // End-to-end latency (EOU + STT + LLM + TTS)
-        if (log.eou_metrics?.end_of_utterance_delay) {
-          const eouTime = log.eou_metrics.end_of_utterance_delay || 0
-          const sttTime = log.stt_metrics?.duration || 0
-          const llmTime = log.llm_metrics?.ttft || 0
-          const ttsTime = (log.tts_metrics?.ttfb || 0) + (log.tts_metrics?.duration || 0)
-          const endToEndTime = eouTime + sttTime + llmTime + ttsTime
-          metrics.endToEndLatencies.push(endToEndTime)
-        }
-      })
-      
-      console.log('🔍 DEBUG - Final metrics from transcript_with_metrics:', {
-        stt: metrics.stt,
-        llm: metrics.llm,
-        tts: metrics.tts,
-        agentResponse: metrics.agentResponseLatencies,
-        totalTurn: metrics.totalTurnLatencies
-      })
-    } else if (hasBasicTranscript) {
-      // Fallback: Estimate latency from basic transcript timing
-      console.log('🔍 DEBUG - Using basic transcript for latency calculation')
-      console.log('🔍 DEBUG - basicTranscript timestamps:', basicTranscript.map(item => ({
-        speaker: item.speaker,
-        timestamp: item.timestamp,
-        text: item.content?.substring(0, 50) + '...'
-      })))
-      
-      for (let i = 0; i < basicTranscript.length - 1; i++) {
-        const current = basicTranscript[i]
-        const next = basicTranscript[i + 1]
-        
-        if (current.speaker === 'customer' && next.speaker === 'agent' && 
-            current.timestamp && next.timestamp) {
-          // Calculate response time in seconds (timestamps are already in Unix seconds)
-          const responseTimeSeconds = next.timestamp - current.timestamp
-          const responseTimeMs = responseTimeSeconds * 1000
-          
-          console.log(`🔍 DEBUG - Response time calculation:`, {
-            customerMessage: current.content?.substring(0, 30) + '...',
-            customerTimestamp: current.timestamp,
-            agentTimestamp: next.timestamp,
-            responseTimeSeconds: responseTimeSeconds.toFixed(2),
-            responseTimeMs: responseTimeMs.toFixed(0)
-          })
-          
-          if (responseTimeMs > 0 && responseTimeMs < 30000) { // Reasonable bounds (0-30s)
-            metrics.agentResponseLatencies.push(responseTimeMs)
-            metrics.totalTurnLatencies.push(responseTimeMs)
-          }
-        }
-      }
-      
-      console.log('🔍 DEBUG - Final latency metrics:', {
-        agentResponseLatencies: metrics.agentResponseLatencies,
-        totalTurnLatencies: metrics.totalTurnLatencies
-      })
-    }
-  
     const calculateStats = (values: number[]) => {
       if (values.length === 0) return { avg: 0, min: 0, max: 0, count: 0, p95: 0 }
       const sorted = [...values].sort((a, b) => a - b)
       const avg = values.reduce((sum, val) => sum + val, 0) / values.length
-      const min = Math.min(...values)
-      const max = Math.max(...values)
-      const p95Index = Math.floor(sorted.length * 0.95)
-      const p95 = sorted[p95Index] || 0
-      return { avg, min, max, count: values.length, p95 }
+      return { avg, min: sorted[0], max: sorted[sorted.length - 1], count: values.length, p95: sorted[Math.floor(sorted.length * 0.95)] || 0 }
     }
-  
-    const endToEndStats = calculateStats(metrics.endToEndLatencies)
     const totalTurnStats = calculateStats(metrics.totalTurnLatencies)
-    
-    return {
-      ...metrics,
-      sttStats: calculateStats(metrics.stt),
-      llmStats: calculateStats(metrics.llm),
-      ttsStats: calculateStats(metrics.tts),
-      eouStats: calculateStats(metrics.eou),
-      agentResponseStats: calculateStats(metrics.agentResponseLatencies),
-      totalTurnStats,
-      endToEndStats,
-      
-      // Calculated averages
-      avgTotalLatency: totalTurnStats.avg,
-      avgAgentResponseTime: calculateStats(metrics.agentResponseLatencies).avg,
-      avgEndToEndLatency: endToEndStats.avg,
-    }
-  }, [transcriptLogs, basicTranscript])
+    return { sttStats: calculateStats(metrics.stt), llmStats: calculateStats(metrics.llm), ttsStats: calculateStats(metrics.tts), eouStats: calculateStats(metrics.eou), totalTurnStats, avgTotalLatency: totalTurnStats.avg }
+  }, [callData?.transcript_with_metrics])
 
-  console.log(conversationMetrics)
-  
-  // CORRECTED: Update the color thresholds and usage
-  const getLatencyColor = (value: number, type: "stt" | "llm" | "tts" | "eou" | "total" | "e2e") => {
-    const thresholds = {
-      stt: { good: 1, fair: 2 },
-      llm: { good: 1, fair: 3 },
-      tts: { good: 1, fair: 2 },
-      eou: { good: 0.5, fair: 1.5 }, // CORRECTED: EOU should be much faster
-      total: { good: 3, fair: 6 },
-      e2e: { good: 4, fair: 8 }, // NEW: End-to-end thresholds
-    }
+  const getLatencyColor = (value: number, type: "stt" | "llm" | "tts" | "eou" | "total") => {
+    const thresholds = { stt: { good: 1, fair: 2 }, llm: { good: 1, fair: 3 }, tts: { good: 1, fair: 2 }, eou: { good: 0.5, fair: 1.5 }, total: { good: 3, fair: 6 } }
     const threshold = thresholds[type]
-    if (value <= threshold.good) return "text-emerald-500"
-    if (value <= threshold.fair) return "text-amber-500"
-    return "text-red-500"
+    if (value <= threshold.good) return "text-emerald-500 dark:text-emerald-400"
+    if (value <= threshold.fair) return "text-amber-500 dark:text-amber-400"
+    return "text-red-500 dark:text-red-400"
   }
 
-  
-  
-
-  const formatTimestamp = (timestamp: number) => {
-    const date = new Date(timestamp * 1000)
-    return date.toLocaleString()
-  }
-
-  const formatDuration = (seconds: number) => {
-    return `${seconds.toFixed(2)}s`
-  }
-
+  const formatTimestamp = (timestamp: number) => new Date(timestamp * 1000).toLocaleString()
+  const formatDuration = (seconds: number) => `${seconds.toFixed(2)}s`
   const formatConversationTime = (timestamp: number) => {
     if (!transcriptLogs?.length) return "00:00"
     const firstTimestamp = transcriptLogs[0].unix_timestamp
@@ -417,22 +130,9 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
   }
 
   const downloadTranscript = () => {
-    if (!transcriptLogs?.length) return
-
-    const transcriptText = transcriptLogs
-      .map((log: TranscriptLog) => {
-        const timestamp = formatConversationTime(log.unix_timestamp)
-        let text = `[${timestamp}]\n`
-        if (log.user_transcript) {
-          text += `User: ${log.user_transcript}\n`
-        }
-        if (log.agent_response) {
-          text += `Agent: ${log.agent_response}\n`
-        }
-        return text + "\n"
-      })
-      .join("")
-
+    const content = transcriptLogs?.length ? transcriptLogs : basicTranscript
+    if (!content?.length) return
+    const transcriptText = content.map((log: any) => `[${formatConversationTime(log.unix_timestamp || log.timestamp)}] ${log.role || (log.user_transcript ? 'User' : 'Agent')}: ${log.content || log.user_transcript || log.agent_response}`).join("\n\n")
     const blob = new Blob([transcriptText], { type: "text/plain" })
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement("a")
@@ -444,389 +144,124 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
 
   if (!isOpen) return null
 
+  const MarkdownComponents: Options['components'] = {
+    h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2 text-gray-900 dark:text-gray-100" {...props} />,
+    h2: ({node, ...props}) => <h2 className="text-md font-semibold mb-2 text-gray-900 dark:text-gray-100" {...props} />,
+    h3: ({node, ...props}) => <h3 className="text-sm font-medium mb-1 text-gray-900 dark:text-gray-100" {...props} />,
+    p: ({node, ...props}) => <p className="mb-2 text-gray-800 dark:text-gray-200" {...props} />,
+    ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2 space-y-1 text-gray-800 dark:text-gray-200" {...props} />,
+    ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2 space-y-1 text-gray-800 dark:text-gray-200" {...props} />,
+    li: ({node, ...props}) => <li className="ml-2" {...props} />,
+    strong: ({node, ...props}) => <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />,
+    table: ({node, ...props}) => <table className="border-collapse border border-gray-300 dark:border-slate-700 w-full mb-4 text-xs" {...props} />,
+    thead: ({node, ...props}) => <thead className="bg-gray-100 dark:bg-slate-800" {...props} />,
+    tbody: ({node, ...props}) => <tbody className="dark:text-gray-200" {...props} />,
+    tr: ({node, ...props}) => <tr className="border-b border-gray-200 dark:border-slate-700" {...props} />,
+    th: ({node, ...props}) => <th className="border border-gray-300 dark:border-slate-700 px-3 py-2 text-xs font-semibold text-left bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-gray-100" {...props} />,
+    td: ({node, ...props}) => <td className="border border-gray-300 dark:border-slate-700 px-3 py-2 text-xs" {...props} />
+  }
+
   return (
     <TooltipProvider>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300"
-        onClick={onClose}
-      />
-
-      {/* Drawer */}
-      <div className="fixed inset-y-0 right-0 w-[80%] bg-background border-l shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col">
-        {/* Header */}
-        <div className="flex-shrink-0 border-b p-6">
+      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" onClick={onClose} />
+      <div className="fixed inset-y-0 right-0 w-[80%] bg-white dark:bg-slate-900 border-l border-gray-200 dark:border-slate-800 shadow-2xl z-50 flex flex-col">
+        <div className="flex-shrink-0 border-b border-gray-200 dark:border-slate-800 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-semibold">{callData.call_id}</h2>
-              <p className="text-sm text-muted-foreground">
-                {formatTimestamp(
-                  callData.created_at ? new Date(callData.created_at).getTime() / 1000 : Date.now() / 1000,
-                )}
-              </p>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{callData.call_id}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{formatTimestamp(callData.created_at ? new Date(callData.created_at).getTime() / 1000 : Date.now() / 1000)}</p>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={downloadTranscript} disabled={!transcriptLogs?.length}>
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="w-4 h-4" />
-              </Button>
+              <Button variant="outline" size="sm" onClick={downloadTranscript} disabled={!transcriptLogs?.length && !basicTranscript?.length}><Download className="w-4 h-4 mr-2" />Export</Button>
+              <Button variant="ghost" size="sm" onClick={onClose}><X className="w-4 h-4" /></Button>
             </div>
           </div>
-
-          {/* Audio Player */}
-          {callData.recording_url && (
-            <div className="mb-6">
-              <AudioPlayer s3Key={extractS3Key(callData.recording_url)} url={callData.recording_url} callId={callData.id} />
-            </div>
-          )}
-
-          {/* Quick Stats */}
+          {callData.recording_url && <div className="mb-6"><AudioPlayer s3Key={extractS3Key(callData.recording_url)} url={callData.recording_url} callId={callData.id} /></div>}
           <div className="grid grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold">
-                {(() => {
-                  // Correct: Use transcriptLogs if available, otherwise basicTranscript (avoid double counting)
-                  const totalTurns = transcriptLogs?.length || basicTranscript?.length || 0;
-                  console.log('🔍 DEBUG - Turns calculation:', {
-                    transcriptLogs: transcriptLogs?.length || 0,
-                    basicTranscript: basicTranscript?.length || 0,
-                    totalTurns,
-                    source: transcriptLogs?.length ? 'transcriptLogs' : 'basicTranscript'
-                  });
-                  return totalTurns;
-                })()}
-              </div>
-              <div className="text-sm text-muted-foreground">Turns</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">
-                {Math.floor(callData.duration_seconds / 60)}:
-                {(callData.duration_seconds % 60).toString().padStart(2, "0")}
-              </div>
-              <div className="text-sm text-muted-foreground">Duration</div>
-            </div>
-            <div className="text-center">
-              <div
-                className={cn(
-                  "text-2xl font-bold",
-                  conversationMetrics ? getLatencyColor(conversationMetrics.avgTotalLatency, "total") : "",
-                )}
-              >
-                {conversationMetrics ? formatDuration(conversationMetrics.avgTotalLatency) : "N/A"}
-              </div>
-              <div className="text-sm text-muted-foreground">Avg Latency</div>
-            </div>
+            <div className="text-center"><div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{transcriptLogs?.length || basicTranscript?.length || 0}</div><div className="text-sm text-gray-500 dark:text-gray-400">Turns</div></div>
+            <div className="text-center"><div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.floor(callData.duration_seconds / 60)}:{(callData.duration_seconds % 60).toString().padStart(2, "0")}</div><div className="text-sm text-gray-500 dark:text-gray-400">Duration</div></div>
+            <div className="text-center"><div className={cn("text-2xl font-bold", conversationMetrics ? getLatencyColor(conversationMetrics.avgTotalLatency, "total") : "")}>{conversationMetrics ? formatDuration(conversationMetrics.avgTotalLatency) : "N/A"}</div><div className="text-sm text-gray-500 dark:text-gray-400">Avg Latency</div></div>
           </div>
-
-          {/* Performance Metrics - only show for metrics-based transcripts */}
           {conversationMetrics && transcriptLogs?.length > 0 && (
             <div className="mt-6">
-              <h3 className="text-sm font-medium mb-3 text-muted-foreground">PERFORMANCE METRICS</h3>
+              <h3 className="text-sm font-medium mb-3 text-gray-500 dark:text-gray-400 uppercase tracking-wider">PERFORMANCE METRICS</h3>
               <div className="grid grid-cols-4 gap-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="text-center p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-help">
-                      <div
-                        className={cn(
-                          "text-lg font-semibold",
-                          getLatencyColor(conversationMetrics.sttStats.avg, "stt"),
-                        )}
-                      >
-                        {formatDuration(conversationMetrics.sttStats.avg)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">STT</div>
+                    <div className="text-center p-3 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors cursor-help">
+                      <div className={cn("text-lg font-semibold", getLatencyColor(conversationMetrics.sttStats.avg, "stt"))}>{formatDuration(conversationMetrics.sttStats.avg)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">STT</div>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="text-center">
-                      <div className="font-medium">Speech-to-Text</div>
-                      <div className="text-xs text-muted-foreground">Time to convert speech to text</div>
-                    </div>
+                    <div className="text-center font-medium">Speech-to-Text</div>
+                    <div className="text-xs text-muted-foreground dark:text-slate-400">Time to convert speech to text</div>
                   </TooltipContent>
                 </Tooltip>
-
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="text-center p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-help">
-                      <div
-                        className={cn(
-                          "text-lg font-semibold",
-                          getLatencyColor(conversationMetrics.llmStats.avg, "llm"),
-                        )}
-                      >
-                        {formatDuration(conversationMetrics.llmStats.avg)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">LLM</div>
+                    <div className="text-center p-3 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors cursor-help">
+                      <div className={cn("text-lg font-semibold", getLatencyColor(conversationMetrics.llmStats.avg, "llm"))}>{formatDuration(conversationMetrics.llmStats.avg)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">LLM</div>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="text-center">
-                      <div className="font-medium">Language Model</div>
-                      <div className="text-xs text-muted-foreground">Time to generate response</div>
-                    </div>
+                    <div className="text-center font-medium">Language Model</div>
+                    <div className="text-xs text-muted-foreground dark:text-slate-400">Time to generate response</div>
                   </TooltipContent>
                 </Tooltip>
-
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="text-center p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-help">
-                      <div
-                        className={cn(
-                          "text-lg font-semibold",
-                          getLatencyColor(conversationMetrics.ttsStats.avg, "tts"),
-                        )}
-                      >
-                        {formatDuration(conversationMetrics.ttsStats.avg)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">TTS</div>
+                    <div className="text-center p-3 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors cursor-help">
+                      <div className={cn("text-lg font-semibold", getLatencyColor(conversationMetrics.ttsStats.avg, "tts"))}>{formatDuration(conversationMetrics.ttsStats.avg)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">TTS</div>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="text-center">
-                      <div className="font-medium">Text-to-Speech</div>
-                      <div className="text-xs text-muted-foreground">Time to convert text to speech</div>
-                    </div>
+                    <div className="text-center font-medium">Text-to-Speech</div>
+                    <div className="text-xs text-muted-foreground dark:text-slate-400">Time to convert text to speech</div>
                   </TooltipContent>
                 </Tooltip>
-
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="text-center p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-help">
-                      <div
-                        className={cn(
-                          "text-lg font-semibold",
-                          getLatencyColor(conversationMetrics.eouStats.avg, "eou"),
-                        )}
-                      >
-                        {formatDuration(conversationMetrics.eouStats.avg)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">EOU</div>
+                    <div className="text-center p-3 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors cursor-help">
+                      <div className={cn("text-lg font-semibold", getLatencyColor(conversationMetrics.eouStats.avg, "eou"))}>{formatDuration(conversationMetrics.eouStats.avg)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">EOU</div>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="text-center">
-                      <div className="font-medium">End of Utterance</div>
-                      <div className="text-xs text-muted-foreground">Time to detect speech end</div>
-                    </div>
+                    <div className="text-center font-medium">End of Utterance</div>
+                    <div className="text-xs text-muted-foreground dark:text-slate-400">Time to detect speech end</div>
                   </TooltipContent>
                 </Tooltip>
               </div>
             </div>
           )}
         </div>
-
-        {/* Transcript */}
         <div className="flex-1 flex flex-col min-h-0">
-          <div className="p-4 border-b bg-muted/20">
-            <h3 className="font-medium">Conversation Transcript</h3>
+          <div className="p-4 border-b border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50">
+            <h3 className="font-medium text-gray-900 dark:text-gray-100">Conversation Transcript</h3>
           </div>
-
           <div className="flex-1 overflow-y-auto">
             <div className="p-6">
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              ) : error ? (
-                <div className="text-center py-12 text-destructive">
-                  <p>Error loading transcript: {error}</p>
-                </div>
-              ) : transcriptLogs?.length ? (
+              {loading ? <div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div> : 
+               error ? <div className="text-center py-12 text-destructive"><p>Error loading transcript: {error}</p></div> : 
+               (transcriptLogs?.length || basicTranscript?.length) ? (
                 <div className="space-y-6">
-                  {/* Metrics-based transcript display */}
-                  {transcriptLogs.map((log: TranscriptLog) => (
+                  {(transcriptLogs.length ? transcriptLogs : basicTranscript).map((log: any) => (
                     <div key={log.id} className="space-y-4">
-                      {/* User Message */}
-                      {log.user_transcript && (
-                        <div className="flex gap-4 group">
-                          <div className="flex-shrink-0 w-12 text-right">
-                            <div className="text-xs text-muted-foreground font-mono">
-                              {formatConversationTime(log.unix_timestamp)}
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Badge variant="outline" className="text-xs">
-                                User
-                              </Badge>
-                            </div>
-                            <p className="text-sm leading-relaxed">{log.user_transcript}</p>
-
-                            {/* User Metrics */}
-                            <div className="flex gap-3 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              {log.stt_metrics && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-1 text-xs text-muted-foreground cursor-help">
-                                      <Mic className="w-3 h-3" />
-                                      {formatDuration(log.stt_metrics.duration || 0)}
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Speech-to-Text processing time</TooltipContent>
-                                </Tooltip>
-                              )}
-                              {log.eou_metrics && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-1 text-xs text-muted-foreground cursor-help">
-                                      <Clock className="w-3 h-3" />
-                                      {formatDuration(log.eou_metrics.end_of_utterance_delay || 0)}
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>End of utterance detection time</TooltipContent>
-                                </Tooltip>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Agent Response */}
-                      {log.agent_response && (
-                        <div className="flex gap-4 group">
-                          <div className="flex-shrink-0 w-12 text-right">
-                            <div className="text-xs text-muted-foreground font-mono">
-                              {formatConversationTime(log.unix_timestamp + 1)}
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Badge variant="secondary" className="text-xs">
-                                Agent
-                              </Badge>
-                            </div>
-                            <div className="text-sm leading-relaxed markdown-content">
-                              <ReactMarkdown 
-                                remarkPlugins={[remarkGfm]}
-                                components={{
-                                  h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2" {...props} />,
-                                  h2: ({node, ...props}) => <h2 className="text-md font-semibold mb-2" {...props} />,
-                                  h3: ({node, ...props}) => <h3 className="text-sm font-medium mb-1" {...props} />,
-                                  p: ({node, ...props}) => <p className="mb-2" {...props} />,
-                                  ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
-                                  ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
-                                  li: ({node, ...props}) => <li className="ml-2" {...props} />,
-                                  strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
-                                  em: ({node, ...props}) => <em className="italic" {...props} />,
-                                  table: ({node, ...props}) => <table className="border-collapse border border-gray-300 w-full mb-4 text-xs" {...props} />,
-                                  thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
-                                  tbody: ({node, ...props}) => <tbody {...props} />,
-                                  tr: ({node, ...props}) => <tr className="border-b border-gray-200" {...props} />,
-                                  th: ({node, ...props}) => <th className="border border-gray-300 px-3 py-2 text-xs font-semibold text-left bg-gray-50" {...props} />,
-                                  td: ({node, ...props}) => <td className="border border-gray-300 px-3 py-2 text-xs" {...props} />
-                                }}
-                              >
-                                {log.agent_response}
-                              </ReactMarkdown>
-                            </div>
-
-                            {/* Agent Metrics */}
-                            <div className="flex gap-3 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              {log.llm_metrics && log.tts_metrics && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div
-                                      className={cn(
-                                        "flex items-center gap-1 text-xs cursor-help",
-                                        getLatencyColor(
-                                          (log.llm_metrics.ttft || 0) + (log.tts_metrics.ttfb || 0),
-                                          "total",
-                                        ),
-                                      )}
-                                    >
-                                      <Activity className="w-3 h-3" />
-                                      {formatDuration((log.llm_metrics.ttft || 0) + (log.tts_metrics.ttfb || 0))}
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Total response time (LLM + TTS)</TooltipContent>
-                                </Tooltip>
-                              )}
-                              {log.llm_metrics && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div
-                                      className={cn(
-                                        "flex items-center gap-1 text-xs cursor-help",
-                                        getLatencyColor(log.llm_metrics.ttft || 0, "llm"),
-                                      )}
-                                    >
-                                      <Brain className="w-3 h-3" />
-                                      {formatDuration(log.llm_metrics.ttft || 0)}
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Language model processing time</TooltipContent>
-                                </Tooltip>
-                              )}
-                              {log.tts_metrics && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div
-                                      className={cn(
-                                        "flex items-center gap-1 text-xs cursor-help",
-                                        getLatencyColor(log.tts_metrics.ttfb || 0, "tts"),
-                                      )}
-                                    >
-                                      <Volume2 className="w-3 h-3" />
-                                      {formatDuration(log.tts_metrics.ttfb || 0)}
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Text-to-speech processing time</TooltipContent>
-                                </Tooltip>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : basicTranscript?.length ? (
-                <div className="space-y-6">
-                  {/* Basic transcript display - no header needed */}
-                  {basicTranscript.map((item: any) => (
-                    <div key={item.id} className="space-y-4">
-                      <div className="flex gap-4">
-                        <div className="flex-shrink-0 w-12 text-right">
-                          <div className="text-xs text-muted-foreground font-mono">
-                            {item.timestamp ? new Date(item.timestamp * 1000).toLocaleTimeString([], { 
-                              hour: '2-digit', 
-                              minute: '2-digit', 
-                              second: '2-digit' 
-                            }) : `${item.id}`}
-                          </div>
-                        </div>
+                      <div className="flex gap-4 group">
+                        <div className="flex-shrink-0 w-12 text-right"><div className="text-xs text-muted-foreground dark:text-slate-400 font-mono">{formatConversationTime(log.unix_timestamp || log.timestamp)}</div></div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge variant={item.role === 'user' ? 'outline' : 'secondary'} className="text-xs">
-                              {item.role === 'user' ? 'User' : item.role === 'assistant' ? 'Assistant' : item.role}
-                            </Badge>
+                          <div className="flex items-center gap-2 mb-1"><Badge variant={log.role === 'user' ? 'outline' : 'secondary'} className="text-xs bg-gray-100 text-gray-800 dark:bg-slate-700 dark:text-slate-300">{log.role === 'user' ? 'User' : 'Assistant'}</Badge></div>
+                          <div className="text-sm leading-relaxed markdown-content text-gray-800 dark:text-gray-200">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>{log.content || log.user_transcript || log.agent_response}</ReactMarkdown>
                           </div>
-                          <div className="text-sm leading-relaxed markdown-content">
-                            <ReactMarkdown 
-                              remarkPlugins={[remarkGfm]}
-                              components={{
-                                h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2" {...props} />,
-                                h2: ({node, ...props}) => <h2 className="text-md font-semibold mb-2" {...props} />,
-                                h3: ({node, ...props}) => <h3 className="text-sm font-medium mb-1" {...props} />,
-                                p: ({node, ...props}) => <p className="mb-2" {...props} />,
-                                ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
-                                ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
-                                li: ({node, ...props}) => <li className="ml-2" {...props} />,
-                                strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
-                                em: ({node, ...props}) => <em className="italic" {...props} />,
-                                table: ({node, ...props}) => <table className="border-collapse border border-gray-300 w-full mb-4 text-xs" {...props} />,
-                                thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
-                                tbody: ({node, ...props}) => <tbody {...props} />,
-                                tr: ({node, ...props}) => <tr className="border-b border-gray-200" {...props} />,
-                                th: ({node, ...props}) => <th className="border border-gray-300 px-3 py-2 text-xs font-semibold text-left bg-gray-50" {...props} />,
-                                td: ({node, ...props}) => <td className="border border-gray-300 px-3 py-2 text-xs" {...props} />
-                              }}
-                            >
-                              {item.content}
-                            </ReactMarkdown>
+                          <div className="flex gap-3 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {log.stt_metrics && <Tooltip><TooltipTrigger asChild><div className="flex items-center gap-1 text-xs text-muted-foreground dark:text-slate-400 cursor-help"><Mic className="w-3 h-3" />{formatDuration(log.stt_metrics.duration || 0)}</div></TooltipTrigger><TooltipContent>Speech-to-Text processing time</TooltipContent></Tooltip>}
+                            {log.eou_metrics && <Tooltip><TooltipTrigger asChild><div className="flex items-center gap-1 text-xs text-muted-foreground dark:text-slate-400 cursor-help"><Clock className="w-3 h-3" />{formatDuration(log.eou_metrics.end_of_utterance_delay || 0)}</div></TooltipTrigger><TooltipContent>End of utterance detection time</TooltipContent></Tooltip>}
+                            {log.llm_metrics && <Tooltip><TooltipTrigger asChild><div className={cn("flex items-center gap-1 text-xs cursor-help", getLatencyColor(log.llm_metrics.ttft || 0, "llm"))}><Brain className="w-3 h-3" />{formatDuration(log.llm_metrics.ttft || 0)}</div></TooltipTrigger><TooltipContent>Language model processing time</TooltipContent></Tooltip>}
+                            {log.tts_metrics && <Tooltip><TooltipTrigger asChild><div className={cn("flex items-center gap-1 text-xs cursor-help", getLatencyColor(log.tts_metrics.ttfb || 0, "tts"))}><Volume2 className="w-3 h-3" />{formatDuration(log.tts_metrics.ttfb || 0)}</div></TooltipTrigger><TooltipContent>Text-to-speech processing time</TooltipContent></Tooltip>}
                           </div>
                         </div>
                       </div>
@@ -834,7 +269,7 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-muted-foreground dark:text-slate-400">
                   <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p className="mb-2">No conversation transcript available for this call</p>
                   <p className="text-xs">Make sure to include either transcript_json or transcript_with_metrics in your API requests</p>
