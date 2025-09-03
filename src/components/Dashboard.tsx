@@ -469,8 +469,8 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                 </div>
               </div>
 
-              {/* Refined Tab Navigation */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 ml-8">
+              {/* Refined Tab Navigation - Responsive */}
+              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 ml-2 md:ml-8 overflow-x-auto scrollbar-hide">
                 {tabs.map((tab) => {
                   const Icon = tab.icon
                   const isActive = activeTab === tab.id
@@ -478,14 +478,14 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                     <button
                       key={tab.id}
                       onClick={() => handleTabChange(tab.id)}
-                      className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      className={`flex items-center gap-2 px-2 sm:px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
                         isActive
                           ? 'bg-white text-gray-900 shadow-sm'
                           : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
-                      {tab.label}
+                      <span className="hidden sm:inline">{tab.label}</span>
                     </button>
                   )
                 })}
