@@ -534,16 +534,16 @@ const Overview: React.FC<OverviewProps> = ({
 
   if (loading || roleLoading || role === null) {
     return (
-      <div className="h-full bg-gray-25 flex items-center justify-center" style={{ backgroundColor: '#fafafa' }}>
+      <div className="h-full bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center space-y-6">
           <div className="relative">
-            <div className="w-16 h-16 bg-white dark:bg-blue-900 rounded-2xl border border-gray-200 dark:border-blue-700 flex items-center justify-center mx-auto shadow-sm">
+            <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
               <CircleNotch weight="light" className="w-7 h-7 animate-spin text-gray-400" />
             </div>
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-medium text-gray-900">Loading Analytics</h3>
-            <p className="text-sm text-gray-500">Fetching your dashboard data</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Loading Analytics</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Fetching your dashboard data</p>
           </div>
         </div>
       </div>
@@ -552,14 +552,14 @@ const Overview: React.FC<OverviewProps> = ({
 
   if (error) {
     return (
-      <div className="h-full bg-gray-25 flex items-center justify-center p-6" style={{ backgroundColor: '#fafafa' }}>
+      <div className="h-full bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-6">
         <div className="text-center space-y-6 max-w-sm">
-          <div className="w-16 h-16 bg-white dark:bg-blue-900 rounded-2xl border border-red-200 dark:border-red-800 flex items-center justify-center mx-auto shadow-sm">
+          <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-red-200 dark:border-red-800 flex items-center justify-center mx-auto shadow-sm">
             <Warning weight="light" className="w-7 h-7 text-red-400" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-medium text-gray-900">Unable to Load Analytics</h3>
-            <p className="text-sm text-gray-500 leading-relaxed">{error}</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Unable to Load Analytics</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{error}</p>
           </div>
         </div>
       </div>
@@ -582,7 +582,7 @@ const Overview: React.FC<OverviewProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
               {/* Total Calls */}
               <div className="group">
-                <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
@@ -609,7 +609,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Global Call Duration */}
               <div className="group">
-                <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
@@ -635,7 +635,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* AI Processing Time */}
               <div className="group">
-                <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
@@ -662,7 +662,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Total Cost */}
               {role !== 'user' && (
                 <div className="group">
-                  <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
@@ -685,7 +685,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Average Latency */}
               {role !== 'user' && (
                 <div className="group">
-                  <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
@@ -707,7 +707,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Successful Calls */}
               <div className="group">
-                <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-green-50 rounded-lg border border-green-100">
@@ -733,7 +733,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Failed Calls */}
               <div className="group">
-                <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-red-50 rounded-lg border border-red-100">
@@ -759,7 +759,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Total Tokens */}
               <div className="group">
-                <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
@@ -790,7 +790,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               return (
                 <div key={config.id} className="group">
-                  <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-blue-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className={`p-2 ${colorClass.replace('bg-', 'bg-').replace('text-', 'border-')} rounded-lg border`}>
@@ -873,7 +873,7 @@ const Overview: React.FC<OverviewProps> = ({
             {/* Responsive Chart Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Daily Calls Chart */}
-              <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -979,7 +979,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Professional Success Chart */}
-              <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -1059,7 +1059,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Daily Minutes Chart */}
-              <div className="bg-white dark:bg-blue-900 border border-gray-300 dark:border-blue-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -1134,7 +1134,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Average Latency Chart */}
-              <div className="bg-white dark:bg-blue-900 rounded-xl border border-gray-300 dark:border-blue-700 shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-300 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">

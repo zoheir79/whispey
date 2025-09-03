@@ -180,7 +180,7 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
       )}
 
       {/* Basic Information */}
-      <Card className="dark:bg-blue-900 dark:border-blue-700">
+      <Card className="dark:bg-slate-800 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="text-lg dark:text-gray-100">Basic Information</CardTitle>
         </CardHeader>
@@ -245,7 +245,7 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
       </Card>
 
       {/* Preview Badges */}
-      <Card className="dark:bg-blue-900 dark:border-blue-700">
+      <Card className="dark:bg-slate-800 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="text-lg dark:text-gray-100">Preview</CardTitle>
         </CardHeader>
@@ -265,7 +265,7 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
       </Card>
 
       {/* Advanced Settings */}
-      <Card className="dark:bg-blue-900 dark:border-blue-700">
+      <Card className="dark:bg-slate-800 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="text-lg dark:text-gray-100">Advanced Settings</CardTitle>
         </CardHeader>

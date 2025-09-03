@@ -361,7 +361,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   if (currentStep === 'creating' || currentStep === 'connecting') {
     return (
       <Dialog open={isOpen} onOpenChange={() => {}}>
-        <DialogContent className="max-w-lg w-[90vw] sm:w-full p-0 gap-0 rounded-xl border border-gray-200 dark:border-blue-700 shadow-2xl bg-white dark:bg-blue-900">
+        <DialogContent className="max-w-lg w-[90vw] sm:w-full p-0 gap-0 rounded-xl border border-gray-200 dark:border-slate-700 shadow-2xl bg-white dark:bg-slate-800">
           <div className="px-6 py-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-50 to-teal-50 rounded-2xl flex items-center justify-center border border-gray-100">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -418,7 +418,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg w-[90vw] sm:w-full p-0 gap-0 rounded-xl border border-gray-200 dark:border-blue-700 shadow-2xl bg-white dark:bg-blue-900 max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-lg w-[90vw] sm:w-full p-0 gap-0 rounded-xl border border-gray-200 dark:border-slate-700 shadow-2xl bg-white dark:bg-slate-800 max-h-[90vh] flex flex-col">
         {currentStep === 'form' ? (
           <>
             {/* Header */}

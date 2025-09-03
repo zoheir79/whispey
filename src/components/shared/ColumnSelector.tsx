@@ -134,7 +134,7 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
                 key={`${type}-${column}`} // FIXED: Add unique key with type prefix
                 className={cn(
                   "flex items-center space-x-3 px-3 py-2 rounded-md transition-colors",
-                  isVisible ? "bg-blue-50 dark:bg-blue-900/20" : "hover:bg-muted/50"
+                  isVisible ? "bg-blue-50 dark:bg-slate-800/20" : "hover:bg-muted/50"
                 )}
               >
                 <Checkbox

@@ -439,7 +439,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
               <div
                 key={agent.id}
                 className={`group px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
-                  selectedAgent === agent?.id ? 'bg-blue-50 dark:bg-blue-900/50' : ''
+                  selectedAgent === agent?.id ? 'bg-blue-50 dark:bg-slate-800/50' : ''
                 }`}
                 onClick={() => handleAgentClick(agent)}
               >

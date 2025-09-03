@@ -165,16 +165,16 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] p-0 gap-0 rounded-xl border shadow-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] p-0 gap-0 rounded-xl border shadow-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-800 dark:border-slate-700">
         {currentStep === 'form' ? (
           <>
             {/* Header */}
             <DialogHeader className="px-6 pt-6 pb-4 text-center">
-              <DialogTitle className="text-xl font-semibold text-gray-900 mb-1 flex items-center justify-center gap-2">
+              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1 flex items-center justify-center gap-2">
                 <Rocket className="w-5 h-5" />
                 Run Campaign
               </DialogTitle>
-              <p className="text-sm text-gray-600 font-normal">
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-normal">
                 Configure and launch a campaign for "{agent?.name}"
               </p>
             </DialogHeader>
@@ -184,7 +184,7 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Campaign Schedule */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                     <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-semibold">1</span>
                     <Calendar className="w-4 h-4" />
                     Campaign Schedule
@@ -193,7 +193,7 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
                   <div className="grid grid-cols-2 gap-4">
                     {/* Start Date */}
                     <div>
-                      <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Start Date
                       </label>
                       <Input
@@ -208,7 +208,7 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                     {/* End Date */}
                     <div>
-                      <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         End Date
                       </label>
                       <Input
@@ -225,9 +225,9 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
                   <div className="grid grid-cols-2 gap-4">
                     {/* Start Time */}
                     <div>
-                      <label htmlFor="start-time" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="start-time" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <Clock className="w-4 h-4 inline mr-1" />
-                        Start Time <span className="text-gray-500 text-xs">(24-hour format)</span>
+                        Start Time <span className="text-gray-500 dark:text-gray-400 text-xs">(24-hour format)</span>
                       </label>
                       <Input
                         id="start-time"
@@ -243,9 +243,9 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                     {/* End Time */}
                     <div>
-                      <label htmlFor="end-time" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="end-time" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <Clock className="w-4 h-4 inline mr-1" />
-                        End Time <span className="text-gray-500 text-xs">(24-hour format)</span>
+                        End Time <span className="text-gray-500 dark:text-gray-400 text-xs">(24-hour format)</span>
                       </label>
                       <Input
                         id="end-time"
@@ -262,7 +262,7 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                   {/* Concurrency */}
                   <div>
-                    <label htmlFor="concurrency" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="concurrency" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Concurrency (simultaneous calls)
                     </label>
                     <Input
@@ -280,19 +280,19 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                 {/* Retry Configuration */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                     <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-semibold">2</span>
                     <RotateCcw className="w-4 h-4" />
                     Retry Configuration
                   </h3>
                   
                   <div className="grid grid-cols-1 gap-4">
-                    <p className="text-sm text-gray-600">Configure retry intervals (in minutes) for different call failure types:</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Configure retry intervals (in minutes) for different call failure types:</p>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Request Timeout (408) */}
                       <div>
-                        <label htmlFor="retry-408" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="retry-408" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Request Timeout (408)
                         </label>
                         <Input
@@ -316,7 +316,7 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                       {/* Temporarily Unavailable (480) */}
                       <div>
-                        <label htmlFor="retry-480" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="retry-480" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           No Answer (480)
                         </label>
                         <Input
@@ -340,7 +340,7 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                       {/* Busy Here (486) */}
                       <div>
-                        <label htmlFor="retry-486" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="retry-486" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           User Busy (486)
                         </label>
                         <Input
@@ -364,7 +364,7 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                       {/* Server Timeout (504) */}
                       <div>
-                        <label htmlFor="retry-504" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="retry-504" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Server Timeout (504)
                         </label>
                         <Input
@@ -422,18 +422,18 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                 {/* CSV Upload */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                     <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-semibold">3</span>
                     <Upload className="w-4 h-4" />
                     Campaign Data
                   </h3>
                   
                   <div>
-                    <label htmlFor="csv-file" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="csv-file" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Upload CSV File
                       <span className="text-red-500 ml-1">*</span>
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                    <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors bg-gray-50 dark:bg-gray-700">
                       <input
                         id="csv-file"
                         type="file"
@@ -448,15 +448,15 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
                       >
                         <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                         {csvFile ? (
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {csvFile.name}
                           </p>
                         ) : (
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
                             Click to select CSV file or drag and drop
                           </p>
                         )}
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           CSV file with phoneNumber, fpoName, fpoLoginId, alternative_number columns
                         </p>
                       </label>
@@ -466,8 +466,8 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
 
                 {/* Error Message */}
                 {error && (
-                  <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                    <span className="text-sm text-red-700 font-medium">{error}</span>
+                  <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                    <span className="text-sm text-red-700 dark:text-red-200 font-medium">{error}</span>
                   </div>
                 )}
 
@@ -478,14 +478,14 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
                     variant="outline"
                     onClick={handleClose}
                     disabled={loading}
-                    className="flex-1 h-11 font-medium text-gray-700 border-gray-300 hover:bg-gray-50 rounded-lg"
+                    className="flex-1 h-11 font-medium text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
                   >
                     Cancel
                   </Button>
                   <Button 
                     type="submit"
                     disabled={loading || !csvFile}
-                    className="flex-1 h-11 text-white rounded-lg font-medium shadow-sm disabled:bg-gray-300 disabled:text-gray-500 transition-all"
+                    className="flex-1 h-11 text-white rounded-lg font-medium shadow-sm disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:text-gray-500 dark:disabled:text-gray-400 transition-all"
                   >
                     {loading ? (
                       <>
@@ -507,13 +507,13 @@ const CampaignDialog: React.FC<CampaignDialogProps> = ({
           <>
             {/* Success Header */}
             <DialogHeader className="px-6 pt-6 pb-4 text-center">
-              <div className="w-12 h-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto mb-4 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
-              <DialogTitle className="text-xl font-semibold text-gray-900 mb-1">
+              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
                 Campaign Launched Successfully!
               </DialogTitle>
-              <p className="text-sm text-gray-600 font-normal">
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-normal">
                 Your campaign for "{agent?.name}" has been launched and scheduled
               </p>
             </DialogHeader>

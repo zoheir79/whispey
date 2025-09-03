@@ -144,7 +144,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
       {/* Usage Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* LLM Usage Card */}
-        <Card className="dark:bg-blue-900 dark:border-blue-700">
+        <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-blue-50 p-2 rounded-lg">
@@ -170,7 +170,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         </Card>
 
         {/* STT Usage Card */}
-        <Card className="dark:bg-blue-900 dark:border-blue-700">
+        <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-red-50 p-2 rounded-lg">
@@ -196,7 +196,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         </Card>
 
         {/* TTS Usage Card */}
-        <Card className="dark:bg-blue-900 dark:border-blue-700">
+        <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-purple-50 p-2 rounded-lg">
@@ -222,7 +222,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         </Card>
 
         {/* Total Usage Card */}
-        <Card className="dark:bg-blue-900 dark:border-blue-700">
+        <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-green-50 p-2 rounded-lg">
@@ -250,7 +250,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
 
       {/* Additional Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="dark:bg-blue-900 dark:border-blue-700">
+        <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-blue-50 p-2 rounded-lg">
@@ -266,7 +266,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-blue-900 dark:border-blue-700">
+        <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-green-50 p-2 rounded-lg">
@@ -282,7 +282,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-blue-900 dark:border-blue-700">
+        <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-orange-50 p-2 rounded-lg">
@@ -298,7 +298,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-blue-900 dark:border-blue-700">
+        <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-purple-50 p-2 rounded-lg">

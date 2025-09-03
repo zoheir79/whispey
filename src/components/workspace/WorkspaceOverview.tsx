@@ -223,7 +223,7 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Activity */}
-            <div className="bg-white dark:bg-blue-900 border border-gray-200 dark:border-blue-700 rounded-lg">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
               <div className="p-6 border-b border-gray-100 dark:border-gray-700">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <Activity className="h-5 w-5" />
@@ -258,7 +258,7 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
             </div>
 
             {/* Top Performing Agents */}
-            <div className="bg-white dark:bg-blue-900 border border-gray-200 dark:border-blue-700 rounded-lg">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
               <div className="p-6 border-b border-gray-100 dark:border-gray-700">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
@@ -295,9 +295,9 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
         </TabsContent>
 
         <TabsContent value="calls" className="space-y-4">
-          <div className="bg-white border border-gray-200 rounded-lg">
-            <div className="p-6 border-b border-gray-100">
-              <h3 className="font-medium text-gray-900 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Phone className="h-5 w-5" />
                 Recent Calls
               </h3>
@@ -305,28 +305,28 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
             <div className="p-6">
               <div className="space-y-4">
                 {recentCalls.map((call) => (
-                  <div key={call.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div key={call.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <div className="flex items-center gap-4">
                       <Badge className={`${getStatusColor(call.status)}`}>
                         {call.status}
                       </Badge>
                       <div>
-                        <p className="font-medium text-gray-900">{call.agent_name}</p>
-                        <p className="text-sm text-gray-500">{call.customer_phone}</p>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">{call.agent_name}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{call.customer_phone}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-6 text-sm text-gray-600">
+                    <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300">
                       <div className="text-center">
                         <p className="font-medium">{formatDuration(call.duration)}</p>
-                        <p className="text-xs text-gray-500">Duration</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Duration</p>
                       </div>
                       <div className="text-center">
                         <p className="font-medium">{formatCurrency(call.cost)}</p>
-                        <p className="text-xs text-gray-500">Cost</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Cost</p>
                       </div>
                       <div className="text-center">
                         <p className="font-medium">{getTimeAgo(call.created_at)}</p>
-                        <p className="text-xs text-gray-500">Time</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Time</p>
                       </div>
                     </div>
                   </div>
@@ -337,9 +337,9 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
         </TabsContent>
 
         <TabsContent value="agents" className="space-y-4">
-          <div className="bg-white border border-gray-200 rounded-lg">
-            <div className="p-6 border-b border-gray-100">
-              <h3 className="font-medium text-gray-900 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Users className="h-5 w-5" />
                 Agent Performance
               </h3>
@@ -347,22 +347,22 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
             <div className="p-6">
               <div className="space-y-4">
                 {topAgents.map((agent) => (
-                  <div key={agent.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div key={agent.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className={`w-3 h-3 rounded-full ${agent.status === 'active' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                       <div>
-                        <p className="font-medium text-gray-900">{agent.name}</p>
-                        <p className="text-sm text-gray-500">{agent.total_calls} total calls</p>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">{agent.name}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{agent.total_calls} total calls</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="text-center">
-                        <p className="text-lg font-semibold text-gray-900">{agent.success_rate}%</p>
-                        <p className="text-xs text-gray-500">Success Rate</p>
+                        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{agent.success_rate}%</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Success Rate</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-lg font-semibold text-gray-900">{formatCurrency(agent.avg_cost)}</p>
-                        <p className="text-xs text-gray-500">Avg Cost</p>
+                        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(agent.avg_cost)}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Avg Cost</p>
                       </div>
                       <Badge className={`${agent.status === 'active' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                         {agent.status}
@@ -376,9 +376,9 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
         </TabsContent>
 
         <TabsContent value="costs" className="space-y-4">
-          <div className="bg-white border border-gray-200 rounded-lg">
-            <div className="p-6 border-b border-gray-100">
-              <h3 className="font-medium text-gray-900 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <DollarSign className="h-5 w-5" />
                 Cost Breakdown by Provider
               </h3>
@@ -389,12 +389,12 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
                   <div key={item.provider} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-4 h-4 rounded ${item.color}`}></div>
-                      <span className="font-medium text-gray-900">{item.provider}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{item.provider}</span>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <p className="font-semibold text-gray-900">{formatCurrency(item.amount)}</p>
-                        <p className="text-sm text-gray-500">{item.percentage}%</p>
+                        <p className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(item.amount)}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{item.percentage}%</p>
                       </div>
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div 

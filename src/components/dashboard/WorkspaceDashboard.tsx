@@ -447,7 +447,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
           <div className="p-6 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-50 dark:bg-blue-900/20 rounded flex items-center justify-center">
+                <div className="w-6 h-6 bg-blue-50 dark:bg-slate-800/20 rounded flex items-center justify-center">
                   <BarChart className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Daily Call Volume</h3>
@@ -566,7 +566,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
           <div className="p-6 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-50 dark:bg-blue-900/20 rounded flex items-center justify-center">
+                <div className="w-6 h-6 bg-blue-50 dark:bg-slate-800/20 rounded flex items-center justify-center">
                   <Activity className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>

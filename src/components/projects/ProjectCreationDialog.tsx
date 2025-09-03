@@ -111,15 +111,15 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] p-0 gap-0 rounded-xl border shadow-2xl">
+      <DialogContent className="sm:max-w-[500px] p-0 gap-0 rounded-xl border shadow-2xl bg-white dark:bg-slate-800 dark:border-slate-700">
         {currentStep === 'form' ? (
           <>
             {/* Header */}
             <DialogHeader className="px-6 pt-6 pb-4 text-center">
-              <DialogTitle className="text-xl font-semibold text-gray-900 mb-1">
+              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
                 Create New Project
               </DialogTitle>
-              <p className="text-sm text-gray-600 font-normal">
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-normal">
                 Set up your voice AI project with automatic API token generation
               </p>
             </DialogHeader>
@@ -129,7 +129,7 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Project Name */}
                 <div>
-                  <label htmlFor="project-name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="project-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Project Name
                   </label>
                   <Input
@@ -144,9 +144,9 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
 
                 {/* Description */}
                 <div>
-                  <label htmlFor="project-description" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="project-description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Description
-                    <span className="text-gray-400 font-normal ml-1">(optional)</span>
+                    <span className="text-gray-400 dark:text-gray-500 font-normal ml-1">(optional)</span>
                   </label>
                   <textarea
                     id="project-description"
@@ -155,7 +155,7 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     disabled={loading}
                     rows={3}
-                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none resize-none transition-all placeholder:text-gray-400"
+                    className="w-full px-4 py-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none resize-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
 
@@ -199,10 +199,10 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
               <div className="w-12 h-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
-              <DialogTitle className="text-xl font-semibold text-gray-900 mb-1">
+              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
                 Project Created Successfully!
               </DialogTitle>
-              <p className="text-sm text-gray-600 font-normal">
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-normal">
                 Your project "{createdProjectData?.name}" has been created with API access
               </p>
             </DialogHeader>
@@ -211,7 +211,7 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
             <div className="px-6 pb-6 space-y-4">
               {/* API Token */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   API Token
                 </label>
                 <div className="relative">
@@ -219,7 +219,7 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
                     type={showToken ? 'text' : 'password'}
                     value={createdProjectData?.api_token || ''}
                     readOnly
-                    className="w-full h-11 px-4 pr-20 text-sm border border-gray-300 rounded-lg bg-gray-50 font-mono"
+                    className="w-full h-11 px-4 pr-20 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
                     <Button
@@ -256,16 +256,16 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
               </div>
 
               {/* Project Details */}
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <h4 className="font-medium text-gray-900 text-sm mb-2">Project Details</h4>
+              <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm mb-2">Project Details</h4>
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">ID:</span>
-                    <span className="font-mono text-gray-800">{createdProjectData?.id}</span>
+                    <span className="text-gray-600 dark:text-gray-400">ID:</span>
+                    <span className="font-mono text-gray-800 dark:text-gray-200">{createdProjectData?.id}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Environment:</span>
-                    <span className="text-gray-800">{createdProjectData?.environment}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Environment:</span>
+                    <span className="text-gray-800 dark:text-gray-200">{createdProjectData?.environment}</span>
                   </div>
                 </div>
               </div>

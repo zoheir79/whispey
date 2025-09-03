@@ -42,14 +42,14 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
           Add Chart
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-md">
+      <DialogContent className="w-full max-w-md bg-white dark:bg-slate-800 dark:border-slate-700">
         <DialogHeader>
-          <DialogTitle>Add Count Chart</DialogTitle>
+          <DialogTitle className="text-gray-900 dark:text-gray-100">Add Count Chart</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           {/* Source Selection */}
           <div>
-            <Label>Data Source</Label>
+            <Label className="text-gray-700 dark:text-gray-300">Data Source</Label>
             <Select
               value={newChart.source}
               onValueChange={(value) => setNewChart(prev => ({ 
@@ -72,7 +72,7 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
           {/* Field Selection */}
           {newChart.source && (
             <div>
-              <Label>Field</Label>
+              <Label className="text-gray-700 dark:text-gray-300">Field</Label>
               <Select
                 value={newChart.field}
                 onValueChange={(value) => setNewChart(prev => ({ ...prev, field: value }))}
@@ -93,20 +93,20 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
 
           {/* Filter Value */}
           <div>
-            <Label>Filter Value (Optional)</Label>
+            <Label className="text-gray-700 dark:text-gray-300">Filter Value (Optional)</Label>
             <Input
               placeholder="e.g., 'Yes', 'completed', 'Successful'"
               value={newChart.filterValue || ''}
               onChange={(e) => setNewChart(prev => ({ ...prev, filterValue: e.target.value }))}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Leave empty to show multiple lines for all values
             </p>
           </div>
 
           {/* Chart Type */}
           <div>
-            <Label>Chart Type</Label>
+            <Label className="text-gray-700 dark:text-gray-300">Chart Type</Label>
             <Select
               value={newChart.chartType}
               onValueChange={(value) => setNewChart(prev => ({ 

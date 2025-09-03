@@ -185,7 +185,7 @@ function Header({ breadcrumb }: HeaderProps) {
 
               {/* Admin Badge */}
               {isAdmin && (
-                <Badge variant="outline" className="ml-2 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
+                <Badge variant="outline" className="ml-2 text-xs font-medium bg-blue-50 dark:bg-slate-800/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-slate-700">
                   {isSuperAdmin ? 'Super Admin' : 'Admin'}
                 </Badge>
               )}
@@ -354,7 +354,7 @@ function Header({ breadcrumb }: HeaderProps) {
                           onClick={() => setTheme('light')}
                           className={`flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                             theme === 'light' 
-                              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                              ? 'bg-blue-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300' 
                               : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
                           }`}
                         >
@@ -365,7 +365,7 @@ function Header({ breadcrumb }: HeaderProps) {
                           onClick={() => setTheme('dark')}
                           className={`flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                             theme === 'dark' 
-                              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                              ? 'bg-blue-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300' 
                               : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
                           }`}
                         >
@@ -376,7 +376,7 @@ function Header({ breadcrumb }: HeaderProps) {
                           onClick={() => setTheme('system')}
                           className={`flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                             theme === 'system' 
-                              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                              ? 'bg-blue-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300' 
                               : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
                           }`}
                         >

@@ -270,15 +270,15 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
           Call
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg bg-white dark:bg-slate-800 dark:border-slate-700">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
             <Phone className="w-5 h-5" />
             Initiate Call
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-gray-600 dark:text-gray-400">
             Start an outbound call using "{assistantName}" assistant
-            <span className="block text-xs text-gray-500 mt-1">
+            <span className="block text-xs text-gray-500 dark:text-gray-500 mt-1">
               Vapi ID: {vapiAssistantId}
             </span>
           </DialogDescription>
@@ -288,14 +288,14 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
           <div className="space-y-4">
             {/* Phone Number Selection */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Call From (Your Numbers) <span className="text-red-500">*</span>
               </Label>
               
               {loadingPhoneNumbers ? (
-                <div className="flex items-center gap-2 p-3 border rounded-lg bg-gray-50">
+                <div className="flex items-center gap-2 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm text-gray-600">Loading phone numbers...</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Loading phone numbers...</span>
                 </div>
               ) : phoneNumberError ? (
                 <Alert variant="destructive">
@@ -375,7 +375,7 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
 
             {/* Country Selection */}
             <div className="space-y-3">
-              <Label htmlFor="country" className="text-sm font-medium">
+              <Label htmlFor="country" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Country <span className="text-red-500">*</span>
               </Label>
               <Select value={selectedCountry.code} onValueChange={handleCountryChange}>
@@ -384,7 +384,7 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{selectedCountry.flag}</span>
                       <span>{selectedCountry.code}</span>
-                      <span className="text-gray-500">({selectedCountry.name})</span>
+                      <span className="text-gray-500 dark:text-gray-400">({selectedCountry.name})</span>
                     </div>
                   </SelectValue>
                 </SelectTrigger>
@@ -394,7 +394,7 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{country.flag}</span>
                         <span>{country.code}</span>
-                        <span className="text-gray-600">({country.name})</span>
+                        <span className="text-gray-600 dark:text-gray-400">({country.name})</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -404,11 +404,11 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
 
             {/* Phone Number Input */}
             <div>
-              <Label htmlFor="phone" className="text-sm font-medium">
+              <Label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Call To (Customer Number) <span className="text-red-500">*</span>
               </Label>
               <div className="flex items-center gap-2 mt-1">
-                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm">
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-gray-100">
                   <span className="text-lg">{selectedCountry.flag}</span>
                   <span className="font-medium">{selectedCountry.code}</span>
                 </div>
@@ -423,14 +423,14 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
                   disabled={isLoading}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Enter {selectedCountry.name} phone number ({selectedCountry.digits} digits)
               </p>
             </div>
 
             {/* Custom Message */}
             <div>
-              <Label htmlFor="message" className="text-sm font-medium">
+              <Label htmlFor="message" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Custom First Message (Optional)
               </Label>
               <Textarea
@@ -441,7 +441,7 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
                 className="mt-1 min-h-[80px]"
                 disabled={isLoading}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Leave empty to use the assistant's default first message
               </p>
             </div>
@@ -455,19 +455,19 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
           </div>
         ) : callStatus === 'success' ? (
           <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-green-800">Call Initiated Successfully!</h3>
-              <p className="text-sm text-gray-600 mt-1">
+              <h3 className="font-semibold text-green-800 dark:text-green-200">Call Initiated Successfully!</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 Calling {selectedCountry.code} {phoneNumber}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 From: {selectedPhoneNum ? formatPhoneNumber(selectedPhoneNum.number) : 'Unknown'}
               </p>
               {callId && (
-                <p className="text-xs text-gray-500 mt-2 font-mono">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-mono">
                   Call ID: {callId}
                 </p>
               )}
@@ -475,12 +475,12 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
           </div>
         ) : (
           <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto">
               <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-red-800">Call Failed</h3>
-              <p className="text-sm text-gray-600 mt-1">{error}</p>
+              <h3 className="font-semibold text-red-800 dark:text-red-200">Call Failed</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{error}</p>
             </div>
           </div>
         )}
