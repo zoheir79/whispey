@@ -289,7 +289,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
             <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
                     <Bot className="w-5 h-5 text-blue-600" />
                   </div>
                 </div>
@@ -306,11 +306,11 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
             <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-green-50 rounded-lg border border-green-100">
+                  <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800">
                     <CheckCircle2 className="w-5 h-5 text-green-600" />
                   </div>
                   <div className="text-right">
-                    <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                    <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-md border border-green-100 dark:border-green-800">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       <span className="text-xs font-bold text-green-600">Running</span>
                     </div>
@@ -329,7 +329,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
             <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-red-50 rounded-lg border border-red-100">
+                  <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
                     <Pause className="w-5 h-5 text-red-600" />
                   </div>
                   <div className="text-right">
@@ -352,7 +352,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
             <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                  <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800">
                     <Globe className="w-5 h-5 text-indigo-600" />
                   </div>
                 </div>

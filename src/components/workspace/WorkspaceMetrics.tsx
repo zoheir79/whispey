@@ -730,7 +730,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                       <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" className="dark:[&>*]:stroke-slate-700" />
                   <XAxis 
                     dataKey="date" 
                     stroke="#94a3b8" 
@@ -835,18 +835,18 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         </div>
 
         {/* Usage Minutes */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
+                <div className="w-6 h-6 bg-blue-50 dark:bg-blue-900/20 rounded flex items-center justify-center">
                   <Clock className="w-4 h-4 text-blue-600" />
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900">Usage Minutes</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
               </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3 text-gray-400" />
-                <span className="text-xs text-gray-500">Daily conversation duration</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Daily conversation duration</span>
               </div>
             </div>
           </div>
@@ -860,7 +860,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                       <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" className="dark:[&>*]:stroke-slate-700" />
                   <XAxis 
                     dataKey="date" 
                     stroke="#94a3b8" 
@@ -907,17 +907,17 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         </div>
 
         {/* Response Performance */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-purple-50 rounded flex items-center justify-center">
+                <div className="w-6 h-6 bg-purple-50 dark:bg-purple-900/20 rounded flex items-center justify-center">
                   <Activity className="w-4 h-4 text-purple-600" />
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900">Response Performance</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-xs text-gray-500">Average latency metrics</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Average latency metrics</span>
               </div>
             </div>
           </div>
@@ -925,7 +925,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
             {timeSeriesData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={timeSeriesData}>
-                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="1 1" stroke="#f1f5f9" className="dark:[&>*]:stroke-slate-700" />
                   <XAxis 
                     dataKey="date" 
                     stroke="#94a3b8" 
