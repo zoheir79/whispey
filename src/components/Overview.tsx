@@ -266,54 +266,6 @@ const Overview: React.FC<OverviewProps> = ({
     }
   }
 
-  const handleDeleteCustomTotal = async (configId: string) => {
-    try {
-      await CustomTotalsService.deleteCustomTotal(configId)
-      setCustomTotals(prev => prev.filter(c => c.id !== configId))
-      setCustomTotalResults(prev => prev.filter(r => r.configId !== configId))
-    } catch (error) {
-      console.error('Failed to delete custom total:', error)
-    }
-  }
-
-  const handleSaveCustomTotal = async (config: CustomTotalConfig) => {
-    try {
-      const result = await CustomTotalsService.saveCustomTotal(config, agent?.id)
-      if (result.success && result.data) {
-        setCustomTotals(prev => {
-          const existing = prev.find(c => c.id === result.data!.id)
-          if (existing) {
-            return prev.map(c => c.id === result.data!.id ? result.data! : c)
-          } else {
-            return [...prev, result.data!]
-          }
-        })
-        
-        // Recalculate custom totals
-        calculateCustomTotals()
-      }
-    } catch (error) {
-      console.error('Failed to save custom total:', error)
-    }
-  }
-
-  const formatCustomTotalValue = (result: any, config: any) => {
-    if (!result || result.value === null || result.value === undefined) {
-      return '0'
-    }
-    
-    const value = result.value
-    switch (config.aggregation) {
-      case 'SUM':
-      case 'COUNT':
-      case 'COUNT_DISTINCT':
-        return typeof value === 'number' ? Math.round(value).toLocaleString() : value.toString()
-      case 'AVG':
-        return typeof value === 'number' ? value.toFixed(2) : value.toString()
-      default:
-        return value.toString()
-    }
-  }
 
   // Build PostgREST-friendly filters and OR string to mirror SQL logic (AND vs OR)
   const buildFiltersForDownload = (
@@ -1195,50 +1147,51 @@ const Overview: React.FC<OverviewProps> = ({
             </div>
 
             {/* Chart Analytics Section */}
-            <ChartProvider>
+            {analytics && analytics.dailyData && analytics.dailyData.length > 0 ? (
               <div className="space-y-6">
-                <EnhancedChartBuilder 
-                  agentId={agent.id}
-                  dateFrom={dateRange.from}
-                  dateTo={dateRange.to}
-                  metadataFields={metadataFields}
-                  transcriptionFields={transcriptionFields}
-                  fieldsLoading={fieldsLoading}
-                />
+                <ChartProvider>
+                  <div className="space-y-6">
+                    <EnhancedChartBuilder 
+                      agentId={agent.id}
+                      dateFrom={dateRange.from}
+                      dateTo={dateRange.to}
+                      metadataFields={metadataFields}
+                      transcriptionFields={transcriptionFields}
+                      fieldsLoading={fieldsLoading}
+                    />
 
-                {/* Floating Action Menu */}
-                {userEmail && !fieldsLoading && (
-                  <FloatingActionMenu
-                    metadataFields={metadataFields}
-                    transcriptionFields={transcriptionFields}
-                    agentId={agent?.id}
-                    projectId={project?.id}
-                    userEmail={userEmail}
-                    availableColumns={AVAILABLE_COLUMNS}
-                    onSaveCustomTotal={handleSaveCustomTotal}
-                  />
-                )}
+                    {/* Floating Action Menu */}
+                    {userEmail && !fieldsLoading && (
+                      <FloatingActionMenu
+                        metadataFields={metadataFields}
+                        transcriptionFields={transcriptionFields}
+                        agentId={agent?.id}
+                        projectId={project?.id}
+                        userEmail={userEmail}
+                        availableColumns={AVAILABLE_COLUMNS}
+                        onSaveCustomTotal={handleSaveCustomTotal}
+                      />
+                    )}
+                  </div>
+                </ChartProvider>
               </div>
-            </ChartProvider>
-          </>
-        ) : (
-          <div className="h-64 bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-slate-800/50 rounded-2xl border border-slate-700/50 flex items-center justify-center mx-auto">
-                <CalendarBlank weight="light" className="w-8 h-8 text-slate-400" />
+            ) : (
+              <div className="h-64 bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl flex items-center justify-center">
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 bg-slate-800/50 rounded-2xl border border-slate-700/50 flex items-center justify-center mx-auto">
+                    <CalendarBlank weight="light" className="w-8 h-8 text-slate-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-medium text-slate-200">No Data Available</h3>
+                    <p className="text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
+                      No calls found for the selected time period. Try adjusting your date range or check back later.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-medium text-slate-200">No Data Available</h3>
-                <p className="text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
-                  No calls found for the selected time period. Try adjusting your date range or check back later.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+            )}
       </div>
     </div>
   )
-}
 
 export default Overview
