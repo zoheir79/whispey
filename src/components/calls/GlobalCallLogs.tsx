@@ -48,8 +48,8 @@ import { getUserProjectRole } from "@/services/getUserRole"
 
 
 interface GlobalCallLogsProps {
-  project: any
-  onBack: () => void
+  project?: any
+  onBack?: () => void
 }
 
 function flattenAndPickColumns(
