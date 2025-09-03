@@ -746,11 +746,12 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #e2e8f0', 
+                      backgroundColor: 'var(--tooltip-bg)', 
+                      border: '1px solid var(--tooltip-border)', 
                       borderRadius: '6px',
                       fontSize: '12px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      color: 'var(--tooltip-text)'
                     }} 
                   />
                   <Area 
@@ -876,11 +877,12 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #e2e8f0', 
+                      backgroundColor: 'var(--tooltip-bg)', 
+                      border: '1px solid var(--tooltip-border)', 
                       borderRadius: '6px',
                       fontSize: '12px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      color: 'var(--tooltip-text)'
                     }} 
                   />
                   <Area 
@@ -941,11 +943,12 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #e2e8f0', 
+                      backgroundColor: 'var(--tooltip-bg)', 
+                      border: '1px solid var(--tooltip-border)', 
                       borderRadius: '6px',
                       fontSize: '12px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      color: 'var(--tooltip-text)'
                     }} 
                   />
                   <Line 

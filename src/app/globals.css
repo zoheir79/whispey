@@ -76,6 +76,9 @@
   --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
   --sidebar-border: oklch(0.923 0.003 48.717);
   --sidebar-ring: oklch(0.709 0.01 56.259);
+  --tooltip-bg: white;
+  --tooltip-border: #e2e8f0;
+  --tooltip-text: #374151;
 }
 
 .dark {
@@ -110,6 +113,9 @@
   --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.553 0.013 58.071);
+  --tooltip-bg: oklch(0.216 0.006 56.043);
+  --tooltip-border: oklch(1 0 0 / 15%);
+  --tooltip-text: oklch(0.985 0.001 106.423);
 }
 
 @layer base {

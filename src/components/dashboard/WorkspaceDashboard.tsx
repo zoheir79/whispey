@@ -483,11 +483,12 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid #e2e8f0', 
+                    backgroundColor: 'var(--tooltip-bg)', 
+                    border: '1px solid var(--tooltip-border)', 
                     borderRadius: '6px',
                     fontSize: '12px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    color: 'var(--tooltip-text)'
                   }} 
                 />
                 <Area 
@@ -540,11 +541,12 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid #e2e8f0', 
+                    backgroundColor: 'var(--tooltip-bg)', 
+                    border: '1px solid var(--tooltip-border)', 
                     borderRadius: '6px',
                     fontSize: '12px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    color: 'var(--tooltip-text)'
                   }} 
                 />
               </PieChart>
@@ -602,11 +604,12 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid #e2e8f0', 
+                    backgroundColor: 'var(--tooltip-bg)', 
+                    border: '1px solid var(--tooltip-border)', 
                     borderRadius: '6px',
                     fontSize: '12px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    color: 'var(--tooltip-text)'
                   }} 
                 />
                 <Area 
@@ -657,11 +660,12 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid #e2e8f0', 
+                    backgroundColor: 'var(--tooltip-bg)', 
+                    border: '1px solid var(--tooltip-border)', 
                     borderRadius: '6px',
                     fontSize: '12px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    color: 'var(--tooltip-text)'
                   }} 
                 />
                 <Line 
@@ -679,7 +683,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Agents Performance Table */}
       <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
-        <div className="p-6 border-b border-gray-100">
+        <div className="p-6 border-b border-gray-100 dark:border-slate-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 bg-purple-50 rounded flex items-center justify-center">
@@ -694,7 +698,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-slate-800">
+            <thead className="bg-gray-50 dark:bg-slate-700">
               <tr>
                 <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Agent</th>
                 <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Calls</th>
@@ -704,9 +708,9 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                 <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
               {agentsData.map((agent, index) => (
-                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">

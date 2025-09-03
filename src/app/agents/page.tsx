@@ -6,7 +6,7 @@ import Header from '@/components/shared/Header'
 
 export default function AgentsPage() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <Header />
       <GlobalAgentSelection />
     </div>
