@@ -120,19 +120,19 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <BarChart3 className="h-6 w-6 text-gray-600" />
-          <h1 className="text-2xl font-semibold text-gray-900">Agent Analytics</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Agent Analytics</h1>
         </div>
         
         {/* Period Selector */}
-        <div className="flex bg-gray-100 rounded-lg p-1">
+        <div className="flex bg-gray-100 dark:bg-blue-800 rounded-lg p-1">
           {['7d', '30d', '90d'].map((period) => (
             <button
               key={period}
               onClick={() => setSelectedPeriod(period)}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 selectedPeriod === period
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white dark:bg-blue-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                  : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100'
               }`}
             >
               {period === '7d' ? '7 Days' : period === '30d' ? '30 Days' : '90 Days'}
@@ -144,16 +144,16 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
       {/* Usage Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* LLM Usage Card */}
-        <Card>
+        <Card className="dark:bg-blue-900 dark:border-blue-700">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-blue-50 p-2 rounded-lg">
                 <MessageSquare className="h-5 w-5 text-blue-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-1">Usage LLM</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Usage LLM</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {loading ? '--' : formatLargeNumber(usageMetrics.llm.totalTokens)}
                   </p>
                   <span className="text-xs text-gray-500">tokens</span>
@@ -170,16 +170,16 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         </Card>
 
         {/* STT Usage Card */}
-        <Card>
+        <Card className="dark:bg-blue-900 dark:border-blue-700">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-red-50 p-2 rounded-lg">
                 <Mic className="h-5 w-5 text-red-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-1">Usage STT</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Usage STT</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {loading ? '--' : formatDuration(usageMetrics.stt.duration)}
                   </p>
                   <span className="text-xs text-gray-500">duration</span>
@@ -196,16 +196,16 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         </Card>
 
         {/* TTS Usage Card */}
-        <Card>
+        <Card className="dark:bg-blue-900 dark:border-blue-700">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-purple-50 p-2 rounded-lg">
                 <Volume2 className="h-5 w-5 text-purple-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-1">Usage TTS</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Usage TTS</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {loading ? '--' : formatLargeNumber(usageMetrics.tts.characters)}
                   </p>
                   <span className="text-xs text-gray-500">characters</span>
@@ -222,16 +222,16 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         </Card>
 
         {/* Total Usage Card */}
-        <Card>
+        <Card className="dark:bg-blue-900 dark:border-blue-700">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-green-50 p-2 rounded-lg">
                 <Clock className="h-5 w-5 text-green-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-1">Usage Minutes</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Usage Minutes</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {loading ? '--' : `${Math.round(usageMetrics.totalMinutes)}min`}
                   </p>
                   <span className="text-xs text-gray-500">duration</span>
@@ -250,14 +250,14 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
 
       {/* Additional Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="dark:bg-blue-900 dark:border-blue-700">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-blue-50 p-2 rounded-lg">
                 <Phone className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Calls</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Total Calls</p>
                 <p className="text-xl font-semibold text-gray-900">
                   {loading ? '--' : timeSeriesData.reduce((sum, item) => sum + (item.calls || 0), 0)}
                 </p>
@@ -266,14 +266,14 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-blue-900 dark:border-blue-700">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-green-50 p-2 rounded-lg">
                 <TrendingUp className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Avg Duration</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Avg Duration</p>
                 <p className="text-xl font-semibold text-gray-900">
                   {loading ? '-- min' : formatDuration(usageMetrics.totalMinutes * 60 / Math.max(timeSeriesData.reduce((sum, item) => sum + (item.calls || 0), 0), 1))}
                 </p>
@@ -282,14 +282,14 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-blue-900 dark:border-blue-700">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-orange-50 p-2 rounded-lg">
                 <BarChart3 className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Daily Average</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Daily Average</p>
                 <p className="text-xl font-semibold text-gray-900">
                   {loading ? '--' : Math.round(timeSeriesData.reduce((sum, item) => sum + (item.calls || 0), 0) / Math.max(timeSeriesData.length, 1))}
                 </p>
@@ -298,14 +298,14 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-blue-900 dark:border-blue-700">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="bg-purple-50 p-2 rounded-lg">
                 <DollarSign className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Cost</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Total Cost</p>
                 <p className="text-xl font-semibold text-gray-900">
                   {loading ? '₹--' : formatCurrency(usageMetrics.totalCost)}
                 </p>

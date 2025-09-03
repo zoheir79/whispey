@@ -161,7 +161,7 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
       {/* Header */}
       <div className="flex items-center gap-3">
         <Settings className="h-6 w-6 text-gray-600" />
-        <h1 className="text-2xl font-semibold text-gray-900">Agent Settings</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Agent Settings</h1>
       </div>
 
       {/* Alerts */}
@@ -180,9 +180,9 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
       )}
 
       {/* Basic Information */}
-      <Card>
+      <Card className="dark:bg-blue-900 dark:border-blue-700">
         <CardHeader>
-          <CardTitle className="text-lg">Basic Information</CardTitle>
+          <CardTitle className="text-lg dark:text-gray-100">Basic Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -245,9 +245,9 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
       </Card>
 
       {/* Preview Badges */}
-      <Card>
+      <Card className="dark:bg-blue-900 dark:border-blue-700">
         <CardHeader>
-          <CardTitle className="text-lg">Preview</CardTitle>
+          <CardTitle className="text-lg dark:text-gray-100">Preview</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -265,15 +265,15 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
       </Card>
 
       {/* Advanced Settings */}
-      <Card>
+      <Card className="dark:bg-blue-900 dark:border-blue-700">
         <CardHeader>
-          <CardTitle className="text-lg">Advanced Settings</CardTitle>
+          <CardTitle className="text-lg dark:text-gray-100">Advanced Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="field_extractor">Field Extractor</Label>
-              <p className="text-sm text-gray-500">Enable field extraction from call transcripts</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Enable field extraction from call transcripts</p>
             </div>
             <Switch
               id="field_extractor"
@@ -308,7 +308,7 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
               rows={8}
               className="mt-1 font-mono text-sm"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Advanced configuration in JSON format. Please ensure valid JSON syntax.
             </p>
           </div>
