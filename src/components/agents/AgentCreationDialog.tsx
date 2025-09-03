@@ -773,39 +773,34 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
               <DialogTitle className="text-lg font-semibold text-gray-900 mb-1">
                 Agent Created Successfully!
               </DialogTitle>
-              <p className="text-sm text-gray-600">
-                "{createdAgentData?.name}" is ready to use
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Your agent is ready to handle voice conversations
               </p>
             </DialogHeader>
 
-            <div className="px-6 py-5 space-y-4">
-              <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    {selectedPlatform === 'vapi' ? (
-                      <Bot className="w-5 h-5 text-[#328c81]" />
-                    ) : (
-                      selectedAgentType && <selectedAgentType.icon className="w-5 h-5 text-blue-600" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 truncate">
-                      {createdAgentData?.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className={`text-xs ${
-                        selectedPlatform === 'vapi' 
-                          ? 'bg-teal-50 text-[#328c81] border-teal-200' 
-                          : 'bg-blue-50 text-blue-700 border-blue-200'
-                      }`}>
-                        {selectedPlatform === 'vapi' ? 'Vapi Connected' : selectedAgentType?.label}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600">
-                        Development
-                      </Badge>
+            <div className="flex-1 overflow-y-auto px-6 py-4">
+              <div className="space-y-4">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100">{formData.name}</h4>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className={`text-xs ${
+                          selectedPlatform === 'vapi' 
+                            ? 'bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-700'
+                            : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700'
+                        }`}>
+                          {selectedPlatform === 'vapi' ? 'Vapi Connected' : selectedAgentType?.label}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600">
+                          Development
+                        </Badge>
+                      </div>
                     </div>
                   </div>
-                </div>
 
                 {/* Webhook Status for Vapi Agents */}
                 {selectedPlatform === 'vapi' && webhookSetupStatus && (
@@ -856,12 +851,14 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                   </p>
                 )}
               </div>
+            </div>
 
-              <div className="flex gap-3 pt-2">
+            <div className="flex-shrink-0 px-6 py-4 bg-gray-50/50 dark:bg-slate-800/50 border-t border-gray-200 dark:border-slate-700">
+              <div className="flex gap-3">
                 <Button 
                   variant="outline"
                   onClick={handleClose}
-                  className="flex-1 h-10 text-gray-700 border-gray-300 hover:bg-gray-50"
+                  className="flex-1 h-10 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700"
                 >
                   Create Another
                 </Button>

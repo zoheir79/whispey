@@ -734,22 +734,30 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Failed Calls */}
               <div className="group">
                 <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-red-50 rounded-lg border border-red-100">
-                        <XCircle weight="regular" className="w-5 h-5 text-red-600" />
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 text-red-600">
-                          <ArrowDown weight="bold" className="w-3 h-3 text-red-600" />
-                          <span className="text-xs font-bold text-red-600">
-                            {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
-                          </span>
+                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Call Volume</h3>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span className="text-sm text-gray-500 dark:text-gray-400">Total Calls</span>
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Success Rate</h3>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                          {isNaN(successRate) ? '0' : successRate.toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-6">
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Failed</h3>
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Failed</h3>
                       <p className="text-2xl font-light text-red-600 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>

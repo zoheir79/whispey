@@ -392,9 +392,9 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
     )
   }
 
-  if (agentLoading || (shouldFetch && projectLoading)) {
+  if (agentLoading) {
     return (
-      <div className="h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
         <Header />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-3">
@@ -402,8 +402,8 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
               <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
             </div>
             <div>
-              <h3 className="text-base font-medium text-gray-900 mb-1">Loading Dashboard</h3>
-              <p className="text-sm text-gray-500">Fetching agent data...</p>
+              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">Loading Dashboard</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Fetching agent data...</p>
             </div>
           </div>
         </div>

@@ -454,7 +454,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
               </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3 text-gray-400" />
-                <span className="text-xs text-gray-500">Last 7 days period</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Last 7 days period</span>
               </div>
             </div>
           </div>
@@ -686,12 +686,12 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
         <div className="p-6 border-b border-gray-100 dark:border-slate-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-purple-50 rounded flex items-center justify-center">
-                <Users className="w-4 h-4 text-purple-600" />
+              <div className="w-6 h-6 bg-purple-50 dark:bg-purple-900/20 rounded flex items-center justify-center">
+                <Users className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="text-sm font-semibold text-gray-900">Agent Performance</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Agent Performance</h3>
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-500 dark:text-gray-400">
               {agentsData.length} active agents
             </div>
           </div>
@@ -700,12 +700,12 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-slate-700">
               <tr>
-                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Agent</th>
-                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Calls</th>
-                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Success Rate</th>
-                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Duration</th>
-                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Total Cost</th>
-                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Agent</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Calls</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Success Rate</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Avg. Duration</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Cost</th>
+                <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Trend</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
@@ -719,13 +719,13 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                         </span>
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{agent.name}</div>
-                        <div className="text-xs text-gray-500">Active</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{agent.name}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Active</div>
                       </div>
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="text-sm text-gray-900">{agent.calls.toLocaleString()}</div>
+                    <div className="text-sm text-gray-900 dark:text-gray-100">{agent.calls.toLocaleString()}</div>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
@@ -741,10 +741,10 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="text-sm text-gray-900">{agent.avgDuration}s</div>
+                    <div className="text-sm text-gray-900 dark:text-gray-100">{agent.avgDuration}s</div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="text-sm font-medium text-gray-900">${agent.totalCost}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">${agent.totalCost}</div>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
