@@ -64,7 +64,7 @@ export default function WorkspaceNameInput({
     <div className={`flex items-center ${className}`}>
       <div className="flex-1 flex">
         {/* Readonly prefix */}
-        <div className="flex items-center bg-gray-50 border border-r-0 border-gray-300 rounded-l-md px-3 py-2 text-sm text-gray-600 font-mono">
+        <div className="flex items-center bg-gray-50 dark:bg-gray-700 border border-r-0 border-gray-300 dark:border-gray-600 rounded-l-md px-3 py-2 text-sm text-gray-600 dark:text-gray-300 font-mono">
           {prefix}
         </div>
         {/* Editable suffix */}

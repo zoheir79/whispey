@@ -256,7 +256,7 @@ function Header({ breadcrumb }: HeaderProps) {
                 </div>
                 <div className="py-1">
                   <DropdownMenuItem asChild>
-                    <Link href="/docs" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1">
+                    <Link href="/docs" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1">
                       <FileText className="w-4 h-4 mr-3 text-blue-600" />
                       <div>
                         <p className="font-medium text-gray-900">Documentation</p>
@@ -265,7 +265,7 @@ function Header({ breadcrumb }: HeaderProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/api-reference" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1">
+                    <Link href="/api-reference" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1">
                       <Zap className="w-4 h-4 mr-3 text-yellow-600" />
                       <div>
                         <p className="font-medium text-gray-900">API Reference</p>
@@ -274,7 +274,7 @@ function Header({ breadcrumb }: HeaderProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/community" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1">
+                    <Link href="/community" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1">
                       <Users className="w-4 h-4 mr-3 text-green-600" />
                       <div>
                         <p className="font-medium text-gray-900">Community</p>
@@ -286,7 +286,7 @@ function Header({ breadcrumb }: HeaderProps) {
                 <DropdownMenuSeparator className="bg-gray-100" />
                 <div className="py-1">
                   <DropdownMenuItem asChild>
-                    <Link href="/support" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1">
+                    <Link href="/support" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1">
                       <HelpCircle className="w-4 h-4 mr-3 text-purple-600" />
                       <div>
                         <p className="font-medium text-gray-900">Contact Support</p>
@@ -321,7 +321,7 @@ function Header({ breadcrumb }: HeaderProps) {
                   </div>
                   <div className="py-1">
                     <DropdownMenuItem asChild>
-                      <Link href="/profile" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                      <Link href="/profile" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1 cursor-pointer">
                         <User className="w-4 h-4 mr-3 text-gray-600" />
                         <span className="font-medium text-gray-900">Profile</span>
                       </Link>
@@ -329,13 +329,13 @@ function Header({ breadcrumb }: HeaderProps) {
                     {isSuperAdmin && (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link href="/admin/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                          <Link href="/admin/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1 cursor-pointer">
                             <Settings className="w-4 h-4 mr-3 text-gray-600" />
                             <span className="font-medium text-gray-900">Admin Settings</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href="/admin/users" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 rounded-lg mx-1 cursor-pointer">
+                          <Link href="/admin/users" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1 cursor-pointer">
                             <Users className="w-4 h-4 mr-3 text-blue-600" />
                             <span className="font-medium text-gray-900">Admin Users</span>
                           </Link>
