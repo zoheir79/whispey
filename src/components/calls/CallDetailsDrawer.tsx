@@ -248,7 +248,7 @@ const CallDetailsDrawer: React.FC<CallDetailsDrawerProps> = ({ isOpen, callData,
                error ? <div className="text-center py-12 text-destructive"><p>Error loading transcript: {error}</p></div> : 
                (transcriptLogs?.length || basicTranscript?.length) ? (
                 <div className="space-y-6">
-                  {(transcriptLogs.length ? transcriptLogs : basicTranscript).map((log: any) => (
+                  {(transcriptLogs.length ? transcriptLogs : basicTranscript || []).map((log: any) => (
                     <div key={log.id} className="space-y-4">
                       <div className="flex gap-4 group">
                         <div className="flex-shrink-0 w-12 text-right"><div className="text-xs text-muted-foreground dark:text-slate-400 font-mono">{formatConversationTime(log.unix_timestamp || log.timestamp)}</div></div>
