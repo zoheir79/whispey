@@ -67,7 +67,7 @@ const FieldExtractorDialog: React.FC<FieldExtractorDialogProps> = ({ initialData
 
         {/* Fixed section for the enable switch */}
         <div className="flex-shrink-0 p-6 pb-4">
-          <div className="flex items-center justify-between p-2 rounded-md bg-gray-50 dark:bg-gray-800">
+          <div className="flex items-center justify-between p-2 rounded-md bg-gray-50 dark:bg-slate-700/50">
             <Label htmlFor="enabled" className="text-base font-medium text-gray-700 dark:text-gray-300">
               Enable Field Extraction
             </Label>
@@ -91,7 +91,7 @@ const FieldExtractorDialog: React.FC<FieldExtractorDialogProps> = ({ initialData
                   placeholder="e.g. Respondent Name"
                   value={field.key}
                   onChange={(e) => updateField(index, { key: e.target.value })}
-                  className="rounded-md border border-gray-300 dark:border-gray-700 focus:ring-gray-950 focus:border-gray-950 dark:focus:ring-gray-300 dark:focus:border-gray-300"
+                  className="rounded-md border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-gray-950 focus:border-gray-950 dark:focus:ring-gray-300 dark:focus:border-gray-300"
                 />
               </div>
               <div className="col-span-6">
@@ -106,7 +106,7 @@ const FieldExtractorDialog: React.FC<FieldExtractorDialogProps> = ({ initialData
                   placeholder="Describe what to extract"
                   value={field.description}
                   onChange={(e) => updateField(index, { description: e.target.value })}
-                  className="rounded-md border border-gray-300 dark:border-gray-700 focus:ring-gray-950 focus:border-gray-950 dark:focus:ring-gray-300 dark:focus:border-gray-300"
+                  className="rounded-md border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-gray-950 focus:border-gray-950 dark:focus:ring-gray-300 dark:focus:border-gray-300"
                 />
               </div>
               <Button
@@ -114,7 +114,7 @@ const FieldExtractorDialog: React.FC<FieldExtractorDialogProps> = ({ initialData
                 size="icon"
                 onClick={() => removeField(index)}
                 aria-label={`Remove field ${index + 1}`}
-                className="rounded-full w-8 h-8 text-gray-400 hover:bg-gray-100 hover:text-red-500 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-red-400"
+                className="rounded-full w-8 h-8 text-gray-400 hover:bg-gray-100 hover:text-red-500 dark:text-gray-400 dark:hover:bg-slate-700 dark:hover:text-red-400"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -128,7 +128,7 @@ const FieldExtractorDialog: React.FC<FieldExtractorDialogProps> = ({ initialData
             type="button"
             variant="outline"
             onClick={addField}
-            className="w-full rounded-md border border-dashed border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 bg-transparent"
+            className="w-full rounded-md border border-dashed border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-slate-700 dark:text-gray-400 dark:hover:bg-slate-700/50 bg-transparent"
           >
             <Plus className="w-4 h-4 mr-2" /> Add Field
           </Button>

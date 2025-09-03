@@ -126,7 +126,7 @@ export default function AuthPage() {
               <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center">
                 <Mic className="w-6 h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold text-slate-900">Whispey</span>
+              <span className="text-2xl font-bold text-slate-900 dark:text-gray-100">Whispey</span>
             </div>
           </div>
 
@@ -144,7 +144,7 @@ export default function AuthPage() {
           <div className="mt-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
                   {error}
                 </div>
               )}
@@ -237,7 +237,7 @@ export default function AuthPage() {
             <div className="mt-6 text-center">
               <button 
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-slate-900 hover:text-slate-700 font-medium text-sm"
+                className="text-slate-900 dark:text-gray-100 hover:text-slate-700 dark:hover:text-gray-300 font-medium text-sm"
               >
                 {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
               </button>
@@ -245,8 +245,8 @@ export default function AuthPage() {
           </div>
 
           {/* Trust Indicators */}
-          <div className="pt-8 border-t border-slate-200">
-            <div className="flex items-center justify-center space-x-6 text-sm text-slate-500">
+          <div className="pt-8 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-center space-x-6 text-sm text-slate-500 dark:text-slate-400">
               <div className="flex items-center space-x-2">
                 <Shield className="w-4 h-4" />
                 <span>Secure</span>

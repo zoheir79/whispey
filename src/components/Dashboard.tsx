@@ -542,9 +542,9 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`px-4 py-2 text-sm font-medium rounded-lg border-gray-200 transition-all duration-200 ${
+                      className={`px-4 py-2 text-sm font-medium rounded-lg border-gray-200 dark:border-slate-700 transition-all duration-200 ${
                         isCustomRange 
-                          ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' 
+                          ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800' 
                           : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-700'
                       }`}
                     >
@@ -552,7 +552,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       Custom
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 border-gray-200 shadow-xl rounded-xl" align="end">
+                  <PopoverContent className="w-auto p-0 border-gray-200 dark:border-slate-700 shadow-xl rounded-xl" align="end">
                     <Calendar
                       initialFocus
                       mode="range"
@@ -599,10 +599,10 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                   }}
               />
             )}
+            </div>
           </div>
         </div>
-        </div>
-        </div>
+      </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">

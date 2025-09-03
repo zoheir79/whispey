@@ -151,10 +151,10 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'owner': return 'bg-purple-100 text-purple-800'
-      case 'user': return 'bg-orange-100 text-orange-800'
-      case 'admin': return 'bg-blue-100 text-blue-800'
-      case 'member': return 'bg-green-100 text-green-800'
+      case 'owner': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300'
+      case 'user': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300'
+      case 'admin': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300'
+      case 'member': return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
       case 'viewer': return 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200'
       default: return 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200'
     }
@@ -281,11 +281,11 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
               ) : (
                 <div className="space-y-3">
                   {members.map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                    <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={member.user.profile_image_url || undefined} />
-                          <AvatarFallback>
+                          <AvatarFallback className="bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-200">
                             {getUserInitials(member.user.name, member.user.email)}
                           </AvatarFallback>
                         </Avatar>
@@ -344,7 +344,7 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
           )}
 
           {/* Close Button */}
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
             <Button onClick={handleClose} variant="outline" className="w-full">
               Close
             </Button>

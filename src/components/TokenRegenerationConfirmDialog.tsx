@@ -41,7 +41,7 @@ const TokenRegenerationConfirmDialog: React.FC<TokenRegenerationConfirmDialogPro
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/20">
-              <AlertTriangle className="h-5 w-5 text-orange-600" />
+              <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
             </div>
             <div>
               <DialogTitle className="text-left text-gray-900 dark:text-gray-100">Regenerate API Token</DialogTitle>
@@ -56,7 +56,7 @@ const TokenRegenerationConfirmDialog: React.FC<TokenRegenerationConfirmDialogPro
         <div className="py-4">
           <div className="space-y-3">
             <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-              <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm text-amber-800 dark:text-amber-200">
                 <p className="font-medium mb-1">This action will:</p>
                 <ul className="list-disc list-inside space-y-1 text-xs">
@@ -88,7 +88,7 @@ const TokenRegenerationConfirmDialog: React.FC<TokenRegenerationConfirmDialogPro
             variant="default"
             onClick={onConfirm}
             disabled={isRegenerating}
-            className="bg-orange-600 hover:bg-orange-700"
+            className="bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600"
           >
             {isRegenerating ? (
               <>

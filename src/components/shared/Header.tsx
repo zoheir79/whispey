@@ -301,7 +301,7 @@ function Header({ breadcrumb }: HeaderProps) {
             {/* User Profile Section */}
             <div className="flex items-center gap-3 pl-4 ml-2 border-l border-gray-200 dark:border-slate-700">
               <div className="hidden sm:flex flex-col items-end">
-                <p className="text-sm font-semibold text-gray-900 leading-none">{getUserDisplayName()}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-none">{getUserDisplayName()}</p>
               </div>
               
               <DropdownMenu>
@@ -316,14 +316,14 @@ function Header({ breadcrumb }: HeaderProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 shadow-2xl border border-gray-100 dark:border-slate-700 rounded-2xl backdrop-blur-sm bg-white/95 dark:bg-slate-800/95">
                   <div className="px-3 py-2 border-b border-gray-100">
-                    <p className="text-sm font-semibold text-gray-900">{getUserDisplayName()}</p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{getUserDisplayName()}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
                   </div>
                   <div className="py-1">
                     <DropdownMenuItem asChild>
                       <Link href="/profile" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1 cursor-pointer">
                         <User className="w-4 h-4 mr-3 text-gray-600" />
-                        <span className="font-medium text-gray-900">Profile</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">Profile</span>
                       </Link>
                     </DropdownMenuItem>
                     {isSuperAdmin && (
@@ -331,13 +331,13 @@ function Header({ breadcrumb }: HeaderProps) {
                         <DropdownMenuItem asChild>
                           <Link href="/admin/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1 cursor-pointer">
                             <Settings className="w-4 h-4 mr-3 text-gray-600" />
-                            <span className="font-medium text-gray-900">Admin Settings</span>
+                            <span className="font-medium text-gray-900 dark:text-gray-100">Admin Settings</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/admin/users" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1 cursor-pointer">
                             <Users className="w-4 h-4 mr-3 text-blue-600" />
-                            <span className="font-medium text-gray-900">Admin Users</span>
+                            <span className="font-medium text-gray-900 dark:text-gray-100">Admin Users</span>
                           </Link>
                         </DropdownMenuItem>
                       </>
@@ -440,7 +440,7 @@ function Header({ breadcrumb }: HeaderProps) {
                   {/* Admin Badge for Mobile */}
                   {isAdmin && (
                     <div className="px-3 py-1">
-                      <Badge variant="outline" className="text-xs font-medium bg-blue-50 text-blue-700 border-blue-200">
+                      <Badge variant="outline" className="text-xs font-medium bg-blue-50 dark:bg-slate-800/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-slate-700">
                         {isSuperAdmin ? 'Super Admin' : 'Admin'}
                       </Badge>
                     </div>
