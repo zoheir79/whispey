@@ -576,7 +576,10 @@ const Overview: React.FC<OverviewProps> = ({
   return (
     <div className="px-6 py-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen relative">
       {/* Animated background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20"></div>
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: 'linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px)',
+        backgroundSize: '4rem 4rem'
+      }}></div>
       
       {analytics ? (
         <>
