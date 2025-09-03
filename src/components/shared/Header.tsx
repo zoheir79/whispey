@@ -299,7 +299,7 @@ function Header({ breadcrumb }: HeaderProps) {
             </DropdownMenu>
 
             {/* User Profile Section */}
-            <div className="flex items-center gap-3 pl-4 ml-2 border-l border-gray-200">
+            <div className="flex items-center gap-3 pl-4 ml-2 border-l border-gray-200 dark:border-slate-700">
               <div className="hidden sm:flex flex-col items-end">
                 <p className="text-sm font-semibold text-gray-900 leading-none">{getUserDisplayName()}</p>
               </div>
@@ -401,18 +401,18 @@ function Header({ breadcrumb }: HeaderProps) {
         </div>
         
         {/* Subtle bottom gradient */}
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200/50 to-transparent"></div>
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200/50 to-transparent dark:via-slate-700/50"></div>
         
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-40">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 shadow-lg z-40">
             <div className="px-6 py-4 space-y-3">
               {/* Mobile Navigation Links */}
               {!roleLoading && (
                 <>
                   <Link
                     href="/"
-                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Folders className="w-4 h-4" />
@@ -421,7 +421,7 @@ function Header({ breadcrumb }: HeaderProps) {
 
                   <Link
                     href="/agents"
-                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Bot className="w-4 h-4" />
@@ -430,7 +430,7 @@ function Header({ breadcrumb }: HeaderProps) {
 
                   <Link
                     href="/calls"
-                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-all duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Phone className="w-4 h-4" />
@@ -446,14 +446,14 @@ function Header({ breadcrumb }: HeaderProps) {
                     </div>
                   )}
 
-                  <div className="h-px bg-gray-200 my-3"></div>
+                  <div className="h-px bg-gray-200 dark:bg-slate-700 my-3"></div>
 
                   {/* Mobile Help Links */}
                   <Link
                     href="https://pypi.org/project/Whispey/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <BookOpen className="w-4 h-4" />
@@ -462,7 +462,7 @@ function Header({ breadcrumb }: HeaderProps) {
 
                   <Link
                     href="/docs"
-                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <FileText className="w-4 h-4" />
@@ -478,9 +478,9 @@ function Header({ breadcrumb }: HeaderProps) {
                         <User className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-900">{user?.name || user?.email}</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{user?.name || user?.email}</p>
                         {user?.name && user?.email && (
-                          <p className="text-xs text-gray-500">{user.email}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
                         )}
                       </div>
                     </div>
@@ -489,7 +489,7 @@ function Header({ breadcrumb }: HeaderProps) {
                       onClick={handleLogout}
                       variant="outline"
                       size="sm"
-                      className="w-full justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                      className="w-full justify-start gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 border-red-200 dark:border-red-800"
                     >
                       <LogOut className="w-4 h-4" />
                       Sign out

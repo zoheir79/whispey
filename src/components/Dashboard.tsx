@@ -515,9 +515,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                 )}
               </div>
             )}
-          </div>
-          </div>
-
+            </div>
           {/* Right: Refined Controls */}
           <div className="flex items-center gap-6">
               {/* Polished Period Filters */}
@@ -603,7 +601,8 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
             )}
           </div>
         </div>
-      </div>
+        </div>
+        </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
