@@ -13,14 +13,17 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('system')
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
+  const [theme, setTheme] = useState<Theme>('dark')
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark')
 
   // Load theme from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem('whispey-theme') as Theme
     if (stored && ['light', 'dark', 'system'].includes(stored)) {
       setTheme(stored)
+    } else {
+      // Default to dark mode if no preference is stored
+      setTheme('dark')
     }
   }, [])
 

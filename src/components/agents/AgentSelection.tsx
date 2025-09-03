@@ -291,7 +291,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
+      <div className="min-h-screen bg-slate-900 transition-colors duration-300">
         <Header breadcrumb={breadcrumb} />
         <div className="flex items-center justify-center py-32">
           <div className="text-center space-y-4">
@@ -305,7 +305,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
+      <div className="min-h-screen bg-slate-900 transition-colors duration-300">
         <Header breadcrumb={breadcrumb} />
         <div className="flex items-center justify-center py-32">
           <div className="text-center space-y-6 max-w-sm">
@@ -329,7 +329,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-900 transition-colors duration-300">
       <Header breadcrumb={breadcrumb} />
       
       <main className="max-w-6xl mx-auto px-8 py-8">
