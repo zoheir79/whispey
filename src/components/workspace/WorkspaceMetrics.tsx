@@ -333,9 +333,9 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
   if (error || !metrics) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 text-center">
         <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-        <p className="text-sm text-gray-600">Failed to load metrics</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300">Failed to load metrics</p>
       </div>
     )
   }
@@ -349,14 +349,14 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-lg font-semibold text-gray-900">{metricsTitle}</h1>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{metricsTitle}</h1>
           <div className="flex items-center gap-4">
             {/* Workspace Selector for Super Admin */}
             {isSuperAdmin && (
               <select 
                 value={selectedWorkspace}
                 onChange={(e) => setSelectedWorkspace(e.target.value)}
-                className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="ALL">All Workspaces</option>
                 {availableWorkspaces.map((workspace) => (
@@ -366,13 +366,13 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 ))}
               </select>
             )}
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Building className="w-4 h-4" />
               <span>{isGlobalView ? 'All Workspaces' : (availableWorkspaces.find(w => w.id === selectedWorkspace)?.name || 'Current workspace')}</span>
             </div>
           </div>
         </div>
-        <p className="text-sm text-gray-500">{metricsDescription}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{metricsDescription}</p>
       </div>
 
       {/* Period Selector */}
@@ -388,8 +388,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
               onClick={() => setSelectedPeriod(period)}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 selectedPeriod === period
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700'
               }`}
             >
               {period === '7d' ? '7 jours' : period === '30d' ? '30 jours' : '90 jours'}
@@ -402,7 +402,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {/* Usage LLM - Tokens & Cost */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-cyan-50 rounded-lg border border-cyan-100">
@@ -415,12 +415,12 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage LLM</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.llm.totalTokens)}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">LLM USAGE</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{formatNumber(usageMetrics.llm.totalTokens)} tokens</p>
                 <div className="flex items-center gap-1">
                   <p className="text-xs text-gray-400 font-medium">Tokens</p>
                   <DollarSign className="w-3 h-3 text-gray-400" />
-                  <p className="text-xs text-gray-900 font-medium">{formatCurrency(usageMetrics.llm.cost)}</p>
+                  <p className="text-xs text-gray-900 dark:text-gray-100 font-medium">{formatCurrency(usageMetrics.llm.cost)}</p>
                 </div>
               </div>
             </div>
@@ -429,7 +429,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Usage STT - Duration & Cost */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-rose-50 rounded-lg border border-rose-100">
@@ -442,12 +442,12 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage STT</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.stt.duration)}s</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Usage STT</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{Math.round(usageMetrics.stt.duration)}s</p>
                 <div className="flex items-center gap-1">
                   <p className="text-xs text-gray-400 font-medium">Speech duration</p>
                   <DollarSign className="w-3 h-3 text-gray-400" />
-                  <p className="text-xs text-gray-900 font-medium">{formatCurrency(usageMetrics.stt.cost)}</p>
+                  <p className="text-xs text-gray-900 dark:text-gray-100 font-medium">{formatCurrency(usageMetrics.stt.cost)}</p>
                 </div>
               </div>
             </div>
@@ -456,7 +456,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Usage TTS - Characters & Cost */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-violet-50 rounded-lg border border-violet-100">
@@ -469,12 +469,12 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage TTS</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatNumber(usageMetrics.tts.characters)}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Usage TTS</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{formatNumber(usageMetrics.tts.characters)} chars</p>
                 <div className="flex items-center gap-1">
                   <p className="text-xs text-gray-400 font-medium">Characters</p>
                   <DollarSign className="w-3 h-3 text-gray-400" />
-                  <p className="text-xs text-gray-900 font-medium">{formatCurrency(usageMetrics.tts.cost)}</p>
+                  <p className="text-xs text-gray-900 dark:text-gray-100 font-medium">{formatCurrency(usageMetrics.tts.cost)}</p>
                 </div>
               </div>
             </div>
@@ -483,7 +483,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Usage Minutes & Total Cost */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-teal-50 rounded-lg border border-teal-100">
@@ -496,12 +496,12 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Usage Minutes</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{Math.round(usageMetrics.totalMinutes)}min</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Usage</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{formatNumber(usageMetrics.totalMinutes)} min</p>
                 <div className="flex items-center gap-1">
                   <p className="text-xs text-gray-400 font-medium">Total duration</p>
                   <DollarSign className="w-3 h-3 text-gray-400" />
-                  <p className="text-xs text-gray-900 font-medium">{formatCurrency(usageMetrics.totalCost)}</p>
+                  <p className="text-xs text-gray-900 dark:text-gray-100 font-medium">{formatCurrency(usageMetrics.totalCost)}</p>
                 </div>
               </div>
             </div>
@@ -516,7 +516,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Calls */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
@@ -529,8 +529,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">{isGlobalView ? 'Total Calls (ALL)' : 'Total Calls'}</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics.totalCalls.toLocaleString()}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{isGlobalView ? 'Total Calls (ALL)' : 'Total Calls'}</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{metrics.totalCalls.toLocaleString()}</p>
                 <p className="text-xs text-gray-400 font-medium">Current period</p>
               </div>
             </div>
@@ -539,7 +539,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Success Rate */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-green-50 rounded-lg border border-green-100">
@@ -553,8 +553,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Success Rate</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics.successRate}%</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Success Rate</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{metrics.successRate}%</p>
                 <p className="text-xs text-gray-400 font-medium">Call completion rate</p>
               </div>
             </div>
@@ -563,7 +563,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Average Duration */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
@@ -576,8 +576,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Avg Duration</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatDuration(metrics.averageDuration)}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Avg Duration</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{formatDuration(metrics.averageDuration)}</p>
                 <p className="text-xs text-gray-400 font-medium">Per conversation</p>
               </div>
             </div>
@@ -586,7 +586,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Total Cost */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
@@ -597,8 +597,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Cost</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatCurrency(metrics.totalCost)}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Cost</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{formatCurrency(metrics.totalCost)}</p>
                 <p className="text-xs text-gray-400 font-medium">This month</p>
               </div>
             </div>
@@ -607,7 +607,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Active Agents */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
@@ -621,8 +621,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Active Agents</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics.activeAgents}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Active Agents</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{metrics.activeAgents}</p>
                 <p className="text-xs text-gray-400 font-medium">Voice assistants</p>
               </div>
             </div>
@@ -631,7 +631,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Response Time */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
@@ -645,8 +645,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Avg Response</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{metrics.avgResponseTime}s</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Avg Response</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{metrics.avgResponseTime}s</p>
                 <p className="text-xs text-gray-400 font-medium">Processing speed</p>
               </div>
             </div>
@@ -655,7 +655,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Cost Per Call */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
@@ -669,8 +669,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Cost Per Call</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">{formatCurrency(metrics.totalCost / metrics.totalCalls)}</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cost Per Call</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{formatCurrency(metrics.totalCost / metrics.totalCalls)}</p>
                 <p className="text-xs text-gray-400 font-medium">Average cost</p>
               </div>
             </div>
@@ -679,7 +679,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
         {/* Weekly Growth */}
         <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
@@ -693,8 +693,8 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                 </div>
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Weekly Growth</h3>
-                <p className="text-2xl font-light text-gray-900 tracking-tight">+{metrics.weeklyGrowth}%</p>
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Weekly Growth</h3>
+                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">+{metrics.weeklyGrowth}%</p>
                 <p className="text-xs text-gray-400 font-medium">This week</p>
               </div>
             </div>

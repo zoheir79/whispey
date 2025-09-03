@@ -537,7 +537,7 @@ const Overview: React.FC<OverviewProps> = ({
       <div className="h-full bg-gray-25 flex items-center justify-center" style={{ backgroundColor: '#fafafa' }}>
         <div className="text-center space-y-6">
           <div className="relative">
-            <div className="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center mx-auto shadow-sm">
+            <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 flex items-center justify-center mx-auto shadow-sm">
               <CircleNotch weight="light" className="w-7 h-7 animate-spin text-gray-400" />
             </div>
           </div>
@@ -554,7 +554,7 @@ const Overview: React.FC<OverviewProps> = ({
     return (
       <div className="h-full bg-gray-25 flex items-center justify-center p-6" style={{ backgroundColor: '#fafafa' }}>
         <div className="text-center space-y-6 max-w-sm">
-          <div className="w-16 h-16 bg-white rounded-2xl border border-red-200 flex items-center justify-center mx-auto shadow-sm">
+          <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl border border-red-200 dark:border-red-800 flex items-center justify-center mx-auto shadow-sm">
             <Warning weight="light" className="w-7 h-7 text-red-400" />
           </div>
           <div className="space-y-2">
@@ -873,16 +873,16 @@ const Overview: React.FC<OverviewProps> = ({
             {/* Responsive Chart Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Daily Calls Chart */}
-              <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 px-4 md:px-6 lg:px-7 py-4 md:py-6">
+              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
                         <TrendUp weight="regular" className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">Daily Call Volume</h3>
-                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">Trend analysis over selected period</p>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Daily Call Volume</h3>
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Trend analysis over selected period</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 md:gap-3 text-sm">
@@ -979,16 +979,16 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Professional Success Chart */}
-              <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 px-4 md:px-6 lg:px-7 py-4 md:py-6">
+              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-green-50 rounded-lg border border-green-100">
                         <Target weight="regular" className="w-5 h-5 text-green-600" />
                       </div>
                       <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">Success Analysis</h3>
-                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">Call completion metrics</p>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Success Analysis</h3>
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Call completion metrics</p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -1059,16 +1059,16 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Daily Minutes Chart */}
-              <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 px-4 md:px-6 lg:px-7 py-4 md:py-6">
+              <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
                         <ChartBar weight="regular" className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">Usage Minutes</h3>
-                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">Daily conversation duration</p>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Usage Minutes</h3>
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Daily conversation duration</p>
                       </div>
                     </div>
                   </div>
@@ -1134,16 +1134,16 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Average Latency Chart */}
-              <div className="bg-white rounded-xl border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 px-4 md:px-6 lg:px-7 py-4 md:py-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-300 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
                         <Activity weight="regular" className="w-5 h-5 text-orange-600" />
                       </div>
                       <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">Response Performance</h3>
-                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">Average latency metrics</p>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Response Performance</h3>
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Average latency metrics</p>
                       </div>
                     </div>
                   </div>

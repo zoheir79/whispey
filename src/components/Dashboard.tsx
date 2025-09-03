@@ -376,7 +376,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
       <div className="h-screen flex flex-col bg-gray-50">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 max-w-md text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 max-w-md text-center">
             <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-6 h-6 text-red-500" />
             </div>
@@ -398,7 +398,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
         <Header />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-3">
-            <div className="w-12 h-12 bg-white rounded-xl border border-gray-200 shadow-sm flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center mx-auto">
               <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
             </div>
             <div>
@@ -416,7 +416,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
       <div className="h-screen flex flex-col bg-gray-50">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 max-w-md text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 max-w-md text-center">
             <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-6 h-6 text-red-500" />
             </div>
@@ -437,7 +437,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
       <Header breadcrumb={breadcrumb} />
 
       {/* Polished Apple Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div className="px-8 py-3">
           <div className="flex items-center justify-between">
             {/* Left: Navigation & Identity */}
