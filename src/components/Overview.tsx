@@ -574,64 +574,66 @@ const Overview: React.FC<OverviewProps> = ({
   console.log('🔍 DEBUG Overview - Date Range:', dateRange);
 
   return (
-    <div className="h-full" style={{ backgroundColor: '#fafafa' }}>
-      <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
-        {analytics ? (
-          <>
-            {/* Responsive Metrics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
-              {/* Total Calls */}
-              <div className="group">
-                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
-                        <Phone weight="regular" className="w-5 h-5 text-blue-600" />
-                      </div>
-                      
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Calls</h3>
-                      <p className="text-2xl font-light text-gray-900 tracking-tight">
-                        {(() => {
-                          const totalCalls = analytics?.totalCalls || 0;
-                          console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
-                          console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
-                          console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
-                          return String(totalCalls).replace(/^0+/, '') || '0';
-                        })()}
-                      </p>
-                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
+    <div className="px-6 py-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen relative">
+      {/* Animated background grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20"></div>
+      
+      {/* Top Metrics Grid - Futuristic Design */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 relative z-10">
+        {/* Total Calls - Futuristic */}
+        <div className="group">
+          <div className="bg-slate-900/40 backdrop-blur-xl border border-cyan-500/20 rounded-2xl shadow-2xl shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-500 relative overflow-hidden">
+            {/* Animated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 animate-pulse"></div>
+            
+            <div className="p-4 md:p-6 relative z-10">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 rounded-xl border border-cyan-400/30 relative">
+                  <Phone className="w-6 h-6 text-cyan-300" />
+                  <div className="absolute inset-0 bg-cyan-400/10 blur-lg rounded-xl"></div>
                 </div>
               </div>
+              <div className="space-y-2">
+                <h3 className="text-xs font-bold text-cyan-300/80 uppercase tracking-wider">📞 Total Calls</h3>
+                <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 tracking-tight">
+                  {(() => {
+                    const totalCalls = analytics?.totalCalls || 0;
+                    console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
+                    console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
+                    console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
+                    return String(totalCalls).replace(/^0+/, '') || '0';
+                  })()}
+                </p>
+                <p className="text-xs text-cyan-300/60 font-medium">{getDateRangeDisplay()}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-              {/* Global Call Duration */}
-              <div className="group">
-                <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
-                        <Clock weight="regular" className="w-5 h-5 text-emerald-600" />
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
-                          {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Call Duration</h3>
-                      <p className="text-2xl font-light text-gray-900 tracking-tight">
-                        {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
-                        <span className="text-lg text-gray-500 ml-1">min</span>
-                      </p>
-                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
+        {/* Global Call Duration - Futuristic */}
+        <div className="group">
+          <div className="bg-slate-900/40 backdrop-blur-xl border border-emerald-500/20 rounded-2xl shadow-2xl shadow-emerald-500/10 hover:shadow-emerald-500/20 transition-all duration-500 relative overflow-hidden">
+            {/* Animated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 animate-pulse"></div>
+            
+            <div className="p-4 md:p-6 relative z-10">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl border border-emerald-400/30 relative">
+                  <Clock className="w-6 h-6 text-emerald-300" />
+                  <div className="absolute inset-0 bg-emerald-400/10 blur-lg rounded-xl"></div>
                 </div>
               </div>
+              <div className="space-y-2">
+                <h3 className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider">⏱️ Call Duration</h3>
+                <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 tracking-tight">
+                  {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
+                  <span className="text-lg text-emerald-300/60 ml-1">min</span>
+                </p>
+                <p className="text-xs text-emerald-300/60 font-medium">{getDateRangeDisplay()}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
               {/* AI Processing Time */}
               <div className="group">
