@@ -269,28 +269,28 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
     switch (environment.toLowerCase()) {
       case 'production':
       case 'prod':
-        return 'bg-red-50 text-red-700 border border-red-100'
+        return 'from-red-500 to-red-600 text-white border border-red-400/50'
       case 'staging':
       case 'stage':
-        return 'bg-orange-50 text-orange-700 border border-orange-100'
+        return 'from-orange-500 to-orange-600 text-white border border-orange-400/50'
       case 'development':
       case 'dev':
-        return 'bg-blue-50 text-blue-700 border border-blue-100'
+        return 'from-blue-500 to-blue-600 text-white border border-blue-400/50'
       default:
-        return 'bg-gray-50 text-gray-700 border border-gray-100'
+        return 'from-slate-500 to-slate-600 text-white border border-slate-400/50'
     }
   }
 
   const getAgentTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'inbound':
-        return 'bg-blue-50 text-blue-700 border border-blue-100'
+        return 'from-blue-500 to-blue-600 text-white border border-blue-400/50'
       case 'outbound':
-        return 'bg-green-50 text-green-700 border border-green-100'
+        return 'from-green-500 to-green-600 text-white border border-green-400/50'
       case 'custom':
-        return 'bg-purple-50 text-purple-700 border border-purple-100'
+        return 'from-purple-500 to-purple-600 text-white border border-purple-400/50'
       default:
-        return 'bg-gray-50 text-gray-700 border border-gray-100'
+        return 'from-slate-500 to-slate-600 text-white border border-slate-400/50'
     }
   }
 
@@ -373,16 +373,16 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
   if (!shouldFetch) {
     return (
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 max-w-md text-center">
-            <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-6 h-6 text-red-500" />
+          <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 p-8 max-w-md text-center">
+            <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <AlertCircle className="w-8 h-8 text-white drop-shadow-sm" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Invalid Agent ID</h2>
-            <p className="text-sm text-gray-500 mb-4">Agent ID missing or invalid</p>
-            <Button onClick={() => router.push('/')} className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+            <h2 className="text-xl font-bold text-slate-100 mb-3">Invalid Agent ID</h2>
+            <p className="text-sm text-slate-400 mb-6">Agent ID missing or invalid</p>
+            <Button onClick={() => router.push('/')} className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
               <Home className="h-4 w-4 mr-2" />
               Back to Workspaces
             </Button>
@@ -394,16 +394,16 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
   if (agentLoading || (shouldFetch && projectLoading)) {
     return (
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center space-y-3">
-            <div className="w-12 h-12 bg-white rounded-xl border border-gray-200 shadow-sm flex items-center justify-center mx-auto">
-              <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl border border-slate-800/50 shadow-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
+              <Loader2 className="w-8 h-8 animate-spin text-white drop-shadow-sm" />
             </div>
             <div>
-              <h3 className="text-base font-medium text-gray-900 mb-1">Loading Dashboard</h3>
-              <p className="text-sm text-gray-500">Fetching agent data...</p>
+              <h3 className="text-lg font-semibold text-slate-100 mb-2">Loading Dashboard</h3>
+              <p className="text-sm text-slate-400">Fetching agent data...</p>
             </div>
           </div>
         </div>
@@ -413,16 +413,16 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
   if (agentError || projectError || !agent) {
     return (
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 max-w-md text-center">
-            <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-6 h-6 text-red-500" />
+          <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 p-8 max-w-md text-center">
+            <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <AlertCircle className="w-8 h-8 text-white drop-shadow-sm" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Agent not found</h2>
-            <p className="text-sm text-gray-500 mb-4">{agentError || projectError || 'Agent not found'}</p>
-            <Button onClick={handleBack} variant="outline" className="w-full border-gray-200">
+            <h2 className="text-xl font-bold text-slate-100 mb-3">Agent not found</h2>
+            <p className="text-sm text-slate-400 mb-6">{agentError || projectError || 'Agent not found'}</p>
+            <Button onClick={handleBack} className="w-full bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-slate-200 hover:text-white transition-all duration-300">
               <ChevronLeft className="h-4 w-4 mr-2" />
               Go Back
             </Button>
@@ -433,18 +433,18 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <Header breadcrumb={breadcrumb} />
 
-      {/* Polished Apple Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="px-8 py-3">
+      {/* Modern Header */}
+      <div className="bg-slate-900/50 border-b border-slate-800/50 shadow-2xl shadow-slate-900/25 backdrop-blur-xl">
+        <div className="px-8 py-4">
           <div className="flex items-center justify-between">
             {/* Left: Navigation & Identity */}
             <div className="flex items-center gap-6">
               <button 
                 onClick={handleBack}
-                className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl transition-all duration-200"
+                className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl transition-all duration-300 border border-slate-700/50 hover:border-slate-600"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -453,24 +453,26 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <h1 className="text-2xl font-semibold text-gray-900 tracking-tight truncate max-w-[250px] cursor-default">
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-100 via-white to-slate-100 bg-clip-text text-transparent tracking-tight truncate max-w-[250px] cursor-default">
                       {agent?.name || 'Loading...'}
                     </h1>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{agent?.name || 'Loading...'}</p>
+                  <TooltipContent side="bottom" className="bg-slate-900/95 text-slate-100 border-slate-700/50 shadow-2xl backdrop-blur-sm">
+                    <p className="font-semibold">{agent?.name}</p>
+                    <p className="text-xs text-slate-400 capitalize">{agent?.provider || 'Unknown'} Agent</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
                 <div className="flex items-center gap-2">
-                  <Badge className={`text-xs font-medium px-3 py-1 rounded-full ${getEnvironmentColor(agent?.environment || 'development')}`}>
+                  <Badge className={`text-xs font-semibold px-3 py-1.5 rounded-xl bg-gradient-to-r ${getEnvironmentColor(agent?.environment || 'development')} shadow-lg backdrop-blur-sm`}>
                     {agent?.environment || 'development'}
                   </Badge>
                 </div>
               </div>
-
-              {/* Refined Tab Navigation - Responsive */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 ml-2 md:ml-8 overflow-x-auto scrollbar-hide">
+            </div>
+            
+            {/* Modern Tab Navigation - Responsive */}
+            <div className="flex items-center gap-1 bg-slate-900/50 border border-slate-800/50 rounded-2xl p-1.5 ml-2 md:ml-8 overflow-x-auto scrollbar-hide backdrop-blur-sm shadow-2xl shadow-slate-900/25">
                 {tabs.map((tab) => {
                   const Icon = tab.icon
                   const isActive = activeTab === tab.id
@@ -478,19 +480,24 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                     <button
                       key={tab.id}
                       onClick={() => handleTabChange(tab.id)}
-                      className={`flex items-center gap-2 px-2 sm:px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
+                      className={`relative flex items-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-300 whitespace-nowrap ${
                         isActive
-                          ? 'bg-white text-gray-900 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                          ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-lg shadow-indigo-500/25'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span className="hidden sm:inline">{tab.label}</span>
+                      <Icon className={`w-4 h-4 transition-all duration-300 ${isActive ? 'drop-shadow-sm' : ''}`} />
+                      <span className="hidden sm:inline font-semibold">{tab.label}</span>
+                      {isActive && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-xl opacity-20 blur-lg -z-10"></div>
+                      )}
                     </button>
                   )
                 })}
-              </div>
+            </div>
 
+            {/* Modern Right Actions */}
+            <div className="flex items-center gap-4">
               {isVapiAgent && (
                 <div className="relative">
                   <Button
@@ -520,75 +527,23 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                   {vapiStatusLoading ? 'Checking...' :
                   connectingWebhook ? 'Connecting...' :
                   vapiStatus?.connected ? 'Agent Settings' : 'Connect VAPI'}
-                </Button>
+                  </Button>
                 
-                {/* Status indicator */}
-                {!vapiStatusLoading && vapiStatus && (
-                  <div className="absolute -top-1 -right-1">
-                    {vapiStatus.connected ? (
-                      <div className="w-3 h-3 bg-green-500 rounded-full border-2 border-white" 
-                          title="Webhook connected" />
-                    ) : (
-                      <div className="w-3 h-3 bg-orange-500 rounded-full border-2 border-white" 
-                          title="Setup required" />
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          </div>
-
-          {/* Right: Refined Controls */}
-          <div className="flex items-center gap-6">
-              {/* Polished Period Filters */}
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-gray-600">Period</span>
-                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                  {quickFilters.map((filter) => (
-                    <button
-                      key={filter.id}
-                      onClick={() => handleQuickFilter(filter.id)}
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                        quickFilter === filter.id && !isCustomRange
-                          ? 'bg-white text-gray-900 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-                      }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
+                  {/* Status indicator */}
+                  {!vapiStatusLoading && vapiStatus && (
+                    <div className="absolute -top-1 -right-1">
+                      {vapiStatus.connected ? (
+                        <div className="w-3 h-3 bg-green-500 rounded-full border-2 border-white" 
+                            title="Webhook connected" />
+                      ) : (
+                        <div className="w-3 h-3 bg-orange-500 rounded-full border-2 border-white" 
+                            title="Setup required" />
+                      )}
+                    </div>
+                  )}
                 </div>
-                
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={`px-4 py-2 text-sm font-medium rounded-lg border-gray-200 transition-all duration-200 ${
-                        isCustomRange 
-                          ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' 
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }`}
-                    >
-                      <CalendarDays className="mr-2 h-4 w-4" />
-                      Custom
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 border-gray-200 shadow-xl rounded-xl" align="end">
-                    <Calendar
-                      initialFocus
-                      mode="range"
-                      defaultMonth={dateRange?.from}
-                      selected={dateRange}
-                      onSelect={handleDateRangeSelect}
-                      numberOfMonths={2}
-                      className="rounded-xl"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              
+              )}
+
               {agent?.id && (
                 <FieldExtractorDialog
                   initialData={JSON.parse(agent?.field_extractor_prompt || '[]')}
@@ -610,24 +565,42 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       
                       const result = await response.json()
                       
-                      if (response.ok) {
-                        alert('Saved field extractor config.')
+                      if (result.success) {
                         refetchAgent()
-                      } else {
-                        alert('Error saving config: ' + (result.error || 'Unknown error'))
                       }
-                    } catch (error: any) {
-                      alert('Error saving config: ' + error.message)
+                    } catch (error) {
+                      console.error('Failed to update field extractor:', error)
                     }
                   }}
-              />
-            )}
+                />
+              )}
+
+              {/* Modern Period Filters */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-slate-400">Period</span>
+                <div className="flex items-center gap-1 bg-slate-800/50 border border-slate-700/50 rounded-xl p-1 backdrop-blur-sm">
+                  {quickFilters.map((filter) => (
+                    <button
+                      key={filter.id}
+                      onClick={() => handleQuickFilter(filter.id)}
+                      className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-300 ${
+                        quickFilter === filter.id
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Content Area */}
+      <div className="flex-1 overflow-y-auto bg-slate-950/50">
         {activeTab === 'overview' && agent?.id && (
           <Overview 
             key={`overview-${quickFilter}-${apiDateRange.from}-${apiDateRange.to}`}

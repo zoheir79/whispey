@@ -48,7 +48,8 @@ import { getUserProjectRole } from "@/services/getUserRole"
 
 
 interface GlobalCallLogsProps {
-  // No props needed for global view
+  project: any
+  onBack: () => void
 }
 
 function flattenAndPickColumns(
@@ -170,7 +171,7 @@ const DynamicJsonCell: React.FC<{
 
 
 
-const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
+const GlobalCallLogs: React.FC<GlobalCallLogsProps> = ({ project, onBack }) => {
   // State for loading all calls globally
   const [calls, setCalls] = useState<CallLog[]>([])
   const [loading, setLoading] = useState(true)
@@ -324,44 +325,50 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
     }
   }
 
-  if (loading || roleLoading) {
+  if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin" />
-        <span className="ml-2">Loading global calls...</span>
+      <div className="flex items-center justify-center h-64 bg-slate-950/50">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl border border-slate-800/50 shadow-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
+            <Loader2 className="w-8 h-8 animate-spin text-white drop-shadow-sm" />
+          </div>
+          <p className="text-slate-400 text-lg font-medium">Loading global calls...</p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-center">
-        <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Error loading calls</h3>
-        <p className="text-muted-foreground mb-4">{error}</p>
-        <Button onClick={fetchGlobalCalls} variant="outline">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Try Again
-        </Button>
+      <div className="flex-1 flex items-center justify-center bg-slate-950/50">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 p-8 max-w-md">
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <AlertCircle className="w-8 h-8 text-white drop-shadow-sm" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-100">Unable to load calls</h3>
+            <p className="text-slate-400">{error}</p>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-6 p-6 bg-slate-950/50 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">All Calls</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-slate-100 via-white to-slate-100 bg-clip-text text-transparent tracking-tight">All Calls</h2>
+          <p className="text-slate-400">
             Viewing {calls.length} calls across all projects
           </p>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <Button
-            variant="outline"
             onClick={fetchGlobalCalls}
+            className="bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-slate-200 hover:text-white transition-all duration-300 gap-2"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
@@ -379,16 +386,16 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
           </p>
         </div>
       ) : (
-        <div className="group">
-          <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-            <Table>
+        <div className="bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl overflow-hidden">
+          <Table>
             <TableHeader>
-              <TableRow>
-                {getFilteredBasicColumns.map((column) => (
-                  <TableHead key={column.key} className="font-semibold">
-                    {column.label}
-                  </TableHead>
-                ))}
+              <TableRow className="border-b border-slate-800/50 bg-slate-800/30">
+                <TableHead className="font-semibold text-slate-200 px-4 py-3">Customer</TableHead>
+                <TableHead className="font-semibold text-slate-200 px-4 py-3">Call ID</TableHead>
+                <TableHead className="font-semibold text-slate-200 px-4 py-3">Status</TableHead>
+                <TableHead className="font-semibold text-slate-200 px-4 py-3">Duration</TableHead>
+                <TableHead className="font-semibold text-slate-200 px-4 py-3">Start Time</TableHead>
+                <TableHead className="font-semibold text-slate-200 px-4 py-3">Agent</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -467,7 +474,6 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
               ))}
             </TableBody>
           </Table>
-          </div>
         </div>
       )}
 

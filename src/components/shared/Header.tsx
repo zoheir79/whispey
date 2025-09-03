@@ -98,46 +98,41 @@ function Header({ breadcrumb }: HeaderProps) {
   if (!user) return null;
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200/60 sticky top-0 z-50 shadow-sm">
-      <div className="px-6 py-3">
-        <div className="flex items-center justify-between max-w-[1600px] mx-auto">
-          {/* Logo & Brand Section */}
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-3 group">
-              <Image src="/logo.png" alt="Pype AI Logo" width={48} height={48} className="group-hover:scale-110 transition-transform duration-200" />
-              <div>
-                <h1 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-200 tracking-tight">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-800/10 bg-slate-950/95 backdrop-blur-xl supports-[backdrop-filter]:bg-slate-950/80 shadow-2xl shadow-slate-900/20">
+      <div className="container flex h-16 items-center justify-between px-6 max-w-full">
+        <div className="flex items-center gap-4">
+          {/* Logo and branding */}
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="relative">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-2xl group-hover:shadow-indigo-500/25 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+                  <span className="text-white font-bold text-sm drop-shadow-lg">W</span>
+                </div>
+                {/* Enhanced glow effect */}
+                <div className="absolute inset-0 w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl opacity-0 group-hover:opacity-40 blur-xl transition-all duration-500 -z-10"></div>
+              </div>
+              <div className="hidden sm:block">
+                <h1 className="text-lg font-bold bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 bg-clip-text text-transparent group-hover:from-indigo-400 group-hover:via-purple-400 group-hover:to-pink-400 transition-all duration-300">
                   Whispey
                 </h1>
-                <p className="text-xs text-gray-500 -mt-0.5 font-medium">LiveKit Observability Platform</p>
               </div>
             </Link>
 
-            {/* Apple-Style Clean Breadcrumb */}
+            {/* Modern Breadcrumb */}
             {breadcrumbState && (
               <div className="flex items-center">
-                <div className="w-px h-6 bg-gray-200 mx-6"></div>
+                <div className="w-px h-6 bg-slate-700 mx-6"></div>
                 <nav className="flex items-center gap-2 text-sm">
                   <Link 
                     href="/" 
-                    className="text-gray-500 hover:text-gray-900 transition-colors"
+                    className="text-slate-400 hover:text-slate-200 transition-colors duration-300 font-medium"
                   >
                     Home
                   </Link>
-                  
-                  {breadcrumbState.project && (
-                    <>
-                      <ChevronRight className="w-4 h-4 text-gray-300" />
-                      <span className="text-gray-900">
-                        {breadcrumbState.project}
-                      </span>
-                    </>
-                  )}
-                  
+                  <ChevronRight className="w-4 h-4 text-slate-600" />
                   {breadcrumbState.item && (
                     <>
-                      <ChevronRight className="w-4 h-4 text-gray-300" />
-                      <span className="text-gray-900">
+                      <span className="text-slate-100 font-semibold">
                         {breadcrumbState.item}
                       </span>
                     </>
@@ -150,36 +145,38 @@ function Header({ breadcrumb }: HeaderProps) {
           {/* Desktop Navigation - Hidden on mobile */}
           {!roleLoading && (
             <div className="hidden md:flex items-center gap-1">
-              {/* Workspaces Access - Differentiated for Admins vs Users */}
+              {/* Workspaces Access - Modern Style */}
               <Link
                 href="/"
-                className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-blue-600 transition-all duration-200 rounded-lg hover:bg-blue-50/50 border border-transparent hover:border-blue-100"
+                className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 rounded-xl hover:bg-slate-800/50 border border-slate-700/50 hover:border-slate-600 hover:shadow-lg hover:shadow-slate-900/25 backdrop-blur-sm"
               >
-                <Folders className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <Folders className="w-4 h-4 transition-transform group-hover:scale-110 group-hover:text-indigo-400" />
                 <span>{isAdmin ? 'All Workspaces' : 'My Workspace'}</span>
               </Link>
 
               {/* Agents Access */}
               <Link
                 href="/agents"
-                className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-green-600 transition-all duration-200 rounded-lg hover:bg-green-50/50 border border-transparent hover:border-green-100"
+                className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 rounded-xl hover:bg-slate-800/50 border border-slate-700/50 hover:border-slate-600 hover:shadow-lg hover:shadow-slate-900/25 backdrop-blur-sm"
               >
-                <Bot className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <Bot className="w-4 h-4 transition-transform group-hover:scale-110 group-hover:text-emerald-400" />
                 <span>{isAdmin ? 'All Agents' : 'My Agents'}</span>
               </Link>
 
-              {/* Calls Access */}
-              <Link
-                href="/calls"
-                className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-purple-600 transition-all duration-200 rounded-lg hover:bg-purple-50/50 border border-transparent hover:border-purple-100"
-              >
-                <Phone className="w-4 h-4 transition-transform group-hover:scale-110" />
-                <span>{isAdmin ? 'All Calls' : 'My Calls'}</span>
-              </Link>
-
-              {/* Admin Badge */}
+              {/* Global Calls Access - Only for admin users */}
               {isAdmin && (
-                <Badge variant="outline" className="ml-2 text-xs font-medium bg-blue-50 text-blue-700 border-blue-200">
+                <Link
+                  href="/calls"
+                  className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 rounded-xl hover:bg-slate-800/50 border border-slate-700/50 hover:border-slate-600 hover:shadow-lg hover:shadow-slate-900/25 backdrop-blur-sm"
+                >
+                  <Phone className="w-4 h-4 transition-transform group-hover:scale-110 group-hover:text-orange-400" />
+                  <span>All Calls</span>
+                </Link>
+              )}
+
+              {/* Admin Badge - Modern Style */}
+              {isAdmin && (
+                <Badge variant="outline" className="ml-2 text-xs font-medium bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-400 border-indigo-500/30 backdrop-blur-sm">
                   {isSuperAdmin ? 'Super Admin' : 'Admin'}
                 </Badge>
               )}
