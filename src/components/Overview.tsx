@@ -624,8 +624,8 @@ const Overview: React.FC<OverviewProps> = ({
               <div className="space-y-1">
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Avg Duration</h3>
                 <p className="text-2xl font-light text-slate-100 tracking-tight">
-                  {analytics?.averageDuration 
-                    ? `${Math.floor(analytics.averageDuration / 60)}:${(analytics.averageDuration % 60).toString().padStart(2, '0')}`
+                  {analytics?.totalCalls && analytics?.totalCallMinutes
+                    ? `${Math.floor((analytics.totalCallMinutes / analytics.totalCalls) / 60)}:${(Math.round((analytics.totalCallMinutes / analytics.totalCalls) % 60)).toString().padStart(2, '0')}`
                     : '0:00'
                   }
                 </p>
@@ -1190,8 +1190,8 @@ const Overview: React.FC<OverviewProps> = ({
                 </div>
               </div>
             )}
-      </div>
     </div>
   )
+}
 
 export default Overview
