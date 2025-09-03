@@ -915,12 +915,12 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
                   <TableHead className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">Avg Latency</TableHead>
                 )}
                 {currentColumns.metadata.map((key) => (
-                  <TableHead key={`metadata-head-${key}`} className="font-semibold text-gray-700 bg-gray-50">
+                  <TableHead key={`metadata-head-${key}`} className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">
                     {key}
                   </TableHead>
                 ))}
                 {currentColumns.transcription_metrics.map((key) => (
-                  <TableHead key={`trans-head-${key}`} className="font-semibold text-gray-700 bg-gray-50">
+                  <TableHead key={`trans-head-${key}`} className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">
                     {key}
                   </TableHead>
                 ))}

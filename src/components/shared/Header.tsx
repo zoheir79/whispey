@@ -104,7 +104,7 @@ function Header({ breadcrumb }: HeaderProps) {
   if (!user) return null;
 
   return (
-    <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200/60 dark:border-gray-700/60 sticky top-0 z-50 shadow-sm transition-colors duration-300">
+    <header className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-gray-200/60 dark:border-slate-700/60 sticky top-0 z-50 shadow-sm transition-colors duration-300">
       <div className="px-6 py-3">
         <div className="flex items-center justify-between max-w-[1600px] mx-auto">
           {/* Logo & Brand Section */}

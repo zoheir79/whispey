@@ -534,7 +534,7 @@ const Overview: React.FC<OverviewProps> = ({
 
   if (loading || roleLoading || role === null) {
     return (
-      <div className="h-full bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="h-full bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center space-y-6">
           <div className="relative">
             <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
@@ -552,7 +552,7 @@ const Overview: React.FC<OverviewProps> = ({
 
   if (error) {
     return (
-      <div className="h-full bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-6">
+      <div className="h-full bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-6">
         <div className="text-center space-y-6 max-w-sm">
           <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-red-200 dark:border-red-800 flex items-center justify-center mx-auto shadow-sm">
             <Warning weight="light" className="w-7 h-7 text-red-400" />
@@ -574,7 +574,7 @@ const Overview: React.FC<OverviewProps> = ({
   console.log('🔍 DEBUG Overview - Date Range:', dateRange);
 
   return (
-    <div className="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="h-full bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
           <>

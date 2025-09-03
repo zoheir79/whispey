@@ -457,7 +457,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               ? platform.color === 'green'
                                 ? 'border-[#328c81] bg-teal-50'
                                 : 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
                           }`}
                           onClick={() => setSelectedPlatform(platform.value)}
                         >

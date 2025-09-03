@@ -333,7 +333,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
 
   if (error || !metrics) {
     return (
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 text-center">
+      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-6 text-center">
         <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
         <p className="text-sm text-gray-600 dark:text-gray-300">Failed to load metrics</p>
       </div>
@@ -388,7 +388,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
               onClick={() => setSelectedPeriod(period)}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 selectedPeriod === period
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                  ? 'bg-white dark:bg-slate-600 text-gray-900 dark:text-gray-100 shadow-sm'
                   : 'text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700'
               }`}
             >
@@ -570,7 +570,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                   <Clock className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                     +{metrics.weeklyGrowth}% week
                   </span>
                 </div>

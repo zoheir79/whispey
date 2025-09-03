@@ -412,7 +412,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
       <Header breadcrumb={breadcrumb} />
 
       {/* Polished Apple Header */}
