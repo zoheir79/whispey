@@ -578,8 +578,10 @@ const Overview: React.FC<OverviewProps> = ({
       {/* Animated background grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20"></div>
       
-      {/* Top Metrics Grid - Futuristic Design */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 relative z-10">
+      {analytics ? (
+        <>
+          {/* Top Metrics Grid - Futuristic Design */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 relative z-10">
         {/* Total Calls - Futuristic */}
         <div className="group">
           <div className="bg-slate-900/40 backdrop-blur-xl border border-cyan-500/20 rounded-2xl shadow-2xl shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-500 relative overflow-hidden">
