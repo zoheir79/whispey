@@ -156,7 +156,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <Header />
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -167,12 +167,12 @@ export default function ProfilePage() {
 
   if (!userProfile) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <Header />
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <p className="text-red-600">Failed to load profile</p>
+            <p className="text-red-600 dark:text-red-400">Failed to load profile</p>
             <Button onClick={() => router.push('/dashboard')} className="mt-4">
               Go to Dashboard
             </Button>
@@ -183,20 +183,20 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-          <p className="text-gray-600">Manage your account information and security settings</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Profile Settings</h1>
+          <p className="text-gray-600 dark:text-slate-400">Manage your account information and security settings</p>
         </div>
 
         {message && (
           <div className={`mb-6 p-4 rounded-lg flex items-center gap-2 ${
             message.type === 'success' 
-              ? 'bg-green-50 text-green-700 border border-green-200' 
-              : 'bg-red-50 text-red-700 border border-red-200'
+              ? 'bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-500/30' 
+              : 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-500/30'
           }`}>
             {message.type === 'success' ? (
               <CheckCircle className="w-5 h-5" />
@@ -219,7 +219,7 @@ export default function ProfilePage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName" className="dark:text-gray-100">First Name</Label>
                   <Input
                     id="firstName"
                     value={firstName}
@@ -228,7 +228,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName" className="dark:text-gray-100">Last Name</Label>
                   <Input
                     id="lastName"
                     value={lastName}
@@ -239,7 +239,7 @@ export default function ProfilePage() {
               </div>
               
               <div>
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email" className="dark:text-gray-100">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
@@ -276,18 +276,18 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">User ID</span>
-                  <span className="text-sm text-gray-900 font-mono">{userProfile.user_id}</span>
+                <div className="flex justify-between py-2 border-b border-gray-100 dark:border-slate-800">
+                  <span className="text-sm font-medium text-gray-600 dark:text-slate-400">User ID</span>
+                  <span className="text-sm text-gray-900 dark:text-gray-100 font-mono">{userProfile.user_id}</span>
                 </div>
                 
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">Role</span>
-                  <span className="text-sm text-gray-900 capitalize">{userProfile.global_role}</span>
+                <div className="flex justify-between py-2 border-b border-gray-100 dark:border-slate-800">
+                  <span className="text-sm font-medium text-gray-600 dark:text-slate-400">Role</span>
+                  <span className="text-sm text-gray-900 dark:text-gray-100 capitalize">{userProfile.global_role}</span>
                 </div>
                 
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">Status</span>
+                <div className="flex justify-between py-2 border-b border-gray-100 dark:border-slate-800">
+                  <span className="text-sm font-medium text-gray-600 dark:text-slate-400">Status</span>
                   <span className={`text-sm font-medium capitalize ${
                     userProfile.status === 'active' ? 'text-green-600' : 'text-red-600'
                   }`}>
@@ -296,8 +296,8 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className="flex justify-between py-2">
-                  <span className="text-sm font-medium text-gray-600">Member Since</span>
-                  <span className="text-sm text-gray-900">{formatDate(userProfile.created_at)}</span>
+                  <span className="text-sm font-medium text-gray-600 dark:text-slate-400">Member Since</span>
+                  <span className="text-sm text-gray-900 dark:text-gray-100">{formatDate(userProfile.created_at)}</span>
                 </div>
               </div>
             </CardContent>
@@ -314,7 +314,7 @@ export default function ProfilePage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="currentPassword">Current Password</Label>
+                  <Label htmlFor="currentPassword" className="dark:text-gray-100">Current Password</Label>
                   <div className="relative">
                     <Input
                       id="currentPassword"
@@ -326,7 +326,7 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={() => togglePasswordVisibility('current')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                     >
                       {showPasswords.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -334,7 +334,7 @@ export default function ProfilePage() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="newPassword">New Password</Label>
+                  <Label htmlFor="newPassword" className="dark:text-gray-100">New Password</Label>
                   <div className="relative">
                     <Input
                       id="newPassword"
@@ -346,7 +346,7 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={() => togglePasswordVisibility('new')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                     >
                       {showPasswords.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -354,7 +354,7 @@ export default function ProfilePage() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword" className="dark:text-gray-100">Confirm Password</Label>
                   <div className="relative">
                     <Input
                       id="confirmPassword"
@@ -366,7 +366,7 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={() => togglePasswordVisibility('confirm')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                     >
                       {showPasswords.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>

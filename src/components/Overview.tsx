@@ -582,7 +582,7 @@ const Overview: React.FC<OverviewProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
               {/* Total Calls */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -591,7 +591,7 @@ const Overview: React.FC<OverviewProps> = ({
                       
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Calls</h3>
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
                       <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {(() => {
                           const totalCalls = analytics?.totalCalls || 0;
@@ -601,7 +601,7 @@ const Overview: React.FC<OverviewProps> = ({
                           return String(totalCalls).replace(/^0+/, '') || '0';
                         })()}
                       </p>
-                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -609,7 +609,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Global Call Duration */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
@@ -622,12 +622,12 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Call Duration</h3>
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Call Duration</h3>
                       <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
-                        <span className="text-lg text-gray-500 dark:text-gray-400 ml-1">min</span>
+                        <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
                       </p>
-                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -635,7 +635,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* AI Processing Time */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
@@ -648,12 +648,12 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">AI Processing</h3>
-                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">AI Processing</h3>
+                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
-                        <span className="text-lg text-gray-500 dark:text-gray-400 ml-1">min</span>
+                        <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
                       </p>
-                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -662,7 +662,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Total Cost */}
               {role !== 'user' && (
                 <div className="group">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
@@ -673,9 +673,9 @@ const Overview: React.FC<OverviewProps> = ({
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Cost</h3>
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Cost</h3>
                         <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">₹{analytics?.totalCost?.toFixed(2) || '0.00'}</p>
-                        <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                       </div>
                     </div>
                   </div>
@@ -685,7 +685,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Average Latency */}
               {role !== 'user' && (
                 <div className="group">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
@@ -696,9 +696,9 @@ const Overview: React.FC<OverviewProps> = ({
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Response Time</h3>
-                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-500 dark:text-gray-400 ml-1">s</span></p>
-                        <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Response Time</h3>
+                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-500 dark:text-slate-400 ml-1">s</span></p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                       </div>
                     </div>
                   </div>
@@ -707,10 +707,10 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Successful Calls */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-green-50 rounded-lg border border-green-100">
+                      <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
                         <CheckCircle weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                       </div>
                       <div className="text-right">
@@ -723,9 +723,9 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Successful</h3>
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Successful</h3>
                       <p className="text-2xl font-light text-green-600 dark:text-green-400 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
-                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -733,7 +733,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Failed Calls */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-100 dark:border-red-800">
@@ -749,9 +749,9 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Failed</h3>
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Failed</h3>
                       <p className="text-2xl font-light text-red-600 dark:text-red-400 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
-                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -759,7 +759,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Total Tokens */}
               <div className="group">
-                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
@@ -773,10 +773,10 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Tokens</h3>
-                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {analytics?.totalTokens?.toLocaleString() || '0'}
                       </p>
-                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
@@ -790,7 +790,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               return (
                 <div key={config.id} className="group">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className={`p-2 ${colorClass} rounded-lg border`}>
@@ -815,7 +815,7 @@ const Overview: React.FC<OverviewProps> = ({
                                 size="sm" 
                                 className="h-6 w-6 p-0 hover:bg-gray-100"
                               >
-                                <MoreHorizontal className="h-3 w-3 text-gray-400" />
+                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -832,14 +832,14 @@ const Overview: React.FC<OverviewProps> = ({
                         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" title={config.name}>
                           {config.name}
                         </h3>
-                        <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                           {loadingCustomTotals || !result ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-gray-500" />
                           ) : (
                             formatCustomTotalValue(result, config)
                           )}
                         </p>
-                        <p className="text-xs text-gray-400 font-medium">
+                        <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
                           {config.filters.length > 0 
                             ? `${config.filters.length} filter${config.filters.length > 1 ? 's' : ''} (${config.filterLogic})`
                             : 'No filters'
@@ -879,21 +879,6 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
                         <TrendUp weight="regular" className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Daily Call Volume</h3>
-                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Trend analysis over selected period</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 md:gap-3 text-sm">
-                      <div className="text-right">
-                        <div className="text-xs font-medium text-gray-500">Peak</div>
-                        <div className="text-sm font-semibold text-gray-900">
-                        {analytics?.dailyData && analytics.dailyData.length > 0 
-                        ? Math.max(...analytics.dailyData.map(d => d.calls || 0)) 
-                        : 0
-                      }
-                        </div>
                       </div>
                       <div className="w-px h-8 bg-gray-200"></div>
                       <div className="text-right">
@@ -1036,9 +1021,11 @@ const Overview: React.FC<OverviewProps> = ({
                         </ResponsiveContainer>
                       </div>
                       {/* Center Statistics */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <div className="text-3xl font-light text-gray-900 mb-1">{analytics?.totalCalls || 0}</div>
-                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Total</div>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
+                        <div className="text-4xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                          {successRate.toFixed(1)}<span className="text-2xl text-gray-500 dark:text-gray-400">%</span>
+                        </div>
+                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Taux de succès</div>
                       </div>
                     </div>
                     {/* Legend */}

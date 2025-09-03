@@ -328,7 +328,7 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 animate-spin" />
-        <span className="ml-2">Loading global calls...</span>
+        <span className="ml-2 dark:text-gray-100">Loading global calls...</span>
       </div>
     )
   }
@@ -337,7 +337,7 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center">
         <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Error loading calls</h3>
+        <h3 className="text-lg font-semibold mb-2 dark:text-gray-100">Error loading calls</h3>
         <p className="text-muted-foreground mb-4">{error}</p>
         <Button onClick={fetchGlobalCalls} variant="outline">
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -373,8 +373,8 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
       {calls.length === 0 ? (
         <div className="text-center py-12">
           <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium mb-2">No calls found</h3>
-          <p className="text-muted-foreground">
+          <h3 className="text-lg font-medium mb-2 dark:text-gray-100">No calls found</h3>
+          <p className="text-muted-foreground dark:text-slate-400">
             No calls have been made yet across all projects.
           </p>
         </div>
@@ -408,13 +408,13 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
                             <div className="w-10 h-8 rounded-full flex items-center justify-center">
                               <Phone className="w-4 h-4 text-primary" />
                             </div>
-                            <span className="font-medium">{call.customer_number}</span>
+                            <span className="font-medium dark:text-gray-100">{call.customer_number}</span>
                           </div>
                         )
                         break
                       case "call_id":
                         value = (
-                          <code className="text-xs bg-muted/60 px-3 py-1.5 rounded-md font-mono">
+                          <code className="text-xs bg-muted/60 dark:text-gray-100 px-3 py-1.5 rounded-md font-mono">
                             {call.call_id.slice(-8)}
                           </code>
                         )
@@ -436,18 +436,18 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
                         break
                       case "duration_seconds":
                         value = (
-                          <div className="flex items-center gap-2 text-sm font-medium">
+                          <div className="flex items-center gap-2 text-sm font-medium dark:text-gray-100">
                             <Clock className="w-3 h-3 text-muted-foreground" />
                             {formatDuration(call.duration_seconds)}
                           </div>
                         )
                         break
                       case "call_started_at":
-                        value = formatToIndianDateTime(call.call_started_at)
+                                                value = <span className="dark:text-gray-100">{formatToIndianDateTime(call.call_started_at)}</span>
                         break
                       case "avg_latency":
                         value = call?.avg_latency ? (
-                          <span className="font-mono">{call.avg_latency.toFixed(2)}s</span>
+                          <span className="font-mono dark:text-gray-100">{call.avg_latency.toFixed(2)}s</span>
                         ) : "-"
                         break
                       case "total_cost":

@@ -275,10 +275,10 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
             {/* Create Agent Button - disabled in global view */}
             <Button 
               disabled 
-              className="gap-2 bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300"
+              className="flex items-center justify-center px-3 md:px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300"
             >
-              <Plus className="w-4 h-4" />
-              New Agent
+              <Plus className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">New Agent</span>
             </Button>
           </div>
         </div>

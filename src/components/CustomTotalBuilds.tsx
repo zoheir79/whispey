@@ -118,11 +118,11 @@ const ICON_OPTIONS = [
 ]
 
 const COLOR_OPTIONS = [
-  { value: 'blue', class: 'bg-blue-100 text-blue-600', label: 'Blue' },
-  { value: 'green', class: 'bg-green-100 text-green-600', label: 'Green' },
-  { value: 'purple', class: 'bg-purple-100 text-purple-600', label: 'Purple' },
-  { value: 'orange', class: 'bg-orange-100 text-orange-600', label: 'Orange' },
-  { value: 'red', class: 'bg-red-100 text-red-600', label: 'Red' }
+  { value: 'blue', class: 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400', label: 'Blue' },
+  { value: 'green', class: 'bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400', label: 'Green' },
+  { value: 'purple', class: 'bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400', label: 'Purple' },
+  { value: 'orange', class: 'bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-400', label: 'Orange' },
+  { value: 'red', class: 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400', label: 'Red' }
 ]
 
 const CustomTotalsBuilder: React.FC<CustomTotalsBuilderProps> = ({
@@ -290,29 +290,29 @@ const CustomTotalsBuilder: React.FC<CustomTotalsBuilderProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
     <DialogTrigger asChild>
-      <div className="p-5 h-full flex flex-col justify-center items-center text-center cursor-pointer">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 p-5 h-full flex flex-col justify-center items-center text-center cursor-pointer">
         <div className="flex items-start justify-center mb-4 w-full">
-          <div className="p-2 bg-gray-100 rounded-lg border border-gray-200 group-hover:bg-gray-200 transition-colors">
-            <Plus className="w-5 h-5 text-gray-600" />
+          <div className="p-2 bg-gray-100 rounded-lg border border-gray-200 group-hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:group-hover:bg-gray-600">
+            <Plus className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </div>
         </div>
         <div className="space-y-6">
-          <p className="text-lg font-light text-gray-700 tracking-tight">Add Custom</p>
-          <p className="text-xs text-gray-400 font-medium">Create metric</p>
+          <p className="text-lg font-light text-gray-700 tracking-tight dark:text-gray-300">Add Custom</p>
+          <p className="text-xs text-gray-400 font-medium dark:text-gray-500">Create metric</p>
         </div>
       </div>
     </DialogTrigger>
-      <DialogContent className="min-w-4xl h-[90vh] flex flex-col p-0">
-        <DialogHeader className="px-6 py-4 border-b">
+            <DialogContent className="min-w-4xl h-[90vh] flex flex-col p-0 dark:bg-slate-900">
+        <DialogHeader className="px-6 py-4 border-b dark:border-neutral-800">
           <DialogTitle className="flex items-center gap-2">
             <Calculator className="h-5 w-5" />
             Create Custom Total
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="flex-1 px-6 min-h-0">
+        <ScrollArea className="flex-1 px-6 min-h-0 dark:bg-gray-900">
           <div className="space-y-6 py-4">
             {/* Basic Configuration */}
-            <Card>
+                        <Card className="dark:bg-slate-800 dark:border-slate-700">
               <CardHeader>
                 <CardTitle className="text-lg">Basic Configuration</CardTitle>
               </CardHeader>
@@ -466,7 +466,7 @@ const CustomTotalsBuilder: React.FC<CustomTotalsBuilderProps> = ({
             </Card>
 
             {/* Filters */}
-            <Card>
+                        <Card className="dark:bg-slate-800 dark:border-slate-700">
               <CardHeader>
                 <CardTitle className="text-lg">Filters (Optional)</CardTitle>
               </CardHeader>
@@ -486,7 +486,7 @@ const CustomTotalsBuilder: React.FC<CustomTotalsBuilderProps> = ({
                 </div>
 
                 {/* Add Filter Form */}
-                <div className="p-4 border rounded-lg bg-muted/20 space-y-4">
+                <div className="p-4 border dark:border-neutral-800 rounded-lg bg-muted/20 space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div>
                       <Label className="text-xs">Column</Label>
@@ -556,7 +556,7 @@ const CustomTotalsBuilder: React.FC<CustomTotalsBuilderProps> = ({
                       <Label>Active Filters ({config.filterLogic})</Label>
                       <Badge variant="outline">{config.filters.length} filter{config.filters.length !== 1 ? 's' : ''}</Badge>
                     </div>
-                    <div className="space-y-2 max-h-40 overflow-y-auto border rounded-lg p-3 bg-muted/10">
+                                        <div className="space-y-2 max-h-40 overflow-y-auto border dark:border-slate-700 rounded-lg p-3 bg-muted/10">
                       {config.filters.map((filter, index) => {
                         const column = availableColumns.find(c => c.key === filter.column)
                         const operation = FILTER_OPERATIONS[getColumnType(filter.column)]?.find(op => op.value === filter.operation)
@@ -568,7 +568,7 @@ const CustomTotalsBuilder: React.FC<CustomTotalsBuilderProps> = ({
                                 {config.filterLogic}
                               </Badge>
                             )}
-                            <div className="flex items-center gap-1 bg-background border rounded-lg px-3 py-2 flex-1 min-w-0">
+                                                        <div className="flex items-center gap-1 bg-background dark:bg-slate-700/50 border dark:border-slate-700 rounded-lg px-3 py-2 flex-1 min-w-0">
                               <span className="font-medium text-sm">
                                 {column?.label || filter.column}
                               </span>
@@ -608,7 +608,7 @@ const CustomTotalsBuilder: React.FC<CustomTotalsBuilderProps> = ({
           </div>
         </ScrollArea>
         {/* Actions footer */}
-        <div className="px-6 py-4 border-t bg-background">
+        <div className="px-6 py-4 border-t dark:border-neutral-800 bg-background">
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setIsOpen(false)}>
               Cancel

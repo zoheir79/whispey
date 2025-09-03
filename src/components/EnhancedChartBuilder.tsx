@@ -537,8 +537,8 @@ const EnhancedChartBuilderContent: React.FC<EnhancedChartBuilderProps> = ({
     const CustomTooltip = ({ active, payload, label }: any) => {
       if (active && payload && payload.length) {
         return (
-          <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-            <p className="font-medium text-gray-900 mb-2">{label}</p>
+          <div className="bg-white dark:bg-slate-800 p-3 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg">
+            <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{label}</p>
             {payload.map((entry: any, index: number) => (
               <div key={index} className="flex items-center justify-between space-x-3">
                 <div className="flex items-center space-x-2">
@@ -546,11 +546,11 @@ const EnhancedChartBuilderContent: React.FC<EnhancedChartBuilderProps> = ({
                     className="w-3 h-3 rounded-full" 
                     style={{ backgroundColor: entry.color }}
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-gray-700 dark:text-slate-300">
                     {entry.dataKey === 'value' ? config.field : entry.dataKey}
                   </span>
                 </div>
-                <span className="text-sm font-semibold">{entry.value}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{entry.value}</span>
               </div>
             ))}
           </div>
@@ -568,7 +568,7 @@ const EnhancedChartBuilderContent: React.FC<EnhancedChartBuilderProps> = ({
                 dataKey="date" 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                 tickFormatter={(value) => {
                   if (config.groupBy === 'day') {
                     return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -579,7 +579,7 @@ const EnhancedChartBuilderContent: React.FC<EnhancedChartBuilderProps> = ({
               <YAxis 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                 tickFormatter={(value) => value.toLocaleString()}
               />
               <Tooltip content={<CustomTooltip />} />
@@ -623,7 +623,7 @@ const EnhancedChartBuilderContent: React.FC<EnhancedChartBuilderProps> = ({
                 dataKey="date" 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                 tickFormatter={(value) => {
                   if (config.groupBy === 'day') {
                     return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -634,7 +634,7 @@ const EnhancedChartBuilderContent: React.FC<EnhancedChartBuilderProps> = ({
               <YAxis 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                 tickFormatter={(value) => value.toLocaleString()}
               />
               <Tooltip content={<CustomTooltip />} />
@@ -693,12 +693,12 @@ const EnhancedChartBuilderContent: React.FC<EnhancedChartBuilderProps> = ({
       {charts.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {charts.map(chart => (
-            <Card key={chart.id} className="border border-gray-300 bg-white shadow-sm hover:shadow-md transition-shadow">
+            <Card key={chart.id} className="border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
-                  <CardTitle className="text-lg font-semibold">{chart.title}</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">{chart.title}</CardTitle>
                   {!chart.filterValue && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
                       Showing top 10 most frequent values
                     </p>
                   )}
@@ -735,11 +735,11 @@ const EnhancedChartBuilderContent: React.FC<EnhancedChartBuilderProps> = ({
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <TrendingUp className="w-8 h-8 text-gray-400" />
+          <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <TrendingUp className="w-8 h-8 text-gray-400 dark:text-slate-500" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Charts Yet</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No Charts Yet</h3>
+          <p className="text-sm text-gray-500 dark:text-slate-400">
             Click "+" right to create your first custom analytics chart
           </p>
         </div>

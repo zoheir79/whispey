@@ -423,10 +423,10 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
             {(userRole === 'member' || userRole === 'admin' || userRole === 'owner' || globalRole === 'super_admin') && (
               <Button 
                 onClick={handleCreateAgent}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm font-medium"
+                className="bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center px-3 md:px-4 py-2 text-sm font-medium"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                New Agent
+                <Plus className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">New Agent</span>
               </Button>
             )}
           </div>
@@ -561,16 +561,16 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                   <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
                       <div className="w-10 h-10 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 relative">
                         {getAgentTypeIcon(agent.agent_type)}
-                        <div className={`absolute w-3 h-3 rounded-full border-2 border-white -bottom-0.5 -right-0.5 ${
-                          agent.is_active ? 'bg-green-500' : 'bg-gray-300'
+                        <div className={`absolute w-3 h-3 rounded-full border-2 border-white dark:border-slate-800 -bottom-1 -right-1 ${
+                          agent.is_active ? 'bg-green-500' : 'bg-gray-400'
                         }`}></div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{agent.name}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{agent.agent_type}</p>
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{agent.name}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{agent.agent_type}</p>
                       </div>
                     </div>
                     
@@ -626,26 +626,29 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                     </DropdownMenu>
                   </div>
 
-                  {/* Environment Badge */}
-                  <div className="mb-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md ${
+                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
+                    <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${
                       agent.environment === 'production' || agent.environment === 'prod'
-                        ? 'bg-red-100 text-red-700'
+                        ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300'
                         : agent.environment === 'staging' || agent.environment === 'stage'
-                        ? 'bg-yellow-100 text-yellow-700'
-                        : 'bg-blue-100 text-blue-700'
+                        ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300'
+                        : 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
                     }`}>
                       {agent.environment}
                     </span>
+                    <div className={`font-medium flex items-center gap-2 ${agent.is_active ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <div className={`w-2 h-2 rounded-full ${agent.is_active ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                      {agent.is_active ? 'Active' : 'Inactive'}
+                    </div>
                   </div>
 
                   {/* Agent ID */}
-                  <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                  <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3 mb-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-xs font-medium text-gray-500 mb-1">Agent ID</div>
-                        <code className="text-xs text-gray-700 font-mono">
-                          {agent.id.slice(0, 8)}...{agent.id.slice(-4)}
+                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Agent ID</div>
+                        <code className="text-xs text-gray-700 dark:text-gray-300 font-mono">
+                          {agent.id}
                         </code>
                       </div>
                       <Button
@@ -663,13 +666,10 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                     <div className="flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />
-                      <span>{formatDate(agent.created_at)}</span>
-                    </div>
-                    <div className={`font-medium ${agent.is_active ? 'text-green-600' : 'text-gray-500'}`}>
-                      {agent.is_active ? 'Active' : 'Inactive'}
+                      <span>Created {formatDate(agent.created_at)}</span>
                     </div>
                   </div>
                   </div>

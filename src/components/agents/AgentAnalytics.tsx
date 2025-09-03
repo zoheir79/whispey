@@ -151,16 +151,16 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
                 <MessageSquare className="h-5 w-5 text-blue-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Usage LLM</p>
+                <p className="text-sm text-gray-600 dark:text-slate-300 mb-1">Usage LLM</p>
                 <div className="flex items-center gap-2">
                   <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {loading ? '--' : formatLargeNumber(usageMetrics.llm.totalTokens)}
                   </p>
-                  <span className="text-xs text-gray-500">tokens</span>
+                  <span className="text-xs text-gray-500 dark:text-slate-400">tokens</span>
                 </div>
                 <div className="flex items-center gap-1 mt-1">
                   <DollarSign className="h-3 w-3 text-gray-400" />
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 dark:text-slate-300">
                     {loading ? '₹0.00' : formatCurrency(usageMetrics.llm.cost)}
                   </span>
                 </div>
@@ -177,16 +177,16 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
                 <Mic className="h-5 w-5 text-red-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Usage STT</p>
+                <p className="text-sm text-gray-600 dark:text-slate-300 mb-1">Usage STT</p>
                 <div className="flex items-center gap-2">
                   <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {loading ? '--' : formatDuration(usageMetrics.stt.duration)}
                   </p>
-                  <span className="text-xs text-gray-500">duration</span>
+                  <span className="text-xs text-gray-500 dark:text-slate-400">duration</span>
                 </div>
                 <div className="flex items-center gap-1 mt-1">
                   <DollarSign className="h-3 w-3 text-gray-400" />
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 dark:text-slate-300">
                     {loading ? '₹0.00' : formatCurrency(usageMetrics.stt.cost)}
                   </span>
                 </div>
@@ -203,16 +203,16 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
                 <Volume2 className="h-5 w-5 text-purple-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Usage TTS</p>
+                <p className="text-sm text-gray-600 dark:text-slate-300 mb-1">Usage TTS</p>
                 <div className="flex items-center gap-2">
                   <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {loading ? '--' : formatLargeNumber(usageMetrics.tts.characters)}
                   </p>
-                  <span className="text-xs text-gray-500">characters</span>
+                  <span className="text-xs text-gray-500 dark:text-slate-400">characters</span>
                 </div>
                 <div className="flex items-center gap-1 mt-1">
                   <DollarSign className="h-3 w-3 text-gray-400" />
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 dark:text-slate-300">
                     {loading ? '₹0.00' : formatCurrency(usageMetrics.tts.cost)}
                   </span>
                 </div>
@@ -229,16 +229,16 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
                 <Clock className="h-5 w-5 text-green-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Usage Minutes</p>
+                <p className="text-sm text-gray-600 dark:text-slate-300 mb-1">Usage Minutes</p>
                 <div className="flex items-center gap-2">
                   <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {loading ? '--' : `${Math.round(usageMetrics.totalMinutes)}min`}
                   </p>
-                  <span className="text-xs text-gray-500">duration</span>
+                  <span className="text-xs text-gray-500 dark:text-slate-400">duration</span>
                 </div>
                 <div className="flex items-center gap-1 mt-1">
                   <DollarSign className="h-3 w-3 text-gray-400" />
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 dark:text-slate-300">
                     {loading ? '₹0.00' : formatCurrency(usageMetrics.totalCost)}
                   </span>
                 </div>
@@ -257,8 +257,8 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
                 <Phone className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Total Calls</p>
-                <p className="text-xl font-semibold text-gray-900">
+                <p className="text-sm text-gray-600 dark:text-slate-300">Total Calls</p>
+                <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {loading ? '--' : timeSeriesData.reduce((sum, item) => sum + (item.calls || 0), 0)}
                 </p>
               </div>
@@ -273,8 +273,8 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
                 <TrendingUp className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Avg Duration</p>
-                <p className="text-xl font-semibold text-gray-900">
+                <p className="text-sm text-gray-600 dark:text-slate-300">Avg Duration</p>
+                <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {loading ? '-- min' : formatDuration(usageMetrics.totalMinutes * 60 / Math.max(timeSeriesData.reduce((sum, item) => sum + (item.calls || 0), 0), 1))}
                 </p>
               </div>
@@ -289,8 +289,8 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
                 <BarChart3 className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Daily Average</p>
-                <p className="text-xl font-semibold text-gray-900">
+                <p className="text-sm text-gray-600 dark:text-slate-300">Daily Average</p>
+                <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {loading ? '--' : Math.round(timeSeriesData.reduce((sum, item) => sum + (item.calls || 0), 0) / Math.max(timeSeriesData.length, 1))}
                 </p>
               </div>
@@ -305,8 +305,8 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
                 <DollarSign className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Total Cost</p>
-                <p className="text-xl font-semibold text-gray-900">
+                <p className="text-sm text-gray-600 dark:text-slate-300">Total Cost</p>
+                <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {loading ? '₹--' : formatCurrency(usageMetrics.totalCost)}
                 </p>
               </div>

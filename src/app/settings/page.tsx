@@ -204,7 +204,7 @@ export default function SettingsPage() {
       <div className="container max-w-4xl mx-auto p-6">
         <div className="flex items-center space-x-2 mb-6">
           <SettingsIcon className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Settings</h1>
+          <h1 className="text-2xl font-bold dark:text-gray-100">Settings</h1>
         </div>
         <div className="flex justify-center py-12">
           <RefreshCw className="h-6 w-6 animate-spin" />
@@ -220,7 +220,7 @@ export default function SettingsPage() {
         {/* Header */}
         <div className="flex items-center space-x-2 mb-6">
           <SettingsIcon className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Settings</h1>
+          <h1 className="text-2xl font-bold dark:text-gray-100">Settings</h1>
         </div>
 
       {/* Unified Notification System */}
@@ -294,13 +294,13 @@ export default function SettingsPage() {
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
+                  className="flex items-center justify-between p-4 border dark:border-slate-700 rounded-lg dark:bg-slate-800"
                 >
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
-                      <h3 className="font-medium">{project.name}</h3>
+                      <h3 className="font-medium dark:text-gray-100">{project.name}</h3>
                       {project.has_token ? (
-                        <Badge variant="default" className="bg-green-100 text-green-800">
+                        <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Token actif
                         </Badge>
@@ -310,10 +310,10 @@ export default function SettingsPage() {
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
                       Project ID: {project.id}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-slate-400">
                       Créé le {new Date(project.created_at).toLocaleDateString('fr-FR')}
                     </p>
                   </div>
@@ -374,15 +374,15 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h4 className="font-medium mb-2">Headers requis :</h4>
-            <pre className="bg-gray-100 p-3 rounded text-sm">
+            <h4 className="font-medium mb-2 dark:text-gray-100">Headers requis :</h4>
+            <pre className="bg-gray-100 dark:bg-slate-800 dark:text-slate-200 p-3 rounded text-sm">
 {`Content-Type: application/json
 x-pype-token: VOTRE_API_KEY`}
             </pre>
           </div>
           <div>
-            <h4 className="font-medium mb-2">Exemple d'appel :</h4>
-            <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+            <h4 className="font-medium mb-2 dark:text-gray-100">Exemple d'appel :</h4>
+            <pre className="bg-gray-100 dark:bg-slate-800 dark:text-slate-200 p-3 rounded text-sm overflow-x-auto">
 {`curl -X POST https://monvoice.adexgenie.ai/api/logs/call-logs \\
   -H "Content-Type: application/json" \\
   -H "x-pype-token: VOTRE_API_KEY" \\
@@ -413,7 +413,7 @@ x-pype-token: VOTRE_API_KEY`}
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Votre nouvelle API Key :</label>
+                <label className="text-sm font-medium dark:text-gray-100">Votre nouvelle API Key :</label>
                 <div className="flex items-center space-x-2 mt-1">
                   <Input
                     type={showToken ? "text" : "password"}
