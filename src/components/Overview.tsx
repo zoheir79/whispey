@@ -575,15 +575,15 @@ const Overview: React.FC<OverviewProps> = ({
 
   return (
     <div className="h-full" style={{ backgroundColor: '#fafafa' }}>
-      <div className="p-8 space-y-8">
+      <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
           <>
-            {/* Smaller Metrics Grid */}
-            <div className="grid grid-cols-6 gap-4">
+            {/* Responsive Metrics Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
               {/* Total Calls */}
               <div className="group">
                 <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                  <div className="p-5">
+                  <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
                         <Phone weight="regular" className="w-5 h-5 text-blue-600" />
@@ -610,7 +610,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Global Call Duration */}
               <div className="group">
                 <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                  <div className="p-5">
+                  <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
                         <Clock weight="regular" className="w-5 h-5 text-emerald-600" />
@@ -636,7 +636,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* AI Processing Time */}
               <div className="group">
                 <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                  <div className="p-5">
+                  <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
                         <Activity weight="regular" className="w-5 h-5 text-purple-600" />
@@ -663,7 +663,7 @@ const Overview: React.FC<OverviewProps> = ({
               {role !== 'user' && (
                 <div className="group">
                   <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                    <div className="p-5">
+                    <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
                           <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600" />
@@ -686,7 +686,7 @@ const Overview: React.FC<OverviewProps> = ({
               {role !== 'user' && (
                 <div className="group">
                   <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                    <div className="p-5">
+                    <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
                           <Lightning weight="regular" className="w-5 h-5 text-purple-600" />
@@ -708,7 +708,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Successful Calls */}
               <div className="group">
                 <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                  <div className="p-5">
+                  <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-green-50 rounded-lg border border-green-100">
                         <CheckCircle weight="regular" className="w-5 h-5 text-green-600" />
@@ -734,7 +734,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Failed Calls */}
               <div className="group">
                 <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                  <div className="p-5">
+                  <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-red-50 rounded-lg border border-red-100">
                         <XCircle weight="regular" className="w-5 h-5 text-red-600" />
@@ -760,7 +760,7 @@ const Overview: React.FC<OverviewProps> = ({
               {/* Total Tokens */}
               <div className="group">
                 <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                  <div className="p-5">
+                  <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
                         <Activity weight="regular" className="w-5 h-5 text-indigo-600" />
@@ -791,7 +791,7 @@ const Overview: React.FC<OverviewProps> = ({
               return (
                 <div key={config.id} className="group">
                   <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300">
-                    <div className="p-5">
+                    <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className={`p-2 ${colorClass.replace('bg-', 'bg-').replace('text-', 'border-')} rounded-lg border`}>
                           <IconComponent weight="regular" className={`w-5 h-5 ${colorClass.split(' ')[1]}`} />
@@ -857,8 +857,6 @@ const Overview: React.FC<OverviewProps> = ({
               )
             })}
 
-
-
             </div>
 
             {process.env.NODE_ENV === 'development' && (
@@ -872,22 +870,22 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-            {/* 2x2 Chart Grid */}
-            <div className="grid grid-cols-2 gap-6">
+            {/* Responsive Chart Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Daily Calls Chart */}
               <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 px-7 py-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                <div className="border-b border-gray-200 px-4 md:px-6 lg:px-7 py-4 md:py-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
                         <TrendUp weight="regular" className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900 tracking-tight">Daily Call Volume</h3>
-                        <p className="text-sm text-gray-500 mt-0.5">Trend analysis over selected period</p>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">Daily Call Volume</h3>
+                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">Trend analysis over selected period</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 md:gap-3 text-sm">
                       <div className="text-right">
                         <div className="text-xs font-medium text-gray-500">Peak</div>
                         <div className="text-sm font-semibold text-gray-900">
@@ -910,8 +908,8 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-7">
-                  <div className="h-80">
+                <div className="p-4 md:p-6 lg:p-7">
+                  <div className="h-64 md:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                         <defs>
@@ -982,15 +980,15 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Professional Success Chart */}
               <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 px-7 py-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                <div className="border-b border-gray-200 px-4 md:px-6 lg:px-7 py-4 md:py-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-green-50 rounded-lg border border-green-100">
                         <Target weight="regular" className="w-5 h-5 text-green-600" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900 tracking-tight">Success Analysis</h3>
-                        <p className="text-sm text-gray-500 mt-0.5">Call completion metrics</p>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">Success Analysis</h3>
+                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">Call completion metrics</p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -999,11 +997,11 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-7">
-                  <div className="h-80 flex items-center justify-center">
+                <div className="p-4 md:p-6 lg:p-7">
+                  <div className="h-64 md:h-80 flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-0">
                     <div className="relative">
                       {/* Modern Ring Chart */}
-                      <div className="w-48 h-48">
+                      <div className="w-32 h-32 md:w-48 md:h-48">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
                             <Pie
@@ -1044,7 +1042,7 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     {/* Legend */}
-                    <div className="ml-8 space-y-3">
+                    <div className="lg:ml-8 space-y-2 md:space-y-3 text-center lg:text-left">
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
                         <div className="text-sm font-medium text-gray-700">Successful</div>
@@ -1062,21 +1060,21 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Daily Minutes Chart */}
               <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 px-7 py-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                <div className="border-b border-gray-200 px-4 md:px-6 lg:px-7 py-4 md:py-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
                         <ChartBar weight="regular" className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900 tracking-tight">Usage Minutes</h3>
-                        <p className="text-sm text-gray-500 mt-0.5">Daily conversation duration</p>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">Usage Minutes</h3>
+                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">Daily conversation duration</p>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="p-7">
-                  <div className="h-80">
+                <div className="p-4 md:p-6 lg:p-7">
+                  <div className="h-64 md:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
                         <defs>
@@ -1137,21 +1135,21 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Average Latency Chart */}
               <div className="bg-white rounded-xl border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 px-7 py-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                <div className="border-b border-gray-200 px-4 md:px-6 lg:px-7 py-4 md:py-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
                       <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
                         <Activity weight="regular" className="w-5 h-5 text-orange-600" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900 tracking-tight">Response Performance</h3>
-                        <p className="text-sm text-gray-500 mt-0.5">Average latency metrics</p>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">Response Performance</h3>
+                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">Average latency metrics</p>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="p-7">
-                  <div className="h-80">
+                <div className="p-4 md:p-6 lg:p-7">
+                  <div className="h-64 md:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
                         <defs>

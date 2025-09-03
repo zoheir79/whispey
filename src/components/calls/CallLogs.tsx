@@ -728,11 +728,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     return flat;
   }
 
-  // Calculate total dynamic columns for table width
-  const totalVisibleColumns = visibleColumns.metadata.length + visibleColumns.transcription_metrics.length
-  const baseWidth = 1020 // Fixed columns width
-  const dynamicWidth = totalVisibleColumns * 200 // 200px per dynamic column
-  const minTableWidth = baseWidth + dynamicWidth
+  // Responsive table - no fixed width calculations needed
 
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
@@ -879,9 +875,9 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
         </div>
       </div>
 
-      {/* Horizontally Scrollable Table Container */}
-      <div className="flex-1 overflow-y-auto min-h-0">
-      {loading && calls.length === 0 ? (
+      {/* Responsive Table Container */}
+      <div className="flex-1 space-y-4 p-6">
+        {loading && calls.length === 0 ? (
           <div className="flex items-center justify-center py-12">
             <div className="text-center space-y-4">
               <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
@@ -900,17 +896,17 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                 : "Calls will appear here once your agent starts handling conversations."}
             </p>
           </div>
-          ) : (
-      <div className="h-full overflow-x-auto overflow-y-hidden"> {/* Horizontal scroll container */}
-        <div className="h-full overflow-y-auto" style={{ minWidth: `${minTableWidth}px` }}> {/* Vertical scroll with min-width */}
-          <Table className="w-full ">
-                <TableHeader className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b-2">
-                  <TableRow className="bg-muted/80 hover:bg-muted/80">
-                    {/* Fixed Columns */}
+        ) : (
+          <div className="group">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300 overflow-x-auto">
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow>
+                    {/* Basic Columns */}
                     {visibleColumns.basic.map((key) => {
                       const col = basicColumns.find((c) => c.key === key)
                       return (
-                        <TableHead key={`basic-${key}`} className="font-semibold text-foreground min-w-[120px]">
+                        <TableHead key={`basic-${key}`} className="font-semibold">
                           {col?.label ?? key}
                         </TableHead>
                       )
@@ -920,7 +916,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                     {visibleColumns.metadata.map((key) => (
                       <TableHead 
                         key={`metadata-${key}`} 
-                        className="w-[200px] font-semibold text-foreground bg-blue-50/50 dark:bg-blue-950/20 border-r border-blue-200/50"
+                        className="font-semibold text-foreground"
                       >
                         <div className="flex flex-col">
                           <span className="text-sm">{key}</span>
@@ -929,14 +925,10 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                     ))}
                     
                     {/* Dynamic Transcription Metrics Columns */}
-                    {visibleColumns.transcription_metrics.map((key, index) => (
+                    {visibleColumns.transcription_metrics.map((key) => (
                       <TableHead 
                         key={`transcription-${key}`} 
-                        className={cn(
-                          "w-[200px] font-semibold text-foreground bg-blue-50/50 dark:bg-blue-950/20",
-                          index === 0 && visibleColumns.metadata.length === 0 && "border-l-2 border-primary/30",
-                          index < visibleColumns.transcription_metrics.length - 1 && "border-r border-blue-200/50"
-                        )}
+                        className="font-semibold text-foreground"
                       >
                         <div className="flex flex-col">
                           <span className="text-sm">{key}</span>
@@ -945,14 +937,11 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                     ))}
                   </TableRow>
                 </TableHeader>
-                <TableBody className="overflow-auto">
+                <TableBody>
                   {calls.map((call: CallLog) => (
                     <TableRow
                       key={call.id}
-                      className={cn(
-                        "cursor-pointer hover:bg-muted/30 transition-all duration-200 border-b border-border/50",
-                        selectedCall?.id === call.id && "bg-muted/50",
-                      )}
+                      className="cursor-pointer hover:bg-muted/50"
                       onClick={() => setSelectedCall(call)}
                     >
               {visibleColumns.basic.map((key) => {
@@ -1020,59 +1009,55 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   </TableCell>
                 )
               })}
-              {/* Dynamic Metadata Columns */}
-              {visibleColumns.metadata.map((key) => (
-                <TableCell 
-                  key={`metadata-${call.id}-${key}`} 
-                  className="py-4 bg-blue-50/30 dark:bg-blue-950/10 border-r border-blue-200/50"
-                >
-                  <DynamicJsonCell 
-                    data={call.metadata} 
-                    fieldKey={key}
-                    maxWidth="180px"
-                  />
-                </TableCell>
-              ))}
 
-              {/* Dynamic Transcription Metrics Columns */}
-              {visibleColumns.transcription_metrics.map((key, index) => (
-                <TableCell 
-                  key={`transcription-${call.id}-${key}`} 
-                  className={cn(
-                    "py-4 bg-blue-50/30 dark:bg-blue-950/10",
-                    index === 0 && visibleColumns.metadata.length === 0 && "border-l-2 border-primary/30",
-                    index < visibleColumns.transcription_metrics.length - 1 && "border-r border-blue-200/50"
-                  )}
-                >
-                  <DynamicJsonCell 
-                    data={call.transcription_metrics} 
-                    fieldKey={key}
-                    maxWidth="180px"
-                  />
-                </TableCell>
+                      {/* Dynamic Metadata Columns */}
+                      {visibleColumns.metadata.map((key) => (
+                        <TableCell 
+                          key={`metadata-${call.id}-${key}`} 
+                          className="py-4"
+                        >
+                          <DynamicJsonCell 
+                            data={call.metadata} 
+                            fieldKey={key}
+                          />
+                        </TableCell>
+                      ))}
+
+                      {/* Dynamic Transcription Metrics Columns */}
+                      {visibleColumns.transcription_metrics.map((key) => (
+                        <TableCell 
+                          key={`transcription-${call.id}-${key}`} 
+                          className="py-4"
+                        >
+                          <DynamicJsonCell 
+                            data={call.transcription_metrics} 
+                            fieldKey={key}
+                          />
+                        </TableCell>
                       ))}
                     </TableRow>
                   ))}
                 </TableBody>
-
               </Table>
-                {/* Load More Trigger */}
-                {hasMore && (
-                  <div ref={loadMoreRef} className="py-6 border-t">
-                    {loading && <Loader2 className="w-6 h-6 animate-spin text-primary" />}
-                  </div>
-                )}
-
-                {/* End of List */}
-                {!hasMore && calls.length > 0 && (
-                  <div className="py-4 text-muted-foreground text-sm border-t">
-                    All calls loaded ({calls.length} total)
-                  </div>
-                )}
             </div>
+            
+            {/* Load More Trigger */}
+            {hasMore && (
+              <div ref={loadMoreRef} className="py-6 text-center">
+                {loading && <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />}
+              </div>
+            )}
+
+            {/* End of List */}
+            {!hasMore && calls.length > 0 && (
+              <div className="py-4 text-muted-foreground text-sm text-center">
+                All calls loaded ({calls.length} total)
+              </div>
+            )}
           </div>
         )}
       </div>
+      
       <CallDetailsDrawer 
         isOpen={!!selectedCall} 
         callData={selectedCall} 

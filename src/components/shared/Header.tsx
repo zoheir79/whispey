@@ -1,15 +1,32 @@
 // src/components/shared/Header.tsx
 "use client"
 
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Mic, Bell, Search, Settings, BarChart3, Users, FileText, Zap, ChevronDown, HelpCircle, Command, ChevronRight, Slash, BookOpen, LogOut, User, Bot, Folders, Phone } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { useEffect, useState } from "react";
-import { useGlobalRole } from '@/hooks/useGlobalRole';
+import { useState, useEffect } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import { 
+  Folders, 
+  Users, 
+  Phone, 
+  BookOpen, 
+  HelpCircle, 
+  LogOut, 
+  User, 
+  ChevronDown,
+  ChevronRight,
+  MoreHorizontal,
+  Menu,
+  X,
+  Bot,
+  FileText,
+  Zap,
+  Settings
+} from "lucide-react"
+import { useGlobalRole } from "@/hooks/useGlobalRole"
 
 interface HeaderProps {
   breadcrumb?: {
@@ -18,14 +35,22 @@ interface HeaderProps {
   }
 }
 
+interface User {
+  name?: string;
+  email?: string;
+}
+
+interface BreadcrumbState {
+  project?: string;
+  item?: string;
+}
+
 function Header({ breadcrumb }: HeaderProps) {
   const pathname = usePathname();
-  const [breadcrumbState, setBreadcrumbState] = useState<{
-    project?: string;
-    item?: string;
-  } | null>(null);
+  const [breadcrumbState, setBreadcrumbState] = useState<BreadcrumbState | null>(null);
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { globalRole, permissions, isAdmin, isSuperAdmin, isLoading: roleLoading } = useGlobalRole();
 
   // Fetch user data from JWT auth
@@ -122,21 +147,16 @@ function Header({ breadcrumb }: HeaderProps) {
               )}
             </div>
 
-            {/* Navigation Menu - Role-based Access */}
+            {/* Desktop Navigation - Hidden on mobile */}
             {!roleLoading && (
-              <div className="flex items-center gap-1">
+              <div className="hidden md:flex items-center gap-1">
                 {/* Workspaces Access - Differentiated for Admins vs Users */}
                 <Link
                   href="/"
                   className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-blue-600 transition-all duration-200 rounded-lg hover:bg-blue-50/50 border border-transparent hover:border-blue-100"
                 >
                   <Folders className="w-4 h-4 transition-transform group-hover:scale-110" />
-                  <span className="hidden sm:inline">
-                    {isAdmin ? 'All Workspaces' : 'My Workspace'}
-                  </span>
-                  <span className="sm:hidden">
-                    {isAdmin ? 'Workspaces' : 'Workspace'}
-                  </span>
+                  <span>{isAdmin ? 'All Workspaces' : 'My Workspace'}</span>
                 </Link>
 
                 {/* Agents Access */}
@@ -145,10 +165,7 @@ function Header({ breadcrumb }: HeaderProps) {
                   className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-green-600 transition-all duration-200 rounded-lg hover:bg-green-50/50 border border-transparent hover:border-green-100"
                 >
                   <Bot className="w-4 h-4 transition-transform group-hover:scale-110" />
-                  <span className="hidden sm:inline">
-                    {isAdmin ? 'All Agents' : 'My Agents'}
-                  </span>
-                  <span className="sm:hidden">Agents</span>
+                  <span>{isAdmin ? 'All Agents' : 'My Agents'}</span>
                 </Link>
 
                 {/* Calls Access */}
@@ -157,10 +174,7 @@ function Header({ breadcrumb }: HeaderProps) {
                   className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-purple-600 transition-all duration-200 rounded-lg hover:bg-purple-50/50 border border-transparent hover:border-purple-100"
                 >
                   <Phone className="w-4 h-4 transition-transform group-hover:scale-110" />
-                  <span className="hidden sm:inline">
-                    {isAdmin ? 'All Calls' : 'My Calls'}
-                  </span>
-                  <span className="sm:hidden">Calls</span>
+                  <span>{isAdmin ? 'All Calls' : 'My Calls'}</span>
                 </Link>
 
                 {/* Admin Badge */}
@@ -172,8 +186,24 @@ function Header({ breadcrumb }: HeaderProps) {
               </div>
             )}
 
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </Button>
+            </div>
+
             {/* Right Side Actions */}
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               {/* Setup Instructions Link - New Addition */}
               <Link
                 href="https://pypi.org/project/Whispey/"
@@ -323,6 +353,105 @@ function Header({ breadcrumb }: HeaderProps) {
         
         {/* Subtle bottom gradient */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-200/50 to-transparent"></div>
+        
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-40">
+            <div className="px-6 py-4 space-y-3">
+              {/* Mobile Navigation Links */}
+              {!roleLoading && (
+                <>
+                  <Link
+                    href="/"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Folders className="w-4 h-4" />
+                    <span>{isAdmin ? 'All Workspaces' : 'My Workspace'}</span>
+                  </Link>
+
+                  <Link
+                    href="/agents"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Bot className="w-4 h-4" />
+                    <span>{isAdmin ? 'All Agents' : 'My Agents'}</span>
+                  </Link>
+
+                  <Link
+                    href="/calls"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span>{isAdmin ? 'All Calls' : 'My Calls'}</span>
+                  </Link>
+
+                  {/* Admin Badge for Mobile */}
+                  {isAdmin && (
+                    <div className="px-3 py-1">
+                      <Badge variant="outline" className="text-xs font-medium bg-blue-50 text-blue-700 border-blue-200">
+                        {isSuperAdmin ? 'Super Admin' : 'Admin'}
+                      </Badge>
+                    </div>
+                  )}
+
+                  <div className="h-px bg-gray-200 my-3"></div>
+
+                  {/* Mobile Help Links */}
+                  <Link
+                    href="https://pypi.org/project/Whispey/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span>Setup Instructions</span>
+                  </Link>
+
+                  <Link
+                    href="/docs"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Documentation</span>
+                  </Link>
+
+                  {/* Mobile User Profile */}
+                  <div className="h-px bg-gray-200 my-3"></div>
+                  
+                  <div className="px-3 py-2">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{user?.name || user?.email}</p>
+                        {user?.name && user?.email && (
+                          <p className="text-xs text-gray-500">{user.email}</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <Button
+                      onClick={handleLogout}
+                      variant="outline"
+                      size="sm"
+                      className="w-full justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign out
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </header>
   );
 }
