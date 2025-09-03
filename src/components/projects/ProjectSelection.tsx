@@ -203,7 +203,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
       case 'dev':
         return 'bg-blue-50 text-blue-700 border-blue-200'
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200'
+        return 'bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-slate-200 border-gray-200 dark:border-slate-600'
     }
   }
 
@@ -339,26 +339,26 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                     placeholder="Search workspaces..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-80 pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg bg-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                    className="w-80 pl-10 pr-4 py-2.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                   />
                 </div>
-                <Button variant="outline" size="sm" className="text-gray-600 border-gray-200 hover:bg-gray-50">
+                <Button variant="outline" size="sm" className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700">
                   <Filter className="w-4 h-4 mr-2" />
                   Filter
                 </Button>
-                <Button variant="outline" size="sm" className="text-gray-600 border-gray-200 hover:bg-gray-50">
+                <Button variant="outline" size="sm" className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700">
                   <SortDesc className="w-4 h-4 mr-2" />
                   Sort
                 </Button>
               </div>
               
               <div className="flex items-center gap-3">
-                <div className="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-50">
+                <div className="flex items-center border border-gray-200 dark:border-slate-600 rounded-lg p-1 bg-gray-50 dark:bg-slate-800">
                   <Button
                     variant={viewMode === 'grid' ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => setViewMode('grid')}
-                    className={`w-8 h-8 p-0 ${viewMode === 'grid' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700 hover:bg-transparent'}`}
+                    className={`w-8 h-8 p-0 ${viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-transparent'}`}
                   >
                     <Grid3X3 className="w-4 h-4" />
                   </Button>
@@ -366,7 +366,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                     variant={viewMode === 'list' ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => setViewMode('list')}
-                    className={`w-8 h-8 p-0 ${viewMode === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700 hover:bg-transparent'}`}
+                    className={`w-8 h-8 p-0 ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-transparent'}`}
                   >
                     <List className="w-4 h-4" />
                   </Button>
@@ -380,7 +380,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
             {filteredProjects.map((project) => (
               <Card
                 key={project.id}
-                className={`group bg-white/80 backdrop-blur-sm border border-gray-200/60 hover:border-gray-300 hover:shadow-lg hover:bg-white transition-all duration-200 cursor-pointer ${
+                className={`group bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-gray-200/60 dark:border-slate-700/60 hover:border-gray-300 dark:hover:border-slate-600 hover:shadow-lg hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 cursor-pointer ${
                   selectedProject === project.id ? 'opacity-50 scale-[0.98]' : ''
                 }`}
                 onClick={() => handleProjectClick(project)}
@@ -391,7 +391,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 relative">
                         {getWorkspaceInitials(project.name)}
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center shadow-sm">
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm">
                           <FolderOpen className="w-2 h-2 text-indigo-600" />
                         </div>
                       </div>
@@ -427,7 +427,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-700"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <MoreHorizontal className="h-4 w-4" />
@@ -505,7 +505,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
           {/* Empty State for Search */}
           {filteredProjects.length === 0 && searchQuery && (
             <div className="text-center py-20">
-              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Search className="h-8 w-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No workspaces found</h3>
@@ -578,7 +578,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                     type={showToken ? 'text' : 'password'}
                     value={regeneratedToken || ''}
                     readOnly
-                    className="w-full h-10 px-3 pr-20 text-sm border border-gray-200 rounded-lg bg-gray-50 font-mono focus:outline-none"
+                    className="w-full h-10 px-3 pr-20 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-800 font-mono focus:outline-none"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
                     <Button

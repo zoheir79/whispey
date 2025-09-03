@@ -231,7 +231,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Calls */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
@@ -254,7 +254,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Success Rate */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-green-50 rounded-lg border border-green-100">
@@ -278,14 +278,14 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Average Duration */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
                   <Clock className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                     +100% week
                   </span>
                 </div>
@@ -303,7 +303,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Total Cost */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
@@ -324,7 +324,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Active Agents */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
@@ -348,7 +348,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Response Time */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
@@ -372,7 +372,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Cost Per Call */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
@@ -398,7 +398,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
         {/* Weekly Growth */}
         <div className="group">
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
@@ -423,7 +423,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
 
       {/* Period Selector */}
       <div className="flex justify-center mb-6">
-        <div className="inline-flex bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-1 shadow-sm">
+        <div className="inline-flex bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-1 shadow-sm">
           {['7d', '30d', '90d'].map((period) => (
             <button
               key={period}
@@ -443,8 +443,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Call Volume */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-blue-50 dark:bg-slate-800/20 rounded flex items-center justify-center">
@@ -506,8 +506,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
         </div>
 
         {/* Success Analysis */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-green-50 dark:bg-green-900/20 rounded flex items-center justify-center">
@@ -562,8 +562,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
           </div>
         </div>
         {/* Usage Minutes */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-blue-50 dark:bg-slate-800/20 rounded flex items-center justify-center">
@@ -624,8 +624,8 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
         </div>
 
         {/* Response Performance */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-100">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-purple-50 rounded flex items-center justify-center">
@@ -676,10 +676,9 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
 
       {/* Agents Performance Table */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -695,7 +694,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-slate-800">
               <tr>
                 <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Agent</th>
                 <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Calls</th>
@@ -707,7 +706,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {agentsData.map((agent, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
+                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">

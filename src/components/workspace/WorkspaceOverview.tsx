@@ -157,13 +157,13 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-50 text-green-700 border-green-200'
+        return 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700'
       case 'failed':
-        return 'bg-red-50 text-red-700 border-red-200'
+        return 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-700'
       case 'in_progress':
-        return 'bg-blue-50 text-blue-700 border-blue-200'
+        return 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700'
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200'
+        return 'bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-600'
     }
   }
 
@@ -305,7 +305,7 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
             <div className="p-6">
               <div className="space-y-4">
                 {recentCalls.map((call) => (
-                  <div key={call.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <div key={call.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                     <div className="flex items-center gap-4">
                       <Badge className={`${getStatusColor(call.status)}`}>
                         {call.status}
@@ -347,7 +347,7 @@ const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({ projectId, projec
             <div className="p-6">
               <div className="space-y-4">
                 {topAgents.map((agent) => (
-                  <div key={agent.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <div key={agent.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className={`w-3 h-3 rounded-full ${agent.status === 'active' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                       <div>

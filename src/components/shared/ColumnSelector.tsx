@@ -98,7 +98,7 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-900">{title}</span>
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-0.5 rounded-full">
               {visibleCount}/{columns.length}
             </span>
           </div>
@@ -106,7 +106,7 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+              className="h-7 px-2 text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
               onClick={() => handleSelectAll(type, true)}
               disabled={visibleCount === columns.length}
             >
@@ -116,7 +116,7 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+              className="h-7 px-2 text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
               onClick={() => handleSelectAll(type, false)}
               disabled={visibleCount === 0}
             >
@@ -164,17 +164,17 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 h-9 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+          className="gap-2 h-9 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-500 transition-all duration-200 shadow-sm"
         >
           <Columns3 className="h-4 w-4 text-gray-600" />
           <span className="text-sm font-medium">Columns</span>
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full ml-1">
+          <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-0.5 rounded-full ml-1">
             {totalVisible}/{totalColumns}
           </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-96 max-h-[60vh] p-0 shadow-xl border border-gray-200 bg-white flex flex-col overflow-hidden"
+        className="w-96 max-h-[60vh] p-0 shadow-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 flex flex-col overflow-hidden"
         side="left"
         align="start"  // Changed from "start" to "end" to align with bottom of trigger
         alignOffset={alignProp} // Reduced negative offset to move it higher
@@ -187,10 +187,10 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
         avoidCollisions={false} // Disable collision detection that might override positioning
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 shrink-0">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-700/50 shrink-0">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-base text-gray-900">Table Columns</h4>
-            <div className="text-xs text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200">
+            <div className="text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-700 px-3 py-1 rounded-full border border-gray-200 dark:border-slate-600">
               {totalVisible} of {totalColumns} visible
             </div>
           </div>
@@ -228,7 +228,7 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
               <div className="relative">
                 <Separator className="bg-gray-200" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-white px-3 text-xs text-gray-500 font-medium">DYNAMIC COLUMNS</div>
+                  <div className="bg-white dark:bg-slate-800 px-3 text-xs text-gray-500 dark:text-gray-400 font-medium">DYNAMIC COLUMNS</div>
                 </div>
               </div>
             )}
@@ -254,7 +254,7 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-gray-100 bg-gray-50/30 shrink-0">
+        <div className="px-6 py-3 border-t border-gray-100 dark:border-slate-700 bg-gray-50/30 dark:bg-slate-700/30 shrink-0">
           <div className="flex items-center justify-between text-xs text-gray-500">
             <span>{totalColumns > 8 ? "Scroll to see more options" : `${totalColumns} columns available`}</span>
             <div className="flex items-center gap-1">

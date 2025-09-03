@@ -585,7 +585,7 @@ const Overview: React.FC<OverviewProps> = ({
                 <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                         <Phone weight="regular" className="w-5 h-5 text-blue-600" />
                       </div>
                       
@@ -612,20 +612,20 @@ const Overview: React.FC<OverviewProps> = ({
                 <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                      <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
                         <Clock weight="regular" className="w-5 h-5 text-emerald-600" />
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                           {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
                         </span>
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Call Duration</h3>
-                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Call Duration</h3>
+                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
-                        <span className="text-lg text-gray-500 ml-1">min</span>
+                        <span className="text-lg text-gray-500 dark:text-gray-400 ml-1">min</span>
                       </p>
                       <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
@@ -648,7 +648,7 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AI Processing</h3>
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">AI Processing</h3>
                       <p className="text-2xl font-light text-gray-900 tracking-tight">
                         {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
                         <span className="text-lg text-gray-500 ml-1">min</span>

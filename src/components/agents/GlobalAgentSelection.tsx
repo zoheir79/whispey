@@ -215,7 +215,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between mb-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="flex items-center justify-between mb-6 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-4">
           <div className="flex items-center gap-4 flex-1">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
@@ -225,7 +225,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                 placeholder="Search agents..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
               />
             </div>
 
@@ -253,11 +253,11 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
 
           <div className="flex items-center gap-2">
             {/* View Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
               <Button
                 variant="ghost"
                 size="sm"
-                className={`px-3 py-1 ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow-sm' : ''}`}
+                className={`px-3 py-1 ${viewMode === 'list' ? 'bg-white dark:bg-slate-800 shadow-sm' : ''}`}
                 onClick={() => setViewMode('list')}
               >
                 <List className="w-4 h-4" />
@@ -265,7 +265,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`px-3 py-1 ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow-sm' : ''}`}
+                className={`px-3 py-1 ${viewMode === 'grid' ? 'bg-white dark:bg-slate-800 shadow-sm' : ''}`}
                 onClick={() => setViewMode('grid')}
               >
                 <Grid3X3 className="w-4 h-4" />
@@ -286,7 +286,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="group">
-            <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+            <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
                   <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -303,7 +303,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
           </div>
 
           <div className="group">
-            <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+            <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
                   <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800">
@@ -326,7 +326,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
           </div>
 
           <div className="group">
-            <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+            <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
                   <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
@@ -349,7 +349,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
           </div>
 
           <div className="group">
-            <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+            <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
                   <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800">
@@ -368,7 +368,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
 
         {/* Agents List */}
         {filteredAgents.length === 0 ? (
-          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
             <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No agents found</h3>
             <p className="text-gray-500 dark:text-gray-400">
@@ -376,11 +376,11 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
             </p>
           </div>
         ) : viewMode === 'list' ? (
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 divide-y divide-gray-200 dark:divide-slate-700">
             {filteredAgents.map((agent) => (
               <div
                 key={agent.id}
-                className={`group p-6 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
+                className={`group p-6 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer transition-colors ${
                   selectedAgent === agent.id ? 'bg-blue-50 border-blue-200' : ''
                 }`}
                 onClick={() => handleAgentClick(agent)}
@@ -388,7 +388,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                 <div className="flex items-center justify-between">
                   {/* Left: Agent Info */}
                   <div className="flex items-center gap-4 min-w-0 flex-1">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 relative">
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 relative">
                       {getAgentTypeIcon(agent.agent_type)}
                       <div className={`absolute w-3 h-3 rounded-full border-2 border-white -bottom-0.5 -right-0.5 ${
                         agent.is_active ? 'bg-green-500' : 'bg-gray-300'
@@ -430,13 +430,13 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="opacity-0 group-hover:opacity-100 w-8 h-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                          className="opacity-0 group-hover:opacity-100 w-8 h-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-all"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-44 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                      <DropdownMenuContent align="end" className="w-44 bg-white/95 dark:bg-slate-800/95 backdrop-blur-lg border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg">
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
                           router.push(`/agents/${agent.id}?tab=overview`)
@@ -491,12 +491,12 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                 }`}
                 onClick={() => handleAgentClick(agent)}
               >
-                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 relative">
+                      <div className="w-10 h-10 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 relative">
                         {getAgentTypeIcon(agent.agent_type)}
                         <div className={`absolute w-3 h-3 rounded-full border-2 border-white -bottom-0.5 -right-0.5 ${
                           agent.is_active ? 'bg-green-500' : 'bg-gray-300'

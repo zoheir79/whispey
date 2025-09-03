@@ -356,7 +356,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
               <select 
                 value={selectedWorkspace}
                 onChange={(e) => setSelectedWorkspace(e.target.value)}
-                className="text-sm border border-gray-300 dark:border-blue-600 rounded-md px-3 py-1.5 bg-white dark:bg-blue-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="text-sm border border-gray-300 dark:border-slate-600 rounded-md px-3 py-1.5 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="ALL">All Workspaces</option>
                 {availableWorkspaces.map((workspace) => (
@@ -381,7 +381,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm font-medium text-gray-700">Time Period</span>
         </div>
-        <div className="flex bg-gray-100 rounded-lg p-1">
+        <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
           {['7d', '30d', '90d'].map((period) => (
             <button
               key={period}

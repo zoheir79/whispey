@@ -277,7 +277,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
       case 'dev':
         return 'bg-blue-50 text-blue-700 border border-blue-100'
       default:
-        return 'bg-gray-50 text-gray-700 border border-gray-100'
+        return 'bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-slate-200 border border-gray-100 dark:border-slate-600'
     }
   }
 
@@ -290,7 +290,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
       case 'custom':
         return 'bg-purple-50 text-purple-700 border border-purple-100'
       default:
-        return 'bg-gray-50 text-gray-700 border border-gray-100'
+        return 'bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-slate-200 border border-gray-100 dark:border-slate-600'
     }
   }
 
@@ -373,7 +373,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
   if (agentError || projectError || !agent) {
     return (
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
         <Header />
         <div className="flex-1 flex items-center justify-center">
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-6 max-w-md text-center">
@@ -394,7 +394,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
 
   if (agentLoading || (shouldFetch && projectLoading)) {
     return (
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
         <Header />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-3">
@@ -423,7 +423,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
             <div className="flex items-center gap-6">
               <button 
                 onClick={handleBack}
-                className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl transition-all duration-200"
+                className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition-all duration-200"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -449,7 +449,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
               </div>
 
               {/* Refined Tab Navigation - Responsive */}
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 ml-2 md:ml-8 overflow-x-auto scrollbar-hide">
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-slate-800 rounded-xl p-1 ml-2 md:ml-8 overflow-x-auto scrollbar-hide">
                 {tabs.map((tab) => {
                   const Icon = tab.icon
                   const isActive = activeTab === tab.id
@@ -459,8 +459,8 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       onClick={() => handleTabChange(tab.id)}
                       className={`flex items-center gap-2 px-2 sm:px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
                         isActive
-                          ? 'bg-white dark:bg-blue-800 text-gray-900 dark:text-gray-100 shadow-sm'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-blue-800/50'
+                          ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-slate-700/50'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -523,7 +523,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
               {/* Polished Period Filters */}
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Period</span>
-                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                <div className="flex items-center gap-1 bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
                   {quickFilters.map((filter) => (
                     <button
                       key={filter.id}
@@ -547,7 +547,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       className={`px-4 py-2 text-sm font-medium rounded-lg border-gray-200 transition-all duration-200 ${
                         isCustomRange 
                           ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' 
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-700'
                       }`}
                     >
                       <CalendarDays className="mr-2 h-4 w-4" />

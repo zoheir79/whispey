@@ -124,14 +124,14 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         </div>
         
         {/* Period Selector */}
-        <div className="flex bg-gray-100 dark:bg-blue-800 rounded-lg p-1">
+        <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
           {['7d', '30d', '90d'].map((period) => (
             <button
               key={period}
               onClick={() => setSelectedPeriod(period)}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 selectedPeriod === period
-                  ? 'bg-white dark:bg-blue-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                  ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 shadow-sm'
                   : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100'
               }`}
             >

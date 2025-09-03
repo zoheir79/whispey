@@ -244,19 +244,19 @@ function Header({ breadcrumb }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 w-9 h-9 p-0 rounded-lg border border-transparent hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-200"
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800 w-9 h-9 p-0 rounded-lg border border-transparent hover:border-gray-200 dark:hover:border-slate-600 transition-all duration-200"
                 >
                   <HelpCircle className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 shadow-lg border border-gray-200/80 dark:border-gray-700/80 rounded-xl backdrop-blur-sm bg-white/95 dark:bg-gray-800/95">
+              <DropdownMenuContent align="end" className="w-64 shadow-lg border border-gray-200/80 dark:border-slate-700/80 rounded-xl backdrop-blur-sm bg-white/95 dark:bg-slate-800/95">
                 <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
                   <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Help & Resources</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Get support and documentation</p>
                 </div>
                 <div className="py-1">
                   <DropdownMenuItem asChild>
-                    <Link href="/docs" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1">
+                    <Link href="/docs" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1">
                       <FileText className="w-4 h-4 mr-3 text-blue-600" />
                       <div>
                         <p className="font-medium text-gray-900">Documentation</p>
@@ -265,7 +265,7 @@ function Header({ breadcrumb }: HeaderProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/api-reference" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1">
+                    <Link href="/api-reference" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1">
                       <Zap className="w-4 h-4 mr-3 text-yellow-600" />
                       <div>
                         <p className="font-medium text-gray-900">API Reference</p>
@@ -274,7 +274,7 @@ function Header({ breadcrumb }: HeaderProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/community" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1">
+                    <Link href="/community" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1">
                       <Users className="w-4 h-4 mr-3 text-green-600" />
                       <div>
                         <p className="font-medium text-gray-900">Community</p>
@@ -283,10 +283,10 @@ function Header({ breadcrumb }: HeaderProps) {
                     </Link>
                   </DropdownMenuItem>
                 </div>
-                <DropdownMenuSeparator className="bg-gray-100" />
+                <DropdownMenuSeparator className="bg-gray-100 dark:bg-slate-700" />
                 <div className="py-1">
                   <DropdownMenuItem asChild>
-                    <Link href="/support" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1">
+                    <Link href="/support" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1">
                       <HelpCircle className="w-4 h-4 mr-3 text-purple-600" />
                       <div>
                         <p className="font-medium text-gray-900">Contact Support</p>
@@ -314,14 +314,14 @@ function Header({ breadcrumb }: HeaderProps) {
                     <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 shadow-2xl border border-gray-100 rounded-2xl backdrop-blur-sm bg-white/95">
+                <DropdownMenuContent align="end" className="w-56 shadow-2xl border border-gray-100 dark:border-slate-700 rounded-2xl backdrop-blur-sm bg-white/95 dark:bg-slate-800/95">
                   <div className="px-3 py-2 border-b border-gray-100">
                     <p className="text-sm font-semibold text-gray-900">{getUserDisplayName()}</p>
                     <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
                   <div className="py-1">
                     <DropdownMenuItem asChild>
-                      <Link href="/profile" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1 cursor-pointer">
+                      <Link href="/profile" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1 cursor-pointer">
                         <User className="w-4 h-4 mr-3 text-gray-600" />
                         <span className="font-medium text-gray-900">Profile</span>
                       </Link>
@@ -329,13 +329,13 @@ function Header({ breadcrumb }: HeaderProps) {
                     {isSuperAdmin && (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link href="/admin/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1 cursor-pointer">
+                          <Link href="/admin/settings" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1 cursor-pointer">
                             <Settings className="w-4 h-4 mr-3 text-gray-600" />
                             <span className="font-medium text-gray-900">Admin Settings</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href="/admin/users" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg mx-1 cursor-pointer">
+                          <Link href="/admin/users" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1 cursor-pointer">
                             <Users className="w-4 h-4 mr-3 text-blue-600" />
                             <span className="font-medium text-gray-900">Admin Users</span>
                           </Link>
@@ -343,7 +343,7 @@ function Header({ breadcrumb }: HeaderProps) {
                       </>
                     )}
                   </div>
-                  <DropdownMenuSeparator className="bg-gray-100 dark:bg-gray-700" />
+                  <DropdownMenuSeparator className="bg-gray-100 dark:bg-slate-700" />
                   
                   {/* Theme Selector */}
                   <div className="py-1">
@@ -355,7 +355,7 @@ function Header({ breadcrumb }: HeaderProps) {
                           className={`flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                             theme === 'light' 
                               ? 'bg-blue-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300' 
-                              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                              : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400'
                           }`}
                         >
                           <Sun className="w-3 h-3" />
@@ -366,7 +366,7 @@ function Header({ breadcrumb }: HeaderProps) {
                           className={`flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                             theme === 'dark' 
                               ? 'bg-blue-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300' 
-                              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                              : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400'
                           }`}
                         >
                           <Moon className="w-3 h-3" />
@@ -377,7 +377,7 @@ function Header({ breadcrumb }: HeaderProps) {
                           className={`flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-md transition-colors ${
                             theme === 'system' 
                               ? 'bg-blue-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300' 
-                              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                              : 'hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400'
                           }`}
                         >
                           <Monitor className="w-3 h-3" />
@@ -387,7 +387,7 @@ function Header({ breadcrumb }: HeaderProps) {
                     </div>
                   </div>
                   
-                  <DropdownMenuSeparator className="bg-gray-100 dark:bg-gray-700" />
+                  <DropdownMenuSeparator className="bg-gray-100 dark:bg-slate-700" />
                   <div className="py-1">
                     <DropdownMenuItem onClick={handleLogout} className="flex items-center w-full px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg mx-1 cursor-pointer text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
                       <LogOut className="w-4 h-4 mr-3" />

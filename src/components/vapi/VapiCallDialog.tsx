@@ -293,7 +293,7 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
               </Label>
               
               {loadingPhoneNumbers ? (
-                <div className="flex items-center gap-2 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
+                <div className="flex items-center gap-2 p-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-800">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">Loading phone numbers...</span>
                 </div>
@@ -408,7 +408,7 @@ const CallDialog: React.FC<CallDialogProps> = ({ agentId, assistantName, vapiAss
                 Call To (Customer Number) <span className="text-red-500">*</span>
               </Label>
               <div className="flex items-center gap-2 mt-1">
-                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-gray-100">
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md text-sm text-gray-900 dark:text-gray-100">
                   <span className="text-lg">{selectedCountry.flag}</span>
                   <span className="font-medium">{selectedCountry.code}</span>
                 </div>

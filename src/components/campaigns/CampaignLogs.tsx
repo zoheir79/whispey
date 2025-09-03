@@ -300,7 +300,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+        return 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200 border-gray-200 dark:border-slate-600'
     }
   }
 
@@ -536,7 +536,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
     const pageNumbers = getPageNumbers()
 
     return (
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white">
+      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
         <div className="flex items-center gap-4 text-sm text-gray-600">
           <div>
             Showing {((page - 1) * pagination.itemsPerPage) + 1} to{' '}
@@ -635,7 +635,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
           <h2 className="text-xl font-semibold text-gray-900">Unable to Load Campaign Logs</h2>
@@ -729,7 +729,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
                 placeholder="Search contacts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white/80 backdrop-blur-sm"
+                className="pl-10 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm"
               />
             </div>
 
@@ -737,7 +737,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none bg-white/80 backdrop-blur-sm"
+              className="px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm"
             >
               {CALL_STATUS_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>
@@ -935,7 +935,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
       {/* Upload CSV Dialog */}
       {showUploadDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4">
             <div className="text-center">
               <div className="w-12 h-12 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
                 <Upload className="w-6 h-6 text-blue-600" />
@@ -958,7 +958,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
               </div>
               
               {csvFile && (
-                <div className="text-sm text-gray-600 bg-gray-50 rounded p-3">
+                <div className="text-sm text-gray-600 dark:text-slate-300 bg-gray-50 dark:bg-slate-700 rounded p-3">
                   <strong>Selected:</strong> {csvFile.name} ({(csvFile.size / 1024).toFixed(1)} KB)
                 </div>
               )}
@@ -1001,7 +1001,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
       {/* Delete All Confirmation Dialog */}
       {showDeleteDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4">
             {!deleteResult ? (
               <>
                 <div className="text-center">
@@ -1021,7 +1021,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Type <span className="font-mono bg-gray-100 px-1 rounded">DELETE ALL LOGS</span> to confirm:
+                      Type <span className="font-mono bg-gray-100 dark:bg-slate-700 px-1 rounded">DELETE ALL LOGS</span> to confirm:
                     </label>
                     <input
                       type="text"
@@ -1034,7 +1034,7 @@ const CampaignLogs: React.FC<CampaignLogsProps> = ({ project, agent, onBack }) =
                   </div>
                   
                   {pagination && (
-                    <div className="text-sm text-gray-600 bg-gray-50 rounded p-3">
+                    <div className="text-sm text-gray-600 dark:text-slate-300 bg-gray-50 dark:bg-slate-700 rounded p-3">
                       <strong>Records to be deleted:</strong> {pagination.totalItems} campaign log entries
                     </div>
                   )}

@@ -155,8 +155,8 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
       case 'user': return 'bg-orange-100 text-orange-800'
       case 'admin': return 'bg-blue-100 text-blue-800'
       case 'member': return 'bg-green-100 text-green-800'
-      case 'viewer': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'viewer': return 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200'
+      default: return 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200'
     }
   }
 
@@ -229,7 +229,7 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     placeholder="colleague@example.com"
                     required
                   />
@@ -241,7 +241,7 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
                   <select
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                   >
                     <option value="user">User</option>
                     <option value="viewer">Viewer (Read only)</option>
@@ -281,7 +281,7 @@ const MemberManagementDialog: React.FC<MemberManagementDialogProps> = ({
               ) : (
                 <div className="space-y-3">
                   {members.map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={member.user.profile_image_url || undefined} />

@@ -678,7 +678,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
 
   // ===== RENDER =====
   return (
-    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+    <div className="space-y-6 p-6 bg-gray-50 dark:bg-slate-900 min-h-screen">
       {/* Error Alert */}
       {error && (
         <Alert variant="destructive" className="border-red-200 bg-red-50">
@@ -693,7 +693,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
       )}
 
       {/* Header Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
@@ -729,7 +729,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
                 </Badge>
               )}
               {isAllView && (
-                <Badge variant="outline" className="gap-1 bg-gray-50 text-gray-700 border-gray-200">
+                <Badge variant="outline" className="gap-1 bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-slate-200 border-gray-200 dark:border-slate-600">
                   <Eye className="w-3 h-3" />
                   All
                 </Badge>
@@ -802,7 +802,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
                   {/* Filters Section */}
                   <div className="space-y-3">
                     <h3 className="text-lg font-medium text-gray-900">Filters</h3>
-                    <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4">
                       <CallFilter
                         onFiltersChange={setCurrentFilters}
                         onClear={() => setCurrentFilters([])}
@@ -817,7 +817,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
                   {/* Columns Section */}
                   <div className="space-y-3">
                     <h3 className="text-lg font-medium text-gray-900">Columns</h3>
-                    <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4">
                       <ColumnSelector
                         basicColumns={BASIC_COLUMN_DEFINITIONS.map((col) => col.key)}
                         basicColumnLabels={Object.fromEntries(BASIC_COLUMN_DEFINITIONS.map((col) => [col.key, col.label]))}
@@ -891,28 +891,28 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
       </div>
 
       {/* Data Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
         <div className="max-h-[600px] overflow-auto">
           <Table>
-            <TableHeader className="sticky top-0 bg-gray-50 z-10">
-              <TableRow className="border-b border-gray-200">
+            <TableHeader className="sticky top-0 bg-gray-50 dark:bg-slate-800 z-10">
+              <TableRow className="border-b border-gray-200 dark:border-slate-700">
                 {currentColumns.basic.includes("customer_number") && (
-                  <TableHead className="font-semibold text-gray-700 bg-gray-50">Customer Number</TableHead>
+                  <TableHead className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">Customer Number</TableHead>
                 )}
                 {currentColumns.basic.includes("call_id") && (
-                  <TableHead className="font-semibold text-gray-700 bg-gray-50">Call ID</TableHead>
+                  <TableHead className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">Call ID</TableHead>
                 )}
                 {currentColumns.basic.includes("call_ended_reason") && (
-                  <TableHead className="font-semibold text-gray-700 bg-gray-50">Status</TableHead>
+                  <TableHead className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">Status</TableHead>
                 )}
                 {currentColumns.basic.includes("duration_seconds") && (
-                  <TableHead className="font-semibold text-gray-700 bg-gray-50">Duration</TableHead>
+                  <TableHead className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">Duration</TableHead>
                 )}
                 {currentColumns.basic.includes("call_started_at") && (
-                  <TableHead className="font-semibold text-gray-700 bg-gray-50">Start Time</TableHead>
+                  <TableHead className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">Start Time</TableHead>
                 )}
                 {currentColumns.basic.includes("avg_latency") && (
-                  <TableHead className="font-semibold text-gray-700 bg-gray-50">Avg Latency</TableHead>
+                  <TableHead className="font-semibold text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-slate-800">Avg Latency</TableHead>
                 )}
                 {currentColumns.metadata.map((key) => (
                   <TableHead key={`metadata-head-${key}`} className="font-semibold text-gray-700 bg-gray-50">
@@ -940,7 +940,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
                 <TableRow>
                   <TableCell colSpan={20} className="text-center py-12">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
                         <Database className="w-6 h-6 text-gray-400" />
                       </div>
                       <div className="text-center">
@@ -955,7 +955,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
               ) : (
                 <>
                   {filteredCallLogs.map((call) => (
-                    <TableRow key={call.id} className="hover:bg-gray-50 transition-colors border-b border-gray-100">
+                    <TableRow key={call.id} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border-b border-gray-100 dark:border-slate-700">
                       {currentColumns.basic.includes("customer_number") && (
                         <TableCell className="font-medium text-gray-900">{call.customer_number}</TableCell>
                       )}
@@ -1016,7 +1016,7 @@ const AgentCustomLogsView: React.FC<AgentCustomLogsViewProps> = ({ agentId, date
 
         {/* Table Footer */}
         {!isLoading && filteredCallLogs.length > 0 && (
-          <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
+          <div className="px-6 py-3 bg-gray-50 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
             <p className="text-sm text-gray-600">
               Showing {filteredCallLogs.length} of {callLogs.length} call logs
               {searchTerm && ` (filtered by "${searchTerm}")`}

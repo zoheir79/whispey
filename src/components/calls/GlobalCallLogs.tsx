@@ -348,7 +348,7 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
   }
 
   return (
-    <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="space-y-4 p-6 bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

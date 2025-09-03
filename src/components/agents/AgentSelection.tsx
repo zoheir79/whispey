@@ -291,7 +291,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
         <Header breadcrumb={breadcrumb} />
         <div className="flex items-center justify-center py-32">
           <div className="text-center space-y-4">
@@ -305,11 +305,11 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
         <Header breadcrumb={breadcrumb} />
         <div className="flex items-center justify-center py-32">
           <div className="text-center space-y-6 max-w-sm">
-            <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto">
               <AlertCircle className="w-8 h-8 text-red-400" />
             </div>
             <div>
@@ -329,7 +329,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <Header breadcrumb={breadcrumb} />
       
       <main className="max-w-6xl mx-auto px-8 py-8">
@@ -355,19 +355,19 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
               placeholder="Search agents"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:outline-none transition-all"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:outline-none transition-all"
             />
           </div>
 
           {/* Right: Minimal Controls */}
           <div className="flex items-center gap-4">
             {/* Clean Filter Toggle */}
-            <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <div className="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
               <button
                 onClick={() => setStatusFilter('all')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                   statusFilter === 'all' 
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm' 
+                    ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 shadow-sm' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
@@ -377,7 +377,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 onClick={() => setStatusFilter('active')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                   statusFilter === 'active' 
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm' 
+                    ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 shadow-sm' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
@@ -387,7 +387,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 onClick={() => setStatusFilter('inactive')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                   statusFilter === 'inactive' 
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm' 
+                    ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 shadow-sm' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
@@ -396,12 +396,12 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
             </div>
 
             {/* View Toggle */}
-            <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <div className="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-md transition-all ${
                   viewMode === 'list' 
-                    ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100' 
+                    ? 'bg-white dark:bg-slate-700 shadow-sm text-gray-900 dark:text-gray-100' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
@@ -411,7 +411,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-md transition-all ${
                   viewMode === 'grid' 
-                    ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100' 
+                    ? 'bg-white dark:bg-slate-700 shadow-sm text-gray-900 dark:text-gray-100' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
@@ -434,11 +434,11 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
         {/* Apple-Style Agent List */}
         {viewMode === 'list' ? (
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
             {filteredAgents.map((agent, index) => (
               <div
                 key={agent.id}
-                className={`group px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
+                className={`group px-6 py-4 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-slate-700 last:border-b-0 ${
                   selectedAgent === agent?.id ? 'bg-blue-50 dark:bg-slate-800/50' : ''
                 }`}
                 onClick={() => handleAgentClick(agent)}
@@ -446,7 +446,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 <div className="flex items-center justify-between">
                   {/* Left: Agent Info */}
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
                       {getAgentTypeIcon(agent.agent_type)}
                       <div className={`absolute w-3 h-3 rounded-full border-2 border-white -bottom-0.5 -right-0.5 ${
                         agent.is_active ? 'bg-green-500' : 'bg-gray-300'
@@ -488,13 +488,13 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="opacity-0 group-hover:opacity-100 w-8 h-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                          className="opacity-0 group-hover:opacity-100 w-8 h-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-all"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-44 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                      <DropdownMenuContent align="end" className="w-44 bg-white/95 dark:bg-slate-800/95 backdrop-blur-lg border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg">
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
                           router.push(`/agents/${agent.id}?tab=overview`)
@@ -557,12 +557,12 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 }`}
                 onClick={() => handleAgentClick(agent)}
               >
-                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 relative">
+                      <div className="w-10 h-10 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 relative">
                         {getAgentTypeIcon(agent.agent_type)}
                         <div className={`absolute w-3 h-3 rounded-full border-2 border-white -bottom-0.5 -right-0.5 ${
                           agent.is_active ? 'bg-green-500' : 'bg-gray-300'
@@ -585,7 +585,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                      <DropdownMenuContent align="end" className="w-40 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
                           router.push(`/agents/${agent.id}?tab=overview`)
