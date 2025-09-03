@@ -677,7 +677,7 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
           </div>
         </div>
 
-      {/* Agents Performance Table */}
+        {/* Agents Performance Table */}
       <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
@@ -766,5 +766,6 @@ export default function WorkspaceDashboard({ workspace }: { workspace: any }) {
         </div>
       </div>
     </div>
+  </div>
   )
 }
