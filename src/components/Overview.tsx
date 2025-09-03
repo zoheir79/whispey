@@ -80,12 +80,12 @@ const ICON_COMPONENTS = {
 }
 
 const COLOR_CLASSES = {
-  blue: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border border-blue-400/50',
-  green: 'bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/50',
-  purple: 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border border-purple-400/50',
-  orange: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border border-orange-400/50',
-  red: 'bg-gradient-to-r from-red-500 to-red-600 text-white border border-red-400/50',
-  emerald: 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border border-emerald-400/50'
+  blue: 'bg-blue-100 text-blue-600',
+  green: 'bg-green-100 text-green-600',
+  purple: 'bg-purple-100 text-purple-600',
+  orange: 'bg-orange-100 text-orange-600',
+  red: 'bg-red-100 text-red-600',
+  emerald: 'bg-emerald-100 text-emerald-600'
 }
 
 const subDays = (date: Date, days: number) => {
@@ -265,7 +265,6 @@ const Overview: React.FC<OverviewProps> = ({
       setLoadingCustomTotals(false)
     }
   }
-
 
   // Build PostgREST-friendly filters and OR string to mirror SQL logic (AND vs OR)
   const buildFiltersForDownload = (
@@ -553,230 +552,304 @@ const Overview: React.FC<OverviewProps> = ({
 
   if (error) {
     return (
-      <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8 overflow-y-auto bg-slate-950/50">
-        {/* Overview Header */}
-        <div className="space-y-3">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-slate-100 via-white to-slate-100 bg-clip-text text-transparent tracking-tight">
-            Overview
-          </h2>
-          <p className="text-slate-400 font-medium">
-            {getDateRangeDisplay()}
-          </p>
+      <div className="h-full bg-gray-25 flex items-center justify-center p-6" style={{ backgroundColor: '#fafafa' }}>
+        <div className="text-center space-y-6 max-w-sm">
+          <div className="w-16 h-16 bg-white rounded-2xl border border-red-200 flex items-center justify-center mx-auto shadow-sm">
+            <Warning weight="light" className="w-7 h-7 text-red-400" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-medium text-gray-900">Unable to Load Analytics</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">{error}</p>
+          </div>
         </div>
       </div>
     )
   }
 
   // Debug all analytics data
-  console.log('🔍 Overview RENDER - Full analytics object:', analytics)
+  console.log('🔍 DEBUG Overview - Full analytics:', analytics);
+  console.log('🔍 DEBUG Overview - Loading:', loading);
+  console.log('🔍 DEBUG Overview - Error:', error);
+  console.log('🔍 DEBUG Overview - Agent ID:', agent?.id);
+  console.log('🔍 DEBUG Overview - Date Range:', dateRange);
 
   return (
-    <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8 overflow-y-auto bg-slate-950/50">
-      {/* Overview Header */}
-      <div className="space-y-3">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-slate-100 via-white to-slate-100 bg-clip-text text-transparent tracking-tight">
-          Overview
-        </h2>
-        <p className="text-slate-400 font-medium">
-          {getDateRangeDisplay()}
-        </p>
-      </div>
-
-      {/* Main Analytics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-        {/* Total Calls */}
-        <div className="group">
-          <div className="bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl hover:shadow-3xl hover:border-slate-700/50 transition-all duration-300">
-            <div className="p-4 md:p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                  <Phone weight="regular" className="w-5 h-5 text-white drop-shadow-sm" />
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-medium text-slate-400 bg-slate-800/50 px-2 py-1 rounded-md border border-slate-700/50">
-                    Total
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Calls</h3>
-                <p className="text-2xl font-light text-slate-100 tracking-tight">{analytics?.totalCalls?.toLocaleString() || '0'}</p>
-                <p className="text-xs text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Average Duration */}
-        <div className="group">
-          <div className="bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl hover:shadow-3xl hover:border-slate-700/50 transition-all duration-300">
-            <div className="p-4 md:p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl shadow-lg">
-                  <Clock weight="regular" className="w-5 h-5 text-white drop-shadow-sm" />
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-medium text-slate-400 bg-slate-800/50 px-2 py-1 rounded-md border border-slate-700/50">
-                    {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Avg Duration</h3>
-                <p className="text-2xl font-light text-slate-100 tracking-tight">
-                  {analytics?.totalCalls && analytics?.totalCallMinutes
-                    ? `${Math.floor((analytics.totalCallMinutes / analytics.totalCalls) / 60)}:${(Math.round((analytics.totalCallMinutes / analytics.totalCalls) % 60)).toString().padStart(2, '0')}`
-                    : '0:00'
-                  }
-                </p>
-                <p className="text-xs text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Successful Calls */}
-        <div className="group">
-          <div className="bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl hover:shadow-3xl hover:border-slate-700/50 transition-all duration-300">
-            <div className="p-4 md:p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg">
-                  <CheckCircle weight="regular" className="w-5 h-5 text-white drop-shadow-sm" />
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-1 bg-green-500/20 px-2 py-1 rounded-md border border-green-500/30">
-                    <ArrowUp weight="bold" className="w-3 h-3 text-green-400" />
-                    <span className="text-xs font-bold text-green-400">
-                      {analytics ? successRate.toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Successful</h3>
-                <p className="text-2xl font-light text-slate-100 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
-                <p className="text-xs text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Failed Calls */}
-        <div className="group">
-          <div className="bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl hover:shadow-3xl hover:border-slate-700/50 transition-all duration-300">
-            <div className="p-4 md:p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-xl shadow-lg">
-                  <XCircle weight="regular" className="w-5 h-5 text-white drop-shadow-sm" />
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-1 bg-red-500/20 px-2 py-1 rounded-md border border-red-500/30">
-                    <ArrowDown weight="bold" className="w-3 h-3 text-red-400" />
-                    <span className="text-xs font-bold text-red-400">
-                      {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Failed</h3>
-                <p className="text-2xl font-light text-slate-100 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
-                <p className="text-xs text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Total Tokens */}
-        <div className="group">
-          <div className="bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl hover:shadow-3xl hover:border-slate-700/50 transition-all duration-300">
-            <div className="p-4 md:p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl shadow-lg">
-                  <Activity weight="regular" className="w-5 h-5 text-white drop-shadow-sm" />
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-medium text-slate-400 bg-slate-800/50 px-2 py-1 rounded-md border border-slate-700/50">
-                    {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Tokens</h3>
-                <p className="text-2xl font-light text-slate-100 tracking-tight">
-                  {analytics?.totalTokens?.toLocaleString() || '0'}
-                </p>
-                <p className="text-xs text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Custom Totals */}
-        {customTotals.map((config) => {
-          const result = customTotalResults.find(r => r.configId === config.id)
-          const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
-          const colorClass = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES] || COLOR_CLASSES.blue
-
-          return (
-            <div key={config.id} className="group">
-              <div className="bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl hover:shadow-3xl hover:border-slate-700/50 transition-all duration-300">
-                <div className="p-4 md:p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`p-3 ${colorClass} rounded-xl shadow-lg`}>
-                      <IconComponent weight="regular" className="w-5 h-5 text-white drop-shadow-sm" />
+    <div className="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
+        {analytics ? (
+          <>
+            {/* Responsive Metrics Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
+              {/* Total Calls */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                        <Phone weight="regular" className="w-5 h-5 text-blue-600" />
+                      </div>
+                      
                     </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 hover:bg-slate-800/50"
-                        onClick={() => handleDownloadCustomTotal(config)}
-                        title="Download matching logs"
-                      >
-                        <Download className="h-3 w-3 text-slate-400" />
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 w-6 p-0 hover:bg-slate-800/50"
-                          >
-                            <MoreHorizontal className="h-3 w-3 text-slate-400" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate" title={config.name}>
-                      {config.name}
-                    </h3>
-                    <p className="text-2xl font-light text-slate-100 tracking-tight">
-                      {loadingCustomTotals || !result ? (
-                        <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
-                      ) : (
-                        formatCustomTotalValue(result, config)
-                      )}
-                    </p>
-                    <p className="text-xs text-slate-400 font-medium">
-                      {config.filters.length > 0 
-                        ? `${config.filters.length} filter${config.filters.length > 1 ? 's' : ''} (${config.filterLogic})`
-                        : 'No filters'
-                      }
-                    </p>
-                    {result?.error && (
-                      <p className="text-xs text-red-500 mt-1">
-                        {result.error}
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Calls</h3>
+                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                        {(() => {
+                          const totalCalls = analytics?.totalCalls || 0;
+                          console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
+                          console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
+                          console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
+                          return String(totalCalls).replace(/^0+/, '') || '0';
+                        })()}
                       </p>
-                    )}
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Global Call Duration */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                        <Clock weight="regular" className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                          {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Call Duration</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
+                        <span className="text-lg text-gray-500 ml-1">min</span>
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Processing Time */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
+                        <Activity weight="regular" className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                          STT+LLM+TTS
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">AI Processing</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
+                        <span className="text-lg text-gray-500 ml-1">min</span>
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Cost */}
+              {role !== 'user' && (
+                <div className="group">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                    <div className="p-4 md:p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-2 bg-amber-50 rounded-lg border border-amber-100">
+                          <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600" />
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-medium text-gray-500">INR</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Cost</h3>
+                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">₹{analytics?.totalCost?.toFixed(2) || '0.00'}</p>
+                        <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Average Latency */}
+              {role !== 'user' && (
+                <div className="group">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                    <div className="p-4 md:p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-2 bg-purple-50 rounded-lg border border-purple-100">
+                          <Lightning weight="regular" className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">avg</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Response Time</h3>
+                        <p className="text-2xl font-light text-gray-900 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-400 ml-1">s</span></p>
+                        <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Successful Calls */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-green-50 rounded-lg border border-green-100">
+                        <CheckCircle weight="regular" className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                          <ArrowUp weight="bold" className="w-3 h-3 text-green-600" />
+                          <span className="text-xs font-bold text-green-600">
+                            {analytics ? successRate.toFixed(1) : '0.0'}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Successful</h3>
+                      <p className="text-2xl font-light text-green-600 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Failed Calls */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-red-50 rounded-lg border border-red-100">
+                        <XCircle weight="regular" className="w-5 h-5 text-red-600" />
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 text-red-600">
+                          <ArrowDown weight="bold" className="w-3 h-3 text-red-600" />
+                          <span className="text-xs font-bold text-red-600">
+                            {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Failed</h3>
+                      <p className="text-2xl font-light text-red-600 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Tokens */}
+              <div className="group">
+                <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                        <Activity weight="regular" className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                          {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Tokens</h3>
+                      <p className="text-2xl font-light text-gray-900 tracking-tight">
+                        {analytics?.totalTokens?.toLocaleString() || '0'}
+                      </p>
+                      <p className="text-xs text-gray-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            {customTotals.map((config) => {
+              const result = customTotalResults.find(r => r.configId === config.id)
+
+              const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
+              const colorClass = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES] || COLOR_CLASSES.blue
+
+              return (
+                <div key={config.id} className="group">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300">
+                    <div className="p-4 md:p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`p-2 ${colorClass.replace('bg-', 'bg-').replace('text-', 'border-')} rounded-lg border`}>
+                          <IconComponent weight="regular" className={`w-5 h-5 ${colorClass.split(' ')[1]}`} />
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 hover:bg-gray-100"
+                            onClick={() => handleDownloadCustomTotal(config)}
+                            title="Download matching logs"
+                          >
+                            <Download className="h-3 w-3 text-gray-400" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 hover:bg-gray-100"
+                              >
+                                <MoreHorizontal className="h-3 w-3 text-gray-400" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" title={config.name}>
+                          {config.name}
+                        </h3>
+                        <p className="text-2xl font-light text-gray-900 tracking-tight">
+                          {loadingCustomTotals || !result ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            formatCustomTotalValue(result, config)
+                          )}
+                        </p>
+                        <p className="text-xs text-gray-400 font-medium">
+                          {config.filters.length > 0 
+                            ? `${config.filters.length} filter${config.filters.length > 1 ? 's' : ''} (${config.filterLogic})`
+                            : 'No filters'
+                          }
+                        </p>
+                        {result?.error && (
+                          <p className="text-xs text-red-500 mt-1">
+                            {result.error}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1147,49 +1220,48 @@ const Overview: React.FC<OverviewProps> = ({
             </div>
 
             {/* Chart Analytics Section */}
-            {analytics && analytics.dailyData && analytics.dailyData.length > 0 ? (
+            <ChartProvider>
               <div className="space-y-6">
-                <ChartProvider>
-                  <div className="space-y-6">
-                    <EnhancedChartBuilder 
-                      agentId={agent.id}
-                      dateFrom={dateRange.from}
-                      dateTo={dateRange.to}
-                      metadataFields={metadataFields}
-                      transcriptionFields={transcriptionFields}
-                      fieldsLoading={fieldsLoading}
-                    />
+                <EnhancedChartBuilder 
+                  agentId={agent.id}
+                  dateFrom={dateRange.from}
+                  dateTo={dateRange.to}
+                  metadataFields={metadataFields}
+                  transcriptionFields={transcriptionFields}
+                  fieldsLoading={fieldsLoading}
+                />
 
-                    {/* Floating Action Menu */}
-                    {userEmail && !fieldsLoading && (
-                      <FloatingActionMenu
-                        metadataFields={metadataFields}
-                        transcriptionFields={transcriptionFields}
-                        agentId={agent?.id}
-                        projectId={project?.id}
-                        userEmail={userEmail}
-                        availableColumns={AVAILABLE_COLUMNS}
-                        onSaveCustomTotal={handleSaveCustomTotal}
-                      />
-                    )}
-                  </div>
-                </ChartProvider>
+                {/* Floating Action Menu */}
+                {userEmail && !fieldsLoading && (
+                  <FloatingActionMenu
+                    metadataFields={metadataFields}
+                    transcriptionFields={transcriptionFields}
+                    agentId={agent?.id}
+                    projectId={project?.id}
+                    userEmail={userEmail}
+                    availableColumns={AVAILABLE_COLUMNS}
+                    onSaveCustomTotal={handleSaveCustomTotal}
+                  />
+                )}
               </div>
-            ) : (
-              <div className="h-64 bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-slate-800/50 rounded-2xl border border-slate-700/50 flex items-center justify-center mx-auto">
-                    <CalendarBlank weight="light" className="w-8 h-8 text-slate-400" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-medium text-slate-200">No Data Available</h3>
-                    <p className="text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
-                      No calls found for the selected time period. Try adjusting your date range or check back later.
-                    </p>
-                  </div>
-                </div>
+            </ChartProvider>
+          </>
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center space-y-8">
+              <div className="w-20 h-20 bg-white rounded-2xl border border-gray-200 flex items-center justify-center mx-auto shadow-sm">
+                <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
               </div>
-            )}
+              <div className="space-y-2">
+                <h3 className="text-xl font-medium text-gray-900">No Data Available</h3>
+                <p className="text-sm text-gray-500 max-w-sm mx-auto leading-relaxed">
+                  No calls found for the selected time period. Try adjusting your date range or check back later.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -793,26 +793,38 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
     })
   }
 
+  if (error) {
+    return (
+      <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center space-y-4">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Unable to load calls</h3>
+            <p className="text-gray-600 dark:text-gray-400">{error}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Show loading state until role is determined
   if (roleLoading || role === null) {
     return (
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-slate-950/50">
-        <div className="flex-none p-6 border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-xl">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="flex-none p-4 border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
           <div className="flex items-center justify-between">
-            <div className="h-10 bg-slate-800/50 animate-pulse rounded-xl w-48"></div>
-            <div className="flex items-center gap-3">
-              <div className="h-10 bg-slate-800/50 animate-pulse rounded-xl w-28"></div>
-              <div className="h-10 bg-slate-800/50 animate-pulse rounded-xl w-28"></div>
-              <div className="h-10 bg-slate-800/50 animate-pulse rounded-xl w-10"></div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded w-48"></div>
+            <div className="flex items-center gap-2">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded w-24"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded w-24"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded w-8"></div>
             </div>
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl border border-slate-800/50 shadow-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
-              <Loader2 className="w-8 h-8 animate-spin text-white drop-shadow-sm" />
-            </div>
-            <p className="text-slate-400 text-lg font-medium">Loading permissions...</p>
+          <div className="text-center space-y-4 mt-20">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400 mx-auto" />
+            <p className="text-gray-600 dark:text-gray-400">Loading permissions...</p>
           </div>
         </div>
       </div>
@@ -820,9 +832,9 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-slate-950/50">
+    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
       {/* Header with Filters and Column Selector */}
-      <div className="flex-none p-6 border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-xl shadow-lg">
+      <div className="flex-none p-4 border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
         <div className="flex items-center justify-between">
           <CallFilter 
             onFiltersChange={handleFiltersChange}
@@ -850,11 +862,13 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
               onSelectAll={handleSelectAll}
             />
             <Button
+              variant="outline"
+              size="sm"
               onClick={handleRefresh}
               disabled={loading}
-              className="bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-slate-200 hover:text-white transition-all duration-300 gap-2 h-10 w-10 p-0 rounded-xl"
+              className="gap-2 h-8 w-8 p-0"
             >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
             </Button>
             
           </div>
@@ -864,23 +878,19 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
       {/* Responsive Table Container */}
       <div className="flex-1 space-y-4 p-6">
         {loading && calls.length === 0 ? (
-          <div className="flex items-center justify-center py-16">
+          <div className="flex items-center justify-center py-12">
             <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl border border-slate-800/50 shadow-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
-                <Loader2 className="w-8 h-8 animate-spin text-white drop-shadow-sm" />
-              </div>
-              <p className="text-slate-400 text-lg font-medium">Loading calls...</p>
+              <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
+              <p className="text-muted-foreground">Loading calls...</p>
             </div>
           </div>
         ) : calls.length === 0 && !loading ? (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gradient-to-r from-slate-600 to-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <Phone className="w-8 h-8 text-white drop-shadow-sm" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-100 mb-3">
+          <div className="text-center py-12">
+            <Phone className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">
               {activeFilters.length > 0 ? "No calls match your filters" : "No calls found"}
             </h3>
-            <p className="text-slate-400 max-w-md mx-auto">
+            <p className="text-muted-foreground">
               {activeFilters.length > 0
                 ? "Try adjusting your filters to find what you're looking for."
                 : "Calls will appear here once your agent starts handling conversations."}
@@ -888,15 +898,15 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
           </div>
         ) : (
           <div className="group">
-            <div className="bg-slate-900/50 border border-slate-800/50 rounded-2xl shadow-2xl shadow-slate-900/25 backdrop-blur-xl hover:shadow-3xl hover:border-slate-700/50 transition-all duration-300 overflow-hidden">
+            <div className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all duration-300 overflow-x-auto">
               <Table className="w-full">
                 <TableHeader>
-                  <TableRow className="border-b border-slate-800/50 bg-slate-800/30">
+                  <TableRow>
                     {/* Basic Columns */}
                     {visibleColumns.basic.map((key) => {
                       const col = basicColumns.find((c) => c.key === key)
                       return (
-                        <TableHead key={`basic-${key}`} className="font-semibold text-slate-200 px-4 py-3">
+                        <TableHead key={`basic-${key}`} className="font-semibold">
                           {col?.label ?? key}
                         </TableHead>
                       )
@@ -906,7 +916,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                     {visibleColumns.metadata.map((key) => (
                       <TableHead 
                         key={`metadata-${key}`} 
-                        className="font-semibold text-slate-200 px-4 py-3"
+                        className="font-semibold text-foreground"
                       >
                         <div className="flex flex-col">
                           <span className="text-sm">{key}</span>
@@ -918,7 +928,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                     {visibleColumns.transcription_metrics.map((key) => (
                       <TableHead 
                         key={`transcription-${key}`} 
-                        className="font-semibold text-slate-200 px-4 py-3"
+                        className="font-semibold text-foreground"
                       >
                         <div className="flex flex-col">
                           <span className="text-sm">{key}</span>
@@ -931,7 +941,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   {calls.map((call: CallLog) => (
                     <TableRow
                       key={call.id}
-                      className="cursor-pointer hover:bg-slate-800/30 border-b border-slate-800/50 transition-all duration-200"
+                      className="cursor-pointer hover:bg-muted/50"
                       onClick={() => setSelectedCall(call)}
                     >
               {visibleColumns.basic.map((key) => {
@@ -941,16 +951,16 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   case "customer_number":
                     value = (
                       <div className="flex w-full items-center gap-3">
-                        <div className="w-10 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                          <Phone className="w-4 h-4 text-white drop-shadow-sm" />
+                        <div className="w-10 h-8 rounded-full  flex items-center justify-center">
+                          <Phone className="w-4 h-4 text-primary" />
                         </div>
-                        <span className="font-medium text-slate-200">{call.customer_number}</span>
+                        <span className="font-medium">{call.customer_number}</span>
                       </div>
                     )
                     break
                   case "call_id":
                     value = (
-                      <code className="text-xs bg-slate-800/50 border border-slate-700/50 text-slate-300 px-3 py-1.5 rounded-xl font-mono shadow-sm">
+                      <code className="text-xs bg-muted/60 px-3 py-1.5 rounded-md font-mono">
                         {call.call_id.slice(-8)}
                       </code>
                     )
@@ -958,11 +968,8 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   case "call_ended_reason":
                     value = (
                       <Badge
-                        className={`text-xs font-semibold px-3 py-1.5 rounded-xl shadow-lg ${
-                          call.call_ended_reason === "completed" 
-                            ? "bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400/50" 
-                            : "bg-gradient-to-r from-red-500 to-red-600 text-white border border-red-400/50"
-                        }`}
+                        variant={call.call_ended_reason === "completed" ? "default" : "destructive"}
+                        className="text-xs font-medium px-2.5 py-1"
                       >
                         {call.call_ended_reason === "completed" ? (
                           <CheckCircle className="w-3 h-3 mr-1.5" />
@@ -975,8 +982,8 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                     break
                   case "duration_seconds":
                     value = (
-                      <div className="flex items-center gap-2 text-sm font-medium text-slate-200">
-                        <Clock className="w-3 h-3 text-slate-400" />
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <Clock className="w-3 h-3 text-muted-foreground" />
                         {formatDuration(call.duration_seconds)}
                       </div>
                     )
@@ -986,8 +993,8 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                     break
                   case "avg_latency":
                     value = call?.avg_latency ? (
-                      <span className="font-mono text-slate-200">{call.avg_latency.toFixed(2)}s</span>
-                    ) : <span className="text-slate-400">"-"</span>
+                      <span className="font-mono">{call.avg_latency.toFixed(2)}s</span>
+                    ) : "-"
                     break
                   case "total_cost":
                     value = call?.total_llm_cost || call?.total_tts_cost || call?.total_stt_cost ? (
@@ -997,7 +1004,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                 }
 
                 return (
-                  <TableCell key={`basic-${call.id}-${key}`} className="py-4 px-4 text-slate-200">
+                  <TableCell key={`basic-${call.id}-${key}`} className="py-4">
                     {value}
                   </TableCell>
                 )
@@ -1007,7 +1014,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       {visibleColumns.metadata.map((key) => (
                         <TableCell 
                           key={`metadata-${call.id}-${key}`} 
-                          className="py-4 px-4"
+                          className="py-4"
                         >
                           <DynamicJsonCell 
                             data={call.metadata} 
@@ -1020,7 +1027,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       {visibleColumns.transcription_metrics.map((key) => (
                         <TableCell 
                           key={`transcription-${call.id}-${key}`} 
-                          className="py-4 px-4"
+                          className="py-4"
                         >
                           <DynamicJsonCell 
                             data={call.transcription_metrics} 
@@ -1036,18 +1043,14 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
             
             {/* Load More Trigger */}
             {hasMore && (
-              <div ref={loadMoreRef} className="py-8 text-center">
-                {loading && (
-                  <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl border border-slate-800/50 shadow-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
-                    <Loader2 className="w-6 h-6 animate-spin text-white drop-shadow-sm" />
-                  </div>
-                )}
+              <div ref={loadMoreRef} className="py-6 text-center">
+                {loading && <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />}
               </div>
             )}
 
             {/* End of List */}
             {!hasMore && calls.length > 0 && (
-              <div className="py-6 text-slate-400 text-sm text-center font-medium">
+              <div className="py-4 text-muted-foreground text-sm text-center">
                 All calls loaded ({calls.length} total)
               </div>
             )}

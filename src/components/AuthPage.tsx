@@ -54,7 +54,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900 flex flex-col lg:flex-row transition-colors duration-300">
       {/* Left Side - Branding & Value Proposition */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
         {/* Background Pattern */}
@@ -132,10 +132,10 @@ export default function AuthPage() {
 
           {/* Header */}
           <div className="text-center lg:text-left">
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-gray-100 mb-2">
               {isLogin ? 'Welcome back' : 'Create an account'}
             </h2>
-            <p className="text-slate-600">
+            <p className="text-slate-600 dark:text-gray-400">
               {isLogin ? 'Sign in to your account to continue' : 'Get started with Whispey'}
             </p>
           </div>
@@ -151,7 +151,7 @@ export default function AuthPage() {
               
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">
                     Email address
                   </label>
                   <input
@@ -162,12 +162,12 @@ export default function AuthPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
+                    className="w-full border-2 border-slate-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-blue-500 focus:border-slate-900 dark:focus:border-blue-500 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">
                     Password
                   </label>
                   <input
@@ -178,14 +178,14 @@ export default function AuthPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
+                    className="w-full border-2 border-slate-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-blue-500 focus:border-slate-900 dark:focus:border-blue-500 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
                   />
                 </div>
 
                 {!isLogin && (
                   <>
                     <div>
-                      <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-1">
+                      <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">
                         First name
                       </label>
                       <input
@@ -195,11 +195,11 @@ export default function AuthPage() {
                         autoComplete="given-name"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="w-full border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
+                        className="w-full border-2 border-slate-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-blue-500 focus:border-slate-900 dark:focus:border-blue-500 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
                       />
                     </div>
                     <div>
-                      <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-1">
+                      <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">
                         Last name
                       </label>
                       <input
@@ -209,7 +209,7 @@ export default function AuthPage() {
                         autoComplete="family-name"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="w-full border-2 border-slate-200 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
+                        className="w-full border-2 border-slate-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-slate-900 dark:focus:ring-blue-500 focus:border-slate-900 dark:focus:border-blue-500 rounded-lg py-3 px-4 transition-all duration-200 ease-in-out"
                       />
                     </div>
                   </>
@@ -220,7 +220,7 @@ export default function AuthPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 ease-in-out shadow-sm hover:shadow-md flex items-center justify-center"
+                  className="w-full bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 ease-in-out shadow-sm hover:shadow-md flex items-center justify-center"
                 >
                   {isLoading ? (
                     <>

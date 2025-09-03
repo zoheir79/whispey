@@ -291,12 +291,12 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#fafafa' }}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <Header breadcrumb={breadcrumb} />
         <div className="flex items-center justify-center py-32">
           <div className="text-center space-y-4">
             <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
-            <p className="text-sm font-medium text-gray-600">Loading agents</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Loading agents</p>
           </div>
         </div>
       </div>
@@ -305,16 +305,16 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#fafafa' }}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <Header breadcrumb={breadcrumb} />
         <div className="flex items-center justify-center py-32">
           <div className="text-center space-y-6 max-w-sm">
-            <div className="w-16 h-16 bg-white rounded-2xl border border-gray-200 flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 flex items-center justify-center mx-auto">
               <AlertCircle className="w-8 h-8 text-red-400" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Unable to Load Agents</h3>
-              <p className="text-sm text-gray-500 mt-2">{error}</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Unable to Load Agents</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{error}</p>
             </div>
             <Button 
               onClick={() => window.location.reload()} 
@@ -329,7 +329,7 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#fafafa' }}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <Header breadcrumb={breadcrumb} />
       
       <main className="max-w-6xl mx-auto px-8 py-8">
@@ -337,8 +337,8 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Voice Agents</h1>
-              <p className="text-gray-600 mt-1">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Voice Agents</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
                 Manage AI voice agents for this workspace. Create, configure, and monitor your conversational AI assistants.
               </p>
             </div>
@@ -355,20 +355,20 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
               placeholder="Search agents"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:outline-none transition-all"
             />
           </div>
 
           {/* Right: Minimal Controls */}
           <div className="flex items-center gap-4">
             {/* Clean Filter Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
               <button
                 onClick={() => setStatusFilter('all')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                   statusFilter === 'all' 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
                 All
@@ -377,8 +377,8 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 onClick={() => setStatusFilter('active')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                   statusFilter === 'active' 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
                 Active
@@ -387,8 +387,8 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 onClick={() => setStatusFilter('inactive')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                   statusFilter === 'inactive' 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
                 Inactive
@@ -396,13 +396,13 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
             </div>
 
             {/* View Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-md transition-all ${
                   viewMode === 'list' 
-                    ? 'bg-white shadow-sm text-gray-900' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
                 <List className="w-4 h-4" />
@@ -411,8 +411,8 @@ const AgentSelection: React.FC<AgentSelectionProps> = ({ projectId }) => {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-md transition-all ${
                   viewMode === 'grid' 
-                    ? 'bg-white shadow-sm text-gray-900' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
                 <Grid3X3 className="w-4 h-4" />

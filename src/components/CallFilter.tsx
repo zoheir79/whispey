@@ -199,7 +199,7 @@ const CallFilter: React.FC<CallFilterProps> = ({
             </Button>
           </PopoverTrigger>
           
-          <PopoverContent className="w-[600px] p-3" align="start">
+          <PopoverContent className="w-[600px] p-3 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" align="start">
             <div className="space-y-3">
               {/* Compact Form */}
               <div className={`grid gap-2 ${gridCols}`}>
@@ -213,7 +213,7 @@ const CallFilter: React.FC<CallFilterProps> = ({
                     <ChevronDown className="h-3 w-3 flex-shrink-0 ml-1" />
                   </Button>
                 </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48">
+                  <DropdownMenuContent align="start" className="w-48 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                     {COLUMNS.map((column) => (
                       <DropdownMenuItem
                         key={column.value}
@@ -226,7 +226,7 @@ const CallFilter: React.FC<CallFilterProps> = ({
                           })
                           setSelectedDate(undefined)
                         }}
-                        className="text-xs"
+                        className="text-xs text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         {column.label}
                       </DropdownMenuItem>
@@ -250,12 +250,12 @@ const CallFilter: React.FC<CallFilterProps> = ({
                         <ChevronDown className="h-3 w-3 flex-shrink-0 ml-1" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-40 max-h-48 overflow-y-auto">
+                    <DropdownMenuContent align="start" className="w-40 max-h-48 overflow-y-auto bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                       {getAvailableJsonFields().map((field) => (
                         <DropdownMenuItem
                           key={field}
                           onClick={() => setNewFilter({ ...newFilter, jsonField: field })}
-                          className="text-xs"
+                          className="text-xs text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           {field}
                         </DropdownMenuItem>
@@ -279,7 +279,7 @@ const CallFilter: React.FC<CallFilterProps> = ({
                       <ChevronDown className="h-3 w-3 flex-shrink-0 ml-1" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-40">
+                  <DropdownMenuContent align="start" className="w-40 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                     {getAvailableOperations().map((operation) => (
                       <DropdownMenuItem
                         key={operation.value}
@@ -310,7 +310,7 @@ const CallFilter: React.FC<CallFilterProps> = ({
                           <CalendarIcon className="h-3 w-3 flex-shrink-0 ml-1" />
                         </Button>
                       </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start" side="bottom">
+                        <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" align="start" side="bottom">
                           <Calendar
                             mode="single"
                             selected={selectedDate}
