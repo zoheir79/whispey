@@ -577,7 +577,7 @@ const Overview: React.FC<OverviewProps> = ({
     <div className="h-full bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
-          <>
+          <div>
             {/* Premier Div - 6 Cartes Métriques */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {/* Total Calls */}
@@ -870,7 +870,7 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-          </>
+          </div>
         ) : (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-8">
