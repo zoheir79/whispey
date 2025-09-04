@@ -542,8 +542,8 @@ const Overview: React.FC<OverviewProps> = ({
             </div>
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Loading Analytics</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Fetching your dashboard data</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-slate-100">Loading Analytics</h3>
+            <p className="text-sm text-gray-500 dark:text-slate-400">Fetching your dashboard data</p>
           </div>
         </div>
       </div>
@@ -558,8 +558,8 @@ const Overview: React.FC<OverviewProps> = ({
             <Warning weight="light" className="w-7 h-7 text-red-400" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Unable to Load Analytics</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{error}</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-slate-100">Unable to Load Analytics</h3>
+            <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed">{error}</p>
           </div>
         </div>
       </div>
@@ -590,7 +590,7 @@ const Overview: React.FC<OverviewProps> = ({
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
-                    <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                    <p className="text-2xl font-light text-gray-900 dark:text-slate-100 tracking-tight">
                       {analytics?.totalCalls?.toLocaleString() || '0'}
                     </p>
                   </div>
@@ -604,13 +604,13 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
                       <Clock weight="regular" className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
+                    <span className="text-xs font-medium text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                       {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
                     </span>
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Call Duration</h3>
-                    <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    <p className="text-xl font-semibold text-gray-900 dark:text-slate-100">
                       {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
                       <span className="text-sm text-gray-500 dark:text-slate-400 ml-1">min</span>
                     </p>
@@ -625,13 +625,13 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
                       <Activity weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </div>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
+                    <span className="text-xs font-medium text-gray-500 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                       STT+LLM+TTS
                     </span>
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">AI Processing</h3>
-                    <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    <p className="text-xl font-semibold text-gray-900 dark:text-slate-100">
                       {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
                       <span className="text-sm text-gray-500 dark:text-slate-400 ml-1">min</span>
                     </p>
@@ -647,11 +647,11 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
                         <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                       </div>
-                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">INR</span>
+                      <span className="text-xs font-medium text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">INR</span>
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Cost</h3>
-                      <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                      <p className="text-xl font-semibold text-gray-900 dark:text-slate-100">
                         ₹{(analytics?.totalCost || 0).toFixed(2)}
                       </p>
                     </div>
@@ -708,13 +708,13 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
                       <Activity weight="regular" className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                     </div>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
+                    <span className="text-xs font-medium text-gray-500 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                       {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
                     </span>
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Tokens</h3>
-                    <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    <p className="text-xl font-semibold text-gray-900 dark:text-slate-100">
                       {analytics?.totalTokens?.toLocaleString() || '0'}
                     </p>
                   </div>
@@ -749,7 +749,7 @@ const Overview: React.FC<OverviewProps> = ({
                                 size="sm" 
                                 className="h-6 w-6 p-0 hover:bg-gray-100"
                               >
-                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
+                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-slate-500" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -765,9 +765,9 @@ const Overview: React.FC<OverviewProps> = ({
                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider truncate" title={config.name}>
                           {config.name}
                         </h3>
-                        <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                        <p className="text-xl font-semibold text-gray-900 dark:text-slate-100">
                           {loadingCustomTotals || !result ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-gray-500" />
+                            <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-slate-500" />
                           ) : (
                             formatCustomTotalValue(result, config)
                           )}
@@ -790,11 +790,11 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                         <TrendUp weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Daily Calls</h3>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">Daily Calls</h3>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      <div className="text-xs font-medium text-gray-500 dark:text-slate-400">Avg</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">
                       {analytics?.dailyData && analytics.dailyData.length > 0 
                           ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
                           : 0
@@ -881,10 +881,10 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
                         <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                       </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">Success Analysis</h3>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
+                      <div className="text-xs font-medium text-gray-500 dark:text-slate-400">Success Rate</div>
                       <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
                     </div>
                   </div>
@@ -928,24 +928,24 @@ const Overview: React.FC<OverviewProps> = ({
                         </ResponsiveContainer>
                       </div>
                       {/* Center Statistics */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
-                        <div className="text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                          {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-gray-400">%</span>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-slate-400">
+                        <div className="text-3xl font-light text-gray-900 dark:text-slate-100 tracking-tight">
+                          {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-slate-400">%</span>
                         </div>
-                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
+                        <div className="text-xs font-medium text-gray-500 dark:text-slate-400 mt-1">Success</div>
                       </div>
                     </div>
                     {/* Legend */}
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
-                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
-                        <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.successfulCalls || 0}</div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-slate-300">Successful</div>
+                        <div className="text-sm font-light text-gray-500 dark:text-slate-400">{analytics?.successfulCalls || 0}</div>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF3B30' }}></div>
-                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Failed</div>
-                        <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-slate-300">Failed</div>
+                        <div className="text-sm font-light text-gray-500 dark:text-slate-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
                       </div>
                     </div>
                   </div>
@@ -963,11 +963,11 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                         <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">Usage Minutes</h3>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Total</div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      <div className="text-xs font-medium text-gray-500 dark:text-slate-400">Total</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">
                         {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}m
                       </div>
                     </div>
@@ -1041,11 +1041,11 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
                         <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                       </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">Response Performance</h3>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg Latency</div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      <div className="text-xs font-medium text-gray-500 dark:text-slate-400">Avg Latency</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">
                         {analytics?.dailyData && analytics.dailyData.length > 0 
                           ? (analytics.dailyData.reduce((sum, d) => sum + ((d as any).avg_latency || 0), 0) / analytics.dailyData.length).toFixed(1)
                           : '0.0'
@@ -1171,8 +1171,8 @@ const Overview: React.FC<OverviewProps> = ({
                 <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No Data Available</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+                <h3 className="text-xl font-medium text-gray-900 dark:text-slate-100">No Data Available</h3>
+                <p className="text-sm text-gray-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
                   No calls found for the selected time period. Try adjusting your date range or check back later.
                 </p>
               </div>
