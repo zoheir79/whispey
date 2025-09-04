@@ -749,7 +749,7 @@ const Overview: React.FC<OverviewProps> = ({
                                 size="sm" 
                                 className="h-6 w-6 p-0 hover:bg-gray-100"
                               >
-                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-slate-500" />
+                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -767,7 +767,7 @@ const Overview: React.FC<OverviewProps> = ({
                         </h3>
                         <p className="text-xl font-semibold text-gray-900 dark:text-slate-100">
                           {loadingCustomTotals || !result ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-slate-500" />
+                            <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-gray-500" />
                           ) : (
                             formatCustomTotalValue(result, config)
                           )}
