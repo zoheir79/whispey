@@ -24,21 +24,11 @@ INSERT INTO ai_providers (name, type, api_key, api_url, cost_per_unit, unit, is_
 SELECT 'Built-in LLM', 'LLM', '', 'http://localhost:8000/llm', 0.000015, 'token', true, true
 WHERE NOT EXISTS (SELECT 1 FROM ai_providers WHERE name = 'Built-in LLM' AND is_builtin = true);
 
--- Ajouter nouveaux champs pour coûts abonnement dédié dans global_settings
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_name = 'global_settings' 
-                   AND column_name = 'subscription_costs') THEN
-        ALTER TABLE global_settings ADD COLUMN subscription_costs JSONB DEFAULT '{}';
-    END IF;
-END $$;
-
--- Initialiser les coûts d'abonnement par défaut
-INSERT INTO global_settings (key, value)
+-- Initialiser les coûts d'abonnement par défaut dans settings_global
+INSERT INTO settings_global (key, value, description)
 VALUES ('subscription_costs', '{
   "voice_agent_monthly": 29.99,
   "text_agent_monthly": 19.99, 
   "vision_agent_monthly": 39.99
-}'::jsonb)
+}'::jsonb, 'Monthly subscription costs for dedicated agent types')
 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
