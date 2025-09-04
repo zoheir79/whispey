@@ -649,7 +649,12 @@ const Overview: React.FC<OverviewProps> = ({
                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Cost</h3>
                         <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">₹{analytics?.totalCost?.toFixed(2) || '0.00'}</p>
                         <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                                  )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Average Latency */}
               {role !== 'user' && (
@@ -664,7 +669,12 @@ const Overview: React.FC<OverviewProps> = ({
                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Response Time</h3>
                         <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-500 dark:text-slate-400 ml-1">s</span></p>
                         <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                                  )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Successful Calls */}
                 <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
@@ -781,7 +791,11 @@ const Overview: React.FC<OverviewProps> = ({
                             {result.error}
                           </p>
                         )}
-                                  )
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
             })}
 
             {process.env.NODE_ENV === 'development' && (
@@ -791,7 +805,8 @@ const Overview: React.FC<OverviewProps> = ({
                     <strong>Debug - Dynamic Fields:</strong>
                     <div>Metadata: {metadataFields.join(', ') || 'None'}</div>
                     <div>Transcription: {transcriptionFields.join(', ') || 'None'}</div>
-                    </CardContent>
+                  </div>
+                </CardContent>
               </Card>
             )}
 
