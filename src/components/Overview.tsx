@@ -953,6 +953,8 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
             </div>
 
+            {/* Second Row of Charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Usage Minutes Chart */}
               <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
@@ -1121,6 +1123,7 @@ const Overview: React.FC<OverviewProps> = ({
                   </div>
                 </div>
               </div>
+            </div>
 
             {process.env.NODE_ENV === 'development' && (
               <Card className="border-yellow-200 bg-yellow-50">
