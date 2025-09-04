@@ -14,7 +14,7 @@ ALTER TABLE pype_voice_agents ADD COLUMN IF NOT EXISTS billing_cycle VARCHAR(20)
 -- 2. Créer table monthly_consumption pour tracking détaillé
 CREATE TABLE IF NOT EXISTS monthly_consumption (
     id SERIAL PRIMARY KEY,
-    agent_id INTEGER REFERENCES pype_voice_agents(id) ON DELETE CASCADE,
+    agent_id UUID REFERENCES pype_voice_agents(id) ON DELETE CASCADE,
     year INTEGER NOT NULL,
     month INTEGER NOT NULL,
     
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS monthly_consumption (
 -- 3. Créer table billing_items pour détail facturation
 CREATE TABLE IF NOT EXISTS billing_items (
     id SERIAL PRIMARY KEY,
-    agent_id INTEGER REFERENCES pype_voice_agents(id) ON DELETE CASCADE,
+    agent_id UUID REFERENCES pype_voice_agents(id) ON DELETE CASCADE,
     consumption_id INTEGER REFERENCES monthly_consumption(id) ON DELETE CASCADE,
     year INTEGER NOT NULL,
     month INTEGER NOT NULL,
@@ -107,7 +107,7 @@ ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
 -- 6. Créer fonction de calcul coût automatique
 CREATE OR REPLACE FUNCTION calculate_call_cost(
-    p_agent_id INTEGER,
+    p_agent_id UUID,
     p_duration_seconds INTEGER,
     p_transcript_length INTEGER,
     p_response_length INTEGER,
