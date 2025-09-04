@@ -12,8 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, CheckCircle, Bot, Phone, PhoneCall, Settings, ArrowRight, Copy, AlertCircle, Zap, Cpu, Link as LinkIcon } from 'lucide-react'
+import { Loader2, CheckCircle, Bot, Phone, PhoneCall, Settings, ArrowRight, Copy, AlertCircle, Zap, Cpu, Link as LinkIcon, Brain } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useProviders, getProvidersByType } from '@/hooks/useProviders'
 
 interface AgentCreationDialogProps {
   isOpen: boolean
@@ -56,6 +57,28 @@ const PLATFORM_OPTIONS = [
 
 const AGENT_TYPES = [
   { 
+    value: 'voice', 
+    label: 'Voice Agent',
+    description: 'Handle voice calls',
+    icon: Phone,
+  },
+  { 
+    value: 'text_only', 
+    label: 'Text-only Agent',
+    description: 'Process text interactions',
+    icon: Brain,
+  },
+  { 
+    value: 'vision', 
+    label: 'Vision Agent',
+    description: 'Coming Soon',
+    icon: Settings,
+    disabled: true
+  }
+]
+
+const VOICE_TYPES = [
+  { 
     value: 'inbound', 
     label: 'Inbound',
     description: 'Handle incoming calls',
@@ -84,12 +107,18 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   const [currentStep, setCurrentStep] = useState<'form' | 'creating' | 'connecting' | 'success'>('form')
   const [selectedPlatform, setSelectedPlatform] = useState('livekit')
   const assistantSectionRef = useRef<HTMLDivElement>(null)
+  const { providers, globalSettings, loading: providersLoading } = useProviders()
   
   // Livekit (regular) agent fields
   const [formData, setFormData] = useState({
     name: '',
-    agent_type: 'inbound',
-    description: ''
+    agent_type: 'voice',
+    voice_type: 'inbound',
+    description: '',
+    provider_mode: 'builtin', // 'builtin' or 'external'
+    stt_provider_id: '',
+    tts_provider_id: '',
+    llm_provider_id: ''
   })
 
   // Vapi agent fields
@@ -117,6 +146,31 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   } | null>(null)
 
   const selectedAgentType = AGENT_TYPES.find(type => type.value === formData.agent_type)
+  const selectedVoiceType = VOICE_TYPES.find(type => type.value === formData.voice_type)
+  
+  // Get providers by type for dropdowns
+  const sttProviders = getProvidersByType(providers, 'STT')
+  const ttsProviders = getProvidersByType(providers, 'TTS')
+  const llmProviders = getProvidersByType(providers, 'LLM')
+  
+  // Calculate estimated cost per minute
+  const getEstimatedCost = () => {
+    if (formData.provider_mode === 'builtin' && globalSettings) {
+      return globalSettings.cost_per_minute
+    } else if (formData.provider_mode === 'external') {
+      const sttProvider = sttProviders.find(p => p.id.toString() === formData.stt_provider_id)
+      const ttsProvider = ttsProviders.find(p => p.id.toString() === formData.tts_provider_id)
+      const llmProvider = llmProviders.find(p => p.id.toString() === formData.llm_provider_id)
+      
+      let totalCost = 0
+      if (sttProvider) totalCost += sttProvider.cost_per_unit // per minute
+      if (ttsProvider) totalCost += ttsProvider.cost_per_unit * 100 // estimated 100 words per minute
+      if (llmProvider) totalCost += llmProvider.cost_per_unit * 1000 // estimated 1000 tokens per minute
+      
+      return totalCost
+    }
+    return 0
+  }
 
   // Scroll to assistant section after successful connection
   useEffect(() => {
@@ -226,6 +280,24 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         setError('Agent name is required')
         return
       }
+      
+      // Additional validation for external providers
+      if (formData.provider_mode === 'external') {
+        if (formData.agent_type === 'voice') {
+          if (!formData.stt_provider_id) {
+            setError('Please select an STT provider')
+            return
+          }
+          if (!formData.tts_provider_id) {
+            setError('Please select a TTS provider')
+            return
+          }
+        }
+        if (!formData.llm_provider_id) {
+          setError('Please select an LLM provider')
+          return
+        }
+      }
     } else if (selectedPlatform === 'vapi') {
       if (!formData.name.trim()) {
         setError('Agent name is required')
@@ -248,12 +320,54 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
       let payload
 
       if (selectedPlatform === 'livekit') {
+        // Build provider config based on mode
+        let providerConfig: any = {}
+        
+        if (formData.provider_mode === 'builtin') {
+          providerConfig = {
+            mode: 'builtin'
+          }
+        } else {
+          providerConfig = {
+            mode: 'external'
+          }
+          
+          if (formData.agent_type === 'voice') {
+            const sttProvider = sttProviders.find(p => p.id.toString() === formData.stt_provider_id)
+            const ttsProvider = ttsProviders.find(p => p.id.toString() === formData.tts_provider_id)
+            
+            if (sttProvider) {
+              providerConfig.stt = {
+                provider_id: sttProvider.id,
+                cost_per_minute: sttProvider.cost_per_unit
+              }
+            }
+            
+            if (ttsProvider) {
+              providerConfig.tts = {
+                provider_id: ttsProvider.id,
+                cost_per_word: ttsProvider.cost_per_unit
+              }
+            }
+          }
+          
+          const llmProvider = llmProviders.find(p => p.id.toString() === formData.llm_provider_id)
+          if (llmProvider) {
+            providerConfig.llm = {
+              provider_id: llmProvider.id,
+              cost_per_token: llmProvider.cost_per_unit
+            }
+          }
+        }
+        
         payload = {
           name: formData.name.trim(),
           agent_type: formData.agent_type,
           configuration: {
             description: formData.description.trim() || null,
+            voice_type: formData.agent_type === 'voice' ? formData.voice_type : null
           },
+          provider_config: providerConfig,
           project_id: projectId,
           environment: 'dev',
           platform: 'livekit'
@@ -330,7 +444,16 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     if (!loading && !vapiData.connectLoading) {
       setCurrentStep('form')
       setSelectedPlatform('livekit')
-      setFormData({ name: '', agent_type: 'inbound', description: '' })
+      setFormData({ 
+        name: '', 
+        agent_type: 'voice', 
+        voice_type: 'inbound', 
+        description: '',
+        provider_mode: 'builtin',
+        stt_provider_id: '',
+        tts_provider_id: '',
+        llm_provider_id: ''
+      })
       setVapiData({ apiKey: '', projectApiKey: '', availableAssistants: [], selectedAssistantId: '', connectLoading: false })
       setError(null)
       setCreatedAgentData(null)
@@ -515,16 +638,19 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                         {AGENT_TYPES.map((type) => {
                           const Icon = type.icon
                           const isSelected = formData.agent_type === type.value
+                          const isDisabled = type.disabled
                           
                           return (
                             <div
                               key={type.value}
-                              className={`relative p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                                isSelected 
-                                  ? 'border-blue-500 bg-blue-50 shadow-sm' 
-                                  : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
+                              className={`relative p-3 rounded-lg border transition-all duration-200 ${
+                                isDisabled
+                                  ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                                  : isSelected 
+                                    ? 'border-blue-500 bg-blue-50 shadow-sm cursor-pointer' 
+                                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer'
                               }`}
-                              onClick={() => setFormData({ ...formData, agent_type: type.value })}
+                              onClick={() => !isDisabled && setFormData({ ...formData, agent_type: type.value })}
                             >
                               <div className="text-center">
                                 <div className={`w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center ${
@@ -540,6 +666,184 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                         })}
                       </div>
                     </div>
+
+                    {/* Voice Type Selection - only for voice agents */}
+                    {formData.agent_type === 'voice' && (
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                          Voice Type
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {VOICE_TYPES.map((type) => {
+                            const Icon = type.icon
+                            const isSelected = formData.voice_type === type.value
+                            
+                            return (
+                              <div
+                                key={type.value}
+                                className={`relative p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                                  isSelected 
+                                    ? 'border-blue-500 bg-blue-50 shadow-sm' 
+                                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                }`}
+                                onClick={() => setFormData({ ...formData, voice_type: type.value })}
+                              >
+                                <div className="text-center">
+                                  <div className={`w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center ${
+                                    isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'
+                                  }`}>
+                                    <Icon className="w-4 h-4" />
+                                  </div>
+                                  <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-0.5">{type.label}</div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 leading-tight">{type.description}</div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Provider Mode Selection */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                        AI Provider Mode
+                      </label>
+                      <div className="flex gap-2">
+                        <div
+                          className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                            formData.provider_mode === 'builtin'
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          }`}
+                          onClick={() => setFormData({ ...formData, provider_mode: 'builtin' })}
+                        >
+                          <div className="text-center">
+                            <div className="text-sm font-medium text-gray-900 mb-1">Built-in Models</div>
+                            <div className="text-xs text-gray-500">Use internal AI models</div>
+                            {globalSettings && (
+                              <div className="text-xs text-blue-600 mt-1 font-medium">
+                                ${globalSettings.cost_per_minute.toFixed(4)}/minute
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div
+                          className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                            formData.provider_mode === 'external'
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          }`}
+                          onClick={() => setFormData({ ...formData, provider_mode: 'external' })}
+                        >
+                          <div className="text-center">
+                            <div className="text-sm font-medium text-gray-900 mb-1">External Providers</div>
+                            <div className="text-xs text-gray-500">Use external AI services</div>
+                            <div className="text-xs text-blue-600 mt-1 font-medium">
+                              ${getEstimatedCost().toFixed(4)}/minute
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* External Provider Selection */}
+                    {formData.provider_mode === 'external' && (
+                      <div className="space-y-4 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+                          Select AI Providers
+                        </div>
+                        
+                        {/* STT Provider - only for voice agents */}
+                        {formData.agent_type === 'voice' && (
+                          <div className="space-y-2">
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                              Speech-to-Text (STT) Provider
+                            </label>
+                            <Select value={formData.stt_provider_id} onValueChange={(value) => setFormData({ ...formData, stt_provider_id: value })}>
+                              <SelectTrigger className="h-9 text-sm">
+                                <SelectValue placeholder="Select STT provider" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {sttProviders.map((provider) => (
+                                  <SelectItem key={provider.id} value={provider.id.toString()}>
+                                    <div className="flex items-center justify-between w-full">
+                                      <span>{provider.name}</span>
+                                      <span className="text-xs text-gray-500 ml-2">
+                                        ${provider.cost_per_unit.toFixed(4)}/{provider.unit}
+                                      </span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                        {/* TTS Provider - only for voice agents */}
+                        {formData.agent_type === 'voice' && (
+                          <div className="space-y-2">
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                              Text-to-Speech (TTS) Provider
+                            </label>
+                            <Select value={formData.tts_provider_id} onValueChange={(value) => setFormData({ ...formData, tts_provider_id: value })}>
+                              <SelectTrigger className="h-9 text-sm">
+                                <SelectValue placeholder="Select TTS provider" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {ttsProviders.map((provider) => (
+                                  <SelectItem key={provider.id} value={provider.id.toString()}>
+                                    <div className="flex items-center justify-between w-full">
+                                      <span>{provider.name}</span>
+                                      <span className="text-xs text-gray-500 ml-2">
+                                        ${provider.cost_per_unit.toFixed(6)}/{provider.unit}
+                                      </span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                        {/* LLM Provider - for all agent types */}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                            Large Language Model (LLM) Provider
+                          </label>
+                          <Select value={formData.llm_provider_id} onValueChange={(value) => setFormData({ ...formData, llm_provider_id: value })}>
+                            <SelectTrigger className="h-9 text-sm">
+                              <SelectValue placeholder="Select LLM provider" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {llmProviders.map((provider) => (
+                                <SelectItem key={provider.id} value={provider.id.toString()}>
+                                  <div className="flex items-center justify-between w-full">
+                                    <span>{provider.name}</span>
+                                    <span className="text-xs text-gray-500 ml-2">
+                                      ${provider.cost_per_unit.toFixed(6)}/{provider.unit}
+                                    </span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Cost Estimation */}
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                          <div className="text-xs font-medium text-blue-900 dark:text-blue-100 mb-1">
+                            Estimated Cost per Minute
+                          </div>
+                          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                            ${getEstimatedCost().toFixed(4)}
+                          </div>
+                          <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                            Based on average usage: 1 min STT + 100 words TTS + 1000 tokens LLM
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
               </div>

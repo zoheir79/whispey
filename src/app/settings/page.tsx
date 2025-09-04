@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useGlobalRole } from '@/hooks/useGlobalRole'
 import { useRouter } from 'next/navigation'
+import AIProvidersManagement from '@/components/admin/AIProvidersManagement'
 import { 
   Key, 
   Plus, 
@@ -363,6 +364,9 @@ export default function SettingsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* AI Providers Management */}
+      <AIProvidersManagement />
 
       {/* Usage Instructions */}
       <Card>
