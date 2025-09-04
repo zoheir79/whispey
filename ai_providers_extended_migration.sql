@@ -150,7 +150,7 @@ CREATE OR REPLACE VIEW agent_effective_costs AS
 SELECT 
   a.id,
   a.name,
-  a.agent_type,
+  a.ai_agent_type,
   a.pricing_mode,
   a.cost_overrides,
   a.s3_bucket_name,
@@ -185,15 +185,13 @@ LEFT JOIN settings_global s_tts ON s_tts.key = 'builtin_tts'
 LEFT JOIN settings_global s_llm ON s_llm.key = 'builtin_llm'
 LEFT JOIN settings_global s_s3 ON s_s3.key = 's3_config';
 
--- Exemples de données pour test
+-- Providers supplémentaires (éviter les doublons avec la migration de base)
 INSERT INTO ai_providers (name, type, api_url, api_key, unit, cost_per_unit, is_active, created_at, updated_at)
 VALUES 
-  ('OpenAI Whisper', 'STT', 'https://api.openai.com/v1/audio/transcriptions', 'sk-example', 'minute', 0.006, true, NOW(), NOW()),
-  ('ElevenLabs TTS', 'TTS', 'https://api.elevenlabs.io/v1/text-to-speech', 'api-key', 'word', 0.00025, true, NOW(), NOW()),
-  ('OpenAI GPT-4', 'LLM', 'https://api.openai.com/v1/chat/completions', 'sk-example', 'token', 0.00003, true, NOW(), NOW()),
-  ('Google Speech-to-Text', 'STT', 'https://speech.googleapis.com/v1/speech:recognize', 'google-key', 'minute', 0.004, true, NOW(), NOW()),
-  ('Azure TTS', 'TTS', 'https://eastus.tts.speech.microsoft.com/cognitiveservices/v1', 'azure-key', 'word', 0.0002, true, NOW(), NOW()),
-  ('Claude-3', 'LLM', 'https://api.anthropic.com/v1/messages', 'anthropic-key', 'token', 0.000015, true, NOW(), NOW())
+  ('AssemblyAI STT', 'STT', 'https://api.assemblyai.com/v2/transcript', 'assemblyai-key', 'minute', 0.0037, true, NOW(), NOW()),
+  ('Murf.ai TTS', 'TTS', 'https://api.murf.ai/v1/speech/generate', 'murf-key', 'word', 0.0003, true, NOW(), NOW()),
+  ('Cohere LLM', 'LLM', 'https://api.cohere.ai/v1/generate', 'cohere-key', 'token', 0.000002, true, NOW(), NOW())
 ON CONFLICT (name, type) DO NOTHING;
 
-PRINT 'Migration AI Providers étendue terminée avec succès !';
+-- Confirmation de fin de migration
+SELECT 'Migration AI Providers étendue terminée avec succès !' AS status;
