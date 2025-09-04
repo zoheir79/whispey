@@ -1121,8 +1121,6 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
             </div>
 
-            </div>
-
             {process.env.NODE_ENV === 'development' && (
               <Card className="border-yellow-200 bg-yellow-50">
                 <CardContent className="p-4">
