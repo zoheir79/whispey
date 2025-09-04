@@ -871,8 +871,8 @@ const Overview: React.FC<OverviewProps> = ({
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
-                      <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
-                        <TrendUp weight="regular" className="w-5 h-5 text-blue-600" />
+                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                        <TrendUp weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
                         <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Daily Calls</h3>
@@ -966,8 +966,8 @@ const Overview: React.FC<OverviewProps> = ({
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
-                      <div className="p-2 bg-green-50 rounded-lg border border-green-100">
-                        <Target weight="regular" className="w-5 h-5 text-green-600" />
+                      <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
+                        <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                       </div>
                       <div>
                         <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Success Analysis</h3>
@@ -1048,8 +1048,8 @@ const Overview: React.FC<OverviewProps> = ({
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
-                      <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
-                        <ChartBar weight="regular" className="w-5 h-5 text-blue-600" />
+                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                        <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
                         <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Usage Minutes</h3>
@@ -1123,8 +1123,8 @@ const Overview: React.FC<OverviewProps> = ({
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
-                      <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
-                        <Activity weight="regular" className="w-5 h-5 text-orange-600" />
+                      <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
+                        <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                       </div>
                       <div>
                         <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Response Performance</h3>
