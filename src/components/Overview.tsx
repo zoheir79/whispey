@@ -783,104 +783,105 @@ const Overview: React.FC<OverviewProps> = ({
             {/* Charts Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Daily Calls Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                      <TrendUp weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                        <TrendUp weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Daily Calls</h3>
                     </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Daily Calls</h3>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
-                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {analytics?.dailyData && analytics.dailyData.length > 0 
-                        ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
-                        : 0
-                      }
+                    <div className="text-right">
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {analytics?.dailyData && analytics.dailyData.length > 0 
+                          ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
+                          : 0
+                        }
+                        </div>
                       </div>
                     </div>
                   </div>
+                <div className="p-6 flex-1">
+                  <div className="h-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                        <defs>
+                          <linearGradient id="callsGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#007aff" stopOpacity={0.1}/>
+                            <stop offset="95%" stopColor="#007aff" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
+                        <XAxis 
+                          dataKey="date" 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                          height={40}
+                          tickFormatter={(value) => {
+                            const date = new Date(value)
+                            return `${date.getMonth() + 1}/${date.getDate()}`
+                          }}
+                        />
+                        <YAxis 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                          width={45}
+                        />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                            borderRadius: '12px',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                            backdropFilter: 'blur(20px)'
+                          }}
+                          labelStyle={{ color: resolvedTheme === 'dark' ? '#e2e8f0' : '#374151', fontWeight: '600' }}
+                          labelFormatter={(value: any) => {
+                            const date = new Date(value)
+                            return date.toLocaleDateString('en-US', { 
+                              weekday: 'short',
+                              month: 'short', 
+                              day: 'numeric' 
+                            })
+                          }}
+                          formatter={(value) => [`${value}`, 'Calls']}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="calls" 
+                          stroke="#007aff" 
+                          strokeWidth={3}
+                          fill="url(#callsGradient)"
+                          dot={false}
+                          activeDot={{ 
+                            r: 6, 
+                            fill: '#007aff', 
+                            strokeWidth: 3, 
+                            stroke: '#ffffff',
+                            filter: 'drop-shadow(0 2px 4px rgba(0, 122, 255, 0.3))'
+                          }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
-              <div className="p-6">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-                      <defs>
-                        <linearGradient id="callsGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#007aff" stopOpacity={0.1}/>
-                          <stop offset="95%" stopColor="#007aff" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
-                      <XAxis 
-                        dataKey="date" 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                        height={40}
-                        tickFormatter={(value) => {
-                          const date = new Date(value)
-                          return `${date.getMonth() + 1}/${date.getDate()}`
-                        }}
-                      />
-                      <YAxis 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                        width={45}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                          border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                          borderRadius: '12px',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                          backdropFilter: 'blur(20px)'
-                        }}
-                        labelStyle={{ color: resolvedTheme === 'dark' ? '#e2e8f0' : '#374151', fontWeight: '600' }}
-                        labelFormatter={(value: any) => {
-                          const date = new Date(value)
-                          return date.toLocaleDateString('en-US', { 
-                            weekday: 'short',
-                            month: 'short', 
-                            day: 'numeric' 
-                          })
-                        }}
-                        formatter={(value) => [`${value}`, 'Calls']}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="calls" 
-                        stroke="#007aff" 
-                        strokeWidth={3}
-                        fill="url(#callsGradient)"
-                        dot={false}
-                        activeDot={{ 
-                          r: 6, 
-                          fill: '#007aff', 
-                          strokeWidth: 3, 
-                          stroke: '#ffffff',
-                          filter: 'drop-shadow(0 2px 4px rgba(0, 122, 255, 0.3))'
-                        }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
 
-            {/* Success Analysis */}
-            <div className="h-full">
-              <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                <div className="p-4 md:p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
-                      <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
+              {/* Success Analysis Chart */}
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
+                        <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
                     </div>
                     <div className="text-right">
                       <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
@@ -888,8 +889,8 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <div className="h-80 flex items-center justify-center gap-8">
+                <div className="p-6 flex-1">
+                  <div className="h-full flex items-center justify-center gap-8">
                     <div className="relative">
                       {/* Modern Ring Chart */}
                       <div className="w-40 h-40">
@@ -950,215 +951,161 @@ const Overview: React.FC<OverviewProps> = ({
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Success Analysis Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="p-4 md:p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
-                      <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
+            {/* Usage Minutes Chart */}
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
-                      <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
-                    </div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
                   </div>
                 </div>
               </div>
-
-              {/* Usage Minutes Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                        <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
-                        <defs>
-                          <linearGradient id="minutesGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#007aff" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#007aff" stopOpacity={0.4}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
-                        <XAxis 
-                          dataKey="date" 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          height={40}
-                          tickFormatter={(value) => {
-                            const date = new Date(value)
-                            return `${date.getMonth() + 1}/${date.getDate()}`
-                          }}
-                        />
-                        <YAxis 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          width={40}
-                          tickFormatter={(value) => `${value}m`}
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                            borderRadius: '12px',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                            backdropFilter: 'blur(20px)'
-                          }}
-                          formatter={(value: any) => [`${value} min`, 'Duration']}
-                          labelFormatter={(value: any) => {
-                            const date = new Date(value)
-                            return date.toLocaleDateString('en-US', { 
-                              weekday: 'short',
-                              month: 'short', 
-                              day: 'numeric' 
-                            })
-                          }}
-                        />
-                        <Bar 
-                          dataKey="minutes" 
-                          fill="url(#minutesGradient)"
-                          radius={[4, 4, 0, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-
-              {/* Response Performance Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
-                        <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                      </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
-                        <defs>
-                          <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#ff9500" stopOpacity={0.1}/>
-                            <stop offset="95%" stopColor="#ff9500" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
-                        <XAxis 
-                          dataKey="date" 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          height={40}
-                          tickFormatter={(value) => {
-                            const date = new Date(value)
-                            return `${date.getMonth() + 1}/${date.getDate()}`
-                          }}
-                        />
-                        <YAxis 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          width={40}
-                          tickFormatter={(value) => `${value}s`}
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                            borderRadius: '12px',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                            backdropFilter: 'blur(20px)'
-                          }}
-                          formatter={(value: any) => [`${value}s`, 'Latency']}
-                          labelFormatter={(value: any) => {
-                            const date = new Date(value)
-                            return date.toLocaleDateString('en-US', { 
-                              weekday: 'short',
-                              month: 'short', 
-                              day: 'numeric' 
-                            })
-                          }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="avg_latency" 
-                          stroke="#ff9500" 
-                          strokeWidth={3}
-                          fill="url(#latencyGradient)"
-                          dot={false}
-                          activeDot={{ 
-                            r: 6, 
-                            fill: '#ff9500', 
-                            strokeWidth: 3, 
-                            stroke: '#ffffff',
-                            filter: 'drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3))'
-                          }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
+              <div className="p-6">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+                      <defs>
+                        <linearGradient id="minutesGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#007aff" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#007aff" stopOpacity={0.4}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        height={40}
+                        tickFormatter={(value) => {
+                          const date = new Date(value)
+                          return `${date.getMonth() + 1}/${date.getDate()}`
+                        }}
+                      />
+                      <YAxis 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        width={40}
+                        tickFormatter={(value) => `${value}m`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                          border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                          backdropFilter: 'blur(20px)'
+                        }}
+                        formatter={(value: any) => [`${value} min`, 'Duration']}
+                        labelFormatter={(value: any) => {
+                          const date = new Date(value)
+                          return date.toLocaleDateString('en-US', { 
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric' 
+                          })
+                        }}
+                      />
+                      <Bar 
+                        dataKey="minutes" 
+                        fill="url(#minutesGradient)"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             </div>
 
-            {process.env.NODE_ENV === 'development' && (
-              <Card className="border-yellow-200 bg-yellow-50">
-                <CardContent className="p-4">
-                  <div className="text-sm">
-                    <strong>Debug - Dynamic Fields:</strong>
-                    <div>Metadata: {metadataFields.join(', ') || 'None'}</div>
-                    <div>Transcription: {transcriptionFields.join(', ') || 'None'}</div>
+            {/* Response Performance Chart */}
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
+                      <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
                   </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Chart Analytics Section */}
-            <ChartProvider>
-              <div className="space-y-6 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
-                <EnhancedChartBuilder 
-                  agentId={agent.id}
-                  dateFrom={dateRange.from}
-                  dateTo={dateRange.to}
-                  metadataFields={metadataFields}
-                  transcriptionFields={transcriptionFields}
-                  fieldsLoading={fieldsLoading}
-                />
-
-                {/* Floating Action Menu */}
-                {userEmail && !fieldsLoading && (
-                  <FloatingActionMenu
-                    metadataFields={metadataFields}
-                    transcriptionFields={transcriptionFields}
-                    agentId={agent?.id}
-                    projectId={project?.id}
-                    userEmail={userEmail}
-                    availableColumns={AVAILABLE_COLUMNS}
-                    onSaveCustomTotal={handleSaveCustomTotal}
-                  />
-                )}
+                </div>
               </div>
-            </ChartProvider>
+              <div className="p-6">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+                      <defs>
+                        <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ff9500" stopOpacity={0.1}/>
+                          <stop offset="95%" stopColor="#ff9500" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        height={40}
+                        tickFormatter={(value) => {
+                          const date = new Date(value)
+                          return `${date.getMonth() + 1}/${date.getDate()}`
+                        }}
+                      />
+                      <YAxis 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        width={40}
+                        tickFormatter={(value) => `${value}s`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                          border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                          backdropFilter: 'blur(20px)'
+                        }}
+                        formatter={(value: any) => [`${value}s`, 'Latency']}
+                        labelFormatter={(value: any) => {
+                          const date = new Date(value)
+                          return date.toLocaleDateString('en-US', { 
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric' 
+                          })
+                        }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="avg_latency" 
+                        stroke="#ff9500" 
+                        strokeWidth={3}
+                        fill="url(#latencyGradient)"
+                        dot={false}
+                        activeDot={{ 
+                          r: 6, 
+                          fill: '#ff9500', 
+                          strokeWidth: 3, 
+                          stroke: '#ffffff',
+                          filter: 'drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3))'
+                        }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
           </>
         ) : (
           <div className="h-full flex items-center justify-center">
