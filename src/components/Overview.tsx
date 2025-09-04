@@ -868,10 +868,10 @@ const Overview: React.FC<OverviewProps> = ({
               </Card>
             )}
             {/* Responsive Chart Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
               {/* Daily Calls Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -882,16 +882,15 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="text-right">
                       <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
                       <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                      {analytics?.dailyData && analytics.dailyData.length > 0 
+                        {analytics?.dailyData && analytics.dailyData.length > 0 
                           ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
                           : 0
                         }
-                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="p-6 flex-1">
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
@@ -962,8 +961,8 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Professional Success Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
@@ -977,7 +976,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="p-6 flex-1">
                   <div className="h-80 flex items-center justify-center gap-8">
                     <div className="relative">
                       {/* Modern Ring Chart */}
@@ -1041,8 +1040,8 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Daily Minutes Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -1052,7 +1051,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="p-6 flex-1">
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
@@ -1113,8 +1112,8 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Average Latency Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
@@ -1124,7 +1123,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="p-6 flex-1">
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
