@@ -601,13 +601,13 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
             {/* Header */}
             <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
               <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-50 to-teal-50 rounded-xl flex items-center justify-center border border-gray-100">
-                  <Bot className="w-6 h-6 text-gray-700" />
+                <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-50 to-teal-50 dark:from-slate-700 dark:to-slate-600 rounded-xl flex items-center justify-center border border-gray-100 dark:border-slate-600">
+                  <Bot className="w-6 h-6 text-gray-700 dark:text-gray-200" />
                 </div>
-                <DialogTitle className="text-lg font-semibold text-gray-900 mb-1">
+                <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
                   Create New Agent
                 </DialogTitle>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Choose your platform and configure your AI agent
                 </p>
               </div>
@@ -618,7 +618,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
               <div className="space-y-5 pb-6">
                 {/* Platform Selection - Compact Style */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-900">
+                  <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
                     Select Platform
                   </label>
                   <div className="flex gap-2">
@@ -632,9 +632,9 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           className={`relative flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-200 flex-1 ${
                             isSelected 
                               ? platform.color === 'green'
-                                ? 'border-[#328c81] bg-teal-50'
-                                : 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                ? 'border-[#328c81] bg-teal-50 dark:bg-teal-900/20 dark:border-teal-600'
+                                : 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
+                              : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
                           }`}
                           onClick={() => setSelectedPlatform(platform.value)}
                         >
@@ -648,8 +648,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                             <Icon className="w-4 h-4" />
                           </div>
                           <div className="min-w-0">
-                            <div className="font-medium text-gray-900 text-sm">{platform.label}</div>
-                            <div className="text-xs text-gray-500 leading-tight">{platform.description}</div>
+                            <div className="font-medium text-gray-900 dark:text-gray-100 text-sm">{platform.label}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 leading-tight">{platform.description}</div>
                           </div>
                           <input
                             type="radio"
@@ -668,7 +668,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
 
                 {/* Agent Name - Always shown */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-900">
+                  <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
                     Agent Name
                   </label>
                   <Input
@@ -676,7 +676,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     disabled={loading}
-                    className="h-10 px-3 text-sm border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                    className="h-10 px-3 text-sm border-gray-200 dark:border-slate-600 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
 
@@ -699,10 +699,10 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               key={type.value}
                               className={`relative p-3 rounded-lg border transition-all duration-200 ${
                                 isDisabled
-                                  ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                                  ? 'border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 cursor-not-allowed opacity-60'
                                   : isSelected 
-                                    ? 'border-blue-500 bg-blue-50 shadow-sm cursor-pointer' 
-                                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500 shadow-sm cursor-pointer' 
+                                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer bg-white dark:bg-slate-800'
                               }`}
                               onClick={() => !isDisabled && setFormData({ ...formData, agent_type: type.value })}
                             >
@@ -737,8 +737,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                 key={type.value}
                                 className={`relative p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
                                   isSelected 
-                                    ? 'border-blue-500 bg-blue-50 shadow-sm' 
-                                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500 shadow-sm' 
+                                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
                                 }`}
                                 onClick={() => setFormData({ ...formData, voice_type: type.value })}
                               >
@@ -773,8 +773,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               key={mode.value}
                               className={`relative p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
                                 isSelected 
-                                  ? 'border-blue-500 bg-blue-50 shadow-sm' 
-                                  : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500 shadow-sm' 
+                                  : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
                               }`}
                               onClick={() => setFormData({ ...formData, pricing_mode: mode.value })}
                             >
@@ -813,33 +813,28 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                         <div
                           className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
                             formData.provider_mode === 'builtin'
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
+                              : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
                           }`}
                           onClick={() => setFormData({ ...formData, provider_mode: 'builtin' })}
                         >
                           <div className="text-center">
-                            <div className="text-sm font-medium text-gray-900 mb-1">Built-in Models</div>
-                            <div className="text-xs text-gray-500">Use internal AI models</div>
-                            {globalSettings && (
-                              <div className="text-xs text-blue-600 mt-1 font-medium">
-                                ${getEstimatedCost().toFixed(4)}/minute
-                              </div>
-                            )}
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Built-in Models</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Use internal AI models</div>
                           </div>
                         </div>
                         <div
                           className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
                             formData.provider_mode === 'external'
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
+                              : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
                           }`}
                           onClick={() => setFormData({ ...formData, provider_mode: 'external' })}
                         >
                           <div className="text-center">
-                            <div className="text-sm font-medium text-gray-900 mb-1">External Providers</div>
-                            <div className="text-xs text-gray-500">Use external AI services</div>
-                            <div className="text-xs text-blue-600 mt-1 font-medium">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">External Providers</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Use external AI services</div>
+                            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1 font-medium">
                               ${getEstimatedCost().toFixed(4)}/minute
                             </div>
                           </div>
@@ -862,7 +857,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               Speech-to-Text (STT) Provider
                             </label>
                             <Select value={formData.stt_provider_id} onValueChange={(value) => setFormData({ ...formData, stt_provider_id: value })}>
-                              <SelectTrigger className="h-9 text-sm">
+                              <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                                 <SelectValue placeholder="Select STT provider" />
                               </SelectTrigger>
                               <SelectContent>
@@ -870,7 +865,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                   <SelectItem key={provider.id} value={provider.id.toString()}>
                                     <div className="flex items-center justify-between w-full">
                                       <span>{provider.name}</span>
-                                      <span className="text-xs text-gray-500 ml-2">
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                                         ${provider.cost_per_unit.toFixed(4)}/{provider.unit}
                                       </span>
                                     </div>
@@ -888,7 +883,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               Text-to-Speech (TTS) Provider
                             </label>
                             <Select value={formData.tts_provider_id} onValueChange={(value) => setFormData({ ...formData, tts_provider_id: value })}>
-                              <SelectTrigger className="h-9 text-sm">
+                              <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                                 <SelectValue placeholder="Select TTS provider" />
                               </SelectTrigger>
                               <SelectContent>
@@ -896,7 +891,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                   <SelectItem key={provider.id} value={provider.id.toString()}>
                                     <div className="flex items-center justify-between w-full">
                                       <span>{provider.name}</span>
-                                      <span className="text-xs text-gray-500 ml-2">
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                                         ${provider.cost_per_unit.toFixed(6)}/{provider.unit}
                                       </span>
                                     </div>
@@ -913,7 +908,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                             Large Language Model (LLM) Provider
                           </label>
                           <Select value={formData.llm_provider_id} onValueChange={(value) => setFormData({ ...formData, llm_provider_id: value })}>
-                            <SelectTrigger className="h-9 text-sm">
+                            <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                               <SelectValue placeholder="Select LLM provider" />
                             </SelectTrigger>
                             <SelectContent>
@@ -921,7 +916,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                 <SelectItem key={provider.id} value={provider.id.toString()}>
                                   <div className="flex items-center justify-between w-full">
                                     <span>{provider.name}</span>
-                                    <span className="text-xs text-gray-500 ml-2">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                                       ${provider.cost_per_unit.toFixed(6)}/{provider.unit}
                                     </span>
                                   </div>
@@ -986,7 +981,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                     ...tempCostOverrides,
                                     builtin_stt_cost: parseFloat(e.target.value) || undefined
                                   })}
-                                  className="h-8 text-xs"
+                                  className="h-8 text-xs bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                                 />
                               </div>
                               
@@ -1001,7 +996,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                     ...tempCostOverrides,
                                     builtin_tts_cost: parseFloat(e.target.value) || undefined
                                   })}
-                                  className="h-8 text-xs"
+                                  className="h-8 text-xs bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                                 />
                               </div>
                               
@@ -1016,7 +1011,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                     ...tempCostOverrides,
                                     builtin_llm_cost: parseFloat(e.target.value) || undefined
                                   })}
-                                  className="h-8 text-xs"
+                                  className="h-8 text-xs bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                                 />
                               </div>
                               
@@ -1031,7 +1026,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                     ...tempCostOverrides,
                                     s3_storage_cost_per_gb: parseFloat(e.target.value) || undefined
                                   })}
-                                  className="h-8 text-xs"
+                                  className="h-8 text-xs bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                                 />
                               </div>
                             </div>
