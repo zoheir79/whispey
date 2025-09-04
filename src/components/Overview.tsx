@@ -578,8 +578,8 @@ const Overview: React.FC<OverviewProps> = ({
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
           <>
-            {/* Responsive Metrics Grid */}
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 md:gap-4">
+            {/* Metric Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {/* Total Calls */}
               <div className="h-full">
                 <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
@@ -867,7 +867,8 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-            {/* Responsive Chart Grid */}
+            
+            {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Daily Calls Chart */}
               <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
@@ -1198,10 +1199,10 @@ const Overview: React.FC<OverviewProps> = ({
             {/* Chart Analytics Section */}
             <ChartProvider>
               <div className="space-y-6 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
-                <EnhancedChartBuilder 
-                  agentId={agent.id}
-                  dateFrom={dateRange.from}
-                  dateTo={dateRange.to}
+                <EnhancedChartBuilder
+                  agentId={agent?.id}
+                  dateFrom={new Date(dateRange.from).toISOString()}
+                  dateTo={new Date(dateRange.to).toISOString()}
                   metadataFields={metadataFields}
                   transcriptionFields={transcriptionFields}
                   fieldsLoading={fieldsLoading}
