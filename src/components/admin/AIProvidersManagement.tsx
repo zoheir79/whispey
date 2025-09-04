@@ -116,7 +116,7 @@ export default function AIProvidersManagement() {
   const [showDialog, setShowDialog] = useState(false)
   const [editingProvider, setEditingProvider] = useState<Provider | null>(null)
   const [showBuiltinDialog, setShowBuiltinDialog] = useState(false)
-  const [builtinEditType, setBuiltinEditType] = useState<'stt' | 'tts' | 'llm'>('stt')
+  const [builtinEditType, setBuiltinEditType] = useState<'stt' | 'tts' | 'llm' | 'voice' | 'text'>('stt')
   
   const [formData, setFormData] = useState<ProviderFormData>({
     name: '',
@@ -147,6 +147,18 @@ export default function AIProvidersManagement() {
     api_key: '',
     cost_per_token: 0.00005,
     cost_dedicated_monthly: 100.00
+  })
+
+  const [builtinVoiceSettings, setBuiltinVoiceSettings] = useState({
+    url: 'http://localhost:8000/voice-agents',
+    api_key: '',
+    cost_per_minute: 0.05
+  })
+
+  const [builtinTextSettings, setBuiltinTextSettings] = useState({
+    url: 'http://localhost:8000/text-agents',
+    api_key: '',
+    cost_per_token: 0.00005
   })
 
   const [s3Settings, setS3Settings] = useState({
@@ -474,10 +486,10 @@ export default function AIProvidersManagement() {
               <div>
                 <div className="font-medium">Agents Voice (Built-in)</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  URL: {globalSettings?.builtin_voice?.url || 'Non configuré'}
+                  URL: {globalSettings?.agent_subscription_costs ? 'Configuré' : 'Non configuré'}
                 </div>
                 <div className="text-sm text-gray-500">
-                  Coût: ${globalSettings?.builtin_voice?.cost_per_minute?.toFixed(4) || '0.0000'}/minute
+                  Coût: ${globalSettings?.agent_subscription_costs?.voice_per_minute?.toFixed(4) || '0.0000'}/minute
                 </div>
               </div>
               <Button variant="outline" onClick={() => {
@@ -494,10 +506,10 @@ export default function AIProvidersManagement() {
               <div>
                 <div className="font-medium">Agents Text-only (Built-in)</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  URL: {globalSettings?.builtin_text?.url || 'Non configuré'}
+                  URL: {globalSettings?.agent_subscription_costs ? 'Configuré' : 'Non configuré'}
                 </div>
                 <div className="text-sm text-gray-500">
-                  Coût: ${globalSettings?.builtin_text?.cost_per_token?.toFixed(6) || '0.000000'}/token
+                  Coût: ${globalSettings?.agent_subscription_costs?.textonly_per_month?.toFixed(2) || '0.00'}/mois
                 </div>
               </div>
               <Button variant="outline" onClick={() => {
@@ -717,19 +729,31 @@ export default function AIProvidersManagement() {
           <DialogHeader>
             <DialogTitle>Configuration Built-in - {builtinEditType === 'voice' ? 'Voice Agents' : 'Text-only Agents'}</DialogTitle>
             <DialogDescription>
-              Configurez les paramètres pour les modèles IA {builtinEditType === 'voice' ? 'voice' : 'text-only'} intégrés.
+              Configurez les paramètres pour les agents {builtinEditType === 'voice' ? 'voice' : builtinEditType === 'text' ? 'text-only' : `${builtinEditType.toUpperCase()}`} intégrés.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">URL du serveur</label>
               <Input
-                value={builtinEditType === 'voice' ? builtinVoiceSettings.url : builtinTextSettings.url}
+                value={
+                  builtinEditType === 'voice' ? builtinVoiceSettings.url :
+                  builtinEditType === 'text' ? builtinTextSettings.url :
+                  builtinEditType === 'stt' ? builtinSttSettings.url :
+                  builtinEditType === 'tts' ? builtinTtsSettings.url :
+                  builtinLlmSettings.url
+                }
                 onChange={(e) => {
                   if (builtinEditType === 'voice') {
                     setBuiltinVoiceSettings({ ...builtinVoiceSettings, url: e.target.value })
-                  } else {
+                  } else if (builtinEditType === 'text') {
                     setBuiltinTextSettings({ ...builtinTextSettings, url: e.target.value })
+                  } else if (builtinEditType === 'stt') {
+                    setBuiltinSttSettings({ ...builtinSttSettings, url: e.target.value })
+                  } else if (builtinEditType === 'tts') {
+                    setBuiltinTtsSettings({ ...builtinTtsSettings, url: e.target.value })
+                  } else {
+                    setBuiltinLlmSettings({ ...builtinLlmSettings, url: e.target.value })
                   }
                 }}
                 placeholder="http://localhost:8000"
@@ -740,12 +764,24 @@ export default function AIProvidersManagement() {
               <label className="block text-sm font-medium mb-1">Clé API (optionnel)</label>
               <Input
                 type="password"
-                value={builtinEditType === 'voice' ? builtinVoiceSettings.api_key : builtinTextSettings.api_key}
+                value={
+                  builtinEditType === 'voice' ? builtinVoiceSettings.api_key :
+                  builtinEditType === 'text' ? builtinTextSettings.api_key :
+                  builtinEditType === 'stt' ? builtinSttSettings.api_key :
+                  builtinEditType === 'tts' ? builtinTtsSettings.api_key :
+                  builtinLlmSettings.api_key
+                }
                 onChange={(e) => {
                   if (builtinEditType === 'voice') {
                     setBuiltinVoiceSettings({ ...builtinVoiceSettings, api_key: e.target.value })
-                  } else {
+                  } else if (builtinEditType === 'text') {
                     setBuiltinTextSettings({ ...builtinTextSettings, api_key: e.target.value })
+                  } else if (builtinEditType === 'stt') {
+                    setBuiltinSttSettings({ ...builtinSttSettings, api_key: e.target.value })
+                  } else if (builtinEditType === 'tts') {
+                    setBuiltinTtsSettings({ ...builtinTtsSettings, api_key: e.target.value })
+                  } else {
+                    setBuiltinLlmSettings({ ...builtinLlmSettings, api_key: e.target.value })
                   }
                 }}
                 placeholder="Clé d'authentification interne"
@@ -753,21 +789,39 @@ export default function AIProvidersManagement() {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">
-                {builtinEditType === 'voice' ? 'Coût par minute ($)' : 'Coût par token ($)'}
+                {builtinEditType === 'voice' ? 'Coût par minute ($)' : builtinEditType === 'text' ? 'Coût par token ($)' : builtinEditType === 'stt' ? 'Coût par minute ($)' : builtinEditType === 'tts' ? 'Coût par mot ($)' : 'Coût par token ($)'}
               </label>
               <Input
                 type="number"
-                step={builtinEditType === 'voice' ? "0.0001" : "0.000001"}
-                value={builtinEditType === 'voice' ? builtinVoiceSettings.cost_per_minute : builtinTextSettings.cost_per_token}
+                step={builtinEditType === 'voice' ? "0.0001" : builtinEditType === 'text' ? "0.000001" : builtinEditType === 'stt' ? "0.0001" : builtinEditType === 'tts' ? "0.00001" : "0.000001"}
+                value={
+                  builtinEditType === 'voice' ? builtinVoiceSettings.cost_per_minute :
+                  builtinEditType === 'text' ? builtinTextSettings.cost_per_token :
+                  builtinEditType === 'stt' ? builtinSttSettings.cost_per_minute :
+                  builtinEditType === 'tts' ? builtinTtsSettings.cost_per_word :
+                  builtinLlmSettings.cost_per_token
+                }
                 onChange={(e) => {
                   const value = parseFloat(e.target.value) || 0
                   if (builtinEditType === 'voice') {
                     setBuiltinVoiceSettings({ ...builtinVoiceSettings, cost_per_minute: value })
-                  } else {
+                  } else if (builtinEditType === 'text') {
                     setBuiltinTextSettings({ ...builtinTextSettings, cost_per_token: value })
+                  } else if (builtinEditType === 'stt') {
+                    setBuiltinSttSettings({ ...builtinSttSettings, cost_per_minute: value })
+                  } else if (builtinEditType === 'tts') {
+                    setBuiltinTtsSettings({ ...builtinTtsSettings, cost_per_word: value })
+                  } else {
+                    setBuiltinLlmSettings({ ...builtinLlmSettings, cost_per_token: value })
                   }
                 }}
-                placeholder={builtinEditType === 'voice' ? "0.05" : "0.00005"}
+                placeholder={
+                  builtinEditType === 'voice' ? "0.05" :
+                  builtinEditType === 'text' ? "0.00005" :
+                  builtinEditType === 'stt' ? "0.02" :
+                  builtinEditType === 'tts' ? "0.0001" :
+                  "0.00005"
+                }
                 required
               />
             </div>
