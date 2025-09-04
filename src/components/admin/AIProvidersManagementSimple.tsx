@@ -88,7 +88,7 @@ export default function AIProvidersManagementSimple() {
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-600">
-                    {provider.cost_per_unit}€ par {provider.unit}
+                    {typeof provider.cost_per_unit === 'number' ? provider.cost_per_unit.toFixed(4) : provider.cost_per_unit}€ par {provider.unit}
                   </p>
                 </div>
                 <div className="flex gap-2">
