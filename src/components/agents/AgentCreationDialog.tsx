@@ -156,15 +156,22 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   // Calculate estimated cost per minute
   const getEstimatedCost = () => {
     if (formData.provider_mode === 'builtin' && globalSettings) {
-      return globalSettings.cost_per_minute
+      if (formData.agent_type === 'voice') {
+        return globalSettings.builtin_voice.cost_per_minute
+      } else if (formData.agent_type === 'text_only') {
+        // Pour text-only, on estime ~1000 tokens par minute
+        return globalSettings.builtin_text.cost_per_token * 1000
+      }
     } else if (formData.provider_mode === 'external') {
       const sttProvider = sttProviders.find(p => p.id.toString() === formData.stt_provider_id)
       const ttsProvider = ttsProviders.find(p => p.id.toString() === formData.tts_provider_id)
       const llmProvider = llmProviders.find(p => p.id.toString() === formData.llm_provider_id)
       
       let totalCost = 0
-      if (sttProvider) totalCost += sttProvider.cost_per_unit // per minute
-      if (ttsProvider) totalCost += ttsProvider.cost_per_unit * 100 // estimated 100 words per minute
+      if (formData.agent_type === 'voice') {
+        if (sttProvider) totalCost += sttProvider.cost_per_unit // per minute
+        if (ttsProvider) totalCost += ttsProvider.cost_per_unit * 100 // estimated 100 words per minute
+      }
       if (llmProvider) totalCost += llmProvider.cost_per_unit * 1000 // estimated 1000 tokens per minute
       
       return totalCost
@@ -723,7 +730,10 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                             <div className="text-xs text-gray-500">Use internal AI models</div>
                             {globalSettings && (
                               <div className="text-xs text-blue-600 mt-1 font-medium">
-                                ${globalSettings.cost_per_minute.toFixed(4)}/minute
+                                {formData.agent_type === 'voice' && 
+                                  `$${globalSettings.builtin_voice.cost_per_minute.toFixed(4)}/minute`}
+                                {formData.agent_type === 'text_only' && 
+                                  `$${globalSettings.builtin_text.cost_per_token.toFixed(6)}/token`}
                               </div>
                             )}
                           </div>

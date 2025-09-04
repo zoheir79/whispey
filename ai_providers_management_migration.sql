@@ -18,16 +18,28 @@ CREATE TABLE IF NOT EXISTS public.settings_global (
 -- Create index for performance
 CREATE INDEX IF NOT EXISTS idx_settings_global_key ON public.settings_global(key);
 
--- Insert default built-in models configuration
+-- Insert default built-in models configuration (voice agents)
 INSERT INTO public.settings_global (key, value, description) 
 VALUES (
-    'builtin_models',
+    'builtin_voice',
     '{
         "url": "http://localhost:8000",
         "api_key": "",
         "cost_per_minute": 0.05
     }'::jsonb,
-    'Configuration for built-in AI models including URL, API key and cost per minute'
+    'Configuration for built-in voice agents - cost calculated per minute (global)'
+) ON CONFLICT (key) DO NOTHING;
+
+-- Insert default built-in models configuration (text-only agents)
+INSERT INTO public.settings_global (key, value, description) 
+VALUES (
+    'builtin_text',
+    '{
+        "url": "http://localhost:8000",
+        "api_key": "",
+        "cost_per_token": 0.00005
+    }'::jsonb,
+    'Configuration for built-in text-only agents - cost calculated per token'
 ) ON CONFLICT (key) DO NOTHING;
 
 -- ========================================
