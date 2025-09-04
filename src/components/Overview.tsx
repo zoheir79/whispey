@@ -844,7 +844,7 @@ const Overview: React.FC<OverviewProps> = ({
                 </div>
               )
             })}
-          </div>
+
 
             {process.env.NODE_ENV === 'development' && (
               <Card className="border-yellow-200 bg-yellow-50 col-span-full">
@@ -1205,7 +1205,7 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
-          </>
+          </div>
         ) : (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-8">
