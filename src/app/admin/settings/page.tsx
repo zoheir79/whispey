@@ -9,7 +9,7 @@ import { Loader2, Settings, Shield } from 'lucide-react'
 
 export default function AdminSettingsPage() {
   const router = useRouter()
-  const { globalRole, isSuperAdmin, loading } = useGlobalRole()
+  const { globalRole, isSuperAdmin, isLoading } = useGlobalRole()
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
@@ -17,12 +17,12 @@ export default function AdminSettingsPage() {
   }, [])
 
   useEffect(() => {
-    if (!loading && !isSuperAdmin) {
+    if (!isLoading && !isSuperAdmin) {
       router.push('/')
     }
-  }, [loading, isSuperAdmin, router])
+  }, [isLoading, isSuperAdmin, router])
 
-  if (!isClient || loading) {
+  if (!isClient || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
