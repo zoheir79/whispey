@@ -43,6 +43,7 @@ interface Provider {
   unit: string
   cost_per_unit: number
   is_active: boolean
+  is_builtin?: boolean
   created_at: string
   updated_at: string
 }
@@ -77,6 +78,11 @@ interface GlobalSettings {
   agent_subscription_costs: {
     voice_per_minute: number
     textonly_per_month: number
+  }
+  subscription_costs: {
+    voice_agent_monthly: number
+    text_agent_monthly: number
+    vision_agent_monthly: number
   }
 }
 
@@ -237,6 +243,11 @@ export default function AIProvidersManagement() {
         agent_subscription_costs: {
           voice_per_minute: 0.10,
           textonly_per_month: 25.00
+        },
+        subscription_costs: {
+          voice_agent_monthly: 29.99,
+          text_agent_monthly: 19.99,
+          vision_agent_monthly: 39.99
         }
       }
 
