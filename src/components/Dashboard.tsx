@@ -418,9 +418,9 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
       {/* Polished Apple Header */}
       <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 shadow-sm">
         <div className="px-8 py-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-y-4">
             {/* Left: Navigation & Identity */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 md:gap-6">
               <button 
                 onClick={handleBack}
                 className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl transition-all duration-200"
@@ -432,7 +432,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <h1 className="text-2xl font-semibold text-gray-900 tracking-tight truncate max-w-[250px] cursor-default">
+                    <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight truncate max-w-[250px] cursor-default">
                       {agent?.name || 'Loading...'}
                     </h1>
                   </TooltipTrigger>

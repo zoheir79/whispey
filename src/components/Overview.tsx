@@ -868,19 +868,16 @@ const Overview: React.FC<OverviewProps> = ({
               </Card>
             )}
             {/* Responsive Chart Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Daily Calls Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                    <div className="flex items-center gap-3 md:gap-4">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                         <TrendUp weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
-                      <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Daily Calls</h3>
-                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Daily conversation volume</p>
-                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Daily Calls</h3>
                     </div>
                     <div className="text-right">
                       <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
@@ -894,8 +891,8 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-4 md:p-6 lg:p-7">
-                  <div className="h-64 md:h-80">
+                <div className="p-6">
+                  <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                         <defs>
@@ -965,37 +962,34 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Professional Success Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                    <div className="flex items-center gap-3 md:gap-4">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
                       <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
                         <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                       </div>
-                      <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Success Analysis</h3>
-                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Call completion metrics</p>
-                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
                     </div>
                     <div className="text-right">
                       <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
-                      <div className="text-2xl font-light text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
+                      <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
                     </div>
                   </div>
                 </div>
-                <div className="p-4 md:p-6 lg:p-7">
-                  <div className="h-64 md:h-80 flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-0">
+                <div className="p-6">
+                  <div className="h-80 flex items-center justify-center gap-8">
                     <div className="relative">
                       {/* Modern Ring Chart */}
-                      <div className="w-32 h-32 md:w-48 md:h-48">
+                      <div className="w-40 h-40">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
                             <Pie
                               data={successFailureData}
                               cx="50%"
                               cy="50%"
-                              innerRadius={55}
-                              outerRadius={85}
+                              innerRadius={50}
+                              outerRadius={70}
                               paddingAngle={2}
                               dataKey="value"
                               strokeWidth={0}
@@ -1023,14 +1017,14 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                       {/* Center Statistics */}
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
-                        <div className="text-4xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                          {successRate.toFixed(1)}<span className="text-2xl text-gray-500 dark:text-gray-400">%</span>
+                        <div className="text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                          {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-gray-400">%</span>
                         </div>
-                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Taux de succès</div>
+                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
                       </div>
                     </div>
                     {/* Legend */}
-                    <div className="lg:ml-8 space-y-2 md:space-y-3 text-center lg:text-left">
+                    <div className="space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
                         <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
@@ -1047,22 +1041,19 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Daily Minutes Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                    <div className="flex items-center gap-3 md:gap-4">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                         <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
-                      <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Usage Minutes</h3>
-                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Daily conversation duration</p>
-                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
                     </div>
                   </div>
                 </div>
-                <div className="p-4 md:p-6 lg:p-7">
-                  <div className="h-64 md:h-80">
+                <div className="p-6">
+                  <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
                         <defs>
@@ -1122,22 +1113,19 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Average Latency Chart */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                    <div className="flex items-center gap-3 md:gap-4">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
                       <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
                         <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                       </div>
-                      <div>
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Response Performance</h3>
-                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Average latency metrics</p>
-                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
                     </div>
                   </div>
                 </div>
-                <div className="p-4 md:p-6 lg:p-7">
-                  <div className="h-64 md:h-80">
+                <div className="p-6">
+                  <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
                         <defs>

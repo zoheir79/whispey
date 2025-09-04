@@ -1035,17 +1035,24 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       ))}
 
                       {/* Dynamic Transcription Metrics Columns */}
-                      {visibleColumns.transcription_metrics.map((key) => (
-                        <TableCell 
-                          key={`transcription-${call.id}-${key}`} 
-                          className="py-4"
-                        >
-                          <DynamicJsonCell 
-                            data={call.transcription_metrics} 
-                            fieldKey={key}
-                          />
-                        </TableCell>
-                      ))}
+                      {visibleColumns.transcription_metrics.map((key) => {
+                        if (key === 'usage') {
+                          return (
+                            <TableCell key={`transcription-${key}`} className="w-[320px]">
+                              <div className="max-h-48 overflow-y-auto rounded-md bg-slate-100 dark:bg-slate-700/50 p-2">
+                                <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+                                  {JSON.stringify(call.transcription_metrics?.[key], null, 2)}
+                                </pre>
+                              </div>
+                            </TableCell>
+                          )
+                        }
+                        return (
+                          <TableCell key={`transcription-${key}`}>
+                            <DynamicJsonCell data={call.transcription_metrics} fieldKey={key} />
+                          </TableCell>
+                        )
+                      })}
                     </TableRow>
                   ))}
                 </TableBody>
