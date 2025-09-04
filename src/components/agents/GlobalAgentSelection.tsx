@@ -204,12 +204,12 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#fafafa' }}>
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <main className="max-w-6xl mx-auto px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">All Agents</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">All Agents</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Manage agents across all workspaces. {filteredAgents.length} of {agents.length} agents
           </p>
         </div>
@@ -396,8 +396,8 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-semibold text-gray-900 truncate">{agent.name}</h3>
-                        <span className="text-sm text-gray-500">
+                        <h3 className="font-semibold text-gray-900 dark:text-white truncate">{agent.name}</h3>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
                           {agent.agent_type}
                         </span>
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-md ${
@@ -410,7 +410,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                           {agent.environment}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                         <span>ID: {agent?.id?.slice(0, 8)}...{agent?.id?.slice(-4)}</span>
                         <span>Created {formatDate(agent.created_at)}</span>
                       </div>
@@ -503,8 +503,8 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                         }`}></div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-gray-900 truncate">{agent.name}</h3>
-                        <p className="text-sm text-gray-500 mt-0.5">{agent.agent_type}</p>
+                        <h3 className="font-medium text-gray-900 dark:text-white truncate">{agent.name}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{agent.agent_type}</p>
                       </div>
                     </div>
                     
@@ -565,7 +565,7 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                     <span>Created {formatDate(agent.created_at)}</span>
                     <span className={`font-medium ${agent.is_active ? 'text-green-600' : 'text-gray-500'}`}>
                       {agent.is_active ? 'Active' : 'Inactive'}

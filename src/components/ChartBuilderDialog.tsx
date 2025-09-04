@@ -37,12 +37,12 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600">
           <Plus className="w-4 h-4 mr-2" />
           Add Chart
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-md bg-white dark:bg-slate-800 dark:border-slate-700">
+      <DialogContent className="w-full max-w-md bg-white dark:bg-slate-800 dark:border-slate-700 text-gray-900 dark:text-gray-100">
         <DialogHeader>
           <DialogTitle className="text-gray-900 dark:text-gray-100">Add Count Chart</DialogTitle>
         </DialogHeader>
@@ -58,7 +58,7 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
                 field: undefined 
               }))}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                 <SelectValue placeholder="Select data source" />
               </SelectTrigger>
               <SelectContent>
@@ -77,7 +77,7 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
                 value={newChart.field}
                 onValueChange={(value) => setNewChart(prev => ({ ...prev, field: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder="Select field" />
                 </SelectTrigger>
                 <SelectContent>
@@ -98,6 +98,7 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
               placeholder="e.g., 'Yes', 'completed', 'Successful'"
               value={newChart.filterValue || ''}
               onChange={(e) => setNewChart(prev => ({ ...prev, filterValue: e.target.value }))}
+              className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Leave empty to show multiple lines for all values
@@ -114,7 +115,7 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
                 chartType: value as 'line' | 'bar' 
               }))}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -129,6 +130,7 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
             <Button
               onClick={handleAddChart}
               disabled={!newChart.field || !newChart.source}
+              className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               Add Chart
             </Button>

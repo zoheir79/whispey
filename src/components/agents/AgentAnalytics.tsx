@@ -147,7 +147,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-50 p-2 rounded-lg">
+              <div className="bg-blue-100 dark:bg-blue-900/50 p-2 rounded-lg">
                 <MessageSquare className="h-5 w-5 text-blue-600" />
               </div>
               <div className="flex-1">
@@ -173,7 +173,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="bg-red-50 p-2 rounded-lg">
+              <div className="bg-red-100 dark:bg-red-900/50 p-2 rounded-lg">
                 <Mic className="h-5 w-5 text-red-600" />
               </div>
               <div className="flex-1">
@@ -199,7 +199,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="bg-purple-50 p-2 rounded-lg">
+              <div className="bg-purple-100 dark:bg-purple-900/50 p-2 rounded-lg">
                 <Volume2 className="h-5 w-5 text-purple-600" />
               </div>
               <div className="flex-1">
@@ -225,7 +225,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="bg-green-50 p-2 rounded-lg">
+              <div className="bg-green-100 dark:bg-green-900/50 p-2 rounded-lg">
                 <Clock className="h-5 w-5 text-green-600" />
               </div>
               <div className="flex-1">
@@ -253,7 +253,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-50 p-2 rounded-lg">
+              <div className="bg-blue-100 dark:bg-blue-900/50 p-2 rounded-lg">
                 <Phone className="h-5 w-5 text-blue-600" />
               </div>
               <div>
@@ -269,7 +269,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="bg-green-50 p-2 rounded-lg">
+              <div className="bg-green-100 dark:bg-green-900/50 p-2 rounded-lg">
                 <TrendingUp className="h-5 w-5 text-green-600" />
               </div>
               <div>
@@ -285,7 +285,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="bg-orange-50 p-2 rounded-lg">
+              <div className="bg-orange-100 dark:bg-orange-900/50 p-2 rounded-lg">
                 <BarChart3 className="h-5 w-5 text-orange-600" />
               </div>
               <div>
@@ -301,7 +301,7 @@ export default function AgentAnalytics({ agent }: AgentAnalyticsProps) {
         <Card className="dark:bg-slate-800 dark:hover:border-slate-600">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="bg-purple-50 p-2 rounded-lg">
+              <div className="bg-purple-100 dark:bg-purple-900/50 p-2 rounded-lg">
                 <DollarSign className="h-5 w-5 text-purple-600" />
               </div>
               <div>
