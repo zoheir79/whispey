@@ -581,16 +581,13 @@ const Overview: React.FC<OverviewProps> = ({
             {/* Metric Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {/* Total Calls */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                         <Phone weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      
-                    </div>
-                    <div className="space-y-1">
+                              
+                          <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
                       <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {(() => {
@@ -602,185 +599,124 @@ const Overview: React.FC<OverviewProps> = ({
                         })()}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            
               {/* Global Call Duration */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
                         <Clock weight="regular" className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                      </div>
-                      <div className="text-right">
+                              <div className="text-right">
                         <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                           {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
                         </span>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
+                                  <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Call Duration</h3>
                       <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
                         <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
                       </p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            
               {/* AI Processing Time */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
                         <Activity weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <div className="text-right">
+                              <div className="text-right">
                         <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                           STT+LLM+TTS
                         </span>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
+                                  <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">AI Processing</h3>
                       <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
                         <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
                       </p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            
               {/* Total Cost */}
               {role !== 'user' && (
-                <div className="h-full">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
                           <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                        </div>
-                        <div className="text-right">
+                                  <div className="text-right">
                           <span className="text-xs font-medium text-gray-500 dark:text-gray-400">INR</span>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
+                                        <div className="space-y-1">
                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Cost</h3>
                         <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">₹{analytics?.totalCost?.toFixed(2) || '0.00'}</p>
                         <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+                                  )}
 
               {/* Average Latency */}
               {role !== 'user' && (
-                <div className="h-full">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
                           <Lightning weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div className="text-right">
+                                  <div className="text-right">
                           <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">avg</span>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
+                                        <div className="space-y-1">
                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Response Time</h3>
                         <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-500 dark:text-slate-400 ml-1">s</span></p>
                         <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+                                  )}
 
               {/* Successful Calls */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
                         <CheckCircle weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
-                      </div>
-                      <div className="text-right">
+                              <div className="text-right">
                         <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-md border border-green-100 dark:border-green-800">
                           <ArrowUp weight="bold" className="w-3 h-3 text-green-600 dark:text-green-400" />
                           <span className="text-xs font-bold text-green-600 dark:text-green-400">
                             {analytics ? successRate.toFixed(1) : '0.0'}%
                           </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
+                                            <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Successful</h3>
                       <p className="text-2xl font-light text-green-600 dark:text-green-400 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            
               {/* Failed Calls */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-100 dark:border-red-800">
                         <XCircle weight="regular" className="w-5 h-5 text-red-600 dark:text-red-400" />
-                      </div>
-                      <div className="text-right">
+                              <div className="text-right">
                         <div className="flex items-center gap-1 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-md border border-red-100 dark:border-red-800">
                           <ArrowDown weight="bold" className="w-3 h-3 text-red-600 dark:text-red-400" />
                           <span className="text-xs font-bold text-red-600 dark:text-red-400">
                             {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
                           </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
+                                            <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Failed</h3>
                       <p className="text-2xl font-light text-red-600 dark:text-red-400 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            
               {/* Total Tokens */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
                         <Activity weight="regular" className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                      </div>
-                      <div className="text-right">
+                              <div className="text-right">
                         <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
                           {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
                         </span>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
+                                  <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Tokens</h3>
                       <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {analytics?.totalTokens?.toLocaleString() || '0'}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
-                </div>
-              {customTotals.map((config) => {
+                          {customTotals.map((config) => {
               const result = customTotalResults.find(r => r.configId === config.id)
 
               const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
@@ -788,13 +724,12 @@ const Overview: React.FC<OverviewProps> = ({
 
               return (
                 <div key={config.id} className="group h-full">
-                  <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                  <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
                         <div className={`p-2 ${colorClass} rounded-lg border`}>
                           <IconComponent weight="regular" className={`w-5 h-5`} />
-                        </div>
-
+          
                         {/* Actions */}
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
@@ -823,9 +758,7 @@ const Overview: React.FC<OverviewProps> = ({
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
-                        </div>
-                      </div>
-
+                  
                       <div className="space-y-1">
                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider truncate" title={config.name}>
                           {config.name}
@@ -848,11 +781,7 @@ const Overview: React.FC<OverviewProps> = ({
                             {result.error}
                           </p>
                         )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
+                                  )
             })}
 
             {process.env.NODE_ENV === 'development' && (
@@ -862,34 +791,26 @@ const Overview: React.FC<OverviewProps> = ({
                     <strong>Debug - Dynamic Fields:</strong>
                     <div>Metadata: {metadataFields.join(', ') || 'None'}</div>
                     <div>Transcription: {transcriptionFields.join(', ') || 'None'}</div>
-                  </div>
-                </CardContent>
+                    </CardContent>
               </Card>
             )}
 
             {/* Daily Calls Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-3 xl:col-span-3">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                       <TrendUp weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Daily Calls</h3>
-                  </div>
-                  <div className="text-right">
+                          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Daily Calls</h3>
+                      <div className="text-right">
                     <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
                     <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     {analytics?.dailyData && analytics.dailyData.length > 0 
                         ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
                         : 0
                       }
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
+                                  <div className="p-6">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
@@ -955,27 +876,20 @@ const Overview: React.FC<OverviewProps> = ({
                       />
                     </LineChart>
                   </ResponsiveContainer>
-                </div>
               </div>
-            </div>
 
             {/* Professional Success Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-3 xl:col-span-3">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
                       <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
-                    </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
-                  </div>
-                  <div className="text-right">
+                          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
+                      <div className="text-right">
                     <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
                     <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
+                    <div className="p-6">
                 <div className="h-80 flex items-center justify-center gap-8">
                   <div className="relative">
                     {/* Modern Ring Chart */}
@@ -1012,45 +926,32 @@ const Overview: React.FC<OverviewProps> = ({
                           />
                         </PieChart>
                       </ResponsiveContainer>
-                    </div>
-                    {/* Center Statistics */}
+                          {/* Center Statistics */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
                       <div className="text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-gray-400">%</span>
-                      </div>
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
-                    </div>
-                  </div>
-                  {/* Legend */}
+                              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
+                            {/* Legend */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
                       <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.successfulCalls || 0}</div>
-                    </div>
-                    <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF3B30' }}></div>
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Failed</div>
                       <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                        </div>
 
             {/* Daily Minutes Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-3 xl:col-span-3">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                       <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
+                          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
+                    <div className="p-6">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
@@ -1106,23 +1007,17 @@ const Overview: React.FC<OverviewProps> = ({
                       />
                     </BarChart>
                   </ResponsiveContainer>
-                </div>
               </div>
-            </div>
 
             {/* Average Latency Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-3 xl:col-span-3">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
                       <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
+                          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
+                    <div className="p-6">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
@@ -1188,9 +1083,7 @@ const Overview: React.FC<OverviewProps> = ({
                       />
                     </LineChart>
                   </ResponsiveContainer>
-                </div>
               </div>
-            </div>
             </div>
 
             {/* Chart Analytics Section */}
@@ -1217,7 +1110,6 @@ const Overview: React.FC<OverviewProps> = ({
                     onSaveCustomTotal={handleSaveCustomTotal}
                   />
                 )}
-              </div>
             </ChartProvider>
           </>
         ) : (
@@ -1225,13 +1117,11 @@ const Overview: React.FC<OverviewProps> = ({
             <div className="text-center space-y-8">
               <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
                 <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
-              </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No Data Available</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
                   No calls found for the selected time period. Try adjusting your date range or check back later.
                 </p>
-              </div>
             </div>
           </div>
         )}
