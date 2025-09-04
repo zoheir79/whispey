@@ -588,7 +588,6 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                         <Phone weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
-                      
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
@@ -596,9 +595,13 @@ const Overview: React.FC<OverviewProps> = ({
                         {(() => {
                           const totalCalls = analytics?.totalCalls || 0;
                           console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
-                          console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
-                          console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
-                          return String(totalCalls).replace(/^0+/, '') || '0';
+                          console.log('🔍 DEBUG Overview - totalCalls computed:', totalCalls);
+                          if (totalCalls >= 1000000) {
+                            return `${(totalCalls / 1000000).toFixed(1)}M`;
+                          } else if (totalCalls >= 1000) {
+                            return `${(totalCalls / 1000).toFixed(1)}K`;
+                          }
+                          return totalCalls.toLocaleString();
                         })()}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
@@ -1220,6 +1223,7 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
+            </div>
           </div>
         ) : (
           <div className="h-full flex items-center justify-center">
