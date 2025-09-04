@@ -4,7 +4,7 @@ import { query } from '@/lib/db';
 import { verifyUserAuth } from '@/lib/auth';
 import { getUserGlobalRole } from '@/services/getGlobalRole';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { isAuthenticated, userId } = await verifyUserAuth(request);
     
@@ -15,7 +15,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
-    const agentId = parseInt(params.id);
+    const { id } = await params;
+    const agentId = parseInt(id);
     if (isNaN(agentId)) {
       return NextResponse.json(
         { error: 'Invalid agent ID' },
@@ -97,7 +98,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { isAuthenticated, userId } = await verifyUserAuth(request);
     
@@ -108,7 +109,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
-    const agentId = parseInt(params.id);
+    const { id } = await params;
+    const agentId = parseInt(id);
     if (isNaN(agentId)) {
       return NextResponse.json(
         { error: 'Invalid agent ID' },
@@ -235,7 +237,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { isAuthenticated, userId } = await verifyUserAuth(request);
     
@@ -246,7 +248,8 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       );
     }
 
-    const agentId = parseInt(params.id);
+    const { id } = await params;
+    const agentId = parseInt(id);
     if (isNaN(agentId)) {
       return NextResponse.json(
         { error: 'Invalid agent ID' },
