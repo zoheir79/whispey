@@ -941,7 +941,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   {calls.map((call: CallLog) => (
                     <TableRow
                       key={call.id}
-                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                      className="cursor-pointer hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors duration-200"
                       onClick={() => setSelectedCall(call)}
                     >
               {visibleColumns.basic.map((key) => {

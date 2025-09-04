@@ -769,7 +769,7 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Tokens</h3>
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Tokens</h3>
                       <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {analytics?.totalTokens?.toLocaleString() || '0'}
                       </p>
@@ -824,7 +824,7 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
 
                       <div className="space-y-1">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider truncate" title={config.name}>
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider truncate" title={config.name}>
                           {config.name}
                         </h3>
                         <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
@@ -867,7 +867,7 @@ const Overview: React.FC<OverviewProps> = ({
             {/* Responsive Chart Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Daily Calls Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -880,8 +880,8 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500">Avg</div>
-                      <div className="text-sm font-semibold text-gray-900">
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {analytics?.dailyData && analytics.dailyData.length > 0 
                           ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
                           : 0
@@ -962,7 +962,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Professional Success Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -975,7 +975,7 @@ const Overview: React.FC<OverviewProps> = ({
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500">Success Rate</div>
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
                       <div className="text-2xl font-light text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
                     </div>
                   </div>
@@ -1044,7 +1044,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Daily Minutes Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -1119,7 +1119,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Average Latency Chart */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-300 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 lg:px-7 py-4 md:py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 md:gap-4">

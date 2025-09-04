@@ -121,7 +121,7 @@ const DynamicJsonCell: React.FC<{
     
     return (
       <div 
-        className="w-full max-w-full overflow-hidden border rounded-md bg-muted/20"
+        className="w-full max-w-full overflow-hidden border rounded-md bg-muted/20 dark:bg-slate-700"
         style={{ maxWidth }}
       >
         <div className="p-1.5 w-full overflow-hidden">
@@ -395,7 +395,7 @@ const GlobalCallLogs: React.FC<GlobalCallLogsProps> = () => {
               {calls.map((call) => (
                 <TableRow
                   key={call.id}
-                  className="cursor-pointer hover:bg-muted/50"
+                  className="cursor-pointer hover:bg-muted/50 dark:hover:bg-slate-700/50"
                   onClick={() => setSelectedCall(call)}
                 >
                   {visibleColumns.basic.map((key) => {
