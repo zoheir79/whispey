@@ -941,7 +941,8 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                   {calls.map((call: CallLog) => (
                     <TableRow
                       key={call.id}
-                      className="cursor-pointer hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                      className="h-20 cursor-pointer hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                      style={{ maxHeight: '80px' }}
                       onClick={() => setSelectedCall(call)}
                     >
               {visibleColumns.basic.map((key) => {
@@ -1038,9 +1039,12 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       {visibleColumns.transcription_metrics.map((key) => {
                         if (key === 'usage') {
                           return (
-                            <TableCell key={`transcription-${key}`} className="w-[320px]">
-                              <div className="max-h-48 overflow-y-auto rounded-md bg-slate-100 dark:bg-slate-700/50 p-2">
-                                <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+                            <TableCell key={`transcription-${key}`} className="w-[280px] align-top">
+                              <div 
+                                className="h-16 overflow-y-auto rounded-md bg-slate-100 dark:bg-slate-700/50 p-2 border"
+                                style={{ maxHeight: '64px', minHeight: '64px' }}
+                              >
+                                <pre className="text-xs font-mono whitespace-pre-wrap break-all leading-tight">
                                   {JSON.stringify(call.transcription_metrics?.[key], null, 2)}
                                 </pre>
                               </div>
