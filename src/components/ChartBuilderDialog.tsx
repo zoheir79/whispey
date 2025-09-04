@@ -49,7 +49,7 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
         <div className="space-y-4">
           {/* Source Selection */}
           <div>
-            <Label className="text-gray-700 dark:text-slate-300">Data Source</Label>
+            <Label className="text-gray-700 dark:!text-slate-300">Data Source</Label>
             <Select
               value={newChart.source}
               onValueChange={(value) => setNewChart(prev => ({ 
@@ -58,10 +58,10 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
                 field: undefined 
               }))}
             >
-              <SelectTrigger className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-slate-100">
+              <SelectTrigger className="bg-white dark:!bg-slate-700 border-gray-200 dark:!border-slate-600 text-gray-900 dark:!text-slate-100">
                 <SelectValue placeholder="Select data source" />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
+              <SelectContent className="bg-white dark:!bg-slate-800 border-gray-200 dark:!border-slate-700">
                 <SelectItem value="table" className="text-gray-900 dark:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-700">Table Fields ({tableFields.length})</SelectItem>
                 <SelectItem value="metadata" className="text-gray-900 dark:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-700">Metadata ({fields.metadata.length} fields)</SelectItem>
                 <SelectItem value="transcription_metrics" className="text-gray-900 dark:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-700">Transcription ({fields.transcription_metrics.length} fields)</SelectItem>
@@ -77,10 +77,10 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
                 value={newChart.field}
                 onValueChange={(value) => setNewChart(prev => ({ ...prev, field: value }))}
               >
-                <SelectTrigger className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-slate-100">
+                <SelectTrigger className="bg-white dark:!bg-slate-700 border-gray-200 dark:!border-slate-600 text-gray-900 dark:!text-slate-100">
                   <SelectValue placeholder="Select field" />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
+                <SelectContent className="bg-white dark:!bg-slate-800 border-gray-200 dark:!border-slate-700">
                   {(newChart.source === 'table' ? tableFields : fields[newChart.source as keyof typeof fields]).map(field => (
                     <SelectItem key={field} value={field} className="text-gray-900 dark:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-700">
                       {field}
@@ -115,10 +115,10 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
                 chartType: value as 'line' | 'bar' 
               }))}
             >
-              <SelectTrigger className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-slate-100">
+              <SelectTrigger className="bg-white dark:!bg-slate-700 border-gray-200 dark:!border-slate-600 text-gray-900 dark:!text-slate-100">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
+              <SelectContent className="bg-white dark:!bg-slate-800 border-gray-200 dark:!border-slate-700">
                 <SelectItem value="line" className="text-gray-900 dark:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-700">Line Chart</SelectItem>
                 <SelectItem value="bar" className="text-gray-900 dark:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-700">Bar Chart (Stacked)</SelectItem>
               </SelectContent>
