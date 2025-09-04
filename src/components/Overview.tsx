@@ -781,7 +781,7 @@ const Overview: React.FC<OverviewProps> = ({
             </div>
 
             {/* Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Daily Calls Chart */}
               <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
