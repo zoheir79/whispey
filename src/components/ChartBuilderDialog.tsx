@@ -42,7 +42,7 @@ export const ChartBuilderDialog: React.FC<ChartBuilderDialogProps> = ({
           Add Chart
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-md bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-gray-100">
+      <DialogContent className="w-full max-w-md bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-slate-100">
         <DialogHeader>
           <DialogTitle className="text-gray-900 dark:text-slate-100">Add Count Chart</DialogTitle>
         </DialogHeader>
