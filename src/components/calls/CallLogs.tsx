@@ -943,6 +943,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       key={call.id}
                       className="cursor-pointer hover:bg-muted/50 dark:hover:bg-slate-700/50 transition-colors duration-200"
                       onClick={() => setSelectedCall(call)}
+                      style={{ height: '24px', minHeight: '24px', maxHeight: '24px' }}
                     >
               {visibleColumns.basic.map((key) => {
                 let value: React.ReactNode = "-"
@@ -1015,7 +1016,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                 }
 
                 return (
-                  <TableCell key={`basic-${call.id}-${key}`} className="py-2 px-3">
+                  <TableCell key={`basic-${call.id}-${key}`} className="!py-0.5 !px-2 !text-xs !leading-tight" style={{ padding: '2px 8px', fontSize: '11px', lineHeight: '1.2' }}>
                     {value}
                   </TableCell>
                 )
@@ -1025,7 +1026,8 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       {visibleColumns.metadata.map((key) => (
                         <TableCell 
                           key={`metadata-${call.id}-${key}`} 
-                          className="py-2 px-3 max-w-[200px]"
+                          className="!py-0.5 !px-2 !text-xs max-w-[200px]"
+                          style={{ padding: '2px 8px', fontSize: '11px', lineHeight: '1.2' }}
                         >
                           <DynamicJsonCell 
                             data={call.metadata} 
@@ -1038,7 +1040,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       {visibleColumns.transcription_metrics.map((key) => {
                         if (key === 'usage') {
                           return (
-                            <TableCell key={`transcription-${key}`} className="w-[450px] max-w-[450px]">
+                            <TableCell key={`transcription-${key}`} className="w-[450px] max-w-[450px] !py-0.5 !px-2 !text-xs" style={{ padding: '2px 8px', fontSize: '11px', lineHeight: '1.2' }}>
                               <div className="max-h-48 overflow-y-auto rounded-md bg-slate-100 dark:bg-slate-700/50 p-2">
                                 <pre className="text-xs font-mono whitespace-pre-wrap break-words leading-tight">
                                   {JSON.stringify(call.transcription_metrics?.[key], null, 2)}
@@ -1048,7 +1050,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                           )
                         }
                         return (
-                          <TableCell key={`transcription-${key}`} className="py-2 px-3 max-w-[250px]">
+                          <TableCell key={`transcription-${key}`} className="!py-0.5 !px-2 !text-xs max-w-[250px]" style={{ padding: '2px 8px', fontSize: '11px', lineHeight: '1.2' }}>
                             <DynamicJsonCell data={call.transcription_metrics} fieldKey={key} />
                           </TableCell>
                         )

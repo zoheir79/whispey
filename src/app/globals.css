@@ -209,3 +209,22 @@
 ::-webkit-scrollbar-track {
   background: hsl(var(--muted) / 0.1);
 }
+
+/* Force compact table styling */
+[data-slot="table-row"] {
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+}
+
+[data-slot="table-cell"] {
+  padding: 2px 8px !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+[data-slot="table-head"] {
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  height: 28px !important;
+}
