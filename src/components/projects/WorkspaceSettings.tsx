@@ -149,12 +149,12 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto dark:bg-slate-900 dark:border-slate-700">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Settings className="h-5 w-5 text-gray-600" />
-              <DialogTitle className="text-lg font-semibold">Workspace Settings</DialogTitle>
+              <Settings className="h-5 w-5 text-gray-600 dark:text-slate-400" />
+              <DialogTitle className="text-lg font-semibold dark:text-slate-100">Workspace Settings</DialogTitle>
             </div>
             <Button variant="ghost" size="sm" onClick={handleClose} className="h-8 w-8 p-0">
               <X className="h-4 w-4" />
@@ -179,14 +179,14 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
           )}
 
           {/* Basic Information */}
-          <Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardHeader>
-              <CardTitle className="text-base">Basic Information</CardTitle>
+              <CardTitle className="text-base dark:text-slate-200">Basic Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Workspace Name</Label>
+                  <Label htmlFor="name" className="dark:text-slate-300">Workspace Name</Label>
                   <WorkspaceNameInput
                     value={formData.name}
                     onChange={(value) => handleInputChange('name', value)}
@@ -195,24 +195,24 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="dark:text-slate-300">Description</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     placeholder="Enter workspace description"
                     rows={3}
-                    className="mt-1"
+                    className="mt-1 dark:bg-slate-900 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="environment">Environment</Label>
+                  <Label htmlFor="environment" className="dark:text-slate-300">Environment</Label>
                   <Select value={formData.environment} onValueChange={(value) => handleInputChange('environment', value)}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-1 dark:bg-slate-900 dark:border-slate-600 dark:text-slate-200">
                       <SelectValue placeholder="Select environment" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200">
                       <SelectItem value="dev">Development</SelectItem>
                       <SelectItem value="staging">Staging</SelectItem>
                       <SelectItem value="production">Production</SelectItem>
@@ -226,7 +226,7 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
                     checked={formData.is_active}
                     onCheckedChange={(checked) => handleInputChange('is_active', checked)}
                   />
-                  <Label htmlFor="is_active" className="flex items-center gap-2">
+                  <Label htmlFor="is_active" className="flex items-center gap-2 dark:text-slate-300">
                     Workspace Status
                     <Badge 
                       className={`px-2 py-1 text-xs ${formData.is_active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
@@ -240,9 +240,9 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
           </Card>
 
           {/* Preview */}
-          <Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardHeader>
-              <CardTitle className="text-base">Preview</CardTitle>
+              <CardTitle className="text-base dark:text-slate-200">Preview</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -257,8 +257,8 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
           </Card>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button variant="outline" onClick={handleClose}>
+          <div className="flex justify-end gap-3 pt-4 border-t dark:border-slate-700">
+            <Button variant="outline" onClick={handleClose} className="dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600 dark:hover:bg-slate-700">
               Cancel
             </Button>
             <Button 

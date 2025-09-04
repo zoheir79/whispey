@@ -433,33 +433,43 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuContent align="end" className="w-48 dark:bg-slate-900 dark:border-slate-700">
                         {/* Manage access - only for super_admin */}
                         {isSuperAdmin && (
-                          <DropdownMenuItem onClick={(e) => {
-                            e.stopPropagation()
-                            setSelectedProjectForDialog(project)
-                            setShowAddMemberDialog(true)
-                          }}>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setSelectedProjectForDialog(project)
+                              setShowAddMemberDialog(true)
+                            }}
+                            className="dark:text-slate-200 dark:hover:!bg-slate-700"
+                          >
                             <Users className="h-4 w-4 mr-2" />
                             Manage access
                           </DropdownMenuItem>
                         )}
                         {/* Settings - only for super_admin */}
                         {isSuperAdmin && (
-                          <DropdownMenuItem onClick={(e) => {
-                            e.stopPropagation()
-                            setShowSettingsDialog(project)
-                          }}>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setShowSettingsDialog(project)
+                            }}
+                            className="dark:text-slate-200 dark:hover:!bg-slate-700"
+                          >
                             <Settings className="h-4 w-4 mr-2" />
                             Settings
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation()
-                          setShowRegenerateConfirm(project)
-                        }} disabled={regeneratingToken === project.id}>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setShowRegenerateConfirm(project)
+                          }}
+                          disabled={regeneratingToken === project.id}
+                          className="dark:text-slate-200 dark:hover:!bg-slate-700"
+                        >
                           {regeneratingToken === project.id ? (
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                           ) : (
@@ -468,10 +478,13 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                           Regenerate token
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation()
-                          setShowDeleteConfirm(project)
-                        }} className="text-red-600 focus:text-red-600">
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setShowDeleteConfirm(project)
+                          }}
+                          className="text-red-600 focus:text-red-600 dark:text-red-500 dark:focus:text-red-500 dark:focus:bg-red-500/10"
+                        >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete workspace
                         </DropdownMenuItem>
@@ -566,7 +579,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle className="text-lg font-semibold">API token generated</DialogTitle>
-              <DialogDescription className="text-sm text-gray-600">
+              <DialogDescription className="text-sm text-gray-600 dark:text-gray-400">
                 A new API token has been generated for the "{showTokenDialog?.name}" workspace. Save this token securely as it won't be shown again.
               </DialogDescription>
             </DialogHeader>
@@ -622,13 +635,17 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
         <Dialog open={showDeleteConfirm !== null} onOpenChange={() => setShowDeleteConfirm(null)}>
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold">Delete workspace</DialogTitle>
-              <DialogDescription className="text-sm text-gray-600">
+              <DialogTitle className="text-lg font-semibold dark:text-white">Delete workspace</DialogTitle>
+              <DialogDescription className="text-sm text-gray-600 dark:text-gray-400">
                 Are you sure you want to delete the "{showDeleteConfirm?.name}" workspace? This action cannot be undone and will permanently delete all agents, call logs, and analytics data in this workspace.
               </DialogDescription>
             </DialogHeader>
             <div className="flex gap-3 pt-6">
-              <Button variant="outline" onClick={() => setShowDeleteConfirm(null)} className="flex-1">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600 dark:hover:bg-slate-700"
+              >
                 Cancel
               </Button>
               <Button

@@ -209,9 +209,9 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Profile Information */}
-          <Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
                 <User className="w-5 h-5" />
                 Profile Information
               </CardTitle>
@@ -225,6 +225,7 @@ export default function ProfilePage() {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Enter first name"
+                    className="dark:bg-slate-900 dark:border-slate-700 dark:text-slate-50"
                   />
                 </div>
                 <div>
@@ -234,6 +235,7 @@ export default function ProfilePage() {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Enter last name"
+                    className="dark:bg-slate-900 dark:border-slate-700 dark:text-slate-50"
                   />
                 </div>
               </div>
@@ -246,13 +248,14 @@ export default function ProfilePage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter email address"
+                  className="dark:bg-slate-900 dark:border-slate-700 dark:text-slate-50"
                 />
               </div>
 
               <Button 
                 onClick={handleUpdateProfile}
                 disabled={updating}
-                className="w-full"
+                className="w-full dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
               >
                 {updating ? (
                   <>
@@ -267,9 +270,9 @@ export default function ProfilePage() {
           </Card>
 
           {/* Account Information */}
-          <Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
                 <Mail className="w-5 h-5" />
                 Account Information
               </CardTitle>
@@ -289,7 +292,7 @@ export default function ProfilePage() {
                 <div className="flex justify-between py-2 border-b border-gray-100 dark:border-slate-800">
                   <span className="text-sm font-medium text-gray-600 dark:text-slate-400">Status</span>
                   <span className={`text-sm font-medium capitalize ${
-                    userProfile.status === 'active' ? 'text-green-600' : 'text-red-600'
+                    userProfile.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                   }`}>
                     {userProfile.status}
                   </span>
@@ -304,9 +307,9 @@ export default function ProfilePage() {
           </Card>
 
           {/* Password Security */}
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 dark:bg-slate-800 dark:border-slate-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
                 <Lock className="w-5 h-5" />
                 Change Password
               </CardTitle>
@@ -322,6 +325,7 @@ export default function ProfilePage() {
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="Enter current password"
+                      className="dark:bg-slate-900 dark:border-slate-700 dark:text-slate-50"
                     />
                     <button
                       type="button"
@@ -342,6 +346,7 @@ export default function ProfilePage() {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Enter new password"
+                      className="dark:bg-slate-900 dark:border-slate-700 dark:text-slate-50"
                     />
                     <button
                       type="button"
@@ -362,6 +367,7 @@ export default function ProfilePage() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Confirm new password"
+                      className="dark:bg-slate-900 dark:border-slate-700 dark:text-slate-50"
                     />
                     <button
                       type="button"

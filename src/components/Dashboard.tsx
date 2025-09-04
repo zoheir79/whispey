@@ -552,7 +552,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agentId }) => {
                       Custom
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 border-gray-200 dark:border-slate-700 shadow-xl rounded-xl" align="end">
+                  <PopoverContent className="w-auto p-0 border-gray-200 dark:border-slate-700 dark:bg-slate-900 shadow-xl rounded-xl" align="end">
                     <Calendar
                       initialFocus
                       mode="range"

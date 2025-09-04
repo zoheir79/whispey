@@ -36,7 +36,7 @@ import {
 } from 'recharts'
 import { useOverviewQuery } from '../hooks/useOverviewQuery'
 import { getUserProjectRole } from '@/services/getUserRole'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -45,7 +45,6 @@ import {
 import { Loader2, MoreHorizontal, Trash2, Download } from 'lucide-react'
 import { EnhancedChartBuilder, ChartProvider } from './EnhancedChartBuilder'
 import { FloatingActionMenu } from './FloatingActionMenu'
-
 
 import { useDynamicFields } from '../hooks/useDynamicFields'
 // JWT auth is handled at the page level
@@ -56,8 +55,7 @@ import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { useApiClient } from '../hooks/useApiClient'
 import Papa from 'papaparse'
-
-
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface OverviewProps {
   project: any
@@ -154,8 +152,7 @@ const Overview: React.FC<OverviewProps> = ({
   // const { user } = useUser() // Removed: obsolete Clerk hook
   const userEmail = 'user@example.com' // TODO: Get from JWT auth context
 
-
-
+  const { resolvedTheme } = useTheme()
 
   // 🔍 DEBUG: Log dateRange changes
   console.log('🔍 Overview RENDER - dateRange received:', dateRange)
@@ -780,9 +777,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-              </div>
-
-            {customTotals.map((config) => {
+              {customTotals.map((config) => {
               const result = customTotalResults.find(r => r.configId === config.id)
 
               const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
@@ -856,7 +851,6 @@ const Overview: React.FC<OverviewProps> = ({
                 </div>
               )
             })}
-
             </div>
 
             {process.env.NODE_ENV === 'development' && (
@@ -880,14 +874,18 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
                         <TrendUp weight="regular" className="w-5 h-5 text-blue-600" />
                       </div>
-                      <div className="w-px h-8 bg-gray-200"></div>
-                      <div className="text-right">
-                        <div className="text-xs font-medium text-gray-500">Avg</div>
-                        <div className="text-sm font-semibold text-gray-900">
-                        {analytics?.dailyData && analytics.dailyData.length > 0 
-                            ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
-                            : 0
-                          }
+                      <div>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Daily Calls</h3>
+                        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Daily conversation volume</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-medium text-gray-500">Avg</div>
+                      <div className="text-sm font-semibold text-gray-900">
+                      {analytics?.dailyData && analytics.dailyData.length > 0 
+                          ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
+                          : 0
+                        }
                         </div>
                       </div>
                     </div>
@@ -903,12 +901,12 @@ const Overview: React.FC<OverviewProps> = ({
                             <stop offset="95%" stopColor="#007aff" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="1 1" stroke="#f3f4f6" />
+                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
                         <XAxis 
                           dataKey="date" 
                           axisLine={false}
                           tickLine={false}
-                          tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 500 }}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
                           height={40}
                           tickFormatter={(value) => {
                             const date = new Date(value)
@@ -918,21 +916,21 @@ const Overview: React.FC<OverviewProps> = ({
                         <YAxis 
                           axisLine={false}
                           tickLine={false}
-                          tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 500 }}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
                           width={45}
                         />
                         <Tooltip 
                           contentStyle={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                            border: '1px solid #e5e7eb',
+                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
                             borderRadius: '12px',
                             fontSize: '13px',
                             fontWeight: '500',
                             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                             backdropFilter: 'blur(20px)'
                           }}
-                          labelStyle={{ color: '#374151', fontWeight: '600' }}
-                          labelFormatter={(value) => {
+                          labelStyle={{ color: resolvedTheme === 'dark' ? '#e2e8f0' : '#374151', fontWeight: '600' }}
+                          labelFormatter={(value: any) => {
                             const date = new Date(value)
                             return date.toLocaleDateString('en-US', { 
                               weekday: 'short',
@@ -1007,15 +1005,15 @@ const Overview: React.FC<OverviewProps> = ({
                             </Pie>
                             <Tooltip 
                               contentStyle={{
-                                backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                                border: '1px solid #e5e7eb',
+                                backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                                border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
                                 borderRadius: '12px',
                                 fontSize: '13px',
                                 fontWeight: '500',
                                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
                                 backdropFilter: 'blur(20px)'
                               }}
-                              formatter={(value, name) => [`${value} calls`, name]}
+                              formatter={(value: any, name: any) => [`${value} calls`, name]}
                             />
                           </PieChart>
                         </ResponsiveContainer>
@@ -1032,13 +1030,13 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="lg:ml-8 space-y-2 md:space-y-3 text-center lg:text-left">
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
-                        <div className="text-sm font-medium text-gray-700">Successful</div>
-                        <div className="text-sm font-light text-gray-500">{analytics?.successfulCalls || 0}</div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
+                        <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.successfulCalls || 0}</div>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF3B30' }}></div>
-                        <div className="text-sm font-medium text-gray-700">Failed</div>
-                        <div className="text-sm font-light text-gray-500">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Failed</div>
+                        <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
                       </div>
                     </div>
                   </div>
@@ -1070,12 +1068,12 @@ const Overview: React.FC<OverviewProps> = ({
                             <stop offset="95%" stopColor="#007aff" stopOpacity={0.4}/>
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="1 1" stroke="#f3f4f6" />
+                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
                         <XAxis 
                           dataKey="date" 
                           axisLine={false}
                           tickLine={false}
-                          tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 500 }}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
                           height={40}
                           tickFormatter={(value) => {
                             const date = new Date(value)
@@ -1085,22 +1083,22 @@ const Overview: React.FC<OverviewProps> = ({
                         <YAxis 
                           axisLine={false}
                           tickLine={false}
-                          tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 500 }}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
                           width={40}
                           tickFormatter={(value) => `${value}m`}
                         />
                         <Tooltip 
                           contentStyle={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                            border: '1px solid #e5e7eb',
+                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
                             borderRadius: '12px',
                             fontSize: '13px',
                             fontWeight: '500',
                             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
                             backdropFilter: 'blur(20px)'
                           }}
-                          formatter={(value) => [`${value} min`, 'Duration']}
-                          labelFormatter={(value) => {
+                          formatter={(value: any) => [`${value} min`, 'Duration']}
+                          labelFormatter={(value: any) => {
                             const date = new Date(value)
                             return date.toLocaleDateString('en-US', { 
                               weekday: 'short',
@@ -1145,12 +1143,12 @@ const Overview: React.FC<OverviewProps> = ({
                             <stop offset="95%" stopColor="#ff9500" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="1 1" stroke="#f3f4f6" />
+                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
                         <XAxis 
                           dataKey="date" 
                           axisLine={false}
                           tickLine={false}
-                          tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 500 }}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
                           height={40}
                           tickFormatter={(value) => {
                             const date = new Date(value)
@@ -1160,22 +1158,22 @@ const Overview: React.FC<OverviewProps> = ({
                         <YAxis 
                           axisLine={false}
                           tickLine={false}
-                          tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 500 }}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
                           width={40}
                           tickFormatter={(value) => `${value}s`}
                         />
                         <Tooltip 
                           contentStyle={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                            border: '1px solid #e5e7eb',
+                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
                             borderRadius: '12px',
                             fontSize: '13px',
                             fontWeight: '500',
                             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
                             backdropFilter: 'blur(20px)'
                           }}
-                          formatter={(value) => [`${value}s`, 'Latency']}
-                          labelFormatter={(value) => {
+                          formatter={(value: any) => [`${value}s`, 'Latency']}
+                          labelFormatter={(value: any) => {
                             const date = new Date(value)
                             return date.toLocaleDateString('en-US', { 
                               weekday: 'short',
@@ -1236,12 +1234,12 @@ const Overview: React.FC<OverviewProps> = ({
         ) : (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-8">
-              <div className="w-20 h-20 bg-white rounded-2xl border border-gray-200 flex items-center justify-center mx-auto shadow-sm">
+              <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
                 <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-medium text-gray-900">No Data Available</h3>
-                <p className="text-sm text-gray-500 max-w-sm mx-auto leading-relaxed">
+                <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No Data Available</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
                   No calls found for the selected time period. Try adjusting your date range or check back later.
                 </p>
               </div>
@@ -1253,4 +1251,4 @@ const Overview: React.FC<OverviewProps> = ({
   )
 }
 
-export default Overview
+export default Overview;

@@ -102,11 +102,11 @@ export default function AdminUsersPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-50 text-green-700 border-green-200'
+        return 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800'
       case 'suspended':
-        return 'bg-red-50 text-red-700 border-red-200'
+        return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/50 dark:text-red-300 dark:border-red-800'
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200'
+        return 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600'
     }
   }
 
@@ -119,7 +119,7 @@ export default function AdminUsersPage() {
 
   if (roleLoading || !isSuperAdmin) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <Header />
         <div className="flex items-center justify-center py-32">
           <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <Header />
       
       <main className="max-w-6xl mx-auto px-8 py-8">
@@ -149,11 +149,11 @@ export default function AdminUsersPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="dark:bg-blue-900 dark:border-blue-700">
+            <Card className="dark:bg-slate-800 dark:border-slate-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Suspended</p>
+                    <p className="text-sm text-gray-600 dark:text-slate-300">Suspended</p>
                     <p className="text-2xl font-semibold text-red-600">
                       {users.filter(u => u.status === 'suspended').length}
                     </p>
@@ -163,11 +163,11 @@ export default function AdminUsersPage() {
               </CardContent>
             </Card>
             
-            <Card className="dark:bg-blue-900 dark:border-blue-700">
+            <Card className="dark:bg-slate-800 dark:border-slate-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Active</p>
+                    <p className="text-sm text-gray-600 dark:text-slate-300">Active</p>
                     <p className="text-2xl font-semibold text-green-600">
                       {users.filter(u => u.status === 'active').length}
                     </p>
@@ -177,11 +177,11 @@ export default function AdminUsersPage() {
               </CardContent>
             </Card>
             
-            <Card className="dark:bg-blue-900 dark:border-blue-700">
+            <Card className="dark:bg-slate-800 dark:border-slate-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">All Users</p>
+                    <p className="text-sm text-gray-600 dark:text-slate-300">All Users</p>
                     <p className="text-2xl font-semibold text-blue-600">
                       {users.length}
                     </p>
@@ -191,11 +191,11 @@ export default function AdminUsersPage() {
               </CardContent>
             </Card>
             
-            <Card className="dark:bg-blue-900 dark:border-blue-700">
+            <Card className="dark:bg-slate-800 dark:border-slate-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Total</p>
+                    <p className="text-sm text-gray-600 dark:text-slate-300">Total</p>
                     <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                       {users.length}
                     </p>
@@ -216,19 +216,19 @@ export default function AdminUsersPage() {
                   placeholder="Search users..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-80 pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg bg-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                  className="w-80 pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg bg-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:placeholder:text-slate-400"
                 />
               </div>
               
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-blue-800 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
                 {(['all', 'active', 'suspended'] as const).map((status) => (
                   <button
                     key={status}
                     onClick={() => setSelectedStatus(status)}
                     className={`px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                       selectedStatus === status
-                        ? 'bg-white dark:bg-blue-700 text-gray-900 dark:text-gray-100 shadow-sm'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-blue-700/50'
+                        ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
+                        : 'text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-700/50'
                     }`}
                   >
                     {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -247,15 +247,15 @@ export default function AdminUsersPage() {
         ) : error ? (
           <div className="text-center py-20">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <p className="text-red-600">{error}</p>
-            <Button onClick={fetchUsers} className="mt-4">
+            <p className="text-red-600 dark:text-red-400">{error}</p>
+            <Button onClick={fetchUsers} className="mt-4" variant="outline">
               Retry
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
             {filteredUsers.map((user) => (
-              <Card key={user.user_id} className="dark:bg-blue-900 dark:border-blue-700 hover:shadow-sm transition-shadow">
+              <Card key={user.user_id} className="dark:bg-slate-800 dark:border-slate-700 hover:shadow-sm transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -276,11 +276,11 @@ export default function AdminUsersPage() {
                           >
                             {user.status}
                           </Badge>
-                          <Badge variant="outline" className="text-xs font-medium">
+                          <Badge variant="outline" className="text-xs font-medium dark:border-slate-600 dark:text-slate-300">
                             {user.global_role}
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
+                        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-slate-300">
                           <div className="flex items-center gap-1">
                             <Mail className="w-4 h-4" />
                             {user.email}
@@ -306,7 +306,7 @@ export default function AdminUsersPage() {
                           variant="outline"
                           onClick={() => openConfirmDialog(user, 'suspend')}
                           disabled={processingUser === user.user_id}
-                          className="text-red-600 border-red-200 hover:bg-red-50"
+                          className="text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-900 dark:hover:bg-red-900/50"
                         >
                           {processingUser === user.user_id ? (
                             <Loader2 className="w-4 h-4 mr-1 animate-spin" />
@@ -356,12 +356,12 @@ export default function AdminUsersPage() {
 
       {/* Confirmation Dialog */}
       <Dialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && setConfirmDialog({ isOpen: false, user: null, action: null })}>
-        <DialogContent>
+        <DialogContent className="dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="dark:text-slate-50">
               {confirmDialog.action === 'suspend' ? 'Suspend User' : 'Unsuspend User'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="dark:text-slate-400">
               {confirmDialog.action === 'suspend' 
                 ? `Suspend ${confirmDialog.user?.email}'s access to the platform?`
                 : `Restore ${confirmDialog.user?.email}'s access to the platform?`
@@ -372,7 +372,7 @@ export default function AdminUsersPage() {
             <Button 
               variant="outline" 
               onClick={() => setConfirmDialog({ isOpen: false, user: null, action: null })}
-              className="flex-1"
+              className="flex-1 dark:border-slate-700 dark:hover:bg-slate-800"
             >
               Cancel
             </Button>

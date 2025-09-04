@@ -54,7 +54,7 @@ export default function WorkspaceNameInput({
         value={editableValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className={className}
+        className={`${className} dark:bg-slate-900 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400`}
       />
     )
   }
@@ -64,7 +64,7 @@ export default function WorkspaceNameInput({
     <div className={`flex items-center ${className}`}>
       <div className="flex-1 flex">
         {/* Readonly prefix */}
-        <div className="flex items-center bg-gray-50 dark:bg-gray-700 border border-r-0 border-gray-300 dark:border-gray-600 rounded-l-md px-3 py-2 text-sm text-gray-600 dark:text-gray-300 font-mono">
+        <div className="flex items-center bg-gray-50 dark:bg-slate-800 border border-r-0 border-gray-300 dark:border-slate-700 rounded-l-md px-3 py-2 text-sm text-gray-600 dark:text-slate-400 font-mono">
           {prefix}
         </div>
         {/* Editable suffix */}
@@ -72,7 +72,7 @@ export default function WorkspaceNameInput({
           value={editableValue}
           onChange={handleChange}
           placeholder="workspace-name"
-          className="rounded-l-none border-l-0 focus:ring-offset-0"
+          className="rounded-l-none border-l-0 focus:ring-offset-0 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 dark:placeholder:text-slate-400"
         />
       </div>
     </div>
