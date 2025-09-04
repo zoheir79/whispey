@@ -870,8 +870,9 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-            {/* Responsive Chart Grid */}
-            <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Dedicated Chart Cards Container - Isolated from metrics grid */}
+            <div style={{ width: '100%', display: 'block' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ width: '100%' }}>
               {/* Daily Calls Chart */}
               <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
@@ -1223,6 +1224,7 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
+              </div>
             </div>
           </div>
         ) : (
