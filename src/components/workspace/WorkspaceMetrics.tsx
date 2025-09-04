@@ -686,15 +686,19 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                   <TrendingUp className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div className="text-right">
-                  <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-md border border-green-100 dark:border-green-800">
-                    <TrendingUp className="w-3 h-3 text-green-600" />
-                    <span className="text-xs font-bold text-green-600">Growing</span>
+                  <div className={`flex items-center gap-1 px-2 py-1 rounded-md border ${metrics.weeklyGrowth >= 0 ? 'bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800'}`}>
+                    {metrics.weeklyGrowth >= 0 ? <TrendingUp className="w-3 h-3 text-green-600" /> : <TrendingDown className="w-3 h-3 text-red-600" />}
+                    <span className={`text-xs font-bold ${metrics.weeklyGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {metrics.weeklyGrowth >= 0 ? 'Growing' : 'Declining'}
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="space-y-1">
                 <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Weekly Growth</h3>
-                <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">+{metrics.weeklyGrowth}%</p>
+                <p className={`text-2xl font-light tracking-tight ${metrics.weeklyGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {metrics.weeklyGrowth >= 0 ? '+' : ''}{metrics.weeklyGrowth}%
+                </p>
                 <p className="text-xs text-gray-400 font-medium">This week</p>
               </div>
             </div>

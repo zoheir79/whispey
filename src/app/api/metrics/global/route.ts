@@ -109,7 +109,9 @@ export async function GET(request: NextRequest) {
       new Date(call.call_started_at) < oneWeekAgo
     ).length || 0
     
-    const weeklyGrowth = lastWeekCalls > 0 ? Math.round(((thisWeekCalls - lastWeekCalls) / lastWeekCalls) * 100) : (thisWeekCalls > 0 ? 100 : 0)
+    const weeklyGrowth = lastWeekCalls > 0 
+      ? Math.round(((thisWeekCalls - lastWeekCalls) / lastWeekCalls) * 100) 
+      : (thisWeekCalls > 0 ? 100 : 0);
 
     // Get active agents based on user permissions
     let agentsSql;
