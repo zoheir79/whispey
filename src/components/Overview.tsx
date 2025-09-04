@@ -854,10 +854,9 @@ const Overview: React.FC<OverviewProps> = ({
                 </div>
               )
             })}
-            </div>
 
             {process.env.NODE_ENV === 'development' && (
-              <Card className="border-yellow-200 bg-yellow-50">
+              <Card className="border-yellow-200 bg-yellow-50 col-span-full">
                 <CardContent className="p-4">
                   <div className="text-sm">
                     <strong>Debug - Dynamic Fields:</strong>
@@ -867,333 +866,331 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-            
-            {/* Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Daily Calls Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                        <TrendUp weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Daily Calls</h3>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                      {analytics?.dailyData && analytics.dailyData.length > 0 
-                          ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
-                          : 0
-                        }
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-                        <defs>
-                          <linearGradient id="callsGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#007aff" stopOpacity={0.1}/>
-                            <stop offset="95%" stopColor="#007aff" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
-                        <XAxis 
-                          dataKey="date" 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          height={40}
-                          tickFormatter={(value) => {
-                            const date = new Date(value)
-                            return `${date.getMonth() + 1}/${date.getDate()}`
-                          }}
-                        />
-                        <YAxis 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          width={45}
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                            borderRadius: '12px',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                            backdropFilter: 'blur(20px)'
-                          }}
-                          labelStyle={{ color: resolvedTheme === 'dark' ? '#e2e8f0' : '#374151', fontWeight: '600' }}
-                          labelFormatter={(value: any) => {
-                            const date = new Date(value)
-                            return date.toLocaleDateString('en-US', { 
-                              weekday: 'short',
-                              month: 'short', 
-                              day: 'numeric' 
-                            })
-                          }}
-                          formatter={(value) => [`${value}`, 'Calls']}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="calls" 
-                          stroke="#007aff" 
-                          strokeWidth={3}
-                          fill="url(#callsGradient)"
-                          dot={false}
-                          activeDot={{ 
-                            r: 6, 
-                            fill: '#007aff', 
-                            strokeWidth: 3, 
-                            stroke: '#ffffff',
-                            filter: 'drop-shadow(0 2px 4px rgba(0, 122, 255, 0.3))'
-                          }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
 
-              {/* Professional Success Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
-                        <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
-                      </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
+            {/* Daily Calls Chart */}
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-3 xl:col-span-3">
+              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <TrendUp weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="text-right">
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
-                      <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
-                    </div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Daily Calls</h3>
                   </div>
-                </div>
-                <div className="p-6">
-                  <div className="h-80 flex items-center justify-center gap-8">
-                    <div className="relative">
-                      {/* Modern Ring Chart */}
-                      <div className="w-40 h-40">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={successFailureData}
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={50}
-                              outerRadius={70}
-                              paddingAngle={2}
-                              dataKey="value"
-                              strokeWidth={0}
-                              startAngle={90}
-                              endAngle={450}
-                            >
-                              {successFailureData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                              ))}
-                            </Pie>
-                            <Tooltip 
-                              contentStyle={{
-                                backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                                border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                                borderRadius: '12px',
-                                fontSize: '13px',
-                                fontWeight: '500',
-                                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                                backdropFilter: 'blur(20px)'
-                              }}
-                              formatter={(value: any, name: any) => [`${value} calls`, name]}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                      {/* Center Statistics */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
-                        <div className="text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                          {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-gray-400">%</span>
-                        </div>
-                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
-                      </div>
-                    </div>
-                    {/* Legend */}
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
-                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
-                        <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.successfulCalls || 0}</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF3B30' }}></div>
-                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Failed</div>
-                        <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
+                  <div className="text-right">
+                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    {analytics?.dailyData && analytics.dailyData.length > 0 
+                        ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
+                        : 0
+                      }
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              <div className="p-6">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                      <defs>
+                        <linearGradient id="callsGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#007aff" stopOpacity={0.1}/>
+                          <stop offset="95%" stopColor="#007aff" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        height={40}
+                        tickFormatter={(value) => {
+                          const date = new Date(value)
+                          return `${date.getMonth() + 1}/${date.getDate()}`
+                        }}
+                      />
+                      <YAxis 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        width={45}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                          border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                          backdropFilter: 'blur(20px)'
+                        }}
+                        labelStyle={{ color: resolvedTheme === 'dark' ? '#e2e8f0' : '#374151', fontWeight: '600' }}
+                        labelFormatter={(value: any) => {
+                          const date = new Date(value)
+                          return date.toLocaleDateString('en-US', { 
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric' 
+                          })
+                        }}
+                        formatter={(value) => [`${value}`, 'Calls']}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="calls" 
+                        stroke="#007aff" 
+                        strokeWidth={3}
+                        fill="url(#callsGradient)"
+                        dot={false}
+                        activeDot={{ 
+                          r: 6, 
+                          fill: '#007aff', 
+                          strokeWidth: 3, 
+                          stroke: '#ffffff',
+                          filter: 'drop-shadow(0 2px 4px rgba(0, 122, 255, 0.3))'
+                        }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
 
-              {/* Daily Minutes Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                        <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
+            {/* Professional Success Chart */}
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-3 xl:col-span-3">
+              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
+                      <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                     </div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
                   </div>
-                </div>
-                <div className="p-6">
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
-                        <defs>
-                          <linearGradient id="minutesGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#007aff" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#007aff" stopOpacity={0.4}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
-                        <XAxis 
-                          dataKey="date" 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          height={40}
-                          tickFormatter={(value) => {
-                            const date = new Date(value)
-                            return `${date.getMonth() + 1}/${date.getDate()}`
-                          }}
-                        />
-                        <YAxis 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          width={40}
-                          tickFormatter={(value) => `${value}m`}
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                            borderRadius: '12px',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                            backdropFilter: 'blur(20px)'
-                          }}
-                          formatter={(value: any) => [`${value} min`, 'Duration']}
-                          labelFormatter={(value: any) => {
-                            const date = new Date(value)
-                            return date.toLocaleDateString('en-US', { 
-                              weekday: 'short',
-                              month: 'short', 
-                              day: 'numeric' 
-                            })
-                          }}
-                        />
-                        <Bar 
-                          dataKey="minutes" 
-                          fill="url(#minutesGradient)"
-                          radius={[4, 4, 0, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+                  <div className="text-right">
+                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
+                    <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
                   </div>
                 </div>
               </div>
+              <div className="p-6">
+                <div className="h-80 flex items-center justify-center gap-8">
+                  <div className="relative">
+                    {/* Modern Ring Chart */}
+                    <div className="w-40 h-40">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={successFailureData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={50}
+                            outerRadius={70}
+                            paddingAngle={2}
+                            dataKey="value"
+                            strokeWidth={0}
+                            startAngle={90}
+                            endAngle={450}
+                          >
+                            {successFailureData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                              border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                              borderRadius: '12px',
+                              fontSize: '13px',
+                              fontWeight: '500',
+                              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                              backdropFilter: 'blur(20px)'
+                            }}
+                            formatter={(value: any, name: any) => [`${value} calls`, name]}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    {/* Center Statistics */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
+                      <div className="text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                        {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-gray-400">%</span>
+                      </div>
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
+                    </div>
+                  </div>
+                  {/* Legend */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
+                      <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.successfulCalls || 0}</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF3B30' }}></div>
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Failed</div>
+                      <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-              {/* Average Latency Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
-                        <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                      </div>
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
+            {/* Daily Minutes Chart */}
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-3 xl:col-span-3">
+              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
-                        <defs>
-                          <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#ff9500" stopOpacity={0.1}/>
-                            <stop offset="95%" stopColor="#ff9500" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
-                        <XAxis 
-                          dataKey="date" 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          height={40}
-                          tickFormatter={(value) => {
-                            const date = new Date(value)
-                            return `${date.getMonth() + 1}/${date.getDate()}`
-                          }}
-                        />
-                        <YAxis 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                          width={40}
-                          tickFormatter={(value) => `${value}s`}
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                            borderRadius: '12px',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                            backdropFilter: 'blur(20px)'
-                          }}
-                          formatter={(value: any) => [`${value}s`, 'Latency']}
-                          labelFormatter={(value: any) => {
-                            const date = new Date(value)
-                            return date.toLocaleDateString('en-US', { 
-                              weekday: 'short',
-                              month: 'short', 
-                              day: 'numeric' 
-                            })
-                          }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="avg_latency" 
-                          stroke="#ff9500" 
-                          strokeWidth={3}
-                          fill="url(#latencyGradient)"
-                          dot={false}
-                          activeDot={{ 
-                            r: 6, 
-                            fill: '#ff9500', 
-                            strokeWidth: 3, 
-                            stroke: '#ffffff',
-                            filter: 'drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3))'
-                          }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
                   </div>
                 </div>
               </div>
+              <div className="p-6">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+                      <defs>
+                        <linearGradient id="minutesGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#007aff" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#007aff" stopOpacity={0.4}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        height={40}
+                        tickFormatter={(value) => {
+                          const date = new Date(value)
+                          return `${date.getMonth() + 1}/${date.getDate()}`
+                        }}
+                      />
+                      <YAxis 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        width={40}
+                        tickFormatter={(value) => `${value}m`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                          border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                          backdropFilter: 'blur(20px)'
+                        }}
+                        formatter={(value: any) => [`${value} min`, 'Duration']}
+                        labelFormatter={(value: any) => {
+                          const date = new Date(value)
+                          return date.toLocaleDateString('en-US', { 
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric' 
+                          })
+                        }}
+                      />
+                      <Bar 
+                        dataKey="minutes" 
+                        fill="url(#minutesGradient)"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            {/* Average Latency Chart */}
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-3 xl:col-span-3">
+              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
+                      <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+                      <defs>
+                        <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ff9500" stopOpacity={0.1}/>
+                          <stop offset="95%" stopColor="#ff9500" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        height={40}
+                        tickFormatter={(value) => {
+                          const date = new Date(value)
+                          return `${date.getMonth() + 1}/${date.getDate()}`
+                        }}
+                      />
+                      <YAxis 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                        width={40}
+                        tickFormatter={(value) => `${value}s`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                          border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                          backdropFilter: 'blur(20px)'
+                        }}
+                        formatter={(value: any) => [`${value}s`, 'Latency']}
+                        labelFormatter={(value: any) => {
+                          const date = new Date(value)
+                          return date.toLocaleDateString('en-US', { 
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric' 
+                          })
+                        }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="avg_latency" 
+                        stroke="#ff9500" 
+                        strokeWidth={3}
+                        fill="url(#latencyGradient)"
+                        dot={false}
+                        activeDot={{ 
+                          r: 6, 
+                          fill: '#ff9500', 
+                          strokeWidth: 3, 
+                          stroke: '#ffffff',
+                          filter: 'drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3))'
+                        }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
             </div>
 
             {/* Chart Analytics Section */}
