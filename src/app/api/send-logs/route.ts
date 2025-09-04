@@ -116,6 +116,43 @@ export async function POST(request: NextRequest) {
 
     console.log("calculated avgLatency", avgLatency)
 
+    // Extract real metrics from transcript_with_metrics
+    let transcriptLength = 0
+    let responseLength = 0
+    let tokensUsed = 0
+    let sttMinutesUsed = 0
+    let ttsWordsUsed = 0
+
+    if (transcript_with_metrics && Array.isArray(transcript_with_metrics)) {
+      transcript_with_metrics.forEach(turn => {
+        const userText = turn.user_transcript || ''
+        const agentText = turn.agent_response || ''
+        
+        transcriptLength += userText.length
+        responseLength += agentText.length
+        
+        // Extract real metrics from Whispey SDK transcript_with_metrics
+        const llmMetrics = turn.llm_metrics || {}
+        const sttMetrics = turn.stt_metrics || {}
+        const ttsMetrics = turn.tts_metrics || {}
+        
+        // LLM tokens from SDK metrics (prompt_tokens + completion_tokens)
+        const promptTokens = llmMetrics.prompt_tokens || 0
+        const completionTokens = llmMetrics.completion_tokens || 0
+        const totalTokens = promptTokens + completionTokens
+        tokensUsed += totalTokens
+        
+        // STT audio duration from SDK metrics (in seconds)
+        const sttAudioDuration = sttMetrics.audio_duration || 0
+        sttMinutesUsed += (sttAudioDuration / 60) // Convert to minutes
+        
+        // TTS characters from SDK metrics (convert to word estimate: ~5 chars per word)
+        const ttsCharacters = ttsMetrics.characters_count || 0
+        const estimatedWords = Math.ceil(ttsCharacters / 5)
+        ttsWordsUsed += estimatedWords
+      })
+    }
+
     // Prepare log data for Supabase (serialize JSON fields) using system timezone
     const now = new Date()
     const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
@@ -135,6 +172,13 @@ export async function POST(request: NextRequest) {
       call_ended_at,
       recording_url,
       duration_seconds,
+      transcript: transcript_with_metrics ? transcript_with_metrics.map((t: any) => t.user_transcript).join(' ') : '',
+      response: transcript_with_metrics ? transcript_with_metrics.map((t: any) => t.agent_response).join(' ') : '',
+      tokens_used: tokensUsed,
+      stt_minutes_used: sttMinutesUsed,
+      tts_words_used: ttsWordsUsed,
+      start_time: call_started_at ? new Date(call_started_at) : nowLocal,
+      end_time: call_ended_at ? new Date(call_ended_at) : nowLocal,
       created_at: nowLocal.toISOString()
     }
 
