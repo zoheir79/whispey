@@ -566,7 +566,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
           <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
-                <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-100 dark:border-emerald-800">
                   <Clock className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div className="text-right">
@@ -610,7 +610,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
           <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
-                <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800">
                   <Users className="w-5 h-5 text-indigo-600" />
                 </div>
                 <div className="text-right">
@@ -658,7 +658,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
           <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 dark:hover:border-slate-600 transition-all duration-300">
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
-                <div className="p-2 bg-orange-50 rounded-lg border border-orange-100">
+                <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-100 dark:border-orange-800">
                   <BarChart3 className="w-5 h-5 text-orange-600" />
                 </div>
                 <div className="text-right">
@@ -705,18 +705,18 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Call Volume */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
                   <BarChart3 className="w-4 h-4 text-blue-600" />
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900">Daily Call Volume</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Daily Call Volume</h3>
               </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3 text-gray-400" />
-                <span className="text-xs text-gray-500">Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} days period</span>
+                <span className="text-xs text-gray-500 dark:text-slate-400">Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} days period</span>
               </div>
             </div>
           </div>
@@ -779,19 +779,19 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
         </div>
 
         {/* Success Analysis */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-green-50 rounded flex items-center justify-center">
                   <CheckCircle className="w-4 h-4 text-green-600" />
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900">Success Analysis</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Success Analysis</h3>
               </div>
               <div className="flex items-center gap-2">
                 <div className="text-right">
                   <div className="text-xs text-gray-500">Success Rate</div>
-                  <div className="text-lg font-semibold text-gray-900">{metrics?.successRate || 0}%</div>
+                  <div className="text-lg font-semibold text-gray-900 dark:text-slate-100">{metrics?.successRate || 0}%</div>
                 </div>
               </div>
             </div>
@@ -809,7 +809,7 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                   dataKey="value"
                 >
                   <Cell fill="#3B82F6" />
-                  <Cell fill="#E5E7EB" />
+                  <Cell fill="#475569" />
                 </Pie>
                 <Tooltip 
                   contentStyle={{ 
@@ -825,11 +825,11 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
             <div className="flex justify-center gap-4 mt-4">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="text-xs text-gray-600">Successful</span>
+                <span className="text-xs text-gray-600 dark:text-slate-300">Successful</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                <span className="text-xs text-gray-600">Failed</span>
+                <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
+                <span className="text-xs text-gray-600 dark:text-slate-300">Failed</span>
               </div>
             </div>
           </div>
@@ -975,14 +975,14 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       </div>
 
       {/* Agents Performance Table */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 bg-purple-50 rounded flex items-center justify-center">
                 <Users className="w-4 h-4 text-purple-600" />
               </div>
-              <h3 className="text-sm font-semibold text-gray-900">Agent Performance</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Agent Performance</h3>
             </div>
             <div className="text-xs text-gray-500">
               {agentsData.length} active agents
@@ -1013,32 +1013,32 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
                           </span>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{agent.name}</div>
-                          <div className="text-xs text-gray-500">Active</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-slate-100">{agent.name}</div>
+                          <div className="text-xs text-gray-500 dark:text-slate-400">Active</div>
                         </div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="text-sm text-gray-900">{agent.calls.toLocaleString()}</div>
+                      <div className="text-sm text-gray-900 dark:text-slate-300">{agent.calls.toLocaleString()}</div>
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                          agent.successRate >= 90 
-                            ? 'bg-green-100 text-green-800' 
-                            : agent.successRate >= 70 
-                            ? 'bg-yellow-100 text-yellow-800' 
-                            : 'bg-red-100 text-red-800'
+                          agent.successRate >= 90
+                            ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
+                            : agent.successRate >= 70
+                            ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300'
+                            : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300'
                         }`}>
                           {agent.successRate}%
                         </span>
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="text-sm text-gray-900">{formatDuration(agent.avgDuration)}</div>
+                      <div className="text-sm text-gray-900 dark:text-slate-300">{formatDuration(agent.avgDuration)}</div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="text-sm font-medium text-gray-900">${agent.totalCost}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-slate-300">${agent.totalCost}</div>
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">

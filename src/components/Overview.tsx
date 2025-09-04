@@ -519,10 +519,13 @@ const Overview: React.FC<OverviewProps> = ({
   }
 
   // Prepare chart data
-  const successFailureData = (analytics?.successfulCalls !== undefined && analytics?.totalCalls !== undefined) ? [
-    { name: 'Success', value: analytics.successfulCalls, color: '#007AFF' },
-    { name: 'Failed', value: analytics.totalCalls - analytics.successfulCalls, color: '#FF3B30' }
-  ] : []
+  const successFailureData = useMemo(() => {
+    const isDark = resolvedTheme === 'dark';
+    return (analytics?.successfulCalls !== undefined && analytics?.totalCalls !== undefined) ? [
+      { name: 'Success', value: analytics.successfulCalls, color: '#007AFF' },
+      { name: 'Failed', value: analytics.totalCalls - analytics.successfulCalls, color: isDark ? '#4b5563' : '#FF3B30' }
+    ] : []
+  }, [analytics, resolvedTheme]);
 
   const successRate = (analytics?.totalCalls && analytics?.successfulCalls !== undefined && analytics.totalCalls > 0) 
     ? (analytics.successfulCalls / analytics.totalCalls) * 100 
@@ -576,7 +579,7 @@ const Overview: React.FC<OverviewProps> = ({
         {analytics ? (
           <>
             {/* Responsive Metrics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 md:gap-4">
               {/* Total Calls */}
               <div className="group">
                 <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
@@ -1206,7 +1209,7 @@ const Overview: React.FC<OverviewProps> = ({
 
             {/* Chart Analytics Section */}
             <ChartProvider>
-              <div className="space-y-6">
+              <div className="space-y-6 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
                 <EnhancedChartBuilder 
                   agentId={agent.id}
                   dateFrom={dateRange.from}
