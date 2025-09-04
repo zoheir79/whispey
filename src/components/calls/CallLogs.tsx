@@ -1015,7 +1015,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                 }
 
                 return (
-                  <TableCell key={`basic-${call.id}-${key}`} className="py-4">
+                  <TableCell key={`basic-${call.id}-${key}`} className="py-2 px-3">
                     {value}
                   </TableCell>
                 )
@@ -1025,7 +1025,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       {visibleColumns.metadata.map((key) => (
                         <TableCell 
                           key={`metadata-${call.id}-${key}`} 
-                          className="py-4"
+                          className="py-2 px-3 max-w-[200px]"
                         >
                           <DynamicJsonCell 
                             data={call.metadata} 
@@ -1038,9 +1038,9 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                       {visibleColumns.transcription_metrics.map((key) => {
                         if (key === 'usage') {
                           return (
-                            <TableCell key={`transcription-${key}`} className="w-[320px]">
+                            <TableCell key={`transcription-${key}`} className="w-[450px] max-w-[450px]">
                               <div className="max-h-48 overflow-y-auto rounded-md bg-slate-100 dark:bg-slate-700/50 p-2">
-                                <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+                                <pre className="text-xs font-mono whitespace-pre-wrap break-words leading-tight">
                                   {JSON.stringify(call.transcription_metrics?.[key], null, 2)}
                                 </pre>
                               </div>
@@ -1048,7 +1048,7 @@ const CallLogs: React.FC<CallLogsProps> = ({ project, agent, onBack }) => {
                           )
                         }
                         return (
-                          <TableCell key={`transcription-${key}`}>
+                          <TableCell key={`transcription-${key}`} className="py-2 px-3 max-w-[250px]">
                             <DynamicJsonCell data={call.transcription_metrics} fieldKey={key} />
                           </TableCell>
                         )
