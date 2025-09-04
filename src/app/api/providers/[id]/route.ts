@@ -4,13 +4,7 @@ import { query } from '@/lib/db';
 import { verifyUserAuth } from '@/lib/auth';
 import { getUserGlobalRole } from '@/services/getGlobalRole';
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify user authentication
     const { isAuthenticated, userId } = await verifyUserAuth(request);
@@ -40,7 +34,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const providerId = params.id;
+    const { id } = await params;
+    const providerId = id;
 
     if (!providerId || isNaN(Number(providerId))) {
       return NextResponse.json(
@@ -86,7 +81,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify user authentication
     const { isAuthenticated, userId } = await verifyUserAuth(request);
@@ -116,7 +111,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const providerId = params.id;
+    const { id } = await params;
+    const providerId = id;
 
     if (!providerId || isNaN(Number(providerId))) {
       return NextResponse.json(
@@ -143,7 +139,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const current = currentProvider.rows[0];
     const updates: any = {};
     const updateFields: string[] = [];
-    const params: any[] = [];
+    const queryParams: any[] = [];
     let paramIndex = 1;
 
     // Validate and prepare updates
@@ -169,7 +165,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       }
 
       updateFields.push(`name = $${paramIndex}`);
-      params.push(name.trim());
+      queryParams.push(name.trim());
       paramIndex++;
     }
 
@@ -181,19 +177,19 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         );
       }
       updateFields.push(`type = $${paramIndex}`);
-      params.push(type);
+      queryParams.push(type);
       paramIndex++;
     }
 
     if (api_url !== undefined) {
       updateFields.push(`api_url = $${paramIndex}`);
-      params.push(api_url || null);
+      queryParams.push(api_url || null);
       paramIndex++;
     }
 
     if (api_key !== undefined) {
       updateFields.push(`api_key = $${paramIndex}`);
-      params.push(api_key || null);
+      queryParams.push(api_key || null);
       paramIndex++;
     }
 
@@ -221,7 +217,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       }
 
       updateFields.push(`unit = $${paramIndex}`);
-      params.push(unit);
+      queryParams.push(unit);
       paramIndex++;
     }
 
@@ -233,13 +229,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         );
       }
       updateFields.push(`cost_per_unit = $${paramIndex}`);
-      params.push(cost_per_unit);
+      queryParams.push(cost_per_unit);
       paramIndex++;
     }
 
     if (is_active !== undefined) {
       updateFields.push(`is_active = $${paramIndex}`);
-      params.push(is_active);
+      queryParams.push(is_active);
       paramIndex++;
     }
 
@@ -254,7 +250,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     updateFields.push(`updated_at = NOW()`);
 
     // Add provider ID as last parameter
-    params.push(providerId);
+    queryParams.push(providerId);
 
     const updateSql = `
       UPDATE ai_providers 
@@ -263,7 +259,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       RETURNING id, name, type, api_url, unit, cost_per_unit, is_active, created_at, updated_at
     `;
 
-    const result = await query(updateSql, params);
+    const result = await query(updateSql, queryParams);
     const updatedProvider = result.rows[0];
 
     console.log(`✅ Successfully updated ${updatedProvider.type} provider "${updatedProvider.name}"`);
@@ -279,7 +275,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify user authentication
     const { isAuthenticated, userId } = await verifyUserAuth(request);
@@ -309,7 +305,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const providerId = params.id;
+    const { id } = await params;
+    const providerId = id;
 
     if (!providerId || isNaN(Number(providerId))) {
       return NextResponse.json(
