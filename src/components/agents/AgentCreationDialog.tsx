@@ -15,6 +15,8 @@ import {
 import { Loader2, CheckCircle, Bot, Phone, PhoneCall, Settings, ArrowRight, Copy, AlertCircle, Zap, Cpu, Link as LinkIcon, Brain } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useProviders, getProvidersByType } from '@/hooks/useProviders'
+import { useCostOverrides } from '@/hooks/useCostOverrides'
+import { useGlobalRole } from '@/hooks/useGlobalRole'
 
 interface AgentCreationDialogProps {
   isOpen: boolean
@@ -98,6 +100,21 @@ const VOICE_TYPES = [
   }
 ]
 
+const PRICING_MODES = [
+  {
+    value: 'pay_as_you_go',
+    label: 'Pay-as-You-Go',
+    description: 'Pay per usage',
+    icon: Zap,
+  },
+  {
+    value: 'dedicated',
+    label: 'Dedicated',
+    description: 'Monthly subscription',
+    icon: Cpu,
+  }
+]
+
 const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({ 
   isOpen, 
   onClose, 
@@ -108,6 +125,10 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   const [selectedPlatform, setSelectedPlatform] = useState('livekit')
   const assistantSectionRef = useRef<HTMLDivElement>(null)
   const { providers, globalSettings, loading: providersLoading } = useProviders()
+  const { agent, updateOverrides, resetOverrides } = useCostOverrides(null)
+  const { globalRole, isSuperAdmin } = useGlobalRole()
+  const [showCostOverrides, setShowCostOverrides] = useState(false)
+  const [tempCostOverrides, setTempCostOverrides] = useState<any>({})
   
   // Livekit (regular) agent fields
   const [formData, setFormData] = useState({
@@ -116,6 +137,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     voice_type: 'inbound',
     description: '',
     provider_mode: 'builtin', // 'builtin' or 'external'
+    pricing_mode: 'pay_as_you_go', // 'pay_as_you_go' or 'dedicated'
     stt_provider_id: '',
     tts_provider_id: '',
     llm_provider_id: ''
@@ -157,10 +179,14 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   const getEstimatedCost = () => {
     if (formData.provider_mode === 'builtin' && globalSettings) {
       if (formData.agent_type === 'voice') {
-        return globalSettings.builtin_voice.cost_per_minute
+        // Pour voice: STT + TTS + LLM
+        const sttCost = globalSettings.builtin_stt?.cost_per_minute || 0
+        const ttsCost = (globalSettings.builtin_tts?.cost_per_word || 0) * 100 // ~100 words/min 
+        const llmCost = (globalSettings.builtin_llm?.cost_per_token || 0) * 1000 // ~1000 tokens/min
+        return sttCost + ttsCost + llmCost
       } else if (formData.agent_type === 'text_only') {
-        // Pour text-only, on estime ~1000 tokens par minute
-        return globalSettings.builtin_text.cost_per_token * 1000
+        // Pour text-only, seulement LLM
+        return (globalSettings.builtin_llm?.cost_per_token || 0) * 1000
       }
     } else if (formData.provider_mode === 'external') {
       const sttProvider = sttProviders.find(p => p.id.toString() === formData.stt_provider_id)
@@ -370,11 +396,13 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         payload = {
           name: formData.name.trim(),
           agent_type: formData.agent_type,
+          pricing_mode: formData.pricing_mode,
           configuration: {
             description: formData.description.trim() || null,
             voice_type: formData.agent_type === 'voice' ? formData.voice_type : null
           },
           provider_config: providerConfig,
+          cost_overrides: Object.keys(tempCostOverrides).length > 0 ? tempCostOverrides : null,
           project_id: projectId,
           environment: 'dev',
           platform: 'livekit'
@@ -419,7 +447,23 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
       
       setCreatedAgentData(data)
 
-      // Step 2: If it's a Vapi agent, automatically setup webhook
+      // Step 2: Apply cost overrides if provided (super admin)
+      if (Object.keys(tempCostOverrides).length > 0 && isSuperAdmin) {
+        try {
+          await fetch(`/api/agents/${data.id}/cost-overrides`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cost_overrides: tempCostOverrides }),
+          });
+          console.log('✅ Cost overrides applied successfully');
+        } catch (overrideError) {
+          console.warn('⚠️ Failed to apply cost overrides:', overrideError);
+        }
+      }
+      
+      // Step 3: If it's a Vapi agent, automatically setup webhook
       if (selectedPlatform === 'vapi') {
         setCurrentStep('connecting')
         setWebhookSetupStatus(null)
@@ -457,10 +501,13 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         voice_type: 'inbound', 
         description: '',
         provider_mode: 'builtin',
+        pricing_mode: 'pay_as_you_go',
         stt_provider_id: '',
         tts_provider_id: '',
         llm_provider_id: ''
       })
+      setTempCostOverrides({})
+      setShowCostOverrides(false)
       setVapiData({ apiKey: '', projectApiKey: '', availableAssistants: [], selectedAssistantId: '', connectLoading: false })
       setError(null)
       setCreatedAgentData(null)
@@ -711,11 +758,57 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                       </div>
                     )}
 
-                    {/* Provider Mode Selection */}
+                    {/* Pricing Mode Selection */}
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
-                        AI Provider Mode
+                        Pricing Mode
                       </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {PRICING_MODES.map((mode) => {
+                          const Icon = mode.icon
+                          const isSelected = formData.pricing_mode === mode.value
+                          
+                          return (
+                            <div
+                              key={mode.value}
+                              className={`relative p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                                isSelected 
+                                  ? 'border-blue-500 bg-blue-50 shadow-sm' 
+                                  : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
+                              }`}
+                              onClick={() => setFormData({ ...formData, pricing_mode: mode.value })}
+                            >
+                              <div className="text-center">
+                                <div className={`w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center ${
+                                  isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'
+                                }`}>
+                                  <Icon className="w-4 h-4" />
+                                </div>
+                                <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-0.5">{mode.label}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 leading-tight">{mode.description}</div>
+                                {isSelected && globalSettings && (
+                                  <div className="text-xs text-blue-600 mt-1 font-medium">
+                                    {mode.value === 'dedicated' && globalSettings.agent_subscription_costs && (
+                                      `$${globalSettings.agent_subscription_costs.voice_per_minute || globalSettings.agent_subscription_costs.textonly_per_month || 0}/month`
+                                    )}
+                                    {mode.value === 'pay_as_you_go' && (
+                                      `$${getEstimatedCost().toFixed(4)}/minute`
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Provider Mode Selection - Only for PAG */}
+                    {formData.pricing_mode === 'pay_as_you_go' && (
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                          AI Provider Mode
+                        </label>
                       <div className="flex gap-2">
                         <div
                           className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
@@ -730,10 +823,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                             <div className="text-xs text-gray-500">Use internal AI models</div>
                             {globalSettings && (
                               <div className="text-xs text-blue-600 mt-1 font-medium">
-                                {formData.agent_type === 'voice' && 
-                                  `$${globalSettings.builtin_voice.cost_per_minute.toFixed(4)}/minute`}
-                                {formData.agent_type === 'text_only' && 
-                                  `$${globalSettings.builtin_text.cost_per_token.toFixed(6)}/token`}
+                                ${getEstimatedCost().toFixed(4)}/minute
                               </div>
                             )}
                           </div>
@@ -756,9 +846,10 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                         </div>
                       </div>
                     </div>
+                    )}
 
-                    {/* External Provider Selection */}
-                    {formData.provider_mode === 'external' && (
+                    {/* External Provider Selection - Only for PAG + External */}
+                    {formData.pricing_mode === 'pay_as_you_go' && formData.provider_mode === 'external' && (
                       <div className="space-y-4 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border">
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
                           Select AI Providers
@@ -852,6 +943,115 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                             Based on average usage: 1 min STT + 100 words TTS + 1000 tokens LLM
                           </div>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Cost Overrides Section - Super Admin Only */}
+                    {isSuperAdmin && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                            Cost Overrides
+                          </label>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowCostOverrides(!showCostOverrides)}
+                            className="text-xs"
+                          >
+                            {showCostOverrides ? 'Hide' : 'Configure'}
+                          </Button>
+                        </div>
+                        
+                        {showCostOverrides && (
+                          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800 space-y-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <AlertCircle className="w-4 h-4 text-amber-600" />
+                              <span className="text-xs font-medium text-amber-800 dark:text-amber-200">
+                                Super Admin: Override costs for this agent
+                              </span>
+                            </div>
+                            
+                            {/* Built-in model cost overrides */}
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">STT Cost Override</label>
+                                <Input
+                                  type="number"
+                                  step="0.0001"
+                                  placeholder="0.0050"
+                                  value={tempCostOverrides.builtin_stt_cost || ''}
+                                  onChange={(e) => setTempCostOverrides({
+                                    ...tempCostOverrides,
+                                    builtin_stt_cost: parseFloat(e.target.value) || undefined
+                                  })}
+                                  className="h-8 text-xs"
+                                />
+                              </div>
+                              
+                              <div className="space-y-1">
+                                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">TTS Cost Override</label>
+                                <Input
+                                  type="number"
+                                  step="0.0001"
+                                  placeholder="0.0020"
+                                  value={tempCostOverrides.builtin_tts_cost || ''}
+                                  onChange={(e) => setTempCostOverrides({
+                                    ...tempCostOverrides,
+                                    builtin_tts_cost: parseFloat(e.target.value) || undefined
+                                  })}
+                                  className="h-8 text-xs"
+                                />
+                              </div>
+                              
+                              <div className="space-y-1">
+                                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">LLM Cost Override</label>
+                                <Input
+                                  type="number"
+                                  step="0.000001"
+                                  placeholder="0.000015"
+                                  value={tempCostOverrides.builtin_llm_cost || ''}
+                                  onChange={(e) => setTempCostOverrides({
+                                    ...tempCostOverrides,
+                                    builtin_llm_cost: parseFloat(e.target.value) || undefined
+                                  })}
+                                  className="h-8 text-xs"
+                                />
+                              </div>
+                              
+                              <div className="space-y-1">
+                                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">S3 Storage Cost/GB</label>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="0.10"
+                                  value={tempCostOverrides.s3_storage_cost_per_gb || ''}
+                                  onChange={(e) => setTempCostOverrides({
+                                    ...tempCostOverrides,
+                                    s3_storage_cost_per_gb: parseFloat(e.target.value) || undefined
+                                  })}
+                                  className="h-8 text-xs"
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setTempCostOverrides({})}
+                                className="text-xs"
+                              >
+                                Reset
+                              </Button>
+                              <div className="text-xs text-amber-700 dark:text-amber-300 flex items-center">
+                                Overrides will be applied after agent creation
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </>
