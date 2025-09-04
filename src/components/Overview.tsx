@@ -578,287 +578,212 @@ const Overview: React.FC<OverviewProps> = ({
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
           <>
-            {/* Unified Responsive Grid for Metrics and Charts */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Metrics Cards Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
               {/* Total Calls */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                        <Phone weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="p-4 h-32 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <Phone weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
-                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                        {(() => {
-                          const totalCalls = analytics?.totalCalls || 0;
-                          console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
-                          console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
-                          console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
-                          return String(totalCalls).replace(/^0+/, '') || '0';
-                        })()}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
+                    <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                      {analytics?.totalCalls?.toLocaleString() || '0'}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Global Call Duration */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
-                        <Clock weight="regular" className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
-                          {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
-                        </span>
-                      </div>
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="p-4 h-32 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
+                      <Clock weight="regular" className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Call Duration</h3>
-                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                        {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
-                        <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
+                      {analytics?.totalCalls && analytics?.totalCallMinutes ? Math.round(analytics.totalCallMinutes / analytics.totalCalls) : 0}m avg
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Call Duration</h3>
+                    <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                      {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
+                      <span className="text-sm text-gray-500 dark:text-slate-400 ml-1">min</span>
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* AI Processing Time */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
-                        <Activity weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
-                          STT+LLM+TTS
-                        </span>
-                      </div>
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="p-4 h-32 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
+                      <Activity weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">AI Processing</h3>
-                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                        {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
-                        <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
+                      STT+LLM+TTS
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">AI Processing</h3>
+                    <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                      {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
+                      <span className="text-sm text-gray-500 dark:text-slate-400 ml-1">min</span>
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Total Cost */}
               {role !== 'user' && (
-                <div className="h-full">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                    <div className="p-4 md:p-5">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
-                          <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                        </div>
-                        <div className="text-right">
-                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400">INR</span>
-                        </div>
+                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                  <div className="p-4 h-32 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
+                        <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                       </div>
-                      <div className="space-y-1">
-                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Cost</h3>
-                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">₹{analytics?.totalCost?.toFixed(2) || '0.00'}</p>
-                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                      </div>
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">INR</span>
                     </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Average Latency */}
-              {role !== 'user' && (
-                <div className="h-full">
-                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                    <div className="p-4 md:p-5">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
-                          <Lightning weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div className="text-right">
-                          <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">avg</span>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Response Time</h3>
-                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                          {analytics?.averageLatency ? `${analytics.averageLatency.toFixed(0)}ms` : '0ms'}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                      </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Cost</h3>
+                      <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                        ₹{(analytics?.totalCost || 0).toFixed(2)}
+                      </p>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Successful Calls */}
-              <div className="h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
-                        <CheckCircle weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-md border border-green-100 dark:border-green-800">
-                          <ArrowUp weight="bold" className="w-3 h-3 text-green-600 dark:text-green-400" />
-                          <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                            {analytics ? successRate.toFixed(1) : '0.0'}%
-                          </span>
-                        </div>
-                      </div>
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="p-4 h-32 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
+                      <CheckCircle weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                     </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Successful</h3>
-                      <p className="text-2xl font-light text-green-600 dark:text-green-400 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
-                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            {/* Failed Calls */}
-            <div className="h-full">
-              <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                <div className="p-4 md:p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-100 dark:border-red-800">
-                      <XCircle weight="regular" className="w-5 h-5 text-red-600 dark:text-red-400" />
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-md border border-red-100 dark:border-red-800">
-                        <ArrowDown weight="bold" className="w-3 h-3 text-red-600 dark:text-red-400" />
-                        <span className="text-xs font-bold text-red-600 dark:text-red-400">
-                          {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Failed</h3>
-                    <p className="text-2xl font-light text-red-600 dark:text-red-400 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Total Tokens */}
-            <div className="h-full">
-              <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                <div className="p-4 md:p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
-                      <Activity weight="regular" className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
-                        {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
+                    <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-md border border-green-100 dark:border-green-800">
+                      <ArrowUp weight="bold" className="w-3 h-3 text-green-600 dark:text-green-400" />
+                      <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                        {analytics ? successRate.toFixed(1) : '0.0'}%
                       </span>
                     </div>
                   </div>
                   <div className="space-y-1">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Successful</h3>
+                    <p className="text-xl font-semibold text-green-600 dark:text-green-400">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Failed Calls */}
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="p-4 h-32 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-100 dark:border-red-800">
+                      <XCircle weight="regular" className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div className="flex items-center gap-1 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-md border border-red-100 dark:border-red-800">
+                      <ArrowDown weight="bold" className="w-3 h-3 text-red-600 dark:text-red-400" />
+                      <span className="text-xs font-bold text-red-600 dark:text-red-400">
+                        {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Failed</h3>
+                    <p className="text-xl font-semibold text-red-600 dark:text-red-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Tokens */}
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="p-4 h-32 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                      <Activity weight="regular" className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
+                      {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
+                    </span>
+                  </div>
+                  <div className="space-y-1">
                     <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Tokens</h3>
-                    <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                    <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                       {analytics?.totalTokens?.toLocaleString() || '0'}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                   </div>
                 </div>
               </div>
-            {customTotals.map((config) => {
-            const result = customTotalResults.find(r => r.configId === config.id)
+              {customTotals.map((config) => {
+                const result = customTotalResults.find(r => r.configId === config.id)
+                const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
+                const colorClass = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES] || COLOR_CLASSES.blue
 
-            const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
-            const colorClass = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES] || COLOR_CLASSES.blue
-
-            return (
-              <div key={config.id} className="group h-full">
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`p-2 ${colorClass} rounded-lg border`}>
-                        <IconComponent weight="regular" className={`w-5 h-5`} />
+                return (
+                  <div key={config.id} className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 group">
+                    <div className="p-4 h-32 flex flex-col justify-between">
+                      <div className="flex items-center justify-between">
+                        <div className={`p-2 ${colorClass} rounded-lg border`}>
+                          <IconComponent weight="regular" className={`w-5 h-5`} />
+                        </div>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 hover:bg-gray-100"
+                            onClick={() => handleDownloadCustomTotal(config)}
+                            title="Download matching logs"
+                          >
+                            <Download className="h-3 w-3 text-gray-400" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 hover:bg-gray-100"
+                              >
+                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0 hover:bg-gray-100"
-                          onClick={() => handleDownloadCustomTotal(config)}
-                          title="Download matching logs"
-                        >
-                          <Download className="h-3 w-3 text-gray-400" />
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-6 w-6 p-0 hover:bg-gray-100"
-                            >
-                              <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider truncate" title={config.name}>
-                        {config.name}
-                      </h3>
-                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                        {loadingCustomTotals || !result ? (
-                          <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-gray-500" />
-                        ) : (
-                          formatCustomTotalValue(result, config)
-                        )}
-                      </p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
-                        {config.filters.length > 0 
-                          ? `${config.filters.length} filter${config.filters.length > 1 ? 's' : ''} (${config.filterLogic})`
-                          : 'No filters'
-                        }
-                      </p>
-                      {result?.error && (
-                        <p className="text-xs text-red-500 mt-1">
-                          {result.error}
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider truncate" title={config.name}>
+                          {config.name}
+                        </h3>
+                        <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                          {loadingCustomTotals || !result ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-gray-500" />
+                          ) : (
+                            formatCustomTotalValue(result, config)
+                          )}
                         </p>
-                      )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            )
-          })}
+                )
+              })}
 
-              {/* Daily Calls Chart - spans 2 columns on larger screens */}
-              <div className="lg:col-span-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+            </div>
+
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Daily Calls Chart */}
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -1026,7 +951,22 @@ const Overview: React.FC<OverviewProps> = ({
                 </div>
               </div>
 
-              {/* Daily Minutes Chart */}
+              {/* Success Analysis Chart */}
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="p-4 md:p-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
+                      <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
+                      <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Usage Minutes Chart */}
               <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
@@ -1098,8 +1038,8 @@ const Overview: React.FC<OverviewProps> = ({
                 </div>
               </div>
 
-              {/* Response Performance Chart - spans 2 columns on larger screens */}
-              <div className="lg:col-span-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+              {/* Response Performance Chart */}
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -1181,7 +1121,6 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
             </div>
 
-            {/* Close the main unified grid */}
             </div>
 
             {process.env.NODE_ENV === 'development' && (
