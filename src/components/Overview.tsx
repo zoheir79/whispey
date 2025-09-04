@@ -577,9 +577,9 @@ const Overview: React.FC<OverviewProps> = ({
     <div className="h-full bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
-          <div>
-            {/* Premier Div - 6 Cartes Métriques */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <>
+            {/* Responsive Metrics Grid */}
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 md:gap-4">
               {/* Total Calls */}
               <div className="h-full">
                 <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
@@ -588,6 +588,7 @@ const Overview: React.FC<OverviewProps> = ({
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                         <Phone weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
+                      
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
@@ -595,13 +596,9 @@ const Overview: React.FC<OverviewProps> = ({
                         {(() => {
                           const totalCalls = analytics?.totalCalls || 0;
                           console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
-                          console.log('🔍 DEBUG Overview - totalCalls computed:', totalCalls);
-                          if (totalCalls >= 1000000) {
-                            return `${(totalCalls / 1000000).toFixed(1)}M`;
-                          } else if (totalCalls >= 1000) {
-                            return `${(totalCalls / 1000).toFixed(1)}K`;
-                          }
-                          return totalCalls.toLocaleString();
+                          console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
+                          console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
+                          return String(totalCalls).replace(/^0+/, '') || '0';
                         })()}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
@@ -870,29 +867,11 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-          </div>
-        ) : (
-          <div className="h-full flex items-center justify-center">
-            <div className="text-center space-y-8">
-              <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
-                <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No Data Available</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
-                  No calls found for the selected time period. Try adjusting your date range or check back later.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Deuxième Div - 4 Cartes Charts Indépendant - COMPLÈTEMENT SÉPARÉ */}
-        {analytics && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+            {/* Responsive Chart Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Daily Calls Chart */}
-              <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -903,15 +882,16 @@ const Overview: React.FC<OverviewProps> = ({
                     <div className="text-right">
                       <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg</div>
                       <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                        {analytics?.dailyData && analytics.dailyData.length > 0 
+                      {analytics?.dailyData && analytics.dailyData.length > 0 
                           ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
                           : 0
                         }
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1">
+                <div className="p-6">
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
@@ -982,8 +962,8 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Professional Success Chart */}
-              <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
@@ -997,7 +977,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1">
+                <div className="p-6">
                   <div className="h-80 flex items-center justify-center gap-8">
                     <div className="relative">
                       {/* Modern Ring Chart */}
@@ -1061,8 +1041,8 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Daily Minutes Chart */}
-              <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -1072,7 +1052,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1">
+                <div className="p-6">
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
@@ -1133,8 +1113,8 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Average Latency Chart */}
-              <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
-                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
@@ -1144,7 +1124,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1">
+                <div className="p-6">
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
@@ -1241,6 +1221,20 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
+          </>
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center space-y-8">
+              <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
+                <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No Data Available</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+                  No calls found for the selected time period. Try adjusting your date range or check back later.
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </div>
