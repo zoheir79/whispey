@@ -578,47 +578,42 @@ const Overview: React.FC<OverviewProps> = ({
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
           <>
-            {/* Metric Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+            {/* Unified Responsive Grid for Metrics and Charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {/* Total Calls */}
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-x-4">
-                        <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                          <Phone weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
-                          <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                            {(() => {
-                              const totalCalls = analytics?.totalCalls || 0;
-                              return String(totalCalls).replace(/^0+/, '') || '0';
-                            })()}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                        </div>
+                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                        <Phone weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
+                      
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Calls</h3>
+                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                        {(() => {
+                          const totalCalls = analytics?.totalCalls || 0;
+                          console.log('🔍 DEBUG Overview - analytics.totalCalls raw:', analytics?.totalCalls);
+                          console.log('🔍 DEBUG Overview - totalCalls processed:', totalCalls);
+                          console.log('🔍 DEBUG Overview - typeof totalCalls:', typeof totalCalls);
+                          return String(totalCalls).replace(/^0+/, '') || '0';
+                        })()}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
+              </div>
 
               {/* Global Call Duration */}
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-x-4">
-                        <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
-                          <Clock weight="regular" className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Call Duration</h3>
-                          <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                            {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
-                            <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                        </div>
+                      <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-100 dark:border-emerald-800">
+                        <Clock weight="regular" className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                       </div>
                       <div className="text-right">
                         <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
@@ -626,25 +621,25 @@ const Overview: React.FC<OverviewProps> = ({
                         </span>
                       </div>
                     </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Call Duration</h3>
+                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                        {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}
+                        <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
                   </div>
                 </div>
+              </div>
 
               {/* AI Processing Time */}
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-x-4">
-                        <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
-                          <Activity weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">AI Processing</h3>
-                          <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                            {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
-                            <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                        </div>
+                      <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
+                        <Activity weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                       </div>
                       <div className="text-right">
                         <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
@@ -652,24 +647,36 @@ const Overview: React.FC<OverviewProps> = ({
                         </span>
                       </div>
                     </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">AI Processing</h3>
+                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                        {(analytics?.totalAiProcessingMinutes || 0).toFixed(2)}
+                        <span className="text-lg text-gray-500 dark:text-slate-400 ml-1">min</span>
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
+                    </div>
                   </div>
                 </div>
+              </div>
 
               {/* Total Cost */}
               {role !== 'user' && (
-                    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="h-full">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-x-4">
-                          <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
-                            <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                          </div>
-                          <div className="space-y-1">
-                            <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Cost</h3>
-                            <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{(analytics?.totalTokens || 0).toLocaleString()}</p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                          </div>
+                        <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-100 dark:border-amber-800">
+                          <CurrencyDollar weight="regular" className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                         </div>
+                        <div className="text-right">
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400">INR</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Cost</h3>
+                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">₹{analytics?.totalCost?.toFixed(2) || '0.00'}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -677,40 +684,36 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* Average Latency */}
               {role !== 'user' && (
-                    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="h-full">
+                  <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-x-4">
-                          <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
-                            <Lightning weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                          </div>
-                          <div className="space-y-1">
-                            <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Response Time</h3>
-                            <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{analytics?.averageLatency?.toFixed(2) || '0.00'}<span className="text-lg text-gray-500 dark:text-slate-400 ml-1">s</span></p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                          </div>
+                        <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-100 dark:border-purple-800">
+                          <Lightning weight="regular" className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                         </div>
                         <div className="text-right">
                           <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">avg</span>
                         </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Response Time</h3>
+                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                          {analytics?.averageLatency ? `${analytics.averageLatency.toFixed(0)}ms` : '0ms'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Successful Calls */}
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
                   <div className="p-4 md:p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-x-4">
-                        <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
-                          <CheckCircle weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Successful</h3>
-                          <p className="text-2xl font-light text-green-600 dark:text-green-400 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
-                          <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                        </div>
+                      <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
+                        <CheckCircle weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                       </div>
                       <div className="text-right">
                         <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-md border border-green-100 dark:border-green-800">
@@ -721,146 +724,141 @@ const Overview: React.FC<OverviewProps> = ({
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-
-              {/* Failed Calls */}
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-x-4">
-                        <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-100 dark:border-red-800">
-                          <XCircle weight="regular" className="w-5 h-5 text-red-600 dark:text-red-400" />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Failed</h3>
-                          <p className="text-2xl font-light text-red-600 dark:text-red-400 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
-                          <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-md border border-red-100 dark:border-red-800">
-                          <ArrowDown weight="bold" className="w-3 h-3 text-red-600 dark:text-red-400" />
-                          <span className="text-xs font-bold text-red-600 dark:text-red-400">
-                            {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
-                          </span>
-                        </div>
-                      </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Successful</h3>
+                      <p className="text-2xl font-light text-green-600 dark:text-green-400 tracking-tight">{analytics?.successfulCalls?.toLocaleString() || '0'}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
                     </div>
                   </div>
                 </div>
+              </div>
 
-              {/* Total Tokens */}
-                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-x-4">
-                        <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
-                          <Activity weight="regular" className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                        </div>
-                        <div className="space-y-1">
-                          <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Tokens</h3>
-                          <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">{(analytics?.totalTokens || 0).toLocaleString()}</p>
-                          <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">LLM</span>
+            {/* Failed Calls */}
+            <div className="h-full">
+              <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="p-4 md:p-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-100 dark:border-red-800">
+                      <XCircle weight="regular" className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-1 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-md border border-red-100 dark:border-red-800">
+                        <ArrowDown weight="bold" className="w-3 h-3 text-red-600 dark:text-red-400" />
+                        <span className="text-xs font-bold text-red-600 dark:text-red-400">
+                          {analytics ? (100 - successRate).toFixed(1) : '0.0'}%
+                        </span>
                       </div>
                     </div>
                   </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Failed</h3>
+                    <p className="text-2xl font-light text-red-600 dark:text-red-400 tracking-tight">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls).toLocaleString() : '0'}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
+                  </div>
                 </div>
+              </div>
+            </div>
 
-              {customTotals.map((config) => {
-              const result = customTotalResults.find(r => r.configId === config.id)
+            {/* Total Tokens */}
+            <div className="h-full">
+              <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="p-4 md:p-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                      <Activity weight="regular" className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
+                        {analytics?.totalCalls ? Math.round((analytics?.totalTokens || 0) / analytics.totalCalls) : 0} avg
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Total Tokens</h3>
+                    <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                      {analytics?.totalTokens?.toLocaleString() || '0'}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{getDateRangeDisplay()}</p>
+                  </div>
+                </div>
+              </div>
+            {customTotals.map((config) => {
+            const result = customTotalResults.find(r => r.configId === config.id)
 
-              const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
-              const colorClass = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES] || COLOR_CLASSES.blue
+            const IconComponent = ICON_COMPONENTS[config.icon as keyof typeof ICON_COMPONENTS] || Users
+            const colorClass = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES] || COLOR_CLASSES.blue
 
-              return (
-                <div key={config.id} className="group h-full">
-                  <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
-                    <div className="p-4 md:p-5">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-x-4">
-                          <div className={`p-2 ${colorClass} rounded-lg border`}>
-                            <IconComponent weight="regular" className={`w-5 h-5`} />
-                          </div>
-                          <div className="space-y-1 flex-grow">
-                        <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider truncate" title={config.name}>
-                          {config.name}
-                        </h3>
-                        <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                          {loadingCustomTotals || !result ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-gray-500" />
-                          ) : (
-                            formatCustomTotalValue(result, config)
-                          )}
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
-                          {config.filters.length > 0 
-                            ? `${config.filters.length} filter${config.filters.length > 1 ? 's' : ''} (${config.filterLogic})`
-                            : 'No filters'
-                          }
-                        </p>
-                        {result?.error && (
-                          <p className="text-xs text-red-500 mt-1">
-                            {result.error}
-                          </p>
+            return (
+              <div key={config.id} className="group h-full">
+                <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                  <div className="p-4 md:p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`p-2 ${colorClass} rounded-lg border`}>
+                        <IconComponent weight="regular" className={`w-5 h-5`} />
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 hover:bg-gray-100"
+                          onClick={() => handleDownloadCustomTotal(config)}
+                          title="Download matching logs"
+                        >
+                          <Download className="h-3 w-3 text-gray-400" />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-6 w-6 p-0 hover:bg-gray-100"
+                            >
+                              <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider truncate" title={config.name}>
+                        {config.name}
+                      </h3>
+                      <p className="text-2xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                        {loadingCustomTotals || !result ? (
+                          <Loader2 className="w-5 h-5 animate-spin text-gray-300 dark:text-gray-500" />
+                        ) : (
+                          formatCustomTotalValue(result, config)
                         )}
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-slate-700"
-                            onClick={() => handleDownloadCustomTotal(config)}
-                            title="Download matching logs"
-                          >
-                            <Download className="h-3 w-3 text-gray-400" />
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-slate-700"
-                              >
-                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                        {config.filters.length > 0 
+                          ? `${config.filters.length} filter${config.filters.length > 1 ? 's' : ''} (${config.filterLogic})`
+                          : 'No filters'
+                        }
+                      </p>
+                      {result?.error && (
+                        <p className="text-xs text-red-500 mt-1">
+                          {result.error}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
-              )
-            })}
+              </div>
+            )
+          })}
 
-
-            {process.env.NODE_ENV === 'development' && (
-              <Card className="border-yellow-200 bg-yellow-50 col-span-full">
-                <CardContent className="p-4">
-                  <div className="text-sm">
-                    <strong>Debug - Dynamic Fields:</strong>
-                    <div>Metadata: {metadataFields.join(', ') || 'None'}</div>
-                    <div>Transcription: {transcriptionFields.join(', ') || 'None'}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            
-            {/* Daily Calls Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
+              {/* Daily Calls Chart - spans 2 columns on larger screens */}
+              <div className="lg:col-span-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -876,6 +874,7 @@ const Overview: React.FC<OverviewProps> = ({
                         ? Math.round(analytics.dailyData.reduce((sum, d) => sum + (d.calls || 0), 0) / analytics.dailyData.length) 
                         : 0
                       }
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -946,246 +945,264 @@ const Overview: React.FC<OverviewProps> = ({
                       />
                     </LineChart>
                   </ResponsiveContainer>
+                </div>
               </div>
+            </div>
 
-            {/* Professional Success Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
-              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+            {/* Success Analysis */}
+            <div className="h-full">
+              <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
+                <div className="p-4 md:p-5">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
                       <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
                     </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
-                    <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
+                    <div className="text-right">
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
+                      <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="p-6">
-                <div className="h-80 flex items-center justify-center gap-8">
-                  <div className="relative">
-                    {/* Modern Ring Chart */}
-                    <div className="w-40 h-40">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={successFailureData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={50}
-                            outerRadius={70}
-                            paddingAngle={2}
-                            dataKey="value"
-                            strokeWidth={0}
-                            startAngle={90}
-                            endAngle={450}
-                          >
-                            {successFailureData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip 
-                            contentStyle={{
-                              backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                              border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                              borderRadius: '12px',
-                              fontSize: '13px',
-                              fontWeight: '500',
-                              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                              backdropFilter: 'blur(20px)'
-                            }}
-                            formatter={(value: any, name: any) => [`${value} calls`, name]}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    {/* Center Statistics */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
-                      <div className="text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
-                        {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-gray-400">%</span>
+                <div className="p-6">
+                  <div className="h-80 flex items-center justify-center gap-8">
+                    <div className="relative">
+                      {/* Modern Ring Chart */}
+                      <div className="w-40 h-40">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={successFailureData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={70}
+                              paddingAngle={2}
+                              dataKey="value"
+                              strokeWidth={0}
+                              startAngle={90}
+                              endAngle={450}
+                            >
+                              {successFailureData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              contentStyle={{
+                                backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                                border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                                borderRadius: '12px',
+                                fontSize: '13px',
+                                fontWeight: '500',
+                                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                                backdropFilter: 'blur(20px)'
+                              }}
+                              formatter={(value: any, name: any) => [`${value} calls`, name]}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
                       </div>
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
+                      {/* Center Statistics */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
+                        <div className="text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
+                          {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-gray-400">%</span>
+                        </div>
+                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
+                      </div>
+                    </div>
+                    {/* Legend */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
+                        <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.successfulCalls || 0}</div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF3B30' }}></div>
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Failed</div>
+                        <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
+                      </div>
                     </div>
                   </div>
-                  {/* Legend */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
-                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
-                      <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.successfulCalls || 0}</div>
+                </div>
+              </div>
+
+              {/* Daily Minutes Chart */}
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                        <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF3B30' }}></div>
-                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Failed</div>
-                      <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+                        <defs>
+                          <linearGradient id="minutesGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#007aff" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#007aff" stopOpacity={0.4}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
+                        <XAxis 
+                          dataKey="date" 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                          height={40}
+                          tickFormatter={(value) => {
+                            const date = new Date(value)
+                            return `${date.getMonth() + 1}/${date.getDate()}`
+                          }}
+                        />
+                        <YAxis 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                          width={40}
+                          tickFormatter={(value) => `${value}m`}
+                        />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                            borderRadius: '12px',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                            backdropFilter: 'blur(20px)'
+                          }}
+                          formatter={(value: any) => [`${value} min`, 'Duration']}
+                          labelFormatter={(value: any) => {
+                            const date = new Date(value)
+                            return date.toLocaleDateString('en-US', { 
+                              weekday: 'short',
+                              month: 'short', 
+                              day: 'numeric' 
+                            })
+                          }}
+                        />
+                        <Bar 
+                          dataKey="minutes" 
+                          fill="url(#minutesGradient)"
+                          radius={[4, 4, 0, 0]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Response Performance Chart - spans 2 columns on larger screens */}
+              <div className="lg:col-span-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
+                        <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                      </div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
                     </div>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+                        <defs>
+                          <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ff9500" stopOpacity={0.1}/>
+                            <stop offset="95%" stopColor="#ff9500" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
+                        <XAxis 
+                          dataKey="date" 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                          height={40}
+                          tickFormatter={(value) => {
+                            const date = new Date(value)
+                            return `${date.getMonth() + 1}/${date.getDate()}`
+                          }}
+                        />
+                        <YAxis 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
+                          width={40}
+                          tickFormatter={(value) => `${value}s`}
+                        />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
+                            border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
+                            borderRadius: '12px',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                            backdropFilter: 'blur(20px)'
+                          }}
+                          formatter={(value: any) => [`${value}s`, 'Latency']}
+                          labelFormatter={(value: any) => {
+                            const date = new Date(value)
+                            return date.toLocaleDateString('en-US', { 
+                              weekday: 'short',
+                              month: 'short', 
+                              day: 'numeric' 
+                            })
+                          }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="avg_latency" 
+                          stroke="#ff9500" 
+                          strokeWidth={3}
+                          fill="url(#latencyGradient)"
+                          dot={false}
+                          activeDot={{ 
+                            r: 6, 
+                            fill: '#ff9500', 
+                            strokeWidth: 3, 
+                            stroke: '#ffffff',
+                            filter: 'drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3))'
+                          }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Daily Minutes Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
-              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
-                      <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
-                      <defs>
-                        <linearGradient id="minutesGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#007aff" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#007aff" stopOpacity={0.4}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
-                      <XAxis 
-                        dataKey="date" 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                        height={40}
-                        tickFormatter={(value) => {
-                          const date = new Date(value)
-                          return `${date.getMonth() + 1}/${date.getDate()}`
-                        }}
-                      />
-                      <YAxis 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                        width={40}
-                        tickFormatter={(value) => `${value}m`}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                          border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                          borderRadius: '12px',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                          backdropFilter: 'blur(20px)'
-                        }}
-                        formatter={(value: any) => [`${value} min`, 'Duration']}
-                        labelFormatter={(value: any) => {
-                          const date = new Date(value)
-                          return date.toLocaleDateString('en-US', { 
-                            weekday: 'short',
-                            month: 'short', 
-                            day: 'numeric' 
-                          })
-                        }}
-                      />
-                      <Bar 
-                        dataKey="minutes" 
-                        fill="url(#minutesGradient)"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-              </div>
-
-            {/* Average Latency Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
-              <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
-                      <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
-                      <defs>
-                        <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#ff9500" stopOpacity={0.1}/>
-                          <stop offset="95%" stopColor="#ff9500" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="1 1" stroke={resolvedTheme === 'dark' ? '#3e4c5f' : '#f3f4f6'} />
-                      <XAxis 
-                        dataKey="date" 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                        height={40}
-                        tickFormatter={(value) => {
-                          const date = new Date(value)
-                          return `${date.getMonth() + 1}/${date.getDate()}`
-                        }}
-                      />
-                      <YAxis 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11, fill: resolvedTheme === 'dark' ? '#94a3b8' : '#9ca3af', fontWeight: 500 }}
-                        width={40}
-                        tickFormatter={(value) => `${value}s`}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: resolvedTheme === 'dark' ? 'rgba(30, 41, 59, 0.9)' : 'rgba(255, 255, 255, 0.98)',
-                          border: `1px solid ${resolvedTheme === 'dark' ? '#4a5568' : '#e5e7eb'}`,
-                          borderRadius: '12px',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                          backdropFilter: 'blur(20px)'
-                        }}
-                        formatter={(value: any) => [`${value}s`, 'Latency']}
-                        labelFormatter={(value: any) => {
-                          const date = new Date(value)
-                          return date.toLocaleDateString('en-US', { 
-                            weekday: 'short',
-                            month: 'short', 
-                            day: 'numeric' 
-                          })
-                        }}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="avg_latency" 
-                        stroke="#ff9500" 
-                        strokeWidth={3}
-                        fill="url(#latencyGradient)"
-                        dot={false}
-                        activeDot={{ 
-                          r: 6, 
-                          fill: '#ff9500', 
-                          strokeWidth: 3, 
-                          stroke: '#ffffff',
-                          filter: 'drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3))'
-                        }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+            {/* Close the main unified grid */}
             </div>
+
+            {process.env.NODE_ENV === 'development' && (
+              <Card className="border-yellow-200 bg-yellow-50">
+                <CardContent className="p-4">
+                  <div className="text-sm">
+                    <strong>Debug - Dynamic Fields:</strong>
+                    <div>Metadata: {metadataFields.join(', ') || 'None'}</div>
+                    <div>Transcription: {transcriptionFields.join(', ') || 'None'}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Chart Analytics Section */}
             <ChartProvider>
               <div className="space-y-6 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
-                <EnhancedChartBuilder
-                  agentId={agent?.id}
-                  dateFrom={new Date(dateRange.from).toISOString()}
-                  dateTo={new Date(dateRange.to).toISOString()}
+                <EnhancedChartBuilder 
+                  agentId={agent.id}
+                  dateFrom={dateRange.from}
+                  dateTo={dateRange.to}
                   metadataFields={metadataFields}
                   transcriptionFields={transcriptionFields}
                   fieldsLoading={fieldsLoading}
@@ -1205,7 +1222,7 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
-          </div>
+          </>
         ) : (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-8">
