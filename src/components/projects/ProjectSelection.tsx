@@ -330,7 +330,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
             </div>
 
             {/* Controls */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -397,7 +397,7 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold text-gray-900 text-base truncate">{project.name}</h3>
+                          <h3 className="font-semibold text-gray-900 dark:text-slate-100 text-base truncate">{project.name}</h3>
                           <div className={`w-2 h-2 rounded-full flex-shrink-0 ${project.is_active ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -501,11 +501,11 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
 
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
                       <Clock className="w-3 h-3" />
                       <span>Created {formatDate(project.created_at)}</span>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-gray-400 group-hover:text-blue-600 transition-colors">
+                    <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors">
                       <span>Open workspace</span>
                       <ChevronRight className="w-3 h-3" />
                     </div>
