@@ -870,7 +870,7 @@ const Overview: React.FC<OverviewProps> = ({
             {/* Responsive Chart Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Daily Calls Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -891,8 +891,8 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1">
-                  <div className="h-full">
+                <div className="p-6">
+                  <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                         <defs>
@@ -962,7 +962,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Professional Success Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -977,8 +977,8 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1 flex items-center justify-center">
-                  <div className="h-full flex items-center justify-center gap-8 w-full">
+                <div className="p-6">
+                  <div className="h-80 flex items-center justify-center gap-8">
                     <div className="relative">
                       {/* Modern Ring Chart */}
                       <div className="w-40 h-40">
@@ -1041,7 +1041,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Daily Minutes Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -1052,8 +1052,8 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1">
-                  <div className="h-full">
+                <div className="p-6">
+                  <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
                         <defs>
@@ -1113,7 +1113,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Average Latency Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -1124,8 +1124,8 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1">
-                  <div className="h-full">
+                <div className="p-6">
+                  <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
                         <defs>
