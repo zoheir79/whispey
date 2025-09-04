@@ -577,7 +577,7 @@ const Overview: React.FC<OverviewProps> = ({
     <div className="h-full bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
-          <>
+          <React.Fragment>
             {/* Responsive Metrics Grid */}
             <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 md:gap-4">
               {/* Total Calls */}
@@ -1220,7 +1220,7 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
-          </>
+          </React.Fragment>
         ) : (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-8">
