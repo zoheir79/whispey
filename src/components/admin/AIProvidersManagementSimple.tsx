@@ -83,7 +83,7 @@ export default function AIProvidersManagementSimple() {
                     <Badge variant={provider.is_active ? 'default' : 'secondary'}>
                       {provider.type}
                     </Badge>
-                    <Badge variant={provider.is_active ? 'success' : 'destructive'}>
+                    <Badge variant={provider.is_active ? 'default' : 'destructive'}>
                       {provider.is_active ? 'Actif' : 'Inactif'}
                     </Badge>
                   </div>
