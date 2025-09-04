@@ -577,9 +577,9 @@ const Overview: React.FC<OverviewProps> = ({
     <div className="h-full bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
-          <div>
+          <div className="w-full">
             {/* Responsive Metrics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
               {/* Total Calls */}
               <div className="h-full">
                 <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-full">
@@ -871,9 +871,9 @@ const Overview: React.FC<OverviewProps> = ({
               </Card>
             )}
             {/* Responsive Chart Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Daily Calls Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
+              <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -964,7 +964,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Professional Success Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
+              <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -1043,7 +1043,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Daily Minutes Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
+              <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -1115,7 +1115,7 @@ const Overview: React.FC<OverviewProps> = ({
               </div>
 
               {/* Average Latency Chart */}
-              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
+              <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
