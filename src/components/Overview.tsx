@@ -870,7 +870,6 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-
             {/* Deuxième Div - 4 Cartes Charts Indépendant */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
               {/* Daily Calls Chart */}
