@@ -578,7 +578,7 @@ const Overview: React.FC<OverviewProps> = ({
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
           <div className="w-full">
-            {/* Responsive Metrics Grid */}
+            {/* Fixed Metrics Grid - 6 Cards */}
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
               {/* Total Calls */}
               <div className="h-full">
@@ -870,9 +870,9 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-            {/* Dedicated Chart Cards Container - Isolated from metrics grid */}
-            <div style={{ width: '100%', display: 'block' }}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ width: '100%' }}>
+            {/* Separate Chart Cards Grid - Independent Container */}
+            <div className="w-full mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Daily Calls Chart */}
               <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
