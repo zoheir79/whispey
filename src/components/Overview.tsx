@@ -870,8 +870,26 @@ const Overview: React.FC<OverviewProps> = ({
                 </CardContent>
               </Card>
             )}
-            {/* Deuxième Div - 4 Cartes Charts Indépendant */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+          </>
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center space-y-8">
+              <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
+                <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No Data Available</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+                  No calls found for the selected time period. Try adjusting your date range or check back later.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Deuxième Div - 4 Cartes Charts Indépendant - COMPLÈTEMENT SÉPARÉ */}
+        {analytics && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
               {/* Daily Calls Chart */}
               <div className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
@@ -1223,21 +1241,6 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
-            </div>
-          </>
-        ) : (
-          <div className="h-full flex items-center justify-center">
-            <div className="text-center space-y-8">
-              <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
-                <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No Data Available</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
-                  No calls found for the selected time period. Try adjusting your date range or check back later.
-                </p>
-              </div>
-            </div>
           </div>
         )}
       </div>
