@@ -866,7 +866,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                     <div className="flex items-center justify-between w-full">
                                       <span>{provider.name}</span>
                                       <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                                        ${provider.cost_per_unit.toFixed(4)}/{provider.unit}
+                                        ${typeof provider.cost_per_unit === 'number' ? provider.cost_per_unit.toFixed(4) : provider.cost_per_unit}/{provider.unit}
                                       </span>
                                     </div>
                                   </SelectItem>
@@ -892,7 +892,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                     <div className="flex items-center justify-between w-full">
                                       <span>{provider.name}</span>
                                       <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                                        ${provider.cost_per_unit.toFixed(6)}/{provider.unit}
+                                        ${typeof provider.cost_per_unit === 'number' ? provider.cost_per_unit.toFixed(6) : provider.cost_per_unit}/{provider.unit}
                                       </span>
                                     </div>
                                   </SelectItem>
@@ -917,7 +917,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                                   <div className="flex items-center justify-between w-full">
                                     <span>{provider.name}</span>
                                     <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                                      ${provider.cost_per_unit.toFixed(6)}/{provider.unit}
+                                      ${typeof provider.cost_per_unit === 'number' ? provider.cost_per_unit.toFixed(6) : provider.cost_per_unit}/{provider.unit}
                                     </span>
                                   </div>
                                 </SelectItem>
