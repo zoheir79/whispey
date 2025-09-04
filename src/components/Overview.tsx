@@ -782,39 +782,11 @@ const Overview: React.FC<OverviewProps> = ({
                   <div className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
                     <div className="p-4 md:p-5">
                       <div className="flex items-start justify-between mb-4">
-                        <div className={`p-2 ${colorClass} rounded-lg border`}>
-                          <IconComponent weight="regular" className={`w-5 h-5`} />
-          
-                        {/* Actions */}
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 hover:bg-gray-100"
-                            onClick={() => handleDownloadCustomTotal(config)}
-                            title="Download matching logs"
-                          >
-                            <Download className="h-3 w-3 text-gray-400" />
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-6 w-6 p-0 hover:bg-gray-100"
-                              >
-                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                  
-                      <div className="space-y-1">
+                        <div className="flex items-center gap-x-4">
+                          <div className={`p-2 ${colorClass} rounded-lg border`}>
+                            <IconComponent weight="regular" className={`w-5 h-5`} />
+                          </div>
+                          <div className="space-y-1 flex-grow">
                         <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider truncate" title={config.name}>
                           {config.name}
                         </h3>
@@ -837,15 +809,42 @@ const Overview: React.FC<OverviewProps> = ({
                           </p>
                         )}
                       </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-slate-700"
+                            onClick={() => handleDownloadCustomTotal(config)}
+                            title="Download matching logs"
+                          >
+                            <Download className="h-3 w-3 text-gray-400" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-slate-700"
+                              >
+                                <MoreHorizontal className="h-3 w-3 text-gray-400 dark:text-gray-500" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleDeleteCustomTotal(config.id)}>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               )
             })}
-
-            </div>
-
-            </div>
+          </div>
 
             {process.env.NODE_ENV === 'development' && (
               <Card className="border-yellow-200 bg-yellow-50 col-span-full">
@@ -880,6 +879,7 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                   </div>
                 </div>
+              </div>
               <div className="p-6">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
@@ -955,11 +955,16 @@ const Overview: React.FC<OverviewProps> = ({
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
                       <Target weight="regular" className="w-5 h-5 text-green-600 dark:text-green-400" />
-                          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
-                      <div className="text-right">
+                    </div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Success Analysis</h3>
+                  </div>
+                  <div className="text-right">
                     <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Success Rate</div>
                     <div className="text-lg font-semibold text-green-600">{analytics ? successRate.toFixed(1) : '0.0'}%</div>
-                    <div className="p-6">
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
                 <div className="h-80 flex items-center justify-center gap-8">
                   <div className="relative">
                     {/* Modern Ring Chart */}
@@ -996,22 +1001,31 @@ const Overview: React.FC<OverviewProps> = ({
                           />
                         </PieChart>
                       </ResponsiveContainer>
-                          {/* Center Statistics */}
+                    </div>
+                    {/* Center Statistics */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-gray-500 dark:text-gray-400">
                       <div className="text-3xl font-light text-gray-900 dark:text-gray-100 tracking-tight">
                         {successRate.toFixed(1)}<span className="text-xl text-gray-500 dark:text-gray-400">%</span>
-                              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
-                            {/* Legend */}
+                      </div>
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1">Success</div>
+                    </div>
+                  </div>
+                  {/* Legend */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#007AFF' }}></div>
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Successful</div>
                       <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.successfulCalls || 0}</div>
-                          <div className="flex items-center gap-3">
+                    </div>
+                    <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF3B30' }}></div>
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Failed</div>
                       <div className="text-sm font-light text-gray-500 dark:text-gray-400">{analytics?.totalCalls && analytics?.successfulCalls !== undefined ? (analytics.totalCalls - analytics.successfulCalls) : 0}</div>
-                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Daily Minutes Chart */}
             <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 lg:col-span-2 xl:col-span-3">
@@ -1020,8 +1034,12 @@ const Overview: React.FC<OverviewProps> = ({
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
                       <ChartBar weight="regular" className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
-                    <div className="p-6">
+                    </div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
@@ -1086,8 +1104,12 @@ const Overview: React.FC<OverviewProps> = ({
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-100 dark:border-orange-800">
                       <Activity weight="regular" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
-                    <div className="p-6">
+                    </div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
@@ -1153,6 +1175,7 @@ const Overview: React.FC<OverviewProps> = ({
                       />
                     </LineChart>
                   </ResponsiveContainer>
+                </div>
               </div>
             </div>
 
@@ -1180,6 +1203,7 @@ const Overview: React.FC<OverviewProps> = ({
                     onSaveCustomTotal={handleSaveCustomTotal}
                   />
                 )}
+              </div>
             </ChartProvider>
           </>
         ) : (
@@ -1187,11 +1211,13 @@ const Overview: React.FC<OverviewProps> = ({
             <div className="text-center space-y-8">
               <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center justify-center mx-auto shadow-sm">
                 <CalendarBlank weight="light" className="w-10 h-10 text-gray-400" />
+              </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100">No Data Available</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
                   No calls found for the selected time period. Try adjusting your date range or check back later.
                 </p>
+              </div>
             </div>
           </div>
         )}
