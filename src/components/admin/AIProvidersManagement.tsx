@@ -569,7 +569,7 @@ export default function AIProvidersManagement() {
                       <Badge variant="outline">{provider.type}</Badge>
                     </TableCell>
                     <TableCell>{provider.unit}</TableCell>
-                    <TableCell>${provider.cost_per_unit.toFixed(6)}</TableCell>
+                    <TableCell>${typeof provider.cost_per_unit === 'number' ? provider.cost_per_unit.toFixed(6) : provider.cost_per_unit}</TableCell>
                     <TableCell>
                       <Badge variant={provider.is_active ? 'default' : 'secondary'}>
                         {provider.is_active ? 'Actif' : 'Inactif'}
