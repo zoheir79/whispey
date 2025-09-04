@@ -577,7 +577,7 @@ const Overview: React.FC<OverviewProps> = ({
     <div className="h-full bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8">
         {analytics ? (
-          <>
+          <div>
             {/* Responsive Metrics Grid */}
             <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 md:gap-4">
               {/* Total Calls */}
@@ -868,7 +868,7 @@ const Overview: React.FC<OverviewProps> = ({
               </Card>
             )}
             {/* Responsive Chart Grid */}
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
               {/* Daily Calls Chart */}
               <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 min-h-[400px] flex flex-col">
                 <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex-shrink-0">
@@ -1220,7 +1220,7 @@ const Overview: React.FC<OverviewProps> = ({
                 )}
               </div>
             </ChartProvider>
-          </>
+          </div>
         ) : (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-8">
