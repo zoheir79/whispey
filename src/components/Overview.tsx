@@ -44,7 +44,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Loader2, MoreHorizontal, Trash2, Download } from 'lucide-react'
 import { EnhancedChartBuilder, ChartProvider } from './EnhancedChartBuilder'
-import { FloatingActionMenu } from './FloatingActionMenu'
 
 import { useDynamicFields } from '../hooks/useDynamicFields'
 // JWT auth is handled at the page level
@@ -954,7 +953,7 @@ const Overview: React.FC<OverviewProps> = ({
             </div>
 
             {/* Usage Minutes Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -963,10 +962,16 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Usage Minutes</h3>
                   </div>
+                  <div className="text-right">
+                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Total</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {Math.round(analytics?.totalCallMinutes || 0).toLocaleString()}m
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="p-6">
-                <div className="h-80">
+              <div className="p-6 flex-1">
+                <div className="h-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
                       <defs>
@@ -1026,7 +1031,7 @@ const Overview: React.FC<OverviewProps> = ({
             </div>
 
             {/* Response Performance Chart */}
-            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 h-[480px] flex flex-col">
               <div className="border-b border-gray-200 dark:border-slate-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -1035,10 +1040,19 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Response Performance</h3>
                   </div>
+                  <div className="text-right">
+                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Avg Latency</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {analytics?.dailyData && analytics.dailyData.length > 0 
+                        ? (analytics.dailyData.reduce((sum, d) => sum + ((d as any).avg_latency || 0), 0) / analytics.dailyData.length).toFixed(1)
+                        : '0.0'
+                      }s
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="p-6">
-                <div className="h-80">
+              <div className="p-6 flex-1">
+                <div className="h-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={analytics?.dailyData || []} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
                       <defs>
