@@ -5,16 +5,16 @@
 
 BEGIN;
 
--- 1. Modifier table agents pour nouvelle architecture pricing
-ALTER TABLE agents ADD COLUMN IF NOT EXISTS platform_mode VARCHAR(20) DEFAULT 'pag' CHECK (platform_mode IN ('dedicated', 'pag', 'hybrid'));
-ALTER TABLE agents ADD COLUMN IF NOT EXISTS pricing_config JSONB DEFAULT '{}';
-ALTER TABLE agents ADD COLUMN IF NOT EXISTS s3_storage_gb INTEGER DEFAULT 50;
-ALTER TABLE agents ADD COLUMN IF NOT EXISTS billing_cycle VARCHAR(20) DEFAULT 'monthly' CHECK (billing_cycle IN ('monthly', 'yearly'));
+-- 1. Modifier table pype_voice_agents pour nouvelle architecture pricing
+ALTER TABLE pype_voice_agents ADD COLUMN IF NOT EXISTS platform_mode VARCHAR(20) DEFAULT 'pag' CHECK (platform_mode IN ('dedicated', 'pag', 'hybrid'));
+ALTER TABLE pype_voice_agents ADD COLUMN IF NOT EXISTS pricing_config JSONB DEFAULT '{}';
+ALTER TABLE pype_voice_agents ADD COLUMN IF NOT EXISTS s3_storage_gb INTEGER DEFAULT 50;
+ALTER TABLE pype_voice_agents ADD COLUMN IF NOT EXISTS billing_cycle VARCHAR(20) DEFAULT 'monthly' CHECK (billing_cycle IN ('monthly', 'yearly'));
 
 -- 2. Créer table monthly_consumption pour tracking détaillé
 CREATE TABLE IF NOT EXISTS monthly_consumption (
     id SERIAL PRIMARY KEY,
-    agent_id INTEGER REFERENCES agents(id) ON DELETE CASCADE,
+    agent_id INTEGER REFERENCES pype_voice_agents(id) ON DELETE CASCADE,
     year INTEGER NOT NULL,
     month INTEGER NOT NULL,
     
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS monthly_consumption (
 -- 3. Créer table billing_items pour détail facturation
 CREATE TABLE IF NOT EXISTS billing_items (
     id SERIAL PRIMARY KEY,
-    agent_id INTEGER REFERENCES agents(id) ON DELETE CASCADE,
+    agent_id INTEGER REFERENCES pype_voice_agents(id) ON DELETE CASCADE,
     consumption_id INTEGER REFERENCES monthly_consumption(id) ON DELETE CASCADE,
     year INTEGER NOT NULL,
     month INTEGER NOT NULL,
@@ -75,16 +75,13 @@ CREATE TABLE IF NOT EXISTS billing_items (
     -- Metadata
     provider_id INTEGER, -- Reference ai_providers si applicable
     is_subscription BOOLEAN DEFAULT false, -- true pour dedicated, false pour PAG
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX(agent_id, year, month),
-    INDEX(item_type)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. Modifier table calls pour tracking coûts détaillés
-ALTER TABLE calls ADD COLUMN IF NOT EXISTS usage_cost DECIMAL(10,4) DEFAULT 0; -- Coût PAG calculé
-ALTER TABLE calls ADD COLUMN IF NOT EXISTS usage_breakdown JSONB DEFAULT '{}'; -- Détail coûts par modèle
-ALTER TABLE calls ADD COLUMN IF NOT EXISTS estimated_dedicated_cost DECIMAL(10,4) DEFAULT 0; -- Estimation dedicated
+-- 4. Modifier table pype_voice_call_logs pour tracking coûts détaillés
+ALTER TABLE pype_voice_call_logs ADD COLUMN IF NOT EXISTS usage_cost DECIMAL(10,4) DEFAULT 0; -- Coût PAG calculé
+ALTER TABLE pype_voice_call_logs ADD COLUMN IF NOT EXISTS usage_breakdown JSONB DEFAULT '{}'; -- Détail coûts par modèle
+ALTER TABLE pype_voice_call_logs ADD COLUMN IF NOT EXISTS estimated_dedicated_cost DECIMAL(10,4) DEFAULT 0; -- Estimation dedicated
 
 -- 5. Ajouter nouveaux settings pour tarifs
 INSERT INTO settings_global (key, value, description) VALUES 
@@ -127,7 +124,7 @@ DECLARE
 BEGIN
     -- Récupérer config agent
     SELECT platform_mode, pricing_config, agent_type INTO agent_config
-    FROM agents WHERE id = p_agent_id;
+    FROM pype_voice_agents WHERE id = p_agent_id;
     
     -- Récupérer tarifs PAG
     SELECT value INTO pag_rates 
@@ -192,10 +189,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Attacher trigger sur table calls
-DROP TRIGGER IF EXISTS calculate_cost_trigger ON calls;
+-- Attacher trigger sur table pype_voice_call_logs
+DROP TRIGGER IF EXISTS calculate_cost_trigger ON pype_voice_call_logs;
 CREATE TRIGGER calculate_cost_trigger
-    BEFORE INSERT OR UPDATE ON calls
+    BEFORE INSERT OR UPDATE ON pype_voice_call_logs
     FOR EACH ROW EXECUTE FUNCTION trigger_calculate_call_cost();
 
 COMMIT;

@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, CheckCircle, Bot, Phone, PhoneCall, Settings, ArrowRight, Copy, AlertCircle, Zap, Cpu, Link as LinkIcon, Brain } from 'lucide-react'
+import { Loader2, CheckCircle, Bot, Phone, PhoneCall, Settings, ArrowRight, Copy, AlertCircle, Zap, Cpu, Link as LinkIcon, Brain, Server } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useProviders, getProvidersByType } from '@/hooks/useProviders'
 import { useCostOverrides } from '@/hooks/useCostOverrides'
@@ -40,20 +40,27 @@ interface VapiAssistant {
   is_active?: boolean;
 }
 
-const PLATFORM_OPTIONS = [
+const PLATFORM_MODES = [
   { 
-    value: 'livekit', 
-    label: 'Livekit',
-    description: 'Build with our native platform',
-    icon: Cpu,
-    color: 'blue'
+    value: 'dedicated', 
+    label: 'Dedicated',
+    description: 'Fixed monthly cost, unlimited usage',
+    icon: Server,
+    color: 'purple'
   },
   { 
-    value: 'vapi', 
-    label: 'Vapi',
-    description: 'Connect existing Vapi assistants',
+    value: 'pag', 
+    label: 'Pay-as-you-Go',
+    description: 'Pay only for what you use',
     icon: Zap,
     color: 'green'
+  },
+  { 
+    value: 'hybrid', 
+    label: 'Hybrid',
+    description: 'Mix dedicated and PAG models',
+    icon: Settings,
+    color: 'blue'
   }
 ]
 
@@ -122,7 +129,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   projectId
 }) => {
   const [currentStep, setCurrentStep] = useState<'form' | 'creating' | 'connecting' | 'success'>('form')
-  const [selectedPlatform, setSelectedPlatform] = useState('livekit')
+  const [selectedPlatform, setSelectedPlatform] = useState('pag')
   const assistantSectionRef = useRef<HTMLDivElement>(null)
   const { providers, globalSettings, loading: providersLoading } = useProviders()
   const { agent, updateOverrides, resetOverrides } = useCostOverrides(null)
@@ -130,17 +137,22 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   const [showCostOverrides, setShowCostOverrides] = useState(false)
   const [tempCostOverrides, setTempCostOverrides] = useState<any>({})
   
-  // Livekit (regular) agent fields
+  // Agent form fields with new pricing architecture
   const [formData, setFormData] = useState({
     name: '',
     agent_type: 'voice',
-    voice_type: 'inbound',
+    voice_type: 'inbound', 
     description: '',
-    provider_mode: 'builtin', // 'builtin' or 'external'
-    pricing_mode: 'pay_as_you_go', // 'pay_as_you_go' or 'dedicated'
+    platform_mode: selectedPlatform, // 'dedicated', 'pag', 'hybrid'
+    pricing_config: {}, // Configuration spécifique selon mode
+    s3_storage_gb: 50, // Storage S3 par défaut
+    billing_cycle: 'monthly', // 'monthly' ou 'yearly'
     stt_provider_id: '',
+    stt_mode: 'builtin', // 'builtin_dedicated', 'builtin_pag', 'external_pag'
     tts_provider_id: '',
-    llm_provider_id: ''
+    tts_mode: 'builtin',
+    llm_provider_id: '',
+    llm_mode: 'builtin'
   })
 
   // Vapi agent fields
@@ -177,7 +189,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   
   // Calculate estimated cost per minute
   const getEstimatedCost = () => {
-    if (formData.provider_mode === 'builtin' && globalSettings) {
+    if (formData.platform_mode === 'pag' && globalSettings) {
       if (formData.agent_type === 'voice') {
         // Pour voice: STT + TTS + LLM
         const sttCost = globalSettings.builtin_stt?.cost_per_minute || 0
@@ -188,7 +200,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         // Pour text-only, seulement LLM
         return (globalSettings.builtin_llm?.cost_per_token || 0) * 1000
       }
-    } else if (formData.provider_mode === 'external') {
+    } else if (formData.platform_mode === 'pag' && formData.stt_mode === 'external') {
       const sttProvider = sttProviders.find(p => p.id.toString() === formData.stt_provider_id)
       const ttsProvider = ttsProviders.find(p => p.id.toString() === formData.tts_provider_id)
       const llmProvider = llmProviders.find(p => p.id.toString() === formData.llm_provider_id)
@@ -315,7 +327,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
       }
       
       // Additional validation for external providers
-      if (formData.provider_mode === 'external') {
+      if (formData.platform_mode === 'pag' && (formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external')) {
         if (formData.agent_type === 'voice') {
           if (!formData.stt_provider_id) {
             setError('Please select an STT provider')
@@ -356,7 +368,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         // Build provider config based on mode
         let providerConfig: any = {}
         
-        if (formData.provider_mode === 'builtin') {
+        if (formData.platform_mode === 'dedicated' || (formData.platform_mode === 'pag' && formData.stt_mode === 'builtin')) {
           providerConfig = {
             mode: 'builtin'
           }
@@ -396,7 +408,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         payload = {
           name: formData.name.trim(),
           agent_type: formData.agent_type,
-          pricing_mode: formData.pricing_mode,
+          platform_mode: formData.platform_mode,
           configuration: {
             description: formData.description.trim() || null,
             voice_type: formData.agent_type === 'voice' ? formData.voice_type : null
@@ -500,11 +512,16 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         agent_type: 'voice', 
         voice_type: 'inbound', 
         description: '',
-        provider_mode: 'builtin',
-        pricing_mode: 'pay_as_you_go',
+        platform_mode: selectedPlatform,
+        pricing_config: {},
+        s3_storage_gb: 50,
+        billing_cycle: 'monthly',
         stt_provider_id: '',
+        stt_mode: 'builtin',
         tts_provider_id: '',
-        llm_provider_id: ''
+        tts_mode: 'builtin',
+        llm_provider_id: '',
+        llm_mode: 'builtin'
       })
       setTempCostOverrides({})
       setShowCostOverrides(false)
@@ -622,7 +639,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                     Select Platform
                   </label>
                   <div className="flex gap-2">
-                    {PLATFORM_OPTIONS.map((platform) => {
+                    {PLATFORM_MODES.map((platform) => {
                       const Icon = platform.icon
                       const isSelected = selectedPlatform === platform.value
                       
@@ -633,6 +650,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                             isSelected 
                               ? platform.color === 'green'
                                 ? 'border-[#328c81] bg-teal-50 dark:bg-teal-900/20 dark:border-teal-600'
+                                : platform.color === 'purple'
+                                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-500'
                                 : 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
                               : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
                           }`}
@@ -642,6 +661,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                             isSelected 
                               ? platform.color === 'green'
                                 ? 'bg-[#328c81] text-white'
+                                : platform.color === 'purple'
+                                ? 'bg-purple-600 text-white'
                                 : 'bg-blue-600 text-white'
                               : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'
                           }`}>
@@ -758,53 +779,28 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                       </div>
                     )}
 
-                    {/* Pricing Mode Selection */}
+                    {/* S3 Storage Configuration */}
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
-                        Pricing Mode
+                        S3 Storage Allocation
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {PRICING_MODES.map((mode) => {
-                          const Icon = mode.icon
-                          const isSelected = formData.pricing_mode === mode.value
-                          
-                          return (
-                            <div
-                              key={mode.value}
-                              className={`relative p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                                isSelected 
-                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500 shadow-sm' 
-                                  : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
-                              }`}
-                              onClick={() => setFormData({ ...formData, pricing_mode: mode.value })}
-                            >
-                              <div className="text-center">
-                                <div className={`w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center ${
-                                  isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300'
-                                }`}>
-                                  <Icon className="w-4 h-4" />
-                                </div>
-                                <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-0.5">{mode.label}</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 leading-tight">{mode.description}</div>
-                                {isSelected && globalSettings && (
-                                  <div className="text-xs text-blue-600 mt-1 font-medium">
-                                    {mode.value === 'dedicated' && globalSettings.agent_subscription_costs && (
-                                      `$${globalSettings.agent_subscription_costs.voice_per_minute || globalSettings.agent_subscription_costs.textonly_per_month || 0}/month`
-                                    )}
-                                    {mode.value === 'pay_as_you_go' && (
-                                      `$${getEstimatedCost().toFixed(4)}/minute`
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )
-                        })}
+                      <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {formData.s3_storage_gb} GB included
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            $0.10/GB per month for additional storage
+                          </div>
+                        </div>
+                        <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                          ${(formData.s3_storage_gb * 0.10).toFixed(2)}/month
+                        </div>
                       </div>
                     </div>
 
                     {/* Provider Mode Selection - Only for PAG */}
-                    {formData.pricing_mode === 'pay_as_you_go' && (
+                    {formData.platform_mode === 'pag' && (
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
                           AI Provider Mode
@@ -812,11 +808,11 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                       <div className="flex gap-2">
                         <div
                           className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                            formData.provider_mode === 'builtin'
+                            formData.stt_mode === 'builtin' && formData.tts_mode === 'builtin' && formData.llm_mode === 'builtin'
                               ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
                               : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
                           }`}
-                          onClick={() => setFormData({ ...formData, provider_mode: 'builtin' })}
+                          onClick={() => setFormData({ ...formData, stt_mode: 'builtin', tts_mode: 'builtin', llm_mode: 'builtin' })}
                         >
                           <div className="text-center">
                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Built-in Models</div>
@@ -825,11 +821,11 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                         </div>
                         <div
                           className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                            formData.provider_mode === 'external'
+                            formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external'
                               ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
                               : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
                           }`}
-                          onClick={() => setFormData({ ...formData, provider_mode: 'external' })}
+                          onClick={() => setFormData({ ...formData, stt_mode: 'external', tts_mode: 'external', llm_mode: 'external' })}
                         >
                           <div className="text-center">
                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">External Providers</div>
@@ -844,7 +840,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                     )}
 
                     {/* External Provider Selection - Only for PAG + External */}
-                    {formData.pricing_mode === 'pay_as_you_go' && formData.provider_mode === 'external' && (
+                    {formData.platform_mode === 'pag' && (formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external') && (
                       <div className="space-y-4 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border">
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
                           Select AI Providers
