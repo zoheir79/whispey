@@ -116,7 +116,7 @@ export default function AIProvidersManagement() {
   const [showDialog, setShowDialog] = useState(false)
   const [editingProvider, setEditingProvider] = useState<Provider | null>(null)
   const [showBuiltinDialog, setShowBuiltinDialog] = useState(false)
-  const [builtinEditType, setBuiltinEditType] = useState<'voice' | 'text'>('voice')
+  const [builtinEditType, setBuiltinEditType] = useState<'stt' | 'tts' | 'llm'>('stt')
   
   const [formData, setFormData] = useState<ProviderFormData>({
     name: '',
@@ -360,6 +360,18 @@ export default function AIProvidersManagement() {
 
   const saveBuiltinSettings = async () => {
     try {
+      const saveSettings = async (key: string, value: any, description?: string) => {
+        return fetch('/api/settings/global', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            key,
+            value,
+            description
+          })
+        })
+      }
+
       const savePromises = []
       
       if (builtinEditType === 'stt') {
@@ -396,7 +408,7 @@ export default function AIProvidersManagement() {
       }
 
       setShowBuiltinDialog(false)
-      showNotification(`Configuration built-in ${builtinEditType === 'voice' ? 'voice' : 'text-only'} sauvegardée avec succès`)
+      showNotification(`Configuration built-in ${builtinEditType} sauvegardée avec succès`)
     } catch (error) {
       console.error('Error saving builtin settings:', error)
       showNotification('Erreur lors de la sauvegarde', 'error')
