@@ -340,6 +340,12 @@ function Header({ breadcrumb }: HeaderProps) {
                             <span className="font-medium text-gray-900 dark:text-gray-100">Admin Users</span>
                           </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/admin/billing" className="flex items-center w-full px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg mx-1 cursor-pointer">
+                            <FileText className="w-4 h-4 mr-3 text-green-600" />
+                            <span className="font-medium text-gray-900 dark:text-gray-100">Billing</span>
+                          </Link>
+                        </DropdownMenuItem>
                       </>
                     )}
                   </div>

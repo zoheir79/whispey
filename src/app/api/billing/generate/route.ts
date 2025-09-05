@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-// @ts-ignore - Supabase types may not be available in build
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const supabase = createClient(supabaseUrl, supabaseKey)
+import { query } from '@/lib/db'
+import { verifyUserAuth } from '@/lib/auth'
+import { getUserGlobalRole } from '@/services/getGlobalRole'
 
 interface BillingItem {
   agent_id: string
@@ -62,60 +59,41 @@ export async function POST(request: NextRequest) {
     }
 
     // Get all agents in workspace
-    const { data: agents, error: agentsError } = await supabase
-      .from('pype_voice_agents')
-      .select(`
-        id,
-        name,
-        platform_mode,
-        billing_cycle,
-        s3_storage_gb,
-        pricing_config,
-        stt_mode,
-        tts_mode,
-        llm_mode
-      `)
-      .eq('workspace_id', workspace_id)
+    const agentsResult = await query(`
+      SELECT id, name, platform_mode, billing_cycle, s3_storage_gb, 
+             pricing_config, stt_mode, tts_mode, llm_mode
+      FROM pype_voice_agents 
+      WHERE workspace_id = $1
+    `, [workspace_id])
 
-    if (agentsError) {
-      return NextResponse.json({ error: agentsError.message }, { status: 500 })
-    }
+    const agents = agentsResult.rows
 
     if (!agents || agents.length === 0) {
       return NextResponse.json({ error: 'No agents found in workspace' }, { status: 404 })
     }
 
     // Get consumption data for period
-    const { data: consumption, error: consumptionError } = await supabase
-      .from('monthly_consumption')
-      .select('*')
-      .in('agent_id', agents.map((a: any) => a.id))
-      .gte('period_start', period_start)
-      .lte('period_end', period_end)
+    const agentIds = agents.map((a: any) => a.id)
+    const consumptionResult = await query(`
+      SELECT * FROM monthly_consumption 
+      WHERE agent_id = ANY($1) 
+      AND period_start >= $2 
+      AND period_end <= $3
+    `, [agentIds, period_start, period_end])
 
-    if (consumptionError) {
-      return NextResponse.json({ error: consumptionError.message }, { status: 500 })
-    }
+    const consumption = consumptionResult.rows
 
     // Get call logs for detailed metrics
-    const { data: callLogs, error: callLogsError } = await supabase
-      .from('pype_voice_call_logs')
-      .select(`
-        agent_id,
-        duration_minutes,
-        stt_minutes_used,
-        tts_words_used,
-        llm_tokens_used,
-        usage_cost,
-        created_at
-      `)
-      .in('agent_id', agents.map((a: any) => a.id))
-      .gte('created_at', period_start)
-      .lte('created_at', period_end)
+    const callLogsResult = await query(`
+      SELECT agent_id, duration_minutes, stt_minutes_used, 
+             tts_words_used, llm_tokens_used, usage_cost, created_at
+      FROM pype_voice_call_logs 
+      WHERE agent_id = ANY($1) 
+      AND created_at >= $2 
+      AND created_at <= $3
+    `, [agentIds, period_start, period_end])
 
-    if (callLogsError) {
-      return NextResponse.json({ error: callLogsError.message }, { status: 500 })
-    }
+    const callLogs = callLogsResult.rows
 
     // Calculate billing items for each agent
     const billingItems: BillingItem[] = []
@@ -234,55 +212,54 @@ export async function POST(request: NextRequest) {
 
     // Save invoice to database if not preview
     if (!preview) {
-      const { data: savedInvoice, error: saveError } = await supabase
-        .from('billing_invoices')
-        .insert({
-          workspace_id: invoice.workspace_id,
-          period_start: invoice.period_start,
-          period_end: invoice.period_end,
-          billing_cycle: invoice.billing_cycle,
-          total_amount: invoice.total_amount,
-          status: invoice.status,
-          currency: invoice.currency,
-          invoice_data: invoice,
-          created_at: new Date().toISOString()
-        })
-        .select()
-        .single()
+      const invoiceResult = await query(`
+        INSERT INTO billing_invoices 
+        (workspace_id, period_start, period_end, billing_cycle, total_amount, status, currency, invoice_data, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING id
+      `, [
+        invoice.workspace_id,
+        invoice.period_start,
+        invoice.period_end,
+        invoice.billing_cycle,
+        invoice.total_amount,
+        invoice.status,
+        invoice.currency,
+        JSON.stringify(invoice),
+        new Date().toISOString()
+      ])
 
-      if (saveError) {
-        return NextResponse.json({ error: saveError.message }, { status: 500 })
-      }
+      const savedInvoice = invoiceResult.rows[0]
 
       // Save detailed billing items
-      const billingItemsToSave = billingItems.map(item => ({
-        invoice_id: savedInvoice.id,
-        agent_id: item.agent_id,
-        agent_name: item.agent_name,
-        platform_mode: item.platform_mode,
-        stt_cost: item.stt_cost,
-        tts_cost: item.tts_cost,
-        llm_cost: item.llm_cost,
-        agent_cost: item.agent_cost,
-        s3_cost: item.s3_cost,
-        total_cost: item.total_cost,
-        usage_details: {
-          total_calls: item.total_calls,
-          total_minutes: item.total_minutes,
-          total_stt_minutes: item.total_stt_minutes,
-          total_tts_words: item.total_tts_words,
-          total_llm_tokens: item.total_llm_tokens,
-          consumption_details: item.consumption_details
-        }
-      }))
-
-      const { error: itemsError } = await supabase
-        .from('billing_items')
-        .insert(billingItemsToSave)
-
-      if (itemsError) {
-        console.error('Error saving billing items:', itemsError)
-        // Don't fail the request, just log the error
+      for (const item of billingItems) {
+        await query(`
+          INSERT INTO billing_items 
+          (invoice_id, agent_id, item_type, quantity, unit_cost, total_cost, usage_details)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `, [
+          savedInvoice.id,
+          item.agent_id,
+          'combined', // Item type for combined billing
+          1, // Quantity
+          item.total_cost, // Unit cost = total cost for combined items
+          item.total_cost,
+          JSON.stringify({
+            agent_name: item.agent_name,
+            platform_mode: item.platform_mode,
+            total_calls: item.total_calls,
+            total_minutes: item.total_minutes,
+            total_stt_minutes: item.total_stt_minutes,
+            total_tts_words: item.total_tts_words,
+            total_llm_tokens: item.total_llm_tokens,
+            stt_cost: item.stt_cost,
+            tts_cost: item.tts_cost,
+            llm_cost: item.llm_cost,
+            agent_cost: item.agent_cost,
+            s3_cost: item.s3_cost,
+            consumption_details: item.consumption_details
+          })
+        ])
       }
 
       return NextResponse.json({
@@ -324,26 +301,16 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const { data: invoices, error } = await supabase
-      .from('billing_invoices')
-      .select(`
-        id,
-        period_start,
-        period_end,
-        billing_cycle,
-        total_amount,
-        status,
-        currency,
-        created_at,
-        updated_at
-      `)
-      .eq('workspace_id', workspace_id)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1)
+    const invoicesResult = await query(`
+      SELECT id, period_start, period_end, billing_cycle, 
+             total_amount, status, currency, created_at, updated_at
+      FROM billing_invoices 
+      WHERE workspace_id = $1
+      ORDER BY created_at DESC
+      LIMIT $2 OFFSET $3
+    `, [workspace_id, limit, offset])
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
+    const invoices = invoicesResult.rows
 
     return NextResponse.json({
       success: true,
