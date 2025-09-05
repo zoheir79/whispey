@@ -237,7 +237,7 @@ BEGIN
                     FROM global_settings WHERE key = 'pricing_rates_pag';
                 END IF;
             ELSE
-                -- TTS builtin
+                -- TTS builtin en mode hybrid: par mot
                 IF agent_config.cost_overrides IS NOT NULL AND 
                    agent_config.cost_overrides->>'tts_price' IS NOT NULL THEN
                     tts_cost := (agent_config.cost_overrides->>'tts_price')::numeric * p_words_generated;

@@ -923,8 +923,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           <div className="grid grid-cols-3 gap-2">
                             <Input
                               placeholder={`Prix $/${
-                                formData.platform_mode === 'pag' && 
-                                !(formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external')
+                                formData.platform_mode === 'pag' && formData.tts_mode === 'builtin'
                                 ? 'minute' : 'mot'
                               } (optionnel)`}
                               type="number"
@@ -970,14 +969,14 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           placeholder={`Prix $/${
                             formData.platform_mode === 'pag' && 
                             formData.agent_type === 'voice' &&
-                            !(formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external')
+                            formData.llm_mode === 'builtin'
                             ? 'minute' : 'token'
                           } (optionnel)`}
                           type="number"
                           step={
                             formData.platform_mode === 'pag' && 
                             formData.agent_type === 'voice' &&
-                            !(formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external')
+                            formData.llm_mode === 'builtin'
                             ? "0.001" : "0.00001"
                           }
                           value={formData.cost_overrides.llm_price || ''}

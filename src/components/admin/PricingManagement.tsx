@@ -41,8 +41,10 @@ interface PricingSettings {
   pricing_rates_pag: {
     llm_builtin_per_token: number
     llm_builtin_per_token_text: number
+    llm_builtin_per_minute: number
     stt_builtin_per_minute: number
     tts_builtin_per_word: number
+    tts_builtin_per_minute: number
     s3_storage_per_gb_monthly: number
   }
   s3_config: {
@@ -115,8 +117,10 @@ export default function PricingManagement() {
         pricing_rates_pag: settingsMap.pricing_rates_pag || {
           llm_builtin_per_token: 0.000015,
           llm_builtin_per_token_text: 0.000010,
+          llm_builtin_per_minute: 0.002,
           stt_builtin_per_minute: 0.005,
           tts_builtin_per_word: 0.002,
+          tts_builtin_per_minute: 0.003,
           s3_storage_per_gb_monthly: 0.10
         },
         s3_config: settingsMap.s3_config || {
@@ -412,7 +416,22 @@ export default function PricingManagement() {
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="llm_per_token_voice">LLM Voice (par minute)</Label>
+                      <Label htmlFor="llm_per_minute_voice">LLM Voice PAG Builtin (par minute)</Label>
+                      <Input
+                        id="llm_per_minute_voice"
+                        type="number"
+                        step="0.001"
+                        value={settings.pricing_rates_pag.llm_builtin_per_minute}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_minute', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Agents voice PAG builtin: facturation par minute d'utilisation
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="llm_per_token_voice">LLM Voice External/Hybrid (par token)</Label>
                       <Input
                         id="llm_per_token_voice"
                         type="number"
@@ -422,7 +441,7 @@ export default function PricingManagement() {
                         className="mt-1"
                       />
                       <p className="text-sm text-gray-500 mt-1">
-                        Agents voice: facturation par minute d'utilisation
+                        Agents voice external/hybrid: facturation par token
                       </p>
                     </div>
 
@@ -457,7 +476,22 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="tts_per_word">TTS (par mot)</Label>
+                      <Label htmlFor="tts_per_minute">TTS Builtin Voice (par minute)</Label>
+                      <Input
+                        id="tts_per_minute"
+                        type="number"
+                        step="0.001"
+                        value={settings.pricing_rates_pag.tts_builtin_per_minute}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'tts_builtin_per_minute', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Agents voice PAG builtin: facturation par minute d'utilisation
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="tts_per_word">TTS External/Hybrid (par mot)</Label>
                       <Input
                         id="tts_per_word"
                         type="number"
@@ -467,7 +501,7 @@ export default function PricingManagement() {
                         className="mt-1"
                       />
                       <p className="text-sm text-gray-500 mt-1">
-                        Facturation par mot synthétisé
+                        Agents voice external/hybrid PAG: facturation par mot synthétisé
                       </p>
                     </div>
                   </div>
@@ -478,16 +512,20 @@ export default function PricingManagement() {
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg space-y-2">
                     <p className="text-sm font-medium mb-2">Usage mensuel typique:</p>
                     <div className="flex justify-between text-sm">
-                      <span>1000 tokens LLM:</span>
+                      <span>60 minutes Voice PAG Builtin (STT+TTS+LLM):</span>
+                      <span>{formatCurrency(60 * (settings.pricing_rates_pag.stt_builtin_per_minute + settings.pricing_rates_pag.tts_builtin_per_minute + settings.pricing_rates_pag.llm_builtin_per_minute))}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>1000 tokens LLM (external/hybrid):</span>
                       <span>{formatCurrency(1000 * settings.pricing_rates_pag.llm_builtin_per_token)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>60 minutes STT:</span>
-                      <span>{formatCurrency(60 * settings.pricing_rates_pag.stt_builtin_per_minute)}</span>
+                      <span>5000 mots TTS (external/hybrid):</span>
+                      <span>{formatCurrency(5000 * settings.pricing_rates_pag.tts_builtin_per_word)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>5000 mots TTS:</span>
-                      <span>{formatCurrency(5000 * settings.pricing_rates_pag.tts_builtin_per_word)}</span>
+                      <span>1000 tokens LLM text-only:</span>
+                      <span>{formatCurrency(1000 * settings.pricing_rates_pag.llm_builtin_per_token_text)}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between font-semibold">
