@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     const callLogsResult = await query(`
       SELECT agent_id, duration_seconds, 
              total_stt_cost, total_tts_cost, total_llm_cost,
-             usage_cost, created_at, call_started_at
+             created_at, call_started_at
       FROM pype_voice_call_logs 
       WHERE agent_id = ANY($1) 
       AND created_at >= $2 

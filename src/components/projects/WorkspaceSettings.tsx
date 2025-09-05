@@ -204,7 +204,7 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
       setSuccess('Workspace settings updated successfully!')
       
       // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(null), 3000)
+      setTimeout(() => setSuccess(''), 3000)
 
     } catch (error) {
       console.error('Error updating workspace:', error)
