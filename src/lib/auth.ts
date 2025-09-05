@@ -31,7 +31,7 @@ export const verifyToken = async (token: string, environment: string = 'dev'): P
 };
 
 // Verify user authentication from request (reads JWT from cookies)
-export const verifyUserAuth = async (request?: Request): Promise<string | null> => {
+export const verifyUserAuth = async (request?: Request): Promise<{ isAuthenticated: boolean, userId: string | null }> => {
   try {
     // Get JWT token from cookies (instead of Authorization header)
     const { cookies } = await import('next/headers');
@@ -39,19 +39,19 @@ export const verifyUserAuth = async (request?: Request): Promise<string | null> 
     const token = cookieStore.get('auth-token')?.value;
 
     if (!token) {
-      return null;
+      return { isAuthenticated: false, userId: null };
     }
 
     const { valid, userId } = verifyJwtToken(token);
 
     if (!valid || !userId) {
-      return null;
+      return { isAuthenticated: false, userId: null };
     }
 
     // Return userId as email (assuming userId is email in JWT)
-    return userId;
+    return { isAuthenticated: true, userId };
   } catch (error) {
     console.error('Auth verification error:', error);
-    return null;
+    return { isAuthenticated: false, userId: null };
   }
 };

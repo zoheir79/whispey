@@ -48,6 +48,17 @@ interface BillingInvoice {
 
 export async function POST(request: NextRequest) {
   try {
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    
+    if (!isAuthenticated || !userId) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const userGlobalRole = await getUserGlobalRole(userId);
+    if (userGlobalRole?.global_role !== 'super_admin') {
+      return NextResponse.json({ error: 'Only super admins can generate billing' }, { status: 403 });
+    }
+
     const body = await request.json()
     const { workspace_id, period_start, period_end, billing_cycle = 'monthly', preview = false } = body
 
@@ -305,6 +316,17 @@ export async function POST(request: NextRequest) {
 // GET - List invoices for workspace
 export async function GET(request: NextRequest) {
   try {
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    
+    if (!isAuthenticated || !userId) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const userGlobalRole = await getUserGlobalRole(userId);
+    if (userGlobalRole?.global_role !== 'super_admin') {
+      return NextResponse.json({ error: 'Only super admins can view billing invoices' }, { status: 403 });
+    }
+
     const { searchParams } = new URL(request.url)
     const workspace_id = searchParams.get('workspace_id')
     const limit = parseInt(searchParams.get('limit') || '10')
