@@ -262,18 +262,13 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
 
   if (loading) {
     return (
-      <Card>
+      <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Receipt className="h-5 w-5" />
-            <span>Gestion Facturation</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-center py-8">
-            <RefreshCw className="h-6 w-6 animate-spin" />
+          <div className="flex items-center justify-center py-8">
+            <RefreshCw className="h-6 w-6 animate-spin mr-3 text-blue-600 dark:text-blue-400" />
+            <span className="text-lg font-medium text-gray-600 dark:text-gray-400">Chargement des données de facturation...</span>
           </div>
-        </CardContent>
+        </CardHeader>
       </Card>
     )
   }
@@ -395,27 +390,27 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
       </div>
 
       {/* Invoices Table */}
-      <Card>
+      <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-gray-900 dark:text-gray-100">
             <div className="flex items-center space-x-2">
-              <Receipt className="h-5 w-5" />
+              <Receipt className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <span>Historique des Factures</span>
             </div>
-            <Button onClick={() => setShowDialog(true)}>
+            <Button onClick={() => setShowDialog(true)} className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700">
               <Plus className="h-4 w-4 mr-2" />
               Générer Facture
             </Button>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-gray-600 dark:text-gray-400">
             Consultez et gérez toutes les factures générées pour ce workspace.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {invoices.length === 0 ? (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
+            <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+              <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <AlertDescription className="text-blue-800 dark:text-blue-200">
                 Aucune facture générée. Créez votre première facture pour commencer.
               </AlertDescription>
             </Alert>
@@ -479,16 +474,16 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
 
       {/* Generate Invoice Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle>Générer Nouvelle Facture</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-gray-900 dark:text-gray-100">Générer Nouvelle Facture</DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400">
               Définissez la période et le type de facturation pour générer une nouvelle facture.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Date de début</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Date de début</label>
               <Input
                 type="date"
                 value={billingForm.period_start}

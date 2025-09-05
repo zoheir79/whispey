@@ -224,6 +224,28 @@ export default function PricingManagement() {
 
   return (
     <div className="space-y-6">
+      {message && (
+        <Alert className={`${message.type === 'success' 
+          ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200' 
+          : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'}`}>
+          <AlertDescription>{message.text}</AlertDescription>
+        </Alert>
+      )}
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Gestion des Tarifs Globaux</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Configurez les prix pour tous les modes de facturation et services</p>
+        </div>
+        <Button onClick={saveSettings} disabled={saving || !settings} className="gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700">
+          {saving ? (
+            <RefreshCw className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}
+          Sauvegarder
+        </Button>
+      </div>
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -250,11 +272,6 @@ export default function PricingManagement() {
         <CardContent>
           {message && (
             <Alert className={`mb-6 ${message.type === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-              {message.type === 'success' ? (
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-              ) : (
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-              )}
               <AlertDescription className={message.type === 'success' ? 'text-green-700' : 'text-red-700'}>
                 {message.text}
               </AlertDescription>
@@ -262,11 +279,23 @@ export default function PricingManagement() {
           )}
 
           <Tabs defaultValue="dedicated" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="dedicated">Mode Dédié</TabsTrigger>
-              <TabsTrigger value="pag">Pay-as-You-Go</TabsTrigger>
-              <TabsTrigger value="subscriptions">Subscriptions Agents</TabsTrigger>
-              <TabsTrigger value="s3">Stockage S3</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 bg-gray-100 dark:bg-slate-800">
+              <TabsTrigger value="dedicated" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
+                <Cloud className="h-4 w-4" />
+                Mode Dédié
+              </TabsTrigger>
+              <TabsTrigger value="pag" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
+                <DollarSign className="h-4 w-4" />
+                Pay-as-You-Go
+              </TabsTrigger>
+              <TabsTrigger value="subscriptions" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
+                <Calendar className="h-4 w-4" />
+                Subscriptions Agents
+              </TabsTrigger>
+              <TabsTrigger value="s3" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
+                <Eye className="h-4 w-4" />
+                Stockage S3
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="dedicated" className="space-y-4">
@@ -288,7 +317,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'llm_monthly', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Usage illimité du modèle LLM built-in
                       </p>
                     </div>
@@ -303,7 +332,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'stt_monthly', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Transcription illimitée built-in
                       </p>
                     </div>
@@ -318,7 +347,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'tts_monthly', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Synthèse vocale illimitée built-in
                       </p>
                     </div>
@@ -342,7 +371,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'llm_annual', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Tarif annuel avec réduction
                       </p>
                     </div>
@@ -375,7 +404,8 @@ export default function PricingManagement() {
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Comparaison Coûts</h3>
-                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2">
+                  <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Comparaison Coûts</h4>
                     <div className="text-sm font-medium mb-2">Mensuel vs Annuel:</div>
                     <div className="flex justify-between text-sm">
                       <span>Total mensuel:</span>
@@ -412,7 +442,7 @@ export default function PricingManagement() {
             <TabsContent value="pag" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Tarifs Pay-as-You-Go Built-in</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Tarifs Pay-as-You-Go Built-in</h3>
                   
                   <div className="space-y-3">
                     <div>
@@ -425,7 +455,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_minute', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents voice PAG builtin: facturation par minute d'utilisation
                       </p>
                     </div>
@@ -440,7 +470,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents voice external/hybrid: facturation par token
                       </p>
                     </div>
@@ -455,7 +485,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token_text', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents text-only: facturation par token utilisé
                       </p>
                     </div>
@@ -470,7 +500,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_pag', 'stt_builtin_per_minute', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Facturation par minute transcrite
                       </p>
                     </div>
@@ -485,7 +515,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_pag', 'tts_builtin_per_minute', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents voice PAG builtin: facturation par minute d'utilisation
                       </p>
                     </div>
@@ -500,7 +530,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_pag', 'tts_builtin_per_word', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents voice external/hybrid PAG: facturation par mot synthétisé
                       </p>
                     </div>
@@ -560,7 +590,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('subscription_costs', 'text_agent_monthly', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Subscription mensuelle agent texte seul
                       </p>
                     </div>
@@ -575,7 +605,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('subscription_costs', 'voice_agent_monthly', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Subscription mensuelle agent vocal
                       </p>
                     </div>
@@ -590,7 +620,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('subscription_costs', 'vision_agent_monthly', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Subscription mensuelle agent avec vision
                       </p>
                     </div>
@@ -710,7 +740,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('s3_config', 'cost_per_gb', parseFloat(e.target.value) || 0)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Tarif de stockage par GB par mois
                       </p>
                     </div>
@@ -755,7 +785,7 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('s3_config', 'default_storage_gb', parseFloat(e.target.value) || 50)}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Stockage par défaut alloué aux nouveaux agents (actuellement 50GB)
                       </p>
                     </div>

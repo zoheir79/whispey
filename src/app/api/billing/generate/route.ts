@@ -77,7 +77,22 @@ export async function POST(request: NextRequest) {
     
     const settings: Record<string, any> = {}
     for (const row of pricingSettingsResult.rows) {
-      settings[row.key] = JSON.parse(row.value)
+      try {
+        // Ensure row.value is a string and not [object Object]
+        if (typeof row.value === 'string') {
+          settings[row.key] = JSON.parse(row.value)
+        } else if (typeof row.value === 'object' && row.value !== null) {
+          // If it's already an object, use it directly
+          settings[row.key] = row.value
+        } else {
+          console.warn(`Invalid settings value for key ${row.key}:`, row.value)
+          settings[row.key] = {}
+        }
+      } catch (parseError) {
+        console.error(`Error parsing settings for key ${row.key}:`, parseError)
+        console.error(`Raw value:`, row.value)
+        settings[row.key] = {}
+      }
     }
 
     const dedicatedRates = settings.pricing_rates_dedicated || {}
