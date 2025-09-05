@@ -100,10 +100,23 @@ export const useOverviewQuery = ({ agentId, dateFrom, dateTo }: UseOverviewQuery
         // Conversion du tableau any[] en tableau typé
         const typedDailyStats = Array.isArray(dailyStats) ? dailyStats as unknown as DailyStatRow[] : [];
         
-        // 🔧 Force numeric conversion to prevent concatenation
+        // 🔧 Force numeric conversion to prevent concatenation + fallback for null costs
         const totalCalls = typedDailyStats.reduce((sum, day) => sum + Number(day.calls || 0), 0)
         const successfulCalls = typedDailyStats.reduce((sum, day) => sum + Number(day.successful_calls || 0), 0)
-        const totalCost = typedDailyStats.reduce((sum, day) => sum + Number(day.total_cost || 0), 0)
+        
+        // FALLBACK pour total_cost si call_summary_materialized a des valeurs null/0 (anciens agents)
+        const totalCost = typedDailyStats.reduce((sum, day) => {
+          let dayCost = Number(day.total_cost || 0)
+          
+          // Si le coût du jour est 0 mais qu'il y a des appels, estimer le coût
+          if (dayCost === 0 && Number(day.calls || 0) > 0 && Number(day.total_minutes || 0) > 0) {
+            // Estimation basée sur les minutes totales: ~$0.02/minute
+            dayCost = Number(day.total_minutes || 0) * 0.02
+          }
+          
+          return sum + dayCost
+        }, 0)
+        
         const totalTokens = typedDailyStats.reduce((sum, day) => sum + Number(day.total_tokens || 0), 0)
         
         console.log('🔍 DEBUG - PostgreSQL raw data:', typedDailyStats);

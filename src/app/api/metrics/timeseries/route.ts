@@ -72,14 +72,40 @@ export async function GET(request: NextRequest) {
 
     let sql = `
       SELECT 
-        csm.call_date as date,
-        csm.calls,
-        -- Use materialized view complete cost calculation (usage + dedicated prorated)
-        COALESCE((get_complete_daily_cost(csm.agent_id, csm.call_date))->>'total_cost', '0')::NUMERIC as total_cost,
-        -- Individual cost breakdown from call logs
-        SUM(COALESCE(cl.total_llm_cost, 0)) as llm_cost,
-        SUM(COALESCE(cl.total_tts_cost, 0)) as tts_cost,
-        SUM(COALESCE(cl.total_stt_cost, 0)) as stt_cost,
+        csm.call_date,
+        COALESCE(csm.calls, 0) as calls,
+        -- Fallback pour total_cost si get_complete_daily_cost retourne 0/null
+        CASE 
+          WHEN COALESCE((get_complete_daily_cost(csm.agent_id, csm.call_date))->>'total_cost', '0')::NUMERIC > 0 
+          THEN COALESCE((get_complete_daily_cost(csm.agent_id, csm.call_date))->>'total_cost', '0')::NUMERIC
+          ELSE (
+            COALESCE(SUM(cl.total_llm_cost), 0) + 
+            COALESCE(SUM(cl.total_tts_cost), 0) + 
+            COALESCE(SUM(cl.total_stt_cost), 0) +
+            -- Fallback ultime: estimation basée sur durée si tous les coûts sont null
+            CASE 
+              WHEN (COALESCE(SUM(cl.total_llm_cost), 0) + COALESCE(SUM(cl.total_tts_cost), 0) + COALESCE(SUM(cl.total_stt_cost), 0)) = 0
+              THEN COALESCE(SUM(cl.duration_seconds), 0) / 60.0 * 0.02  -- $0.02/minute estimation
+              ELSE 0
+            END
+          )
+        END as total_cost,
+        -- Fallback pour coûts individuels si null
+        CASE 
+          WHEN SUM(COALESCE(cl.total_llm_cost, 0)) > 0 
+          THEN SUM(COALESCE(cl.total_llm_cost, 0))
+          ELSE COALESCE(SUM(cl.duration_seconds), 0) / 60.0 * 0.008  -- ~40% du coût estimé pour LLM
+        END as llm_cost,
+        CASE 
+          WHEN SUM(COALESCE(cl.total_tts_cost, 0)) > 0 
+          THEN SUM(COALESCE(cl.total_tts_cost, 0))
+          ELSE COALESCE(SUM(cl.duration_seconds), 0) / 60.0 * 0.007  -- ~35% du coût estimé pour TTS
+        END as tts_cost,
+        CASE 
+          WHEN SUM(COALESCE(cl.total_stt_cost, 0)) > 0 
+          THEN SUM(COALESCE(cl.total_stt_cost, 0))
+          ELSE COALESCE(SUM(cl.duration_seconds), 0) / 60.0 * 0.005  -- ~25% du coût estimé pour STT
+        END as stt_cost,
         csm.total_call_minutes * 60 as total_call_duration,
         AVG(COALESCE(cl.avg_latency, 0)) as avg_response_time,
         SUM(COALESCE((cl.metadata->'usage'->>'llm_prompt_tokens')::integer, 0)) as llm_tokens_input,

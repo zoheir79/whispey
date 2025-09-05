@@ -82,8 +82,25 @@ export async function GET(request: NextRequest) {
 
     // Total cost using backend calculated total_cost field (includes dedicated prorated costs)
     const totalCost = callsList.reduce((sum: number, call: any) => {
-      // Use total_cost field which includes proper billing logic and dedicated prorated costs
-      return sum + (parseFloat(call.total_cost || 0))
+      let callCost = parseFloat(call.total_cost || 0)
+      
+      // FALLBACK: Si total_cost est null/0, calculer à partir des champs individuels ou duration
+      if (callCost === 0 && call.duration_seconds > 0) {
+        const sttCost = parseFloat(call.total_stt_cost || 0)
+        const ttsCost = parseFloat(call.total_tts_cost || 0) 
+        const llmCost = parseFloat(call.total_llm_cost || 0)
+        
+        // Si les champs individuels existent, les utiliser
+        if (sttCost > 0 || ttsCost > 0 || llmCost > 0) {
+          callCost = sttCost + ttsCost + llmCost
+        } else {
+          // FALLBACK ultime: estimation basée sur durée (tarifs moyens)
+          const durationMinutes = call.duration_seconds / 60
+          callCost = durationMinutes * 0.02 // ~$0.02/minute estimation conservative
+        }
+      }
+      
+      return sum + callCost
     }, 0) || 0
 
     // Average response time

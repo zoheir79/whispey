@@ -81,7 +81,12 @@ export async function GET(request: NextRequest) {
         COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) as successful_calls,
         COUNT(CASE WHEN cl.call_ended_reason != 'completed' THEN 1 END) as failed_calls,
         AVG(COALESCE(cl.duration_seconds, 0)) as avg_duration,
-        SUM(COALESCE(cl.total_llm_cost, 0) + COALESCE(cl.total_tts_cost, 0) + COALESCE(cl.total_stt_cost, 0)) as total_cost,
+        -- Fallback pour total_cost si les champs sont null (anciens agents)
+        CASE 
+          WHEN SUM(COALESCE(cl.total_llm_cost, 0) + COALESCE(cl.total_tts_cost, 0) + COALESCE(cl.total_stt_cost, 0)) > 0
+          THEN SUM(COALESCE(cl.total_llm_cost, 0) + COALESCE(cl.total_tts_cost, 0) + COALESCE(cl.total_stt_cost, 0))
+          ELSE SUM(COALESCE(cl.duration_seconds, 0)) / 60.0 * 0.02  -- Estimation $0.02/minute
+        END as total_cost,
         ROUND(
           (COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) * 100.0 / NULLIF(COUNT(cl.id), 0)), 2
         ) as completion_rate,
