@@ -58,6 +58,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get global pricing settings
+    const pricingSettingsResult = await query(`
+      SELECT key, value FROM settings_global 
+      WHERE key IN ('pricing_rates_dedicated', 'pricing_rates_pag', 's3_config')
+    `)
+    
+    const settings: Record<string, any> = {}
+    for (const row of pricingSettingsResult.rows) {
+      settings[row.key] = JSON.parse(row.value)
+    }
+
+    const dedicatedRates = settings.pricing_rates_dedicated || {}
+    const pagRates = settings.pricing_rates_pag || {}
+    const s3Config = settings.s3_config || {}
+
     // Get all agents in workspace
     const agentsResult = await query(`
       SELECT id, name, platform_mode, billing_cycle, s3_storage_gb, 
@@ -119,60 +134,61 @@ export async function POST(request: NextRequest) {
       const consumptionDetails: any = {}
 
       if (agent.platform_mode === 'dedicated') {
-        // Fixed monthly costs for all models
-        sttCost = 15.00 // Built-in STT dedicated monthly
-        ttsCost = 12.00 // Built-in TTS dedicated monthly  
-        llmCost = 25.00 // Built-in LLM dedicated monthly
-        agentCost = 29.99 // Voice agent monthly subscription
+        // Fixed monthly costs from global settings
+        sttCost = dedicatedRates.stt_monthly || 15.00
+        ttsCost = dedicatedRates.tts_monthly || 12.00  
+        llmCost = dedicatedRates.llm_monthly || 25.00
+        agentCost = dedicatedRates.voice_agent_monthly || 29.99
         
         consumptionDetails.stt_dedicated_monthly = sttCost
         consumptionDetails.tts_dedicated_monthly = ttsCost
         consumptionDetails.llm_dedicated_monthly = llmCost
 
       } else if (agent.platform_mode === 'pag') {
-        // Pay-as-you-go costs based on usage
-        sttCost = totalSttMinutes * 0.005 // $0.005 per minute
-        ttsCost = totalTtsWords * 0.002 // $0.002 per word
-        llmCost = totalLlmTokens * 0.000015 // $0.000015 per token
+        // Pay-as-you-go costs from global settings
+        sttCost = totalSttMinutes * (pagRates.stt_builtin_per_minute || 0.005)
+        ttsCost = totalTtsWords * (pagRates.tts_builtin_per_word || 0.002)
+        llmCost = totalLlmTokens * (pagRates.llm_builtin_per_token || 0.000015)
         
         consumptionDetails.stt_pag_usage = totalSttMinutes
         consumptionDetails.tts_pag_usage = totalTtsWords
         consumptionDetails.llm_pag_usage = totalLlmTokens
 
       } else if (agent.platform_mode === 'hybrid') {
-        // Mixed costs based on individual model modes
+        // Mixed costs based on individual model modes using global settings
         const pricing_config = agent.pricing_config || {}
         
         // STT cost
         if (agent.stt_mode === 'builtin_dedicated') {
-          sttCost = 15.00
+          sttCost = dedicatedRates.stt_monthly || 15.00
           consumptionDetails.stt_dedicated_monthly = sttCost
         } else {
-          sttCost = totalSttMinutes * 0.005
+          sttCost = totalSttMinutes * (pagRates.stt_builtin_per_minute || 0.005)
           consumptionDetails.stt_pag_usage = totalSttMinutes
         }
         
         // TTS cost
         if (agent.tts_mode === 'builtin_dedicated') {
-          ttsCost = 12.00
+          ttsCost = dedicatedRates.tts_monthly || 12.00
           consumptionDetails.tts_dedicated_monthly = ttsCost
         } else {
-          ttsCost = totalTtsWords * 0.002
+          ttsCost = totalTtsWords * (pagRates.tts_builtin_per_word || 0.002)
           consumptionDetails.tts_pag_usage = totalTtsWords
         }
         
         // LLM cost
         if (agent.llm_mode === 'builtin_dedicated') {
-          llmCost = 25.00
+          llmCost = dedicatedRates.llm_monthly || 25.00
           consumptionDetails.llm_dedicated_monthly = llmCost
         } else {
-          llmCost = totalLlmTokens * 0.000015
+          llmCost = totalLlmTokens * (pagRates.llm_builtin_per_token || 0.000015)
           consumptionDetails.llm_pag_usage = totalLlmTokens
         }
       }
 
-      // S3 storage cost (monthly)
-      s3Cost = (agent.s3_storage_gb || 50) * 0.023 // $0.023 per GB per month
+      // S3 storage cost (monthly) from global settings
+      const s3Rate = s3Config.cost_per_gb || pagRates.s3_storage_per_gb_monthly || 0.023
+      s3Cost = (agent.s3_storage_gb || 50) * s3Rate
 
       // Apply billing cycle multiplier for annual
       const cycleMultiplier = billing_cycle === 'annual' ? 12 : 1

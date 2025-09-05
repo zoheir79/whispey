@@ -20,7 +20,7 @@ export default function AdminBillingPage() {
   const checkAccess = async () => {
     try {
       // Check user's global role
-      const roleResponse = await fetch('/api/users/me')
+      const roleResponse = await fetch('/api/auth/me')
       if (roleResponse.ok) {
         const userData = await roleResponse.json()
         const globalRole = userData.user?.global_role

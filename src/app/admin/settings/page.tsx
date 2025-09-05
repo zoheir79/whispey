@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AIProvidersManagement from '@/components/admin/AIProvidersManagement'
+import PricingManagement from '@/components/admin/PricingManagement'
 import { useGlobalRole } from '@/hooks/useGlobalRole'
 import Header from '@/components/shared/Header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Settings, Shield } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Loader2, Settings, Shield, Zap, DollarSign } from 'lucide-react'
 
 export default function AdminSettingsPage() {
   const router = useRouter()
@@ -73,7 +75,26 @@ export default function AdminSettingsPage() {
           </p>
         </div>
 
-        <AIProvidersManagement />
+        <Tabs defaultValue="providers" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="providers" className="gap-2">
+              <Zap className="h-4 w-4" />
+              Fournisseurs IA
+            </TabsTrigger>
+            <TabsTrigger value="pricing" className="gap-2">
+              <DollarSign className="h-4 w-4" />
+              Tarifs & Facturation
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="providers" className="mt-6">
+            <AIProvidersManagement />
+          </TabsContent>
+          
+          <TabsContent value="pricing" className="mt-6">
+            <PricingManagement />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )
