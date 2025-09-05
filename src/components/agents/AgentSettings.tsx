@@ -108,12 +108,13 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
     s3_enabled: agent.configuration?.s3_enabled || false,
     s3_storage_gb: agent.s3_storage_gb || 50,
     s3_cost_override: agent.configuration?.s3_cost_override || null,
-    stt_provider_id: agent.provider_config?.stt_provider || '',
-    stt_mode: agent.provider_config?.stt_provider ? 'external' : 'builtin',
-    tts_provider_id: agent.provider_config?.tts_provider || '',
-    tts_mode: agent.provider_config?.tts_provider ? 'external' : 'builtin', 
-    llm_provider_id: agent.provider_config?.llm_provider || '',
-    llm_mode: agent.provider_config?.llm_provider ? 'external' : 'builtin',
+    // Charger la config provider existante ou défaut builtin comme AgentCreationDialog
+    stt_provider_id: agent.provider_config?.stt?.provider_id?.toString() || '',
+    stt_mode: agent.provider_config?.stt?.provider_id ? 'external' : 'builtin',
+    tts_provider_id: agent.provider_config?.tts?.provider_id?.toString() || '',
+    tts_mode: agent.provider_config?.tts?.provider_id ? 'external' : 'builtin', 
+    llm_provider_id: agent.provider_config?.llm?.provider_id?.toString() || '',
+    llm_mode: agent.provider_config?.llm?.provider_id ? 'external' : 'builtin',
     cost_overrides: {
       stt_price: null as string | null,
       stt_url: null as string | null,
@@ -565,66 +566,67 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
                 </div>
               </div>
               
-              {/* Show individual provider selects for external mode */}
+              {/* Provider Selection for External Mode - Copié depuis AgentCreationDialog */}
               {(formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external') && (
                 <div className="space-y-4 p-4 bg-white dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600">
                   <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
-                    Select External Providers
+                    Sélectionnez vos providers externes
                   </div>
                   
-                  {formData.agent_type === 'voice' && formData.stt_mode === 'external' && (
-                    <div className="space-y-2">
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">STT Provider</label>
-                      <Select value={formData.stt_provider_id} onValueChange={(value) => handleInputChange('stt_provider_id', value)}>
-                        <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
-                          <SelectValue placeholder="Select STT provider" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
-                          {sttProviders.map((provider) => (
-                            <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
-                              {provider.name} - ${provider.cost_per_unit}/{provider.unit}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                  {formData.agent_type === 'voice' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* STT Provider */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">STT Provider</label>
+                        <Select value={formData.stt_provider_id} onValueChange={(value) => handleInputChange('stt_provider_id', value)}>
+                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
+                            <SelectValue placeholder="Select STT provider" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            {sttProviders.map((provider) => (
+                              <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
+                                {provider.name} - ${provider.cost_per_unit}/{provider.unit}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* TTS Provider */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">TTS Provider</label>
+                        <Select value={formData.tts_provider_id} onValueChange={(value) => handleInputChange('tts_provider_id', value)}>
+                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
+                            <SelectValue placeholder="Select TTS provider" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                            {ttsProviders.map((provider) => (
+                              <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
+                                {provider.name} - ${provider.cost_per_unit}/{provider.unit}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   )}
                   
-                  {formData.agent_type === 'voice' && formData.tts_mode === 'external' && (
-                    <div className="space-y-2">
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">TTS Provider</label>
-                      <Select value={formData.tts_provider_id} onValueChange={(value) => handleInputChange('tts_provider_id', value)}>
-                        <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
-                          <SelectValue placeholder="Select TTS provider" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
-                          {ttsProviders.map((provider) => (
-                            <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
-                              {provider.name} - ${provider.cost_per_unit}/{provider.unit}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  
-                  {formData.llm_mode === 'external' && (
-                    <div className="space-y-2">
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">LLM Provider</label>
-                      <Select value={formData.llm_provider_id} onValueChange={(value) => handleInputChange('llm_provider_id', value)}>
-                        <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
-                          <SelectValue placeholder="Select LLM provider" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
-                          {llmProviders.map((provider) => (
-                            <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
-                              {provider.name} - ${provider.cost_per_unit}/{provider.unit}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
+                  {/* LLM Provider */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">LLM Provider</label>
+                    <Select value={formData.llm_provider_id} onValueChange={(value) => handleInputChange('llm_provider_id', value)}>
+                      <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
+                        <SelectValue placeholder="Select LLM provider" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                        {llmProviders.map((provider) => (
+                          <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
+                            {provider.name} - ${provider.cost_per_unit}/{provider.unit}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               )}
             </div>
