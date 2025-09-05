@@ -588,4 +588,4 @@ $$ LANGUAGE plpgsql;
 
 COMMENT ON FUNCTION calculate_agent_cost IS 'Calcule le coût d''un call basé sur la configuration spécifique de l''agent (avec overrides)';
 COMMENT ON FUNCTION calculate_monthly_prorata IS 'Calcule le ratio prorata pour un agent créé en cours de mois';
-COMMENT ON TABLE call_costs IS 'Stockage des coûts calculés par call pour facturation mensuelle';
+COMMENT ON FUNCTION get_agent_total_cost_t0 IS 'Calcule le coût total d''un agent à un instant T0 avec dedicated proratés';
