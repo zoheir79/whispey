@@ -281,7 +281,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN billing_items bi ON i.id = bi.invoice_id
       WHERE i.year = $1 AND i.month = $2
     `
-    const params = [year, month]
+    const params: (number | string)[] = [year, month]
 
     if (projectId) {
       invoicesQuery += ' AND i.project_id = $3'

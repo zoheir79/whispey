@@ -123,11 +123,54 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     setFormData(prev => ({ ...prev, platform_mode: selectedPlatform }))
   }, [selectedPlatform])
 
+  // Calculate dynamic cost estimation
+  const calculateEstimation = () => {
+    if (!globalSettings) return '$0.00'
+    
+    const { agent_type, platform_mode, cost_overrides } = formData
+    const hasExternalProvider = formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external'
+    
+    if (platform_mode === 'dedicated') {
+      const monthlyFee = 30.00 // Base dedicated cost
+      return `$${monthlyFee.toFixed(2)}/month`
+    }
+    
+    if (platform_mode === 'pag') {
+      if (agent_type === 'voice') {
+        if (!hasExternalProvider) {
+          // PAG Builtin Voice: unified per minute pricing
+          const sttPrice = cost_overrides.stt_price ? parseFloat(cost_overrides.stt_price) : 0.01
+          const ttsPrice = cost_overrides.tts_price ? parseFloat(cost_overrides.tts_price) : 0.02  
+          const llmPrice = cost_overrides.llm_price ? parseFloat(cost_overrides.llm_price) : 0.02
+          const totalPerMinute = sttPrice + ttsPrice + llmPrice
+          return `$${totalPerMinute.toFixed(3)}/minute`
+        } else {
+          // PAG External Voice: mixed pricing
+          return '$0.05/minute (variable)'
+        }
+      } else {
+        // Text-only: per token
+        const llmTokenPrice = cost_overrides.llm_price ? parseFloat(cost_overrides.llm_price) : 0.00005
+        return `$${llmTokenPrice.toFixed(5)}/token`
+      }
+    }
+    
+    if (platform_mode === 'hybrid') {
+      if (agent_type === 'voice') {
+        return '$0.03/minute + monthly fees'
+      } else {
+        return '$0.00003/token + monthly fees'
+      }
+    }
+    
+    return '$0.00'
+  }
+
   // Force refresh of cost estimation when relevant data changes
   const [estimationKey, setEstimationKey] = useState(0)
   useEffect(() => {
     setEstimationKey(prev => prev + 1)
-  }, [formData.agent_type, formData.billing_cycle, selectedPlatform, formData.cost_overrides])
+  }, [formData.agent_type, formData.platform_mode, formData.stt_mode, formData.tts_mode, formData.llm_mode, formData.cost_overrides, globalSettings])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -778,13 +821,6 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                     <div className="font-medium">Mode Dedicated:</div>
                     <div>
                       {formData.agent_type === 'voice' ? 'Agent Voice' : 'Agent Text-Only'} 
-                      {formData.billing_cycle === 'monthly' ? ' (Mensuel)' : ' (Annuel avec réduction)'}
-                    </div>
-                    <div className="text-lg font-bold text-green-600 mt-1">
-                      {formData.agent_type === 'voice' 
-                        ? (formData.billing_cycle === 'monthly' ? 'Estimation: $180/mois' : 'Estimation: $1,800/an')
-                        : (formData.billing_cycle === 'monthly' ? 'Estimation: $100/mois' : 'Estimation: $1,000/an')
-                      }
                     </div>
                   </div>
                 )}
@@ -798,10 +834,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                       }
                     </div>
                     <div className="text-lg font-bold text-blue-600 mt-1">
-                      {formData.agent_type === 'voice' 
-                        ? 'Estimation: $0.05/minute'
-                        : 'Estimation: $0.00005/token'
-                      }
+                      Estimation: {calculateEstimation()}
                     </div>
                   </div>
                 )}
@@ -810,10 +843,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                     <div className="font-medium">Mode Hybrid:</div>
                     <div>Mix de modèles dedicated et pay-as-you-go</div>
                     <div className="text-lg font-bold text-purple-600 mt-1">
-                      {formData.agent_type === 'voice' 
-                        ? 'Estimation: $0.03/minute + coûts fixes'
-                        : 'Estimation: $0.00003/token + coûts fixes'
-                      }
+                      Estimation: {calculateEstimation()}
                     </div>
                   </div>
                 )}

@@ -52,20 +52,14 @@ interface GlobalSettings {
   builtin_stt: {
     url: string
     api_key: string
-    cost_per_minute: number
-    cost_dedicated_monthly: number
   }
   builtin_tts: {
     url: string
     api_key: string
-    cost_per_word: number
-    cost_dedicated_monthly: number
   }
   builtin_llm: {
     url: string
     api_key: string
-    cost_per_token: number
-    cost_dedicated_monthly: number
   }
   s3_config: {
     endpoint: string
@@ -136,23 +130,17 @@ export default function AIProvidersManagement() {
 
   const [builtinSttSettings, setBuiltinSttSettings] = useState({
     url: 'http://localhost:8000/stt',
-    api_key: '',
-    cost_per_minute: 0.02,
-    cost_dedicated_monthly: 50.00
+    api_key: ''
   })
 
   const [builtinTtsSettings, setBuiltinTtsSettings] = useState({
     url: 'http://localhost:8000/tts',
-    api_key: '',
-    cost_per_word: 0.0001,
-    cost_dedicated_monthly: 30.00
+    api_key: ''
   })
 
   const [builtinLlmSettings, setBuiltinLlmSettings] = useState({
     url: 'http://localhost:8000/llm',
-    api_key: '',
-    cost_per_token: 0.00005,
-    cost_dedicated_monthly: 100.00
+    api_key: ''
   })
 
   const [builtinVoiceSettings, setBuiltinVoiceSettings] = useState({
@@ -217,21 +205,15 @@ export default function AIProvidersManagement() {
       const settings: GlobalSettings = {
         builtin_stt: {
           url: 'http://localhost:8000/stt',
-          api_key: '',
-          cost_per_minute: 0.02,
-          cost_dedicated_monthly: 50.00
+          api_key: ''
         },
         builtin_tts: {
           url: 'http://localhost:8000/tts',
-          api_key: '',
-          cost_per_word: 0.0001,
-          cost_dedicated_monthly: 30.00
+          api_key: ''
         },
         builtin_llm: {
           url: 'http://localhost:8000/llm',
-          api_key: '',
-          cost_per_token: 0.00005,
-          cost_dedicated_monthly: 100.00
+          api_key: ''
         },
         s3_config: {
           endpoint: 'https://s3.example.com',
@@ -504,8 +486,7 @@ export default function AIProvidersManagement() {
                   URL: {globalSettings?.builtin_stt?.url || 'Non configuré'}
                 </div>
                 <div className="text-sm text-gray-500">
-                  PAG: ${globalSettings?.builtin_stt?.cost_per_minute?.toFixed(4) || '0.0000'}/minute | 
-                  Dedicated: ${globalSettings?.builtin_stt?.cost_dedicated_monthly?.toFixed(2) || '0.00'}/mois
+                  Coûts configurés dans Tarifs & Facturation
                 </div>
               </div>
               <Button variant="outline" onClick={() => {
@@ -528,8 +509,7 @@ export default function AIProvidersManagement() {
                   URL: {globalSettings?.builtin_tts?.url || 'Non configuré'}
                 </div>
                 <div className="text-sm text-gray-500">
-                  PAG: ${globalSettings?.builtin_tts?.cost_per_word?.toFixed(6) || '0.000000'}/mot | 
-                  Dedicated: ${globalSettings?.builtin_tts?.cost_dedicated_monthly?.toFixed(2) || '0.00'}/mois
+                  Coûts configurés dans Tarifs & Facturation
                 </div>
               </div>
               <Button variant="outline" onClick={() => {
@@ -552,8 +532,7 @@ export default function AIProvidersManagement() {
                   URL: {globalSettings?.builtin_llm?.url || 'Non configuré'}
                 </div>
                 <div className="text-sm text-gray-500">
-                  PAG: ${globalSettings?.builtin_llm?.cost_per_token?.toFixed(6) || '0.000000'}/token | 
-                  Dedicated: ${globalSettings?.builtin_llm?.cost_dedicated_monthly?.toFixed(2) || '0.00'}/mois
+                  Coûts configurés dans Tarifs & Facturation
                 </div>
               </div>
               <Button variant="outline" onClick={() => {
@@ -839,43 +818,11 @@ export default function AIProvidersManagement() {
                 placeholder="Clé d'authentification interne"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                {builtinEditType === 'voice' ? 'Coût par minute ($)' : builtinEditType === 'text' ? 'Coût par token ($)' : builtinEditType === 'stt' ? 'Coût par minute ($)' : builtinEditType === 'tts' ? 'Coût par mot ($)' : 'Coût par token ($)'}
-              </label>
-              <Input
-                type="number"
-                step={builtinEditType === 'voice' ? "0.0001" : builtinEditType === 'text' ? "0.000001" : builtinEditType === 'stt' ? "0.0001" : builtinEditType === 'tts' ? "0.00001" : "0.000001"}
-                value={
-                  builtinEditType === 'voice' ? builtinVoiceSettings.cost_per_minute :
-                  builtinEditType === 'text' ? builtinTextSettings.cost_per_token :
-                  builtinEditType === 'stt' ? builtinSttSettings.cost_per_minute :
-                  builtinEditType === 'tts' ? builtinTtsSettings.cost_per_word :
-                  builtinLlmSettings.cost_per_token
-                }
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0
-                  if (builtinEditType === 'voice') {
-                    setBuiltinVoiceSettings({ ...builtinVoiceSettings, cost_per_minute: value })
-                  } else if (builtinEditType === 'text') {
-                    setBuiltinTextSettings({ ...builtinTextSettings, cost_per_token: value })
-                  } else if (builtinEditType === 'stt') {
-                    setBuiltinSttSettings({ ...builtinSttSettings, cost_per_minute: value })
-                  } else if (builtinEditType === 'tts') {
-                    setBuiltinTtsSettings({ ...builtinTtsSettings, cost_per_word: value })
-                  } else {
-                    setBuiltinLlmSettings({ ...builtinLlmSettings, cost_per_token: value })
-                  }
-                }}
-                placeholder={
-                  builtinEditType === 'voice' ? "0.05" :
-                  builtinEditType === 'text' ? "0.00005" :
-                  builtinEditType === 'stt' ? "0.02" :
-                  builtinEditType === 'tts' ? "0.0001" :
-                  "0.00005"
-                }
-                required
-              />
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                <strong>Note:</strong> Les coûts des fournisseurs built-in sont configurés dans la section "Tarifs & Facturation".
+                Seuls l'URL et la clé API peuvent être modifiés ici.
+              </p>
             </div>
           </div>
           <DialogFooter className="gap-2">
