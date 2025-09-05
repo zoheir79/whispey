@@ -11,7 +11,9 @@ type Props = {
 
 export const CostTooltip: React.FC<Props> = ({ call}) => {
   const telecom = telecomCost(call.duration_seconds);
-  const total = call.total_stt_cost! + call.total_llm_cost! + call.total_tts_cost! + telecom;
+  // Use backend-calculated costs (includes voice PAG builtin per-minute logic)
+  const aiCosts = (call.total_stt_cost || 0) + (call.total_llm_cost || 0) + (call.total_tts_cost || 0);
+  const total = aiCosts + telecom;
 
   return (
     <Tooltip.Provider delayDuration={400}>

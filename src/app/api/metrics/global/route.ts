@@ -6,9 +6,9 @@ import { getUserGlobalRole } from '@/services/getGlobalRole'
 export async function GET(request: NextRequest) {
   try {
     // Verify user authentication
-    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    const userId = await verifyUserAuth(request);
     
-    if (!isAuthenticated || !userId) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -80,12 +80,10 @@ export async function GET(request: NextRequest) {
       call.call_started_at && new Date(call.call_started_at) >= todayStart
     ).length || 0
 
-    // Total cost (sum of all cost fields)
+    // Total cost using backend calculated total_cost field (includes dedicated prorated costs)
     const totalCost = callsList.reduce((sum: number, call: any) => {
-      const llmCost = parseFloat(call.total_llm_cost || 0)
-      const ttsCost = parseFloat(call.total_tts_cost || 0)  
-      const sttCost = parseFloat(call.total_stt_cost || 0)
-      return sum + llmCost + ttsCost + sttCost
+      // Use total_cost field which includes proper billing logic and dedicated prorated costs
+      return sum + (parseFloat(call.total_cost || 0))
     }, 0) || 0
 
     // Average response time

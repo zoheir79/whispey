@@ -63,6 +63,7 @@ interface TimeSeriesData {
   timestamp: number
   calls: number
   total_cost: number
+  total_usage_cost?: number // From materialized view for PAG agents
   llm_cost: number
   tts_cost: number
   stt_cost: number
@@ -284,7 +285,13 @@ const WorkspaceMetrics: React.FC<WorkspaceMetricsProps> = ({ projectId, workspac
       console.log(`⏱️ Total duration for ${item.date}: ${item.total_call_duration}s = ${(item.total_call_duration || 0) / 60}min`)
       return sum + (item.total_call_duration || 0)
     }, 0) / 60,
-    totalCost: timeSeriesData.reduce((sum, item) => sum + (item.total_cost || 0), 0)
+    // Use materialized view total_cost (includes dedicated costs for dedicated/hybrid agents)
+    totalCost: timeSeriesData.reduce((sum, item) => {
+      // Prefer total_usage_cost from materialized view if available, fallback to total_cost
+      const cost = item.total_usage_cost || item.total_cost || 0;
+      console.log(`💰 Total cost for ${item.date}: ${cost} (usage cost from materialized view)`)
+      return sum + cost;
+    }, 0)
   }
   
   console.log('📈 FINAL Usage Metrics:', usageMetrics)

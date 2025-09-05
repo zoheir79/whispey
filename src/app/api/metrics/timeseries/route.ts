@@ -6,9 +6,9 @@ import { getUserGlobalRole } from '@/services/getGlobalRole';
 export async function GET(request: NextRequest) {
   try {
     // Verify user authentication
-    const { isAuthenticated, userId } = await verifyUserAuth(request);
+    const userId = await verifyUserAuth(request);
     
-    if (!isAuthenticated || !userId) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -72,24 +72,25 @@ export async function GET(request: NextRequest) {
 
     let sql = `
       SELECT 
-        DATE(cl.call_started_at) as date,
-        COUNT(*) as calls,
-        SUM(COALESCE(cl.total_llm_cost, 0) + COALESCE(cl.total_tts_cost, 0) + COALESCE(cl.total_stt_cost, 0)) as total_cost,
+        csm.call_date as date,
+        csm.calls,
+        -- Use materialized view complete cost calculation (usage + dedicated prorated)
+        COALESCE((get_complete_daily_cost(csm.agent_id, csm.call_date))->>'total_cost', '0')::NUMERIC as total_cost,
+        -- Individual cost breakdown from call logs
         SUM(COALESCE(cl.total_llm_cost, 0)) as llm_cost,
         SUM(COALESCE(cl.total_tts_cost, 0)) as tts_cost,
         SUM(COALESCE(cl.total_stt_cost, 0)) as stt_cost,
-        SUM(COALESCE(cl.duration_seconds, 0)) as total_call_duration,
+        csm.total_call_minutes * 60 as total_call_duration,
         AVG(COALESCE(cl.avg_latency, 0)) as avg_response_time,
         SUM(COALESCE((cl.metadata->'usage'->>'llm_prompt_tokens')::integer, 0)) as llm_tokens_input,
         SUM(COALESCE((cl.metadata->'usage'->>'llm_completion_tokens')::integer, 0)) as llm_tokens_output,
         SUM(COALESCE((cl.metadata->'usage'->>'stt_audio_duration')::numeric, 0)) as stt_duration,
         SUM(COALESCE((cl.metadata->'usage'->>'tts_characters')::integer, 0)) as tts_characters,
-        ROUND(
-          (COUNT(CASE WHEN cl.call_ended_reason = 'completed' THEN 1 END) * 100.0 / COUNT(*)), 2
-        ) as completion_rate
-      FROM pype_voice_call_logs cl
-      INNER JOIN pype_voice_agents a ON cl.agent_id = a.id
-      WHERE cl.call_started_at >= $1 AND cl.call_started_at <= $2
+        csm.success_rate as completion_rate
+      FROM call_summary_materialized csm
+      LEFT JOIN pype_voice_call_logs cl ON csm.agent_id = cl.agent_id AND DATE(cl.call_started_at) = csm.call_date
+      INNER JOIN pype_voice_agents a ON csm.agent_id = a.id
+      WHERE csm.call_date >= DATE($1) AND csm.call_date <= DATE($2)
     `
 
     const params = [startDateLocal.toISOString(), endDateLocal.toISOString()]
@@ -120,14 +121,14 @@ export async function GET(request: NextRequest) {
 
     // Add agent filter if specified
     if (agentId) {
-      sql += ` AND cl.agent_id = $${++paramIndex}`
+      sql += ` AND csm.agent_id = $${++paramIndex}`
       params.push(agentId)
       console.log('🎯 Agent filter applied:', agentId)
     }
 
     sql += `
-      GROUP BY DATE(cl.call_started_at)
-      ORDER BY DATE(cl.call_started_at) ASC
+      GROUP BY csm.call_date, csm.agent_id, csm.calls, csm.total_call_minutes, csm.success_rate
+      ORDER BY csm.call_date ASC
     `
 
     console.log(' Executing SQL query:', sql)
