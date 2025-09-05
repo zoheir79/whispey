@@ -46,13 +46,64 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description } = body
+    const { 
+      name, 
+      description, 
+      s3_config // New optional S3 configuration
+    } = body
 
     if (!name || !name.trim()) {
       return NextResponse.json(
         { error: 'Project name is required' },
         { status: 400 }
       )
+    }
+
+    // Validate S3 config if provided
+    let s3Fields = {
+      s3_enabled: false,
+      s3_region: null,
+      s3_endpoint: null,
+      s3_access_key: null,
+      s3_secret_key: null,
+      s3_bucket_prefix: null,
+      s3_cost_per_gb: 0.023,
+      s3_default_storage_gb: 50
+    }
+
+    if (s3_config) {
+      const { 
+        enabled, 
+        region, 
+        endpoint, 
+        access_key, 
+        secret_key, 
+        bucket_prefix, 
+        cost_per_gb = 0.023,
+        default_storage_gb = 50
+      } = s3_config
+
+      if (enabled) {
+        // Validate required S3 fields when enabled
+        if (!region || !endpoint || !access_key || !secret_key || !bucket_prefix) {
+          return NextResponse.json(
+            { error: 'When S3 is enabled, region, endpoint, access_key, secret_key, and bucket_prefix are required' },
+            { status: 400 }
+          )
+        }
+
+        // TODO: Encrypt secret_key before storing
+        s3Fields = {
+          s3_enabled: true,
+          s3_region: region.trim(),
+          s3_endpoint: endpoint.trim(),
+          s3_access_key: access_key.trim(),
+          s3_secret_key: secret_key, // Should be encrypted in production
+          s3_bucket_prefix: bucket_prefix.trim().toLowerCase(),
+          s3_cost_per_gb: parseFloat(cost_per_gb),
+          s3_default_storage_gb: parseInt(default_storage_gb)
+        }
+      }
     }
 
     // Generate API token
@@ -66,7 +117,8 @@ export async function POST(request: NextRequest) {
       is_active: true,
       retry_configuration: {},
       token_hash: hashedToken,
-      owner_user_id: userId // Add owner reference
+      owner_user_id: userId, // Add owner reference
+      ...s3Fields // Add S3 configuration fields
     }
 
     // Insert project into database
@@ -317,7 +369,7 @@ export async function GET(request: NextRequest) {
       const mappingData = mapping as any
       const { data: projectData, error: projectError } = await fetchFromTable({
         table: 'pype_voice_projects',
-        select: 'id, name, description, environment, is_active, created_at',
+        select: 'id, name, description, environment, is_active, created_at, s3_enabled, s3_region, s3_endpoint, s3_bucket_prefix, s3_cost_per_gb, s3_default_storage_gb',
         filters: [{ column: 'id', operator: '=', value: mappingData.project_id }]
       })
       

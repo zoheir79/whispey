@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { AlertCircle, Check, Loader2, Save, Settings, X } from 'lucide-react'
+import { AlertCircle, Check, Loader2, Save, Settings, X, Database, Cloud } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import WorkspaceNameInput from '@/components/ui/WorkspaceNameInput'
 
@@ -24,6 +24,12 @@ interface Project {
   is_active: boolean
   token_hash?: string
   agent_count?: number
+  s3_enabled?: boolean
+  s3_region?: string
+  s3_endpoint?: string
+  s3_bucket_prefix?: string
+  s3_cost_per_gb?: number
+  s3_default_storage_gb?: number
 }
 
 interface WorkspaceSettingsProps {
@@ -239,6 +245,88 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
             </CardContent>
           </Card>
 
+          {/* S3 Configuration */}
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-base dark:text-slate-200 flex items-center gap-2">
+                <Database className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                S3 Storage Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {project?.s3_enabled ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium dark:text-slate-300">Storage Status</span>
+                    <Badge className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                      <Cloud className="h-3 w-3 mr-1" />
+                      S3 Enabled
+                    </Badge>
+                  </div>
+                  
+                  <Separator className="dark:bg-slate-700" />
+                  
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600 dark:text-slate-400">Region:</span>
+                      <p className="font-medium dark:text-slate-200">{project.s3_region || 'Not set'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-slate-400">Endpoint:</span>
+                      <p className="font-medium dark:text-slate-200 truncate">{project.s3_endpoint || 'Not set'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-slate-400">Bucket Prefix:</span>
+                      <p className="font-medium dark:text-slate-200">{project.s3_bucket_prefix || 'Not set'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-slate-400">Cost per GB/month:</span>
+                      <p className="font-medium dark:text-slate-200">${project.s3_cost_per_gb?.toFixed(4) || '0.0230'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-slate-400">Default Storage:</span>
+                      <p className="font-medium dark:text-slate-200">{project.s3_default_storage_gb || 50} GB</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-slate-400">Bucket Pattern:</span>
+                      <p className="font-medium font-mono text-xs dark:text-slate-200 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">
+                        {project.s3_bucket_prefix}-[agent-id]
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                    <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200 text-sm font-medium mb-1">
+                      <Cloud className="h-4 w-4" />
+                      S3 Bucket Management
+                    </div>
+                    <p className="text-blue-700 dark:text-blue-300 text-xs">
+                      Each voice agent created in this workspace will automatically get a dedicated S3 bucket: 
+                      <code className="bg-blue-100 dark:bg-blue-800/50 px-1 rounded text-xs">
+                        {project.s3_bucket_prefix}-[agent-id]
+                      </code>
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="flex flex-col items-center gap-3">
+                    <Database className="h-12 w-12 text-gray-400 dark:text-slate-600" />
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-slate-200">No S3 Configuration</h4>
+                      <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
+                        This workspace doesn't have S3 storage configured.
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-slate-500 mt-2">
+                        Voice agents will use default storage settings with $0 cost.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Preview */}
           <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardHeader>
@@ -252,6 +340,11 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
                 <Badge className={`px-3 py-1 ${formData.is_active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                   {formData.is_active ? 'ACTIVE' : 'INACTIVE'}
                 </Badge>
+                {project?.s3_enabled && (
+                  <Badge className="px-3 py-1 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
+                    S3 ENABLED
+                  </Badge>
+                )}
               </div>
             </CardContent>
           </Card>

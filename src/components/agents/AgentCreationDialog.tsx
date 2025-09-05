@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, Bot, Phone, Settings, Zap, Server, Brain } from 'lucide-react'
+import { Loader2, Bot, Phone, Settings, Zap, Server, Brain, Database, Cloud } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useProviders, getProvidersByType } from '@/hooks/useProviders'
 import { useCostOverrides } from '@/hooks/useCostOverrides'
@@ -22,6 +22,14 @@ interface AgentCreationDialogProps {
   onClose: () => void
   onAgentCreated: (agentData: any) => void
   projectId: string
+  projectData?: {
+    s3_enabled?: boolean
+    s3_region?: string
+    s3_endpoint?: string
+    s3_bucket_prefix?: string
+    s3_cost_per_gb?: number
+    s3_default_storage_gb?: number
+  }
 }
 
 const PLATFORM_MODES = [
@@ -73,7 +81,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   isOpen, 
   onClose, 
   onAgentCreated,
-  projectId
+  projectId,
+  projectData
 }) => {
   const [currentStep, setCurrentStep] = useState<'form' | 'creating' | 'success'>('form')
   const [selectedPlatform, setSelectedPlatform] = useState('pag')
@@ -90,7 +99,9 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     description: '',
     platform_mode: 'pag',
     billing_cycle: 'monthly',
-    s3_storage_gb: 50,
+    s3_enabled: false,
+    s3_storage_gb: projectData?.s3_default_storage_gb || 50,
+    s3_cost_override: null as number | null,
     stt_provider_id: '',
     stt_mode: 'builtin',
     tts_provider_id: '',
@@ -244,12 +255,16 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         agent_type: formData.agent_type,
         platform_mode: formData.platform_mode,
         billing_cycle: formData.billing_cycle,
-        s3_storage_gb: formData.s3_storage_gb,
+        s3_enabled: formData.agent_type === 'voice' ? formData.s3_enabled : false,
+        s3_storage_gb: formData.agent_type === 'voice' && formData.s3_enabled ? formData.s3_storage_gb : 0,
+        s3_cost_override: formData.agent_type === 'voice' && formData.s3_enabled ? formData.s3_cost_override : null,
         configuration: {
           description: formData.description.trim() || null,
           voice_type: formData.agent_type === 'voice' ? formData.voice_type : null,
           billing_cycle: formData.billing_cycle,
-          s3_storage_gb: formData.s3_storage_gb,
+          s3_enabled: formData.agent_type === 'voice' ? formData.s3_enabled : false,
+          s3_storage_gb: formData.agent_type === 'voice' && formData.s3_enabled ? formData.s3_storage_gb : 0,
+          s3_cost_override: formData.agent_type === 'voice' && formData.s3_enabled ? formData.s3_cost_override : null,
           cost_overrides: formData.cost_overrides
         },
         provider_config: providerConfig,
@@ -308,7 +323,9 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         description: '',
         platform_mode: 'pag',
         billing_cycle: 'monthly',
-        s3_storage_gb: 50,
+        s3_enabled: false,
+        s3_storage_gb: projectData?.s3_default_storage_gb || 50,
+        s3_cost_override: null as number | null,
         stt_provider_id: '',
         stt_mode: 'builtin',
         tts_provider_id: '',
@@ -849,6 +866,129 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                 )}
               </div>
             </div>
+
+            {/* S3 Storage Configuration - Only for voice agents */}
+            {formData.agent_type === 'voice' && (
+              <div className="space-y-4">
+                {projectData?.s3_enabled ? (
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Cloud className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                        S3 Storage Configuration
+                      </h3>
+                    </div>
+                    
+                    {/* S3 Enable Toggle */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <label className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            Enable S3 Storage
+                          </label>
+                          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                            Dedicated S3 bucket will be created: <code className="bg-blue-100 dark:bg-blue-800/50 px-1 rounded text-xs">
+                              {projectData.s3_bucket_prefix}-[agent-id]
+                            </code>
+                          </p>
+                        </div>
+                        <div
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors ${
+                            formData.s3_enabled 
+                              ? 'bg-blue-600' 
+                              : 'bg-gray-200 dark:bg-slate-600'
+                          }`}
+                          onClick={() => setFormData(prev => ({ ...prev, s3_enabled: !prev.s3_enabled }))}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              formData.s3_enabled ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
+                        </div>
+                      </div>
+
+                      {/* S3 Storage Settings - shown when enabled */}
+                      {formData.s3_enabled && (
+                        <div className="space-y-3 mt-4 p-3 bg-white dark:bg-slate-800 rounded-lg border">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Storage Allocation (GB)
+                              </label>
+                              <Input
+                                type="number"
+                                min="1"
+                                max="10000"
+                                value={formData.s3_storage_gb}
+                                onChange={(e) => setFormData(prev => ({ 
+                                  ...prev, 
+                                  s3_storage_gb: parseInt(e.target.value) || projectData?.s3_default_storage_gb || 50 
+                                }))}
+                                className="h-8 text-xs"
+                                placeholder="50"
+                              />
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Default: {projectData.s3_default_storage_gb || 50} GB
+                              </p>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Cost Override ($/GB/month)
+                              </label>
+                              <Input
+                                type="number"
+                                step="0.001"
+                                min="0"
+                                value={formData.s3_cost_override || ''}
+                                onChange={(e) => setFormData(prev => ({ 
+                                  ...prev, 
+                                  s3_cost_override: e.target.value ? parseFloat(e.target.value) : null 
+                                }))}
+                                className="h-8 text-xs"
+                                placeholder={`${projectData.s3_cost_per_gb || 0.023}`}
+                              />
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Default: ${projectData.s3_cost_per_gb || 0.023}/GB/month
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Cost calculation */}
+                          <div className="bg-gray-50 dark:bg-slate-700 p-2 rounded text-xs">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 dark:text-gray-400">Monthly S3 Cost:</span>
+                              <span className="font-medium text-gray-900 dark:text-gray-100">
+                                ${((formData.s3_cost_override || projectData.s3_cost_per_gb || 0.023) * formData.s3_storage_gb).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-600">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Database className="h-4 w-4 text-gray-400 dark:text-slate-500" />
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Storage Configuration
+                      </h3>
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                      This workspace doesn't have S3 storage configured.
+                    </p>
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                      <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                        <strong>Default Settings:</strong> Voice recordings will use default storage with $0 cost.
+                        STT/TTS URLs and tokens will be set to empty values.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Super Admin Cost Overrides */}
             {isSuperAdmin && (

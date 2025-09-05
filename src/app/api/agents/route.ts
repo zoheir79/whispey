@@ -27,7 +27,9 @@ export async function POST(request: NextRequest) {
       environment, 
       platform,
       billing_cycle,
+      s3_enabled,
       s3_storage_gb,
+      s3_cost_override,
       platform_mode,
       provider_config,
       cost_overrides
@@ -111,10 +113,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Verify project exists
+    // Verify project exists and get S3 configuration
     const { data: project, error: projectError } = await fetchFromTable({
       table: 'pype_voice_projects',
-      select: 'id',
+      select: 'id, s3_enabled, s3_region, s3_endpoint, s3_access_key, s3_secret_key, s3_bucket_prefix',
       filters: [{ column: 'id', operator: 'eq', value: project_id }],
       limit: 1
     })
@@ -153,6 +155,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get project S3 configuration  
+    const projectS3Config = project && project.length > 0 ? project[0] as any : null
+    const isS3Available = projectS3Config?.s3_enabled && projectS3Config?.s3_bucket_prefix
+
     // Create agent data with proper typing
     const agentData: any = {
       name: name.trim(),
@@ -162,7 +168,9 @@ export async function POST(request: NextRequest) {
       environment: environment || 'dev',
       is_active: true,
       billing_cycle: billing_cycle || 'monthly',
-      s3_storage_gb: s3_storage_gb || 50,
+      s3_enabled: agent_type === 'voice' && s3_enabled && isS3Available ? true : false,
+      s3_storage_gb: agent_type === 'voice' && s3_enabled && isS3Available ? (s3_storage_gb || 50) : 0,
+      s3_cost_override: agent_type === 'voice' && s3_enabled && isS3Available ? s3_cost_override : null,
       platform_mode: platform_mode || 'pag',
       provider_config: provider_config || {},
       cost_overrides: cost_overrides || null
@@ -212,6 +220,44 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`✅ Successfully created ${platform} agent "${agent.name}" with ID: ${agent.id}`)
+
+    // Create S3 bucket if S3 is enabled for voice agent
+    if (agent_type === 'voice' && s3_enabled && isS3Available && projectS3Config) {
+      try {
+        const bucketName = `${projectS3Config.s3_bucket_prefix}-${agent.id}`
+        
+        console.log(`🪣 Creating S3 bucket: ${bucketName}`)
+        
+        // Insert S3 bucket record
+        const { error: bucketError } = await insertIntoTable({
+          table: 'pype_voice_agent_s3_buckets',
+          data: {
+            agent_id: agent.id,
+            project_id: project_id,
+            bucket_name: bucketName,
+            region: projectS3Config.s3_region,
+            storage_gb: agentData.s3_storage_gb,
+            cost_per_gb: agentData.s3_cost_override || projectS3Config.s3_cost_per_gb || 0.023,
+            is_active: true,
+            created_at: new Date().toISOString()
+          }
+        })
+
+        if (bucketError) {
+          console.error('❌ Error creating S3 bucket record:', bucketError)
+          // Don't fail the agent creation, just log the error
+        } else {
+          console.log(`✅ S3 bucket record created: ${bucketName}`)
+        }
+
+        // TODO: Implement actual S3 bucket creation using AWS SDK
+        // This would require AWS credentials and SDK integration
+        
+      } catch (bucketCreationError) {
+        console.error('❌ Error in S3 bucket creation process:', bucketCreationError)
+        // Don't fail the agent creation, just log the error
+      }
+    }
     
     return NextResponse.json(agent, { status: 201 })
 
