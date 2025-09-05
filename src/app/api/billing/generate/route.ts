@@ -175,9 +175,22 @@ export async function POST(request: NextRequest) {
       // Aggregate usage metrics
       const totalCalls = agentCallLogs.length
       const totalMinutes = agentCallLogs.reduce((sum: number, log: any) => sum + ((log.duration_seconds || 0) / 60), 0)
-      const totalSttCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_stt_cost || 0), 0)
-      const totalTtsCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_tts_cost || 0), 0)
-      const totalLlmCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_llm_cost || 0), 0)
+      
+      // Calculate costs from duration if pre-calculated costs are null
+      let totalSttCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_stt_cost || 0), 0)
+      let totalTtsCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_tts_cost || 0), 0)
+      let totalLlmCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_llm_cost || 0), 0)
+      
+      // If costs are null/zero, calculate from duration using PAG rates
+      if (totalSttCost === 0 && totalMinutes > 0) {
+        totalSttCost = totalMinutes * (pagRates.stt_builtin_per_minute || 0.005)
+      }
+      if (totalTtsCost === 0 && totalMinutes > 0) {
+        totalTtsCost = totalMinutes * (pagRates.tts_builtin_per_minute || 0.004)
+      }
+      if (totalLlmCost === 0 && totalMinutes > 0) {
+        totalLlmCost = totalMinutes * (pagRates.llm_builtin_per_minute || 0.2)
+      }
       
       console.log(`💰 BILLING DEBUG - Agent ${agent.name} (${agent.id}):`, {
         platform_mode: agent.platform_mode,
