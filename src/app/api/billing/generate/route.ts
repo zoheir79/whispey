@@ -98,6 +98,12 @@ export async function POST(request: NextRequest) {
     const dedicatedRates = settings.pricing_rates_dedicated || {}
     const pagRates = settings.pricing_rates_pag || {}
     const s3Config = settings.s3_config || {}
+    
+    console.log('💲 BILLING DEBUG - Pricing rates loaded:', {
+      dedicatedRates,
+      pagRates,
+      s3Config
+    })
 
     // Get all agents in workspace
     const agentsResult = await query(`
@@ -134,6 +140,13 @@ export async function POST(request: NextRequest) {
     const consumption = consumptionResult.rows
 
     // Get call logs for detailed metrics
+    console.log('🔍 BILLING DEBUG - Fetching call logs:', {
+      agentIds,
+      period_start,
+      period_end,
+      agentCount: agentIds.length
+    })
+    
     const callLogsResult = await query(`
       SELECT agent_id, duration_seconds, 
              total_stt_cost, total_tts_cost, total_llm_cost,
@@ -145,6 +158,12 @@ export async function POST(request: NextRequest) {
     `, [agentIds, period_start, period_end])
 
     const callLogs = callLogsResult.rows
+    
+    console.log('📊 BILLING DEBUG - Call logs found:', {
+      totalCallLogs: callLogs.length,
+      sampleLog: callLogs[0] || 'No logs found',
+      dateRange: { period_start, period_end }
+    })
 
     // Calculate billing items for each agent
     const billingItems: BillingItem[] = []
@@ -159,6 +178,16 @@ export async function POST(request: NextRequest) {
       const totalSttCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_stt_cost || 0), 0)
       const totalTtsCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_tts_cost || 0), 0)
       const totalLlmCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_llm_cost || 0), 0)
+      
+      console.log(`💰 BILLING DEBUG - Agent ${agent.name} (${agent.id}):`, {
+        platform_mode: agent.platform_mode,
+        totalCalls,
+        totalMinutes: totalMinutes.toFixed(2),
+        totalSttCost,
+        totalTtsCost,
+        totalLlmCost,
+        callLogsCount: agentCallLogs.length
+      })
 
       // Calculate costs based on platform mode
       let sttCost = 0
@@ -208,6 +237,18 @@ export async function POST(request: NextRequest) {
       // Apply billing cycle multiplier for annual
       const cycleMultiplier = billing_cycle === 'annual' ? 12 : 1
       const totalCost = (sttCost + ttsCost + llmCost + agentCost + s3Cost) * cycleMultiplier
+      
+      console.log(`💸 BILLING DEBUG - Final costs for ${agent.name}:`, {
+        sttCost,
+        ttsCost, 
+        llmCost,
+        agentCost,
+        s3Cost,
+        cycleMultiplier,
+        totalCost,
+        dedicatedRates,
+        pagRates
+      })
 
       billingItems.push({
         agent_id: agent.id,
