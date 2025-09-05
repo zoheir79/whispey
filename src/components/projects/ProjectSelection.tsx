@@ -26,6 +26,12 @@ interface Project {
   is_active: boolean
   token_hash?: string
   agent_count?: number // Adding agent count for workspace context
+  s3_enabled?: boolean
+  s3_region?: string
+  s3_endpoint?: string
+  s3_bucket_prefix?: string
+  s3_cost_per_gb?: number
+  s3_default_storage_gb?: number
 }
 
 interface ProjectSelectionProps {}
@@ -418,6 +424,14 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                           {project.agent_count !== undefined && (
                             <Badge variant="outline" className="text-xs font-medium bg-blue-50 text-blue-700 border-blue-200">
                               {project.agent_count} {project.agent_count === 1 ? 'agent' : 'agents'}
+                            </Badge>
+                          )}
+                          {project.s3_enabled && (
+                            <Badge variant="outline" className="text-xs font-medium bg-purple-50 text-purple-700 border-purple-200">
+                              <svg className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M3 4a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 14.846 4.632 16 6.414 16H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                              </svg>
+                              S3 Storage
                             </Badge>
                           )}
                         </div>

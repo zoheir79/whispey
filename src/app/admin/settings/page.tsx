@@ -76,12 +76,12 @@ export default function AdminSettingsPage() {
         </div>
 
         <Tabs defaultValue="providers" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="providers" className="gap-2">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-slate-800">
+            <TabsTrigger value="providers" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-gray-900 dark:data-[state=active]:text-gray-100 text-gray-600 dark:text-gray-400">
               <Zap className="h-4 w-4" />
               Fournisseurs IA
             </TabsTrigger>
-            <TabsTrigger value="pricing" className="gap-2">
+            <TabsTrigger value="pricing" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-gray-900 dark:data-[state=active]:text-gray-100 text-gray-600 dark:text-gray-400">
               <DollarSign className="h-4 w-4" />
               Tarifs & Facturation
             </TabsTrigger>

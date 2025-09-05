@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { AlertCircle, Check, Loader2, Save, Settings, X, Database, Cloud } from 'lucide-react'
+import { AlertCircle, Check, Loader2, Save, Settings, X, Database, Cloud, Edit } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import WorkspaceNameInput from '@/components/ui/WorkspaceNameInput'
 
@@ -343,10 +343,33 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-slate-300">Storage Status</span>
-                    <Badge className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                      <Cloud className="h-3 w-3 mr-1" />
-                      S3 Enabled
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                        <Cloud className="h-3 w-3 mr-1" />
+                        S3 Enabled
+                      </Badge>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setShowS3Config(true)
+                          setS3ConfigData({
+                            s3_enabled: true,
+                            s3_region: project.s3_region || '',
+                            s3_endpoint: project.s3_endpoint || '',
+                            s3_bucket_prefix: project.s3_bucket_prefix || '',
+                            s3_access_key: '',
+                            s3_secret_key: '',
+                            s3_cost_per_gb: project.s3_cost_per_gb || globalS3Cost,
+                            s3_default_storage_gb: project.s3_default_storage_gb || 50
+                          })
+                        }}
+                        className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-600"
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Modifier
+                      </Button>
+                    </div>
                   </div>
                   
                   <Separator className="dark:bg-slate-700" />

@@ -586,19 +586,19 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
                       <TableCell>
                         {formatCurrency(item.stt_cost)}
                         <div className="text-xs text-gray-500">
-                          {item.total_stt_minutes.toFixed(2)} min
+                          {typeof item.total_stt_minutes === 'number' ? item.total_stt_minutes.toFixed(2) : '0.00'} min
                         </div>
                       </TableCell>
                       <TableCell>
                         {formatCurrency(item.tts_cost)}
                         <div className="text-xs text-gray-500">
-                          {item.total_tts_words} mots
+                          {item.total_tts_words || 0} mots
                         </div>
                       </TableCell>
                       <TableCell>
                         {formatCurrency(item.llm_cost)}
                         <div className="text-xs text-gray-500">
-                          {item.total_llm_tokens} tokens
+                          {item.total_llm_tokens || 0} tokens
                         </div>
                       </TableCell>
                       <TableCell className="font-semibold">
