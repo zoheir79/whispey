@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyUserAuth } from '@/lib/auth'
 import { fetchFromTable, insertIntoTable, updateTable, deleteFromTable } from '@/lib/db-service'
 import { headers } from 'next/headers'
+import { getUserGlobalRole, isSuperAdmin } from '@/services/getGlobalRole'
 
 export async function POST(
   request: NextRequest,
@@ -43,25 +44,30 @@ export async function POST(
     }
 
     console.log("userEmail", userEmail)
-    // Check current user access to project
-    const { data: userProject } = await fetchFromTable({
-      table: 'pype_voice_email_project_mapping',
-      select: 'role',
-      filters: [
-        { column: 'email', operator: '=', value: userEmail },
-        { column: 'project_id', operator: '=', value: projectId }
-      ]
-    })
     
-    const userProjectData = Array.isArray(userProject) && userProject.length > 0 ? userProject[0] as any : null
+    // Check if user is super admin (bypasses project-level restrictions)
+    const isSuperAdminUser = await isSuperAdmin(userId)
+    let hasAdminAccess = isSuperAdminUser
 
-    let hasAdminAccess = false
+    if (!hasAdminAccess) {
+      // Check current user access to project
+      const { data: userProject } = await fetchFromTable({
+        table: 'pype_voice_email_project_mapping',
+        select: 'role',
+        filters: [
+          { column: 'email', operator: '=', value: userEmail },
+          { column: 'project_id', operator: '=', value: projectId }
+        ]
+      })
+      
+      const userProjectData = Array.isArray(userProject) && userProject.length > 0 ? userProject[0] as any : null
 
-    console.log("userProjects", userProject)
+      console.log("userProjects", userProject)
 
-    if (userProjectData && ['admin', 'owner'].includes(userProjectData.role)) {
-      hasAdminAccess = true
-    } 
+      if (userProjectData && ['admin', 'owner'].includes(userProjectData.role)) {
+        hasAdminAccess = true
+      } 
+    }
 
     if (!hasAdminAccess) {
       return NextResponse.json(
@@ -183,25 +189,33 @@ export async function GET(
 
     const projectId = params.id
 
-    const { data: accessCheck, error: accessError } = await fetchFromTable({
-      table: 'pype_voice_email_project_mapping',
-      select: 'id',
-      filters: [
-        { column: 'user_id', operator: '=', value: userId },
-        { column: 'project_id', operator: '=', value: projectId },
-        { column: 'is_active', operator: '=', value: true }
-      ]
-    })
-    
-    const accessData = Array.isArray(accessCheck) && accessCheck.length > 0 ? accessCheck[0] : null
+    // Check if user is super admin (bypasses project-level restrictions)
+    const isSuperAdminUser = await isSuperAdmin(userId)
+    let hasAccess = isSuperAdminUser
 
-    if(accessError)
-    {
-      console.error("Access error:", accessError)
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    if (!hasAccess) {
+      // Check project-level access for non-super admin users
+      const { data: accessCheck, error: accessError } = await fetchFromTable({
+        table: 'pype_voice_email_project_mapping',
+        select: 'id',
+        filters: [
+          { column: 'user_id', operator: '=', value: userId },
+          { column: 'project_id', operator: '=', value: projectId },
+          { column: 'is_active', operator: '=', value: true }
+        ]
+      })
+      
+      const accessData = Array.isArray(accessCheck) && accessCheck.length > 0 ? accessCheck[0] : null
+
+      if(accessError) {
+        console.error("Access error:", accessError)
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+      }
+
+      hasAccess = !!accessData
     }
 
-    if (!accessData) {
+    if (!hasAccess) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 

@@ -45,8 +45,6 @@ interface PricingSettings {
     stt_builtin_per_minute: number
     tts_builtin_per_word: number
     tts_builtin_per_minute: number
-    voice_agent_builtin_per_minute: number
-    voice_agent_hybrid_per_minute: number
     s3_storage_per_gb_monthly: number
   }
   s3_config: {
@@ -123,8 +121,6 @@ export default function PricingManagement() {
           stt_builtin_per_minute: 0.005,
           tts_builtin_per_word: 0.002,
           tts_builtin_per_minute: 0.003,
-          voice_agent_builtin_per_minute: 0.08,
-          voice_agent_hybrid_per_minute: 0.12,
           s3_storage_per_gb_monthly: 0.10
         },
         s3_config: settingsMap.s3_config || {
@@ -543,35 +539,6 @@ export default function PricingManagement() {
                       </p>
                     </div>
 
-                    <div>
-                      <Label htmlFor="voice_agent_builtin_per_minute" className="text-gray-900 dark:text-gray-100">Agent Voice Builtin PAG (par minute)</Label>
-                      <Input
-                        id="voice_agent_builtin_per_minute"
-                        type="number"
-                        step="0.001"
-                        value={settings.pricing_rates_pag.voice_agent_builtin_per_minute}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'voice_agent_builtin_per_minute', parseFloat(e.target.value) || 0)}
-                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
-                      />
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Agent voice builtin complet: tarif global par minute d'interaction
-                      </p>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="voice_agent_hybrid_per_minute" className="text-gray-900 dark:text-gray-100">Agent Voice Hybrid PAG (par minute)</Label>
-                      <Input
-                        id="voice_agent_hybrid_per_minute"
-                        type="number"
-                        step="0.001"
-                        value={settings.pricing_rates_pag.voice_agent_hybrid_per_minute}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'voice_agent_hybrid_per_minute', parseFloat(e.target.value) || 0)}
-                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
-                      />
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Agent voice hybrid: tarif global par minute d'interaction
-                      </p>
-                    </div>
                   </div>
                 </div>
 
@@ -582,14 +549,6 @@ export default function PricingManagement() {
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>60 minutes Voice PAG Builtin (STT+TTS+LLM):</span>
                       <span>{formatCurrency(60 * (settings.pricing_rates_pag.stt_builtin_per_minute + settings.pricing_rates_pag.tts_builtin_per_minute + settings.pricing_rates_pag.llm_builtin_per_minute))}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
-                      <span>60 minutes Agent Voice Builtin PAG:</span>
-                      <span>{formatCurrency(60 * settings.pricing_rates_pag.voice_agent_builtin_per_minute)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
-                      <span>60 minutes Agent Voice Hybrid PAG:</span>
-                      <span>{formatCurrency(60 * settings.pricing_rates_pag.voice_agent_hybrid_per_minute)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>1000 tokens LLM (external/hybrid):</span>

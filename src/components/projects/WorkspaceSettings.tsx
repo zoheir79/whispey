@@ -48,6 +48,7 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
     environment: 'dev',
     is_active: true
   })
+  const [globalS3Cost, setGlobalS3Cost] = useState<number>(0.0230)
   
   const [s3ConfigData, setS3ConfigData] = useState({
     s3_enabled: false,
@@ -61,11 +62,38 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
   })
   
   const [showS3Config, setShowS3Config] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-  const [hasChanges, setHasChanges] = useState(false)
+  // Fetch global S3 pricing on component mount
+  useEffect(() => {
+    const fetchGlobalS3Cost = async () => {
+      try {
+        const response = await fetch('/api/settings/global')
+        if (response.ok) {
+          const data = await response.json()
+          if (Array.isArray(data.settings)) {
+            const s3Setting = data.settings.find((setting: any) => 
+              setting.key === 'pricing_rates_pag' || setting.key === 'pricing_rates_dedicated'
+            )
+            if (s3Setting) {
+              const settingValue = typeof s3Setting.value === 'string' 
+                ? JSON.parse(s3Setting.value) 
+                : s3Setting.value
+              if (settingValue?.s3_storage_per_gb_monthly) {
+                setGlobalS3Cost(settingValue.s3_storage_per_gb_monthly)
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Could not fetch global S3 cost, using default')
+      }
+    }
+    
+    fetchGlobalS3Cost()
+  }, [])
 
   // Initialize form data when project changes
   useEffect(() => {
@@ -336,7 +364,7 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
                     </div>
                     <div>
                       <span className="text-gray-600 dark:text-slate-400">Cost per GB/month:</span>
-                      <p className="font-medium dark:text-slate-200">${project.s3_cost_per_gb?.toFixed(4) || '0.0230'}</p>
+                      <p className="font-medium dark:text-slate-200">${typeof project.s3_cost_per_gb === 'number' ? project.s3_cost_per_gb.toFixed(4) : globalS3Cost.toFixed(4)}</p>
                     </div>
                     <div>
                       <span className="text-gray-600 dark:text-slate-400">Default Storage:</span>

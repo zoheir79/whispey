@@ -6,15 +6,15 @@ import { getUserGlobalRole } from '@/services/getGlobalRole'
 interface BillingItem {
   agent_id: string
   agent_name: string
-  platform_mode: 'dedicated' | 'pag' | 'hybrid'
+  platform_mode: string
   billing_cycle: 'monthly' | 'annual'
   
   // Usage totals
   total_calls: number
   total_minutes: number
-  total_stt_minutes: number
-  total_tts_words: number
-  total_llm_tokens: number
+  total_stt_cost: number
+  total_tts_cost: number
+  total_llm_cost: number
   
   // Costs breakdown
   stt_cost: number
@@ -30,8 +30,8 @@ interface BillingItem {
     tts_dedicated_monthly?: number
     llm_dedicated_monthly?: number
     stt_pag_usage?: number
-    tts_pag_usage?: number
-    llm_pag_usage?: number
+    tts_pag_cost?: number
+    llm_pag_cost?: number
   }
 }
 
@@ -135,8 +135,9 @@ export async function POST(request: NextRequest) {
 
     // Get call logs for detailed metrics
     const callLogsResult = await query(`
-      SELECT agent_id, duration_minutes, stt_minutes_used, 
-             tts_words_used, llm_tokens_used, usage_cost, created_at
+      SELECT agent_id, duration_seconds, 
+             total_stt_cost, total_tts_cost, total_llm_cost,
+             usage_cost, created_at, call_started_at
       FROM pype_voice_call_logs 
       WHERE agent_id = ANY($1) 
       AND created_at >= $2 
@@ -154,10 +155,10 @@ export async function POST(request: NextRequest) {
       
       // Aggregate usage metrics
       const totalCalls = agentCallLogs.length
-      const totalMinutes = agentCallLogs.reduce((sum: number, log: any) => sum + (log.duration_minutes || 0), 0)
-      const totalSttMinutes = agentCallLogs.reduce((sum: number, log: any) => sum + (log.stt_minutes_used || 0), 0)
-      const totalTtsWords = agentCallLogs.reduce((sum: number, log: any) => sum + (log.tts_words_used || 0), 0)
-      const totalLlmTokens = agentCallLogs.reduce((sum: number, log: any) => sum + (log.llm_tokens_used || 0), 0)
+      const totalMinutes = agentCallLogs.reduce((sum: number, log: any) => sum + ((log.duration_seconds || 0) / 60), 0)
+      const totalSttCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_stt_cost || 0), 0)
+      const totalTtsCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_tts_cost || 0), 0)
+      const totalLlmCost = agentCallLogs.reduce((sum: number, log: any) => sum + (log.total_llm_cost || 0), 0)
 
       // Calculate costs based on platform mode
       let sttCost = 0
@@ -180,27 +181,24 @@ export async function POST(request: NextRequest) {
         consumptionDetails.llm_dedicated_monthly = llmCost
 
       } else if (agent.platform_mode === 'pag') {
-        // Pay-as-you-go costs from global settings
-        sttCost = totalSttMinutes * (pagRates.stt_builtin_per_minute || 0.005)
-        ttsCost = totalTtsWords * (pagRates.tts_builtin_per_word || 0.002)
-        llmCost = totalLlmTokens * (pagRates.llm_builtin_per_token || 0.000015)
+        // Pay-as-you-go costs from call logs (already calculated)
+        sttCost = totalSttCost
+        ttsCost = totalTtsCost  
+        llmCost = totalLlmCost
         
-        consumptionDetails.stt_pag_usage = totalSttMinutes
-        consumptionDetails.tts_pag_usage = totalTtsWords
-        consumptionDetails.llm_pag_usage = totalLlmTokens
+        consumptionDetails.stt_pag_usage = totalMinutes
+        consumptionDetails.tts_pag_cost = totalTtsCost
+        consumptionDetails.llm_pag_cost = totalLlmCost
 
       } else if (agent.platform_mode === 'hybrid') {
-        // Mixed costs based on provider config using global settings
-        const provider_config = agent.provider_config || {}
+        // Mixed costs from call logs (already calculated)
+        sttCost = totalSttCost
+        ttsCost = totalTtsCost
+        llmCost = totalLlmCost
         
-        // Default to PAG pricing for hybrid mode
-        sttCost = totalSttMinutes * (pagRates.stt_builtin_per_minute || 0.005)
-        ttsCost = totalTtsWords * (pagRates.tts_builtin_per_word || 0.002)
-        llmCost = totalLlmTokens * (pagRates.llm_builtin_per_token || 0.000015)
-        
-        consumptionDetails.stt_pag_usage = totalSttMinutes
-        consumptionDetails.tts_pag_usage = totalTtsWords
-        consumptionDetails.llm_pag_usage = totalLlmTokens
+        consumptionDetails.stt_pag_usage = totalMinutes
+        consumptionDetails.tts_pag_cost = totalTtsCost
+        consumptionDetails.llm_pag_cost = totalLlmCost
       }
 
       // S3 storage cost (monthly) from global settings
@@ -218,9 +216,9 @@ export async function POST(request: NextRequest) {
         billing_cycle: agent.billing_cycle || billing_cycle,
         total_calls: totalCalls,
         total_minutes: totalMinutes,
-        total_stt_minutes: totalSttMinutes,
-        total_tts_words: totalTtsWords,
-        total_llm_tokens: totalLlmTokens,
+        total_stt_cost: totalSttCost,
+        total_tts_cost: totalTtsCost,
+        total_llm_cost: totalLlmCost,
         stt_cost: sttCost * cycleMultiplier,
         tts_cost: ttsCost * cycleMultiplier,
         llm_cost: llmCost * cycleMultiplier,
@@ -282,9 +280,9 @@ export async function POST(request: NextRequest) {
             platform_mode: item.platform_mode,
             total_calls: item.total_calls,
             total_minutes: item.total_minutes,
-            total_stt_minutes: item.total_stt_minutes,
-            total_tts_words: item.total_tts_words,
-            total_llm_tokens: item.total_llm_tokens,
+            total_stt_cost: item.total_stt_cost,
+            total_tts_cost: item.total_tts_cost,
+            total_llm_cost: item.total_llm_cost,
             stt_cost: item.stt_cost,
             tts_cost: item.tts_cost,
             llm_cost: item.llm_cost,
