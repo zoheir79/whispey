@@ -123,6 +123,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     setFormData(prev => ({ ...prev, platform_mode: selectedPlatform }))
   }, [selectedPlatform])
 
+  // Force refresh of cost estimation when relevant data changes
+  const [estimationKey, setEstimationKey] = useState(0)
+  useEffect(() => {
+    setEstimationKey(prev => prev + 1)
+  }, [formData.agent_type, formData.billing_cycle, selectedPlatform, formData.cost_overrides])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -498,45 +504,204 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
               />
             </div>
 
-            {/* External Provider Selection - For PAG mode with external */}
-            {formData.platform_mode === 'pag' && (
+            {/* Provider Selection - For PAG and Hybrid modes */}
+            {(formData.platform_mode === 'pag' || formData.platform_mode === 'hybrid') && (
               <div className="space-y-4 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border">
                 <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
                   AI Provider Mode
                 </div>
                 
-                <div className="flex gap-2">
-                  <div
-                    className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                      formData.stt_mode === 'builtin' && formData.tts_mode === 'builtin' && formData.llm_mode === 'builtin'
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
-                        : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
-                    }`}
-                    onClick={() => setFormData({ ...formData, stt_mode: 'builtin', tts_mode: 'builtin', llm_mode: 'builtin' })}
-                  >
-                    <div className="text-center">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Built-in Models</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Use internal AI models</div>
+                {formData.platform_mode === 'pag' && (
+                  <div className="flex gap-2">
+                    <div
+                      className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                        formData.stt_mode === 'builtin' && formData.tts_mode === 'builtin' && formData.llm_mode === 'builtin'
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
+                          : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
+                      }`}
+                      onClick={() => setFormData({ ...formData, stt_mode: 'builtin', tts_mode: 'builtin', llm_mode: 'builtin' })}
+                    >
+                      <div className="text-center">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Built-in Models</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Use internal AI models</div>
+                      </div>
+                    </div>
+                    
+                    <div
+                      className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                        formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external'
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
+                          : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
+                      }`}
+                      onClick={() => setFormData({ ...formData, stt_mode: 'external', tts_mode: 'external', llm_mode: 'external' })}
+                    >
+                      <div className="text-center">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">External Providers</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Use external AI services</div>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div
-                    className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                      formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external'
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
-                        : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
-                    }`}
-                    onClick={() => setFormData({ ...formData, stt_mode: 'external', tts_mode: 'external', llm_mode: 'external' })}
-                  >
-                    <div className="text-center">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">External Providers</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Use external AI services</div>
-                    </div>
-                  </div>
-                </div>
+                )}
 
-                {/* External Provider Selection */}
-                {(formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external') && (
+                {formData.platform_mode === 'hybrid' && (
+                  <div className="space-y-4">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      En mode Hybrid, choisissez individuellement chaque provider (Built-in, External, ou Dedicated) pour chaque modèle.
+                    </div>
+                    
+                    {/* Individual Provider Selection for Hybrid */}
+                    {formData.agent_type === 'voice' && (
+                      <>
+                        {/* STT Provider Choice */}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">STT Provider</label>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant={formData.stt_mode === 'builtin' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setFormData({...formData, stt_mode: 'builtin', stt_provider_id: ''})}
+                              className="text-xs"
+                            >
+                              Built-in
+                            </Button>
+                            <Button
+                              type="button"
+                              variant={formData.stt_mode === 'external' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setFormData({...formData, stt_mode: 'external'})}
+                              className="text-xs"
+                            >
+                              External
+                            </Button>
+                            <Button
+                              type="button"
+                              variant={formData.stt_mode === 'dedicated' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setFormData({...formData, stt_mode: 'dedicated', stt_provider_id: ''})}
+                              className="text-xs"
+                            >
+                              Dedicated
+                            </Button>
+                          </div>
+                          {formData.stt_mode === 'external' && (
+                            <Select value={formData.stt_provider_id} onValueChange={(value) => setFormData({ ...formData, stt_provider_id: value })}>
+                              <SelectTrigger className="h-9 text-sm">
+                                <SelectValue placeholder="Select STT provider" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {sttProviders.map((provider) => (
+                                  <SelectItem key={provider.id} value={provider.id.toString()}>
+                                    {provider.name} - ${provider.cost_per_unit}/{provider.unit}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </div>
+
+                        {/* TTS Provider Choice */}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">TTS Provider</label>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant={formData.tts_mode === 'builtin' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setFormData({...formData, tts_mode: 'builtin', tts_provider_id: ''})}
+                              className="text-xs"
+                            >
+                              Built-in
+                            </Button>
+                            <Button
+                              type="button"
+                              variant={formData.tts_mode === 'external' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setFormData({...formData, tts_mode: 'external'})}
+                              className="text-xs"
+                            >
+                              External
+                            </Button>
+                            <Button
+                              type="button"
+                              variant={formData.tts_mode === 'dedicated' ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setFormData({...formData, tts_mode: 'dedicated', tts_provider_id: ''})}
+                              className="text-xs"
+                            >
+                              Dedicated
+                            </Button>
+                          </div>
+                          {formData.tts_mode === 'external' && (
+                            <Select value={formData.tts_provider_id} onValueChange={(value) => setFormData({ ...formData, tts_provider_id: value })}>
+                              <SelectTrigger className="h-9 text-sm">
+                                <SelectValue placeholder="Select TTS provider" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {ttsProviders.map((provider) => (
+                                  <SelectItem key={provider.id} value={provider.id.toString()}>
+                                    {provider.name} - ${provider.cost_per_unit}/{provider.unit}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </div>
+                      </>
+                    )}
+
+                    {/* LLM Provider Choice */}
+                    <div className="space-y-2">
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">LLM Provider</label>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant={formData.llm_mode === 'builtin' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setFormData({...formData, llm_mode: 'builtin', llm_provider_id: ''})}
+                          className="text-xs"
+                        >
+                          Built-in
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={formData.llm_mode === 'external' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setFormData({...formData, llm_mode: 'external'})}
+                          className="text-xs"
+                        >
+                          External
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={formData.llm_mode === 'dedicated' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setFormData({...formData, llm_mode: 'dedicated', llm_provider_id: ''})}
+                          className="text-xs"
+                        >
+                          Dedicated
+                        </Button>
+                      </div>
+                      {formData.llm_mode === 'external' && (
+                        <Select value={formData.llm_provider_id} onValueChange={(value) => setFormData({ ...formData, llm_provider_id: value })}>
+                          <SelectTrigger className="h-9 text-sm">
+                            <SelectValue placeholder="Select LLM provider" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {llmProviders.map((provider) => (
+                              <SelectItem key={provider.id} value={provider.id.toString()}>
+                                {provider.name} - ${provider.cost_per_unit}/{provider.unit}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* External Provider Selection for PAG mode */}
+                {formData.platform_mode === 'pag' && (formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external') && (
                   <div className="space-y-3 mt-4">
                     {formData.agent_type === 'voice' && formData.stt_mode === 'external' && (
                       <div>
@@ -682,10 +847,13 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                       <>
                         {/* STT Overrides */}
                         <div className="space-y-2">
-                          <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">STT Overrides</h4>
+                          <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
+                            STT Overrides {formData.stt_mode === 'builtin' ? '(Built-in STT)' : formData.stt_provider_id ? `(${sttProviders.find(p => p.id.toString() === formData.stt_provider_id)?.name || 'Provider'})` : ''}
+                          </h4>
+                          <p className="text-xs text-gray-500">Remplissez seulement les champs à modifier (optionnel)</p>
                           <div className="grid grid-cols-3 gap-2">
                             <Input
-                              placeholder="Prix custom"
+                              placeholder="Prix $/minute (optionnel)"
                               type="number"
                               step="0.001"
                               value={formData.cost_overrides.stt_price || ''}
@@ -696,7 +864,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               className="h-8 text-xs"
                             />
                             <Input
-                              placeholder="URL custom"
+                              placeholder="URL custom (optionnel)"
                               value={formData.cost_overrides.stt_url || ''}
                               onChange={(e) => setFormData(prev => ({
                                 ...prev,
@@ -705,7 +873,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               className="h-8 text-xs"
                             />
                             <Input
-                              placeholder="API Token"
+                              placeholder="API Token (optionnel)"
                               value={formData.cost_overrides.stt_token || ''}
                               onChange={(e) => setFormData(prev => ({
                                 ...prev,
@@ -718,10 +886,13 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
 
                         {/* TTS Overrides */}
                         <div className="space-y-2">
-                          <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">TTS Overrides</h4>
+                          <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
+                            TTS Overrides {formData.tts_mode === 'builtin' ? '(Built-in TTS)' : formData.tts_provider_id ? `(${ttsProviders.find(p => p.id.toString() === formData.tts_provider_id)?.name || 'Provider'})` : ''}
+                          </h4>
+                          <p className="text-xs text-gray-500">Remplissez seulement les champs à modifier (optionnel)</p>
                           <div className="grid grid-cols-3 gap-2">
                             <Input
-                              placeholder="Prix custom"
+                              placeholder="Prix $/mot (optionnel)"
                               type="number"
                               step="0.001"
                               value={formData.cost_overrides.tts_price || ''}
@@ -732,7 +903,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               className="h-8 text-xs"
                             />
                             <Input
-                              placeholder="URL custom"
+                              placeholder="URL custom (optionnel)"
                               value={formData.cost_overrides.tts_url || ''}
                               onChange={(e) => setFormData(prev => ({
                                 ...prev,
@@ -741,7 +912,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                               className="h-8 text-xs"
                             />
                             <Input
-                              placeholder="API Token"
+                              placeholder="API Token (optionnel)"
                               value={formData.cost_overrides.tts_token || ''}
                               onChange={(e) => setFormData(prev => ({
                                 ...prev,
@@ -756,10 +927,13 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
 
                     {/* LLM Overrides */}
                     <div className="space-y-2">
-                      <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">LLM Overrides</h4>
+                      <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
+                        LLM Overrides {formData.llm_mode === 'builtin' ? '(Built-in LLM)' : formData.llm_provider_id ? `(${llmProviders.find(p => p.id.toString() === formData.llm_provider_id)?.name || 'Provider'})` : ''}
+                      </h4>
+                      <p className="text-xs text-gray-500">Remplissez seulement les champs à modifier (optionnel)</p>
                       <div className="grid grid-cols-3 gap-2">
                         <Input
-                          placeholder="Prix custom"
+                          placeholder="Prix $/token (optionnel)"
                           type="number"
                           step="0.00001"
                           value={formData.cost_overrides.llm_price || ''}
@@ -770,7 +944,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           className="h-8 text-xs"
                         />
                         <Input
-                          placeholder="URL custom"
+                          placeholder="URL custom (optionnel)"
                           value={formData.cost_overrides.llm_url || ''}
                           onChange={(e) => setFormData(prev => ({
                             ...prev,
@@ -779,7 +953,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           className="h-8 text-xs"
                         />
                         <Input
-                          placeholder="API Token"
+                          placeholder="API Token (optionnel)"
                           value={formData.cost_overrides.llm_token || ''}
                           onChange={(e) => setFormData(prev => ({
                             ...prev,

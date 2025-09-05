@@ -46,10 +46,11 @@ export async function GET(request: NextRequest) {
         unit,
         cost_per_unit,
         is_active,
+        is_builtin,
         created_at,
         updated_at
       FROM ai_providers 
-      WHERE 1=1
+      WHERE is_active = true AND (is_builtin IS NULL OR is_builtin = false)
     `;
     const params: any[] = [];
 

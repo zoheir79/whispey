@@ -99,15 +99,22 @@ export default function PricingManagement() {
       const defaultSettings: PricingSettings = {
         pricing_rates_dedicated: settingsMap.pricing_rates_dedicated || {
           llm_monthly: 25.00,
+          llm_annual: 250.00,
           stt_monthly: 15.00,
+          stt_annual: 150.00,
           tts_monthly: 12.00,
+          tts_annual: 120.00,
           text_agent_monthly: 19.99,
+          text_agent_annual: 199.90,
           voice_agent_monthly: 29.99,
+          voice_agent_annual: 299.90,
           vision_agent_monthly: 39.99,
+          vision_agent_annual: 399.90,
           s3_storage_per_gb_monthly: 0.10
         },
         pricing_rates_pag: settingsMap.pricing_rates_pag || {
           llm_builtin_per_token: 0.000015,
+          llm_builtin_per_token_text: 0.000010,
           stt_builtin_per_minute: 0.005,
           tts_builtin_per_word: 0.002,
           s3_storage_per_gb_monthly: 0.10
@@ -118,12 +125,16 @@ export default function PricingManagement() {
           access_key: '',
           secret_key: '',
           cost_per_gb: 0.023,
-          bucket_prefix: 'whispey-agent-'
+          bucket_prefix: 'whispey-agent-',
+          default_storage_gb: 50
         },
         subscription_costs: settingsMap.subscription_costs || {
           text_agent_monthly: 19.99,
+          text_agent_annual: 199.90,
           voice_agent_monthly: 29.99,
-          vision_agent_monthly: 39.99
+          voice_agent_annual: 299.90,
+          vision_agent_monthly: 39.99,
+          vision_agent_annual: 399.90
         }
       }
 
@@ -185,7 +196,12 @@ export default function PricingManagement() {
     }))
   }
 
-  const formatCurrency = (value: number) => `$${value.toFixed(4)}`
+  const formatCurrency = (value: number | undefined | null) => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return '$0.0000'
+    }
+    return `$${value.toFixed(4)}`
+  }
 
   if (loading) {
     return (
