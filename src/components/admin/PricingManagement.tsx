@@ -74,7 +74,12 @@ export default function PricingManagement() {
       
       if (Array.isArray(data.settings)) {
         data.settings.forEach((setting: any) => {
-          settingsMap[setting.key] = JSON.parse(setting.value)
+          try {
+            settingsMap[setting.key] = typeof setting.value === 'string' ? JSON.parse(setting.value) : setting.value
+          } catch (e) {
+            console.warn(`Failed to parse setting ${setting.key}:`, setting.value)
+            settingsMap[setting.key] = setting.value
+          }
         })
       }
 

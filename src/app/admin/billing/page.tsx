@@ -70,18 +70,8 @@ export default function AdminBillingPage() {
     )
   }
 
-  if (!workspaceId) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Aucun workspace sélectionné. Veuillez sélectionner un workspace pour gérer la facturation.
-          </AlertDescription>
-        </Alert>
-      </div>
-    )
-  }
+  // Super admin can access billing without workspace selection
+  // BillingDashboard will handle workspace selection internally
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -94,7 +84,7 @@ export default function AdminBillingPage() {
         </p>
       </div>
 
-      <BillingDashboard workspaceId={workspaceId} />
+      <BillingDashboard workspaceId={workspaceId || 'all'} />
     </div>
   )
 }

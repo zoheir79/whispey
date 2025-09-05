@@ -89,6 +89,8 @@ interface NotificationState {
 
 export default function BillingDashboard({ workspaceId }: { workspaceId: string }) {
   const [invoices, setInvoices] = useState<BillingInvoice[]>([])
+  const [workspaces, setWorkspaces] = useState<any[]>([])
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string>(workspaceId === 'all' ? '' : workspaceId)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
   const [showDialog, setShowDialog] = useState(false)
@@ -113,15 +115,41 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
   }
 
   useEffect(() => {
-    if (workspaceId) {
-      fetchInvoices()
+    if (workspaceId === 'all') {
+      fetchWorkspaces()
+    } else if (workspaceId) {
+      setSelectedWorkspace(workspaceId)
     }
+    fetchInvoices()
   }, [workspaceId])
 
+  useEffect(() => {
+    if (selectedWorkspace) {
+      fetchInvoices()
+    }
+  }, [selectedWorkspace])
+
+  const fetchWorkspaces = async () => {
+    try {
+      const response = await fetch('/api/workspaces')
+      if (response.ok) {
+        const data = await response.json()
+        setWorkspaces(data.workspaces || [])
+        if (data.workspaces && data.workspaces.length > 0) {
+          setSelectedWorkspace(data.workspaces[0].id)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching workspaces:', error)
+    }
+  }
+
   const fetchInvoices = async () => {
+    if (!selectedWorkspace) return
+    
     try {
       setLoading(true)
-      const response = await fetch(`/api/billing/generate?workspace_id=${workspaceId}&limit=20`)
+      const response = await fetch(`/api/billing/generate?workspace_id=${selectedWorkspace}&limit=20`)
       
       if (response.ok) {
         const data = await response.json()
@@ -146,7 +174,7 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspace_id: workspaceId,
+          workspace_id: selectedWorkspace,
           ...billingForm,
           preview: true
         })
@@ -177,7 +205,7 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspace_id: workspaceId,
+          workspace_id: selectedWorkspace,
           ...billingForm,
           preview: false
         })
@@ -272,6 +300,44 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
           </div>
         </Alert>
       )}
+
+      {/* Workspace Selector for Super Admin */}
+      {workspaceId === 'all' && workspaces.length > 0 && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Sélection Workspace</CardTitle>
+            <CardDescription>
+              Choisissez le workspace pour lequel afficher la facturation
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Select value={selectedWorkspace} onValueChange={setSelectedWorkspace}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sélectionnez un workspace" />
+              </SelectTrigger>
+              <SelectContent>
+                {workspaces.map((workspace) => (
+                  <SelectItem key={workspace.id} value={workspace.id}>
+                    {workspace.name} ({workspace.id})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Show content only if workspace is selected */}
+      {!selectedWorkspace ? (
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-gray-500 dark:text-gray-400">
+              Sélectionnez un workspace pour afficher la facturation
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -563,6 +629,8 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      )}
+        </>
       )}
     </>
   )
