@@ -20,10 +20,14 @@ SELECT
     SUM(COALESCE(duration_seconds, 0)) / 60.0 as total_minutes,
     AVG(COALESCE(avg_latency, 0)) as avg_latency,
     COUNT(DISTINCT customer_number) as unique_customers,
-    SUM(COALESCE(total_llm_cost, 0) + COALESCE(total_tts_cost, 0) + COALESCE(total_stt_cost, 0)) as total_cost,
+    -- Coûts per-call (usage costs)
+    SUM(COALESCE(l.total_llm_cost, 0) + COALESCE(l.total_tts_cost, 0) + COALESCE(l.total_stt_cost, 0)) as total_usage_cost,
+    -- Platform mode pour différencier le calcul
+    MAX(a.platform_mode) as platform_mode,
     -- Extract and sum tokens across all calls for this agent/date
     SUM(COALESCE(extract_tokens_from_transcript(transcript_with_metrics), 0)) as total_tokens
-FROM pype_voice_call_logs 
+FROM pype_voice_call_logs l
+LEFT JOIN pype_voice_agents a ON l.agent_id = a.id
 WHERE call_started_at IS NOT NULL
 GROUP BY agent_id, DATE(call_started_at)
 ORDER BY agent_id, call_date;
@@ -32,10 +36,49 @@ ORDER BY agent_id, call_date;
 CREATE INDEX IF NOT EXISTS idx_call_summary_materialized_agent_date 
 ON call_summary_materialized (agent_id, call_date);
 
+CREATE INDEX IF NOT EXISTS idx_call_summary_materialized_platform_mode
+ON call_summary_materialized (platform_mode);
+
 -- Rafraîchir la vue avec les données actuelles
 REFRESH MATERIALIZED VIEW call_summary_materialized;
 
--- Vérification des données créées avec les deux métriques de temps
+-- Créer une fonction helper pour calculer les coûts complets avec dedicated T0
+CREATE OR REPLACE FUNCTION get_complete_daily_cost(p_agent_id UUID, p_date DATE)
+RETURNS JSONB AS $$
+DECLARE
+    usage_cost NUMERIC := 0;
+    dedicated_cost NUMERIC := 0;
+    platform_mode TEXT;
+    total_cost NUMERIC := 0;
+BEGIN
+    -- Récupérer usage cost depuis materialized view
+    SELECT total_usage_cost, platform_mode 
+    INTO usage_cost, platform_mode
+    FROM call_summary_materialized 
+    WHERE agent_id = p_agent_id AND call_date = p_date;
+    
+    usage_cost := COALESCE(usage_cost, 0);
+    
+    -- Calculer dedicated cost seulement pour dedicated/hybrid
+    IF platform_mode IN ('dedicated', 'hybrid') THEN
+        SELECT COALESCE(
+            (get_agent_total_cost_t0(p_agent_id, p_date, p_date + INTERVAL '1 day'))->>'total_cost', '0'
+        )::NUMERIC - usage_cost
+        INTO dedicated_cost;
+    END IF;
+    
+    total_cost := usage_cost + COALESCE(dedicated_cost, 0);
+    
+    RETURN jsonb_build_object(
+        'usage_cost', usage_cost,
+        'dedicated_cost', COALESCE(dedicated_cost, 0),
+        'total_cost', total_cost,
+        'platform_mode', COALESCE(platform_mode, 'pag')
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Vérification des données avec coûts complets
 SELECT 
     agent_id,
     call_date,
@@ -44,7 +87,9 @@ SELECT
     success_rate,
     total_call_minutes as global_call_duration,
     total_ai_processing_minutes as stt_llm_tts_duration,
-    total_cost,
+    total_usage_cost,
+    platform_mode,
+    get_complete_daily_cost(agent_id, call_date) as complete_cost,
     total_tokens,
     unique_customers
 FROM call_summary_materialized 
