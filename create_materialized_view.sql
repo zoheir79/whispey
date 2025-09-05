@@ -48,19 +48,19 @@ RETURNS JSONB AS $$
 DECLARE
     usage_cost NUMERIC := 0;
     dedicated_cost NUMERIC := 0;
-    platform_mode TEXT;
+    agent_platform_mode TEXT;
     total_cost NUMERIC := 0;
 BEGIN
     -- Récupérer usage cost depuis materialized view
-    SELECT total_usage_cost, platform_mode 
-    INTO usage_cost, platform_mode
-    FROM call_summary_materialized 
-    WHERE agent_id = p_agent_id AND call_date = p_date;
+    SELECT total_usage_cost, csm.platform_mode 
+    INTO usage_cost, agent_platform_mode
+    FROM call_summary_materialized csm
+    WHERE csm.agent_id = p_agent_id AND csm.call_date = p_date;
     
     usage_cost := COALESCE(usage_cost, 0);
     
     -- Calculer dedicated cost seulement pour dedicated/hybrid
-    IF platform_mode IN ('dedicated', 'hybrid') THEN
+    IF agent_platform_mode IN ('dedicated', 'hybrid') THEN
         SELECT COALESCE(
             (get_agent_total_cost_t0(p_agent_id, p_date, p_date + INTERVAL '1 day'))->>'total_cost', '0'
         )::NUMERIC - usage_cost
@@ -73,7 +73,7 @@ BEGIN
         'usage_cost', usage_cost,
         'dedicated_cost', COALESCE(dedicated_cost, 0),
         'total_cost', total_cost,
-        'platform_mode', COALESCE(platform_mode, 'pag')
+        'platform_mode', COALESCE(agent_platform_mode, 'pag')
     );
 END;
 $$ LANGUAGE plpgsql;
