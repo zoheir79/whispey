@@ -487,44 +487,76 @@ export default function AIProvidersManagement() {
             <span>Built-in Models Configuration</span>
           </CardTitle>
           <CardDescription>
-            Configurez les paramètres des modèles IA intégrés hébergés sur vos serveurs.
+            Configurez les paramètres des modèles IA intégrés hébergés sur vos serveurs. Ces modèles sont non supprimables.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Voice Agents Built-in */}
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            {/* STT Built-in */}
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-purple-50 dark:bg-purple-900/20">
               <div>
-                <div className="font-medium">Agents Voice (Built-in)</div>
+                <div className="font-medium flex items-center gap-2">
+                  Speech-to-Text (Built-in)
+                  <Badge variant="secondary" className="text-xs">NON SUPPRIMABLE</Badge>
+                </div>
                 <div className="text-sm text-gray-500 mt-1">
-                  URL: {globalSettings?.agent_subscription_costs ? 'Configuré' : 'Non configuré'}
+                  URL: {globalSettings?.builtin_stt?.url || 'Non configuré'}
                 </div>
                 <div className="text-sm text-gray-500">
-                  Coût: ${globalSettings?.agent_subscription_costs?.voice_per_minute?.toFixed(4) || '0.0000'}/minute
+                  PAG: ${globalSettings?.builtin_stt?.cost_per_minute?.toFixed(4) || '0.0000'}/minute | 
+                  Dedicated: ${globalSettings?.builtin_stt?.cost_dedicated_monthly?.toFixed(2) || '0.00'}/mois
                 </div>
               </div>
               <Button variant="outline" onClick={() => {
-                setBuiltinEditType('voice')
+                setBuiltinEditType('stt')
                 setShowBuiltinDialog(true)
               }}>
                 <Edit className="h-4 w-4 mr-2" />
                 Configurer
               </Button>
             </div>
-            
-            {/* Text-only Agents Built-in */}
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+
+            {/* TTS Built-in */}
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-purple-50 dark:bg-purple-900/20">
               <div>
-                <div className="font-medium">Agents Text-only (Built-in)</div>
+                <div className="font-medium flex items-center gap-2">
+                  Text-to-Speech (Built-in)
+                  <Badge variant="secondary" className="text-xs">NON SUPPRIMABLE</Badge>
+                </div>
                 <div className="text-sm text-gray-500 mt-1">
-                  URL: {globalSettings?.agent_subscription_costs ? 'Configuré' : 'Non configuré'}
+                  URL: {globalSettings?.builtin_tts?.url || 'Non configuré'}
                 </div>
                 <div className="text-sm text-gray-500">
-                  Coût: ${globalSettings?.agent_subscription_costs?.textonly_per_month?.toFixed(2) || '0.00'}/mois
+                  PAG: ${globalSettings?.builtin_tts?.cost_per_word?.toFixed(6) || '0.000000'}/mot | 
+                  Dedicated: ${globalSettings?.builtin_tts?.cost_dedicated_monthly?.toFixed(2) || '0.00'}/mois
                 </div>
               </div>
               <Button variant="outline" onClick={() => {
-                setBuiltinEditType('text')
+                setBuiltinEditType('tts')
+                setShowBuiltinDialog(true)
+              }}>
+                <Edit className="h-4 w-4 mr-2" />
+                Configurer
+              </Button>
+            </div>
+
+            {/* LLM Built-in */}
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-purple-50 dark:bg-purple-900/20">
+              <div>
+                <div className="font-medium flex items-center gap-2">
+                  Large Language Model (Built-in)
+                  <Badge variant="secondary" className="text-xs">NON SUPPRIMABLE</Badge>
+                </div>
+                <div className="text-sm text-gray-500 mt-1">
+                  URL: {globalSettings?.builtin_llm?.url || 'Non configuré'}
+                </div>
+                <div className="text-sm text-gray-500">
+                  PAG: ${globalSettings?.builtin_llm?.cost_per_token?.toFixed(6) || '0.000000'}/token | 
+                  Dedicated: ${globalSettings?.builtin_llm?.cost_dedicated_monthly?.toFixed(2) || '0.00'}/mois
+                </div>
+              </div>
+              <Button variant="outline" onClick={() => {
+                setBuiltinEditType('llm')
                 setShowBuiltinDialog(true)
               }}>
                 <Edit className="h-4 w-4 mr-2" />
@@ -734,13 +766,21 @@ export default function AIProvidersManagement() {
         </DialogContent>
       </Dialog>
 
-      {/* Built-in Settings Dialog */}
+          {/* Built-in Settings Dialog */}
       <Dialog open={showBuiltinDialog} onOpenChange={setShowBuiltinDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Configuration Built-in - {builtinEditType === 'voice' ? 'Voice Agents' : 'Text-only Agents'}</DialogTitle>
+            <DialogTitle>
+              Configuration Built-in - {
+                builtinEditType === 'stt' ? 'Speech-to-Text' :
+                builtinEditType === 'tts' ? 'Text-to-Speech' :
+                builtinEditType === 'llm' ? 'Large Language Model' :
+                builtinEditType === 'voice' ? 'Voice Agents' : 
+                'Text-only Agents'
+              }
+            </DialogTitle>
             <DialogDescription>
-              Configurez les paramètres pour les agents {builtinEditType === 'voice' ? 'voice' : builtinEditType === 'text' ? 'text-only' : `${builtinEditType.toUpperCase()}`} intégrés.
+              Configurez les paramètres pour les modèles {builtinEditType.toUpperCase()} intégrés non supprimables.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

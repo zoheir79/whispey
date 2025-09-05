@@ -839,8 +839,157 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                     </div>
                     )}
 
-                    {/* External Provider Selection - Only for PAG + External */}
-                    {formData.platform_mode === 'pag' && (formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external') && (
+                    {/* Hybrid Mode - Individual Model Selection */}
+                    {formData.platform_mode === 'hybrid' && (
+                      <div className="space-y-4 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+                          Configure Each Model Individually
+                        </div>
+                        
+                        {/* STT Configuration - only for voice agents */}
+                        {formData.agent_type === 'voice' && (
+                          <div className="space-y-2">
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                              Speech-to-Text (STT)
+                            </label>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                  formData.stt_mode === 'builtin_dedicated'
+                                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                                    : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                                }`}
+                                onClick={() => setFormData({ ...formData, stt_mode: 'builtin_dedicated' })}
+                              >
+                                Built-in Dedicated
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">$15.00/month</div>
+                              </button>
+                              <button
+                                type="button"
+                                className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                  formData.stt_mode === 'builtin_pag'
+                                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+                                    : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                                }`}
+                                onClick={() => setFormData({ ...formData, stt_mode: 'builtin_pag' })}
+                              >
+                                Built-in PAG
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">$0.005/minute</div>
+                              </button>
+                              <button
+                                type="button"
+                                className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                  formData.stt_mode === 'external_pag'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                                    : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                                }`}
+                                onClick={() => setFormData({ ...formData, stt_mode: 'external_pag' })}
+                              >
+                                External PAG
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Custom</div>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* TTS Configuration - only for voice agents */}
+                        {formData.agent_type === 'voice' && (
+                          <div className="space-y-2">
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                              Text-to-Speech (TTS)
+                            </label>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                  formData.tts_mode === 'builtin_dedicated'
+                                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                                    : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                                }`}
+                                onClick={() => setFormData({ ...formData, tts_mode: 'builtin_dedicated' })}
+                              >
+                                Built-in Dedicated
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">$12.00/month</div>
+                              </button>
+                              <button
+                                type="button"
+                                className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                  formData.tts_mode === 'builtin_pag'
+                                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+                                    : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                                }`}
+                                onClick={() => setFormData({ ...formData, tts_mode: 'builtin_pag' })}
+                              >
+                                Built-in PAG
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">$0.002/word</div>
+                              </button>
+                              <button
+                                type="button"
+                                className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                  formData.tts_mode === 'external_pag'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                                    : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                                }`}
+                                onClick={() => setFormData({ ...formData, tts_mode: 'external_pag' })}
+                              >
+                                External PAG
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Custom</div>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* LLM Configuration - for all agents */}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                            Large Language Model (LLM)
+                          </label>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                formData.llm_mode === 'builtin_dedicated'
+                                  ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                                  : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                              }`}
+                              onClick={() => setFormData({ ...formData, llm_mode: 'builtin_dedicated' })}
+                            >
+                              Built-in Dedicated
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">$25.00/month</div>
+                            </button>
+                            <button
+                              type="button"
+                              className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                formData.llm_mode === 'builtin_pag'
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+                                  : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                              }`}
+                              onClick={() => setFormData({ ...formData, llm_mode: 'builtin_pag' })}
+                            >
+                              Built-in PAG
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">$0.000015/token</div>
+                            </button>
+                            <button
+                              type="button"
+                              className={`flex-1 p-2 text-xs rounded border transition-all ${
+                                formData.llm_mode === 'external_pag'
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                                  : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                              }`}
+                              onClick={() => setFormData({ ...formData, llm_mode: 'external_pag' })}
+                            >
+                              External PAG
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Custom</div>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* External Provider Selection - For any external mode */}
+                    {((formData.platform_mode === 'pag' && (formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external')) || 
+                     (formData.platform_mode === 'hybrid' && (formData.stt_mode === 'external_pag' || formData.tts_mode === 'external_pag' || formData.llm_mode === 'external_pag'))) && (
                       <div className="space-y-4 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border">
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
                           Select AI Providers
