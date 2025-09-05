@@ -115,12 +115,21 @@ export async function POST(request: NextRequest) {
 
     // Get consumption data for period
     const agentIds = agents.map((a: any) => a.id)
+    
+    // Extract year and month from period dates
+    const startDate = new Date(period_start)
+    const endDate = new Date(period_end)
+    const startYear = startDate.getFullYear()
+    const startMonth = startDate.getMonth() + 1
+    const endYear = endDate.getFullYear()
+    const endMonth = endDate.getMonth() + 1
+    
     const consumptionResult = await query(`
       SELECT * FROM monthly_consumption 
       WHERE agent_id = ANY($1) 
-      AND period_start >= $2 
-      AND period_end <= $3
-    `, [agentIds, period_start, period_end])
+      AND ((year = $2 AND month >= $3) OR (year > $2))
+      AND ((year = $4 AND month <= $5) OR (year < $4))
+    `, [agentIds, startYear, startMonth, endYear, endMonth])
 
     const consumption = consumptionResult.rows
 

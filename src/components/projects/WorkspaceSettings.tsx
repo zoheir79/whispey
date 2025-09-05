@@ -98,13 +98,32 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
       formData.name !== project.name ||
       formData.description !== (project.description || '') ||
       formData.environment !== project.environment ||
-      formData.is_active !== project.is_active
+      formData.is_active !== project.is_active ||
+      s3ConfigData.s3_enabled !== (project.s3_enabled || false) ||
+      (s3ConfigData.s3_enabled && (
+        s3ConfigData.s3_region !== (project.s3_region || '') ||
+        s3ConfigData.s3_endpoint !== (project.s3_endpoint || '') ||
+        s3ConfigData.s3_bucket_prefix !== (project.s3_bucket_prefix || '') ||
+        s3ConfigData.s3_access_key !== (project.s3_access_key || '') ||
+        s3ConfigData.s3_secret_key !== (project.s3_secret_key || '') ||
+        s3ConfigData.s3_cost_per_gb !== (project.s3_cost_per_gb || 0.023) ||
+        s3ConfigData.s3_default_storage_gb !== (project.s3_default_storage_gb || 50)
+      ))
     
     setHasChanges(hasChanged)
-  }, [formData, project])
+  }, [formData, s3ConfigData, project])
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+    setError(null)
+    setSuccess(null)
+  }
+
+  const handleS3ConfigChange = (field: string, value: any) => {
+    setS3ConfigData(prev => ({
       ...prev,
       [field]: value
     }))
@@ -124,7 +143,17 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
         name: formData.name.trim(),
         description: formData.description.trim(),
         environment: formData.environment,
-        is_active: formData.is_active
+        is_active: formData.is_active,
+        s3_config: s3ConfigData.s3_enabled ? {
+          enabled: s3ConfigData.s3_enabled,
+          region: s3ConfigData.s3_region.trim(),
+          endpoint: s3ConfigData.s3_endpoint.trim(),
+          access_key: s3ConfigData.s3_access_key.trim(),
+          secret_key: s3ConfigData.s3_secret_key,
+          bucket_prefix: s3ConfigData.s3_bucket_prefix.trim().toLowerCase(),
+          cost_per_gb: s3ConfigData.s3_cost_per_gb,
+          default_storage_gb: s3ConfigData.s3_default_storage_gb
+        } : { enabled: false }
       }
 
       const response = await fetch(`/api/projects/${project.id}`, {
@@ -335,19 +364,159 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-6">
-                  <div className="flex flex-col items-center gap-3">
-                    <Database className="h-12 w-12 text-gray-400 dark:text-slate-600" />
-                    <div>
-                      <h4 className="font-medium text-gray-900 dark:text-slate-200">No S3 Configuration</h4>
-                      <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
-                        This workspace doesn't have S3 storage configured.
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-slate-500 mt-2">
-                        Voice agents will use default storage settings with $0 cost.
-                      </p>
+                <div className="space-y-4">
+                  {!showS3Config ? (
+                    <div className="text-center py-6">
+                      <div className="flex flex-col items-center gap-3">
+                        <Database className="h-12 w-12 text-gray-400 dark:text-slate-600" />
+                        <div>
+                          <h4 className="font-medium text-gray-900 dark:text-slate-200">No S3 Configuration</h4>
+                          <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
+                            This workspace doesn't have S3 storage configured.
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-slate-500 mt-2">
+                            Voice agents will use default storage settings with $0 cost.
+                          </p>
+                        </div>
+                        <Button 
+                          onClick={() => setShowS3Config(true)}
+                          variant="outline" 
+                          className="mt-3 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+                        >
+                          <Cloud className="h-4 w-4 mr-2" />
+                          Configure S3 Storage
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-gray-900 dark:text-slate-200">Configure S3 Storage</h4>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setShowS3Config(false)
+                            setS3ConfigData(prev => ({ ...prev, s3_enabled: false }))
+                          }}
+                          className="dark:text-slate-400 dark:hover:text-slate-200"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="s3_enabled"
+                          checked={s3ConfigData.s3_enabled}
+                          onCheckedChange={(checked) => handleS3ConfigChange('s3_enabled', checked)}
+                        />
+                        <Label htmlFor="s3_enabled" className="flex items-center gap-2 dark:text-slate-300">
+                          Enable S3 Storage
+                          <Badge className={`px-2 py-1 text-xs ${s3ConfigData.s3_enabled ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-gray-50 text-gray-700 dark:bg-slate-700 dark:text-slate-300'}`}>
+                            {s3ConfigData.s3_enabled ? 'Enabled' : 'Disabled'}
+                          </Badge>
+                        </Label>
+                      </div>
+
+                      {s3ConfigData.s3_enabled && (
+                        <div className="space-y-4 p-4 bg-blue-50 dark:bg-slate-700/50 rounded-lg border border-blue-200 dark:border-slate-600">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="s3_region" className="dark:text-slate-300">Region *</Label>
+                              <Input
+                                id="s3_region"
+                                value={s3ConfigData.s3_region}
+                                onChange={(e) => handleS3ConfigChange('s3_region', e.target.value)}
+                                placeholder="us-east-1"
+                                className="mt-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="s3_endpoint" className="dark:text-slate-300">Endpoint *</Label>
+                              <Input
+                                id="s3_endpoint"
+                                value={s3ConfigData.s3_endpoint}
+                                onChange={(e) => handleS3ConfigChange('s3_endpoint', e.target.value)}
+                                placeholder="https://s3.amazonaws.com"
+                                className="mt-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label htmlFor="s3_bucket_prefix" className="dark:text-slate-300">Bucket Prefix *</Label>
+                            <Input
+                              id="s3_bucket_prefix"
+                              value={s3ConfigData.s3_bucket_prefix}
+                              onChange={(e) => handleS3ConfigChange('s3_bucket_prefix', e.target.value)}
+                              placeholder="whispey-workspace"
+                              className="mt-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
+                            />
+                            <p className="text-xs text-gray-600 dark:text-slate-400 mt-1">
+                              Buckets will be created as: {s3ConfigData.s3_bucket_prefix || 'prefix'}-[agent-id]
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="s3_access_key" className="dark:text-slate-300">Access Key *</Label>
+                              <Input
+                                id="s3_access_key"
+                                type="password"
+                                value={s3ConfigData.s3_access_key}
+                                onChange={(e) => handleS3ConfigChange('s3_access_key', e.target.value)}
+                                placeholder="AKIA..."
+                                className="mt-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="s3_secret_key" className="dark:text-slate-300">Secret Key *</Label>
+                              <Input
+                                id="s3_secret_key"
+                                type="password"
+                                value={s3ConfigData.s3_secret_key}
+                                onChange={(e) => handleS3ConfigChange('s3_secret_key', e.target.value)}
+                                placeholder="Enter secret key"
+                                className="mt-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="s3_cost_per_gb" className="dark:text-slate-300">Cost per GB/month</Label>
+                              <Input
+                                id="s3_cost_per_gb"
+                                type="number"
+                                step="0.001"
+                                value={s3ConfigData.s3_cost_per_gb}
+                                onChange={(e) => handleS3ConfigChange('s3_cost_per_gb', parseFloat(e.target.value) || 0)}
+                                className="mt-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="s3_default_storage_gb" className="dark:text-slate-300">Default Storage (GB)</Label>
+                              <Input
+                                id="s3_default_storage_gb"
+                                type="number"
+                                value={s3ConfigData.s3_default_storage_gb}
+                                onChange={(e) => handleS3ConfigChange('s3_default_storage_gb', parseInt(e.target.value) || 0)}
+                                className="mt-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded p-3">
+                            <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                              <strong>Security Note:</strong> S3 credentials will be encrypted and stored securely. 
+                              Make sure the provided access key has appropriate S3 bucket creation and management permissions.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>

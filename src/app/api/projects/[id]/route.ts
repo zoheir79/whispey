@@ -39,7 +39,7 @@ export async function GET(
     // Fetch project details from database
     const { data: projectData, error } = await fetchFromTable({
       table: 'pype_voice_projects',
-      select: 'id, name, description, environment, is_active, created_at, owner_user_id',
+      select: 'id, name, description, environment, is_active, created_at, owner_user_id, s3_enabled, s3_region, s3_endpoint, s3_bucket_prefix, s3_access_key, s3_secret_key, s3_cost_per_gb, s3_default_storage_gb',
       filters: [{ column: 'id', operator: '=', value: projectId }]
     })
 
@@ -139,7 +139,14 @@ export async function PATCH(
   try {
     const { id: projectId } = await params
     const body = await request.json()
-    const { retry_configuration } = body
+    const { 
+      name, 
+      description, 
+      environment, 
+      is_active, 
+      retry_configuration, 
+      s3_config 
+    } = body
 
     if (!projectId) {
       return NextResponse.json(
@@ -147,6 +154,14 @@ export async function PATCH(
         { status: 400 }
       )
     }
+
+    let updateData: any = {}
+
+    // Handle basic project updates
+    if (name !== undefined) updateData.name = name
+    if (description !== undefined) updateData.description = description
+    if (environment !== undefined) updateData.environment = environment
+    if (is_active !== undefined) updateData.is_active = is_active
 
     // Validate retry_configuration if provided
     if (retry_configuration) {
@@ -165,12 +180,54 @@ export async function PATCH(
           )
         }
       }
+      updateData.retry_configuration = retry_configuration
     }
 
-    // Update the project with retry configuration
+    // Handle S3 configuration
+    if (s3_config) {
+      const { 
+        enabled, 
+        region, 
+        endpoint, 
+        access_key, 
+        secret_key, 
+        bucket_prefix, 
+        cost_per_gb = 0.023,
+        default_storage_gb = 50
+      } = s3_config
+
+      if (enabled) {
+        if (!region || !endpoint || !access_key || !secret_key || !bucket_prefix) {
+          return NextResponse.json(
+            { error: 'When S3 is enabled, region, endpoint, access_key, secret_key, and bucket_prefix are required' },
+            { status: 400 }
+          )
+        }
+
+        updateData.s3_enabled = true
+        updateData.s3_region = region.trim()
+        updateData.s3_endpoint = endpoint.trim()
+        updateData.s3_access_key = access_key.trim()
+        updateData.s3_secret_key = secret_key // Should be encrypted in production
+        updateData.s3_bucket_prefix = bucket_prefix.trim().toLowerCase()
+        updateData.s3_cost_per_gb = parseFloat(cost_per_gb)
+        updateData.s3_default_storage_gb = parseInt(default_storage_gb)
+      } else {
+        updateData.s3_enabled = false
+        updateData.s3_region = null
+        updateData.s3_endpoint = null
+        updateData.s3_access_key = null
+        updateData.s3_secret_key = null
+        updateData.s3_bucket_prefix = null
+        updateData.s3_cost_per_gb = 0.023
+        updateData.s3_default_storage_gb = 50
+      }
+    }
+
+    // Update the project
     const { data, error } = await updateTable({
    table: 'pype_voice_projects',
-   data: {retry_configuration},
+   data: updateData,
    filters: [{ column: 'id', operator: 'eq', value: projectId }]
  })
 
@@ -182,7 +239,7 @@ export async function PATCH(
       )
     }
 
-    console.log(`Successfully updated retry configuration for project "${data.name}"`)
+    console.log(`Successfully updated project "${data.name}"`)
     return NextResponse.json(data, { status: 200 })
 
   } catch (error) {

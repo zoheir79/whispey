@@ -984,8 +984,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                     </p>
                     <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-lg border border-yellow-200 dark:border-yellow-700">
                       <p className="text-xs text-yellow-800 dark:text-yellow-200">
-                        <strong>Default Settings:</strong> Voice recordings will use default storage with $0 cost.
-                        STT/TTS URLs and tokens will be set to empty values.
+                        <strong>Default Settings:</strong> Voice recordings will use local temporary storage with $0 cost.
+                        Configure S3 in workspace settings for persistent storage and call recording archival.
                       </p>
                     </div>
                   </div>
