@@ -10,8 +10,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
-import { AlertCircle, Check, Loader2, Save, Settings, ToggleLeft, ToggleRight } from 'lucide-react'
+import { AlertCircle, Check, Loader2, Save, Settings, Phone, Bot, Brain, Server, Zap, Database, Cloud, DollarSign, Edit } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useProviders, getProvidersByType } from '@/hooks/useProviders'
+import { useCostOverrides } from '@/hooks/useCostOverrides'
+import { useGlobalRole } from '@/hooks/useGlobalRole'
 
 interface Agent {
   id: string
@@ -27,6 +30,11 @@ interface Agent {
   vapi_project_key_encrypted?: string
   field_extractor?: boolean
   field_extractor_prompt?: string
+  platform_mode?: string
+  billing_cycle?: string
+  provider_config?: any
+  pricing_config?: any
+  s3_storage_gb?: number
 }
 
 interface AgentSettingsProps {
@@ -34,14 +42,71 @@ interface AgentSettingsProps {
   onAgentUpdate: (updatedAgent: Agent) => void
 }
 
+const PLATFORM_MODES = [
+  { 
+    value: 'dedicated', 
+    label: 'Dedicated',
+    description: 'Fixed monthly cost, unlimited usage',
+    icon: Server,
+    color: 'purple'
+  },
+  { 
+    value: 'pag', 
+    label: 'Pay-as-you-Go',
+    description: 'Pay only for what you use',
+    icon: Zap,
+    color: 'green'
+  },
+  { 
+    value: 'hybrid', 
+    label: 'Hybrid',
+    description: 'Mix dedicated and PAG models',
+    icon: Settings,
+    color: 'blue'
+  }
+]
+
+const AGENT_TYPES = [
+  { 
+    value: 'voice', 
+    label: 'Voice Agent',
+    description: 'Handle voice calls',
+    icon: Phone,
+  },
+  { 
+    value: 'text_only', 
+    label: 'Text-only Agent',
+    description: 'Process text interactions',
+    icon: Brain,
+  }
+]
+
+const VOICE_TYPES = [
+  { value: 'inbound', label: 'Inbound', description: 'Handle incoming calls' },
+  { value: 'outbound', label: 'Outbound', description: 'Make automated calls' },
+  { value: 'custom', label: 'Custom', description: 'Specialized agent' }
+]
+
 export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsProps) {
+  const { providers, globalSettings, loading: providersLoading } = useProviders()
+  const { agent: costAgent, updateOverrides, resetOverrides } = useCostOverrides(null)
+  const { globalRole, isSuperAdmin } = useGlobalRole()
+  const [showCostOverrides, setShowCostOverrides] = useState(false)
+  
   const [formData, setFormData] = useState({
     name: agent.name || '',
-    agent_type: agent.agent_type || 'inbound',
+    agent_type: agent.agent_type || 'voice',
+    voice_type: agent.agent_type || 'inbound',
     environment: agent.environment || 'dev',
     is_active: agent.is_active ?? true,
     field_extractor: agent.field_extractor ?? false,
     field_extractor_prompt: agent.field_extractor_prompt || '',
+    platform_mode: agent.platform_mode || 'pag',
+    billing_cycle: agent.billing_cycle || 'monthly',
+    stt_provider: agent.provider_config?.stt_provider || 'builtin_stt',
+    tts_provider: agent.provider_config?.tts_provider || 'builtin_tts',
+    llm_provider: agent.provider_config?.llm_provider || 'builtin_llm',
+    s3_storage_gb: agent.s3_storage_gb || 50,
     configuration: JSON.stringify(agent.configuration || {}, null, 2)
   })
 
@@ -50,15 +115,27 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
   const [success, setSuccess] = useState<string | null>(null)
   const [hasChanges, setHasChanges] = useState(false)
 
+  // Get providers by type
+  const sttProviders = getProvidersByType(providers, 'STT')
+  const ttsProviders = getProvidersByType(providers, 'TTS')  
+  const llmProviders = getProvidersByType(providers, 'LLM')
+
   // Track changes
   useEffect(() => {
     const hasChanged = 
       formData.name !== agent.name ||
       formData.agent_type !== agent.agent_type ||
+      formData.voice_type !== agent.agent_type ||
       formData.environment !== agent.environment ||
       formData.is_active !== agent.is_active ||
       formData.field_extractor !== (agent.field_extractor ?? false) ||
       formData.field_extractor_prompt !== (agent.field_extractor_prompt || '') ||
+      formData.platform_mode !== (agent.platform_mode || 'pag') ||
+      formData.billing_cycle !== (agent.billing_cycle || 'monthly') ||
+      formData.stt_provider !== (agent.provider_config?.stt_provider || 'builtin_stt') ||
+      formData.tts_provider !== (agent.provider_config?.tts_provider || 'builtin_tts') ||
+      formData.llm_provider !== (agent.provider_config?.llm_provider || 'builtin_llm') ||
+      formData.s3_storage_gb !== (agent.s3_storage_gb || 50) ||
       formData.configuration !== JSON.stringify(agent.configuration || {}, null, 2)
     
     setHasChanges(hasChanged)
@@ -91,11 +168,19 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
 
       const updateData = {
         name: formData.name.trim(),
-        agent_type: formData.agent_type,
+        agent_type: formData.agent_type === 'voice' ? formData.voice_type : formData.agent_type,
         environment: formData.environment,
         is_active: formData.is_active,
         field_extractor: formData.field_extractor,
         field_extractor_prompt: formData.field_extractor_prompt,
+        platform_mode: formData.platform_mode,
+        billing_cycle: formData.billing_cycle,
+        provider_config: {
+          stt_provider: formData.stt_provider,
+          tts_provider: formData.tts_provider,
+          llm_provider: formData.llm_provider
+        },
+        s3_storage_gb: formData.s3_storage_gb,
         configuration: parsedConfig
       }
 
@@ -204,12 +289,44 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
                   <SelectValue placeholder="Select agent type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="inbound">Inbound</SelectItem>
-                  <SelectItem value="outbound">Outbound</SelectItem>
-                  <SelectItem value="custom">Custom</SelectItem>
+                  {AGENT_TYPES.map((type) => {
+                    const Icon = type.icon
+                    return (
+                      <SelectItem key={type.value} value={type.value}>
+                        <div className="flex items-center gap-2">
+                          <Icon className="h-4 w-4" />
+                          <div>
+                            <div className="font-medium">{type.label}</div>
+                            <div className="text-xs text-gray-500">{type.description}</div>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    )
+                  })}
                 </SelectContent>
               </Select>
             </div>
+
+            {formData.agent_type === 'voice' && (
+              <div>
+                <Label htmlFor="voice_type">Voice Type</Label>
+                <Select value={formData.voice_type} onValueChange={(value) => handleInputChange('voice_type', value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select voice type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {VOICE_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        <div>
+                          <div className="font-medium">{type.label}</div>
+                          <div className="text-xs text-gray-500">{type.description}</div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div>
               <Label htmlFor="environment">Environment</Label>
@@ -243,6 +360,209 @@ export default function AgentSettings({ agent, onAgentUpdate }: AgentSettingsPro
           </div>
         </CardContent>
       </Card>
+
+      {/* Platform & Billing */}
+      <Card className="dark:bg-slate-800 dark:border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-lg dark:text-gray-100 flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Platform & Billing
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="platform_mode">Platform Mode</Label>
+              <Select value={formData.platform_mode} onValueChange={(value) => handleInputChange('platform_mode', value)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select platform mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PLATFORM_MODES.map((mode) => {
+                    const Icon = mode.icon
+                    return (
+                      <SelectItem key={mode.value} value={mode.value}>
+                        <div className="flex items-center gap-2">
+                          <Icon className="h-4 w-4" />
+                          <div>
+                            <div className="font-medium">{mode.label}</div>
+                            <div className="text-xs text-gray-500">{mode.description}</div>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    )
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="billing_cycle">Billing Cycle</Label>
+              <Select value={formData.billing_cycle} onValueChange={(value) => handleInputChange('billing_cycle', value)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select billing cycle" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="annual">Annual</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* AI Providers */}
+      <Card className="dark:bg-slate-800 dark:border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-lg dark:text-gray-100 flex items-center gap-2">
+            <Brain className="h-5 w-5" />
+            AI Providers
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {providersLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span className="ml-2">Loading providers...</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="stt_provider">STT Provider</Label>
+                <Select value={formData.stt_provider} onValueChange={(value) => handleInputChange('stt_provider', value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select STT provider" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sttProviders.map((provider) => (
+                      <SelectItem key={provider.id} value={provider.id.toString()}>
+                        {provider.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="tts_provider">TTS Provider</Label>
+                <Select value={formData.tts_provider} onValueChange={(value) => handleInputChange('tts_provider', value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select TTS provider" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ttsProviders.map((provider) => (
+                      <SelectItem key={provider.id} value={provider.id.toString()}>
+                        {provider.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="llm_provider">LLM Provider</Label>
+                <Select value={formData.llm_provider} onValueChange={(value) => handleInputChange('llm_provider', value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select LLM provider" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {llmProviders.map((provider) => (
+                      <SelectItem key={provider.id} value={provider.id.toString()}>
+                        {provider.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* S3 Storage */}
+      <Card className="dark:bg-slate-800 dark:border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-lg dark:text-gray-100 flex items-center gap-2">
+            <Cloud className="h-5 w-5" />
+            S3 Storage Configuration
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="s3_storage_gb">S3 Storage (GB)</Label>
+            <Input
+              id="s3_storage_gb"
+              type="number"
+              min="0"
+              step="1"
+              value={formData.s3_storage_gb}
+              onChange={(e) => handleInputChange('s3_storage_gb', parseInt(e.target.value) || 0)}
+              placeholder="Enter storage amount in GB"
+              className="mt-1"
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Amount of S3 storage allocated for this agent
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Cost Overrides */}
+      {isSuperAdmin && (
+        <Card className="dark:bg-slate-800 dark:border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-lg dark:text-gray-100 flex items-center gap-2">
+              <Edit className="h-5 w-5" />
+              Cost Overrides
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCostOverrides(!showCostOverrides)}
+                className="ml-auto"
+              >
+                {showCostOverrides ? 'Hide' : 'Show'} Overrides
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          {showCostOverrides && (
+            <CardContent className="space-y-4">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Override default pricing for this agent. Leave empty to use global settings.
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <Label>STT Cost Override</Label>
+                  <Input
+                    type="number"
+                    step="0.001"
+                    placeholder="Per minute"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>TTS Cost Override</Label>
+                  <Input
+                    type="number"
+                    step="0.001"
+                    placeholder="Per word"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>LLM Cost Override</Label>
+                  <Input
+                    type="number"
+                    step="0.001"
+                    placeholder="Per token"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          )}
+        </Card>
+      )}
 
       {/* Preview Badges */}
       <Card className="dark:bg-slate-800 dark:border-slate-700">
