@@ -19,7 +19,19 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, agent_type, configuration, project_id, environment, platform } = body
+    const { 
+      name, 
+      agent_type, 
+      configuration, 
+      project_id, 
+      environment, 
+      platform,
+      billing_cycle,
+      s3_storage_gb,
+      platform_mode,
+      provider_config,
+      cost_overrides
+    } = body
 
     console.log('📥 Received agent creation request:', {
       name,
@@ -148,7 +160,12 @@ export async function POST(request: NextRequest) {
       configuration: configuration || {},
       project_id,
       environment: environment || 'dev',
-      is_active: true
+      is_active: true,
+      billing_cycle: billing_cycle || 'monthly',
+      s3_storage_gb: s3_storage_gb || 50,
+      platform_mode: platform_mode || 'pag',
+      provider_config: provider_config || {},
+      cost_overrides: cost_overrides || null
     }
 
     // If it's a Vapi agent, encrypt and store the API keys

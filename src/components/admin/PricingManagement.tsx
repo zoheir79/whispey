@@ -18,21 +18,29 @@ import {
   Save, 
   RefreshCw,
   AlertTriangle,
-  CheckCircle2
+  CheckCircle2,
+  Calendar
 } from 'lucide-react'
 
 interface PricingSettings {
   pricing_rates_dedicated: {
     llm_monthly: number
+    llm_annual: number
     stt_monthly: number
+    stt_annual: number
     tts_monthly: number
+    tts_annual: number
     text_agent_monthly: number
+    text_agent_annual: number
     voice_agent_monthly: number
+    voice_agent_annual: number
     vision_agent_monthly: number
+    vision_agent_annual: number
     s3_storage_per_gb_monthly: number
   }
   pricing_rates_pag: {
     llm_builtin_per_token: number
+    llm_builtin_per_token_text: number
     stt_builtin_per_minute: number
     tts_builtin_per_word: number
     s3_storage_per_gb_monthly: number
@@ -44,11 +52,15 @@ interface PricingSettings {
     secret_key: string
     cost_per_gb: number
     bucket_prefix: string
+    default_storage_gb: number
   }
   subscription_costs: {
     text_agent_monthly: number
+    text_agent_annual: number
     voice_agent_monthly: number
+    voice_agent_annual: number
     vision_agent_monthly: number
+    vision_agent_annual: number
   }
 }
 
@@ -238,11 +250,11 @@ export default function PricingManagement() {
             </TabsList>
 
             <TabsContent value="dedicated" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Mic className="h-5 w-5 text-blue-600" />
-                    Modèles IA - Tarifs Mensuels Fixes
+                    Modèles IA - Tarifs Mensuels
                   </h3>
                   
                   <div className="space-y-3">
@@ -294,28 +306,83 @@ export default function PricingManagement() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Aperçu Coûts Mode Dédié</h3>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-purple-600" />
+                    Modèles IA - Tarifs Annuels
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="llm_annual">LLM (par an)</Label>
+                      <Input
+                        id="llm_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.pricing_rates_dedicated.llm_annual}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'llm_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Tarif annuel avec réduction
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="stt_annual">STT (par an)</Label>
+                      <Input
+                        id="stt_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.pricing_rates_dedicated.stt_annual}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'stt_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="tts_annual">TTS (par an)</Label>
+                      <Input
+                        id="tts_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.pricing_rates_dedicated.tts_annual}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'tts_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Comparaison Coûts</h3>
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2">
-                    <div className="flex justify-between">
-                      <span>LLM mensuel:</span>
-                      <Badge variant="secondary">{formatCurrency(settings.pricing_rates_dedicated.llm_monthly)}</Badge>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>STT mensuel:</span>
-                      <Badge variant="secondary">{formatCurrency(settings.pricing_rates_dedicated.stt_monthly)}</Badge>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>TTS mensuel:</span>
-                      <Badge variant="secondary">{formatCurrency(settings.pricing_rates_dedicated.tts_monthly)}</Badge>
-                    </div>
-                    <Separator />
-                    <div className="flex justify-between font-semibold">
-                      <span>Total IA par mois:</span>
-                      <Badge>{formatCurrency(
+                    <div className="text-sm font-medium mb-2">Mensuel vs Annuel:</div>
+                    <div className="flex justify-between text-sm">
+                      <span>Total mensuel:</span>
+                      <Badge variant="secondary">{formatCurrency(
                         settings.pricing_rates_dedicated.llm_monthly + 
                         settings.pricing_rates_dedicated.stt_monthly + 
                         settings.pricing_rates_dedicated.tts_monthly
                       )}</Badge>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Total annuel:</span>
+                      <Badge>{formatCurrency(
+                        settings.pricing_rates_dedicated.llm_annual + 
+                        settings.pricing_rates_dedicated.stt_annual + 
+                        settings.pricing_rates_dedicated.tts_annual
+                      )}</Badge>
+                    </div>
+                    <div className="flex justify-between text-sm font-semibold text-green-600">
+                      <span>Économie annuelle:</span>
+                      <span>{formatCurrency(
+                        (settings.pricing_rates_dedicated.llm_monthly + 
+                         settings.pricing_rates_dedicated.stt_monthly + 
+                         settings.pricing_rates_dedicated.tts_monthly) * 12 -
+                        (settings.pricing_rates_dedicated.llm_annual + 
+                         settings.pricing_rates_dedicated.stt_annual + 
+                         settings.pricing_rates_dedicated.tts_annual)
+                      )}</span>
                     </div>
                   </div>
                 </div>
@@ -329,9 +396,9 @@ export default function PricingManagement() {
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="llm_per_token">LLM (par token)</Label>
+                      <Label htmlFor="llm_per_token_voice">LLM Voice (par minute)</Label>
                       <Input
-                        id="llm_per_token"
+                        id="llm_per_token_voice"
                         type="number"
                         step="0.000001"
                         value={settings.pricing_rates_pag.llm_builtin_per_token}
@@ -339,7 +406,22 @@ export default function PricingManagement() {
                         className="mt-1"
                       />
                       <p className="text-sm text-gray-500 mt-1">
-                        Facturation par token utilisé
+                        Agents voice: facturation par minute d'utilisation
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="llm_per_token_text">LLM Text-Only (par token)</Label>
+                      <Input
+                        id="llm_per_token_text"
+                        type="number"
+                        step="0.000001"
+                        value={settings.pricing_rates_pag.llm_builtin_per_token_text}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token_text', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Agents text-only: facturation par token utilisé
                       </p>
                     </div>
 
@@ -406,11 +488,11 @@ export default function PricingManagement() {
             </TabsContent>
 
             <TabsContent value="subscriptions" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <MessageSquare className="h-5 w-5 text-purple-600" />
-                    Subscriptions Agents (Mensuelles)
+                    Subscriptions Mensuelles
                   </h3>
                   
                   <div className="space-y-3">
@@ -462,33 +544,93 @@ export default function PricingManagement() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Comparaison Subscriptions</h3>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-green-600" />
+                    Subscriptions Annuelles
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="text_agent_annual">Agent Text-Only (Annuel)</Label>
+                      <Input
+                        id="text_agent_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.subscription_costs.text_agent_annual}
+                        onChange={(e) => updateSetting('subscription_costs', 'text_agent_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="voice_agent_annual">Agent Voice (Annuel)</Label>
+                      <Input
+                        id="voice_agent_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.subscription_costs.voice_agent_annual}
+                        onChange={(e) => updateSetting('subscription_costs', 'voice_agent_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="vision_agent_annual">Agent Vision (Annuel)</Label>
+                      <Input
+                        id="vision_agent_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.subscription_costs.vision_agent_annual}
+                        onChange={(e) => updateSetting('subscription_costs', 'vision_agent_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Comparaison Tarifs</h3>
                   <div className="space-y-2">
                     <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <MessageSquare className="h-5 w-5 text-gray-600" />
                       <div className="flex-1">
                         <div className="font-medium">Text-Only</div>
-                        <div className="text-sm text-gray-500">Chat basique</div>
+                        <div className="text-sm text-gray-500">
+                          Mensuel: {formatCurrency(settings.subscription_costs.text_agent_monthly)} | 
+                          Annuel: {formatCurrency(settings.subscription_costs.text_agent_annual)}
+                        </div>
                       </div>
-                      <Badge variant="outline">{formatCurrency(settings.subscription_costs.text_agent_monthly)}/mois</Badge>
+                      <div className="text-green-600 font-medium text-sm">
+                        Économie: {formatCurrency(settings.subscription_costs.text_agent_monthly * 12 - settings.subscription_costs.text_agent_annual)}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <Mic className="h-5 w-5 text-blue-600" />
                       <div className="flex-1">
                         <div className="font-medium">Voice</div>
-                        <div className="text-sm text-gray-500">STT + TTS + Chat</div>
+                        <div className="text-sm text-gray-500">
+                          Mensuel: {formatCurrency(settings.subscription_costs.voice_agent_monthly)} | 
+                          Annuel: {formatCurrency(settings.subscription_costs.voice_agent_annual)}
+                        </div>
                       </div>
-                      <Badge>{formatCurrency(settings.subscription_costs.voice_agent_monthly)}/mois</Badge>
+                      <div className="text-green-600 font-medium text-sm">
+                        Économie: {formatCurrency(settings.subscription_costs.voice_agent_monthly * 12 - settings.subscription_costs.voice_agent_annual)}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                       <Eye className="h-5 w-5 text-purple-600" />
                       <div className="flex-1">
                         <div className="font-medium">Vision</div>
-                        <div className="text-sm text-gray-500">Voice + Vision AI</div>
+                        <div className="text-sm text-gray-500">
+                          Mensuel: {formatCurrency(settings.subscription_costs.vision_agent_monthly)} | 
+                          Annuel: {formatCurrency(settings.subscription_costs.vision_agent_annual)}
+                        </div>
                       </div>
-                      <Badge variant="secondary">{formatCurrency(settings.subscription_costs.vision_agent_monthly)}/mois</Badge>
+                      <div className="text-green-600 font-medium text-sm">
+                        Économie: {formatCurrency(settings.subscription_costs.vision_agent_monthly * 12 - settings.subscription_costs.vision_agent_annual)}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -547,6 +689,21 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('s3_config', 'bucket_prefix', e.target.value)}
                         className="mt-1"
                       />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="default_storage_gb">Stockage Default (GB)</Label>
+                      <Input
+                        id="default_storage_gb"
+                        type="number"
+                        step="1"
+                        value={settings.s3_config.default_storage_gb}
+                        onChange={(e) => updateSetting('s3_config', 'default_storage_gb', parseFloat(e.target.value) || 50)}
+                        className="mt-1"
+                      />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Stockage par défaut alloué aux nouveaux agents (actuellement 50GB)
+                      </p>
                     </div>
                   </div>
                 </div>

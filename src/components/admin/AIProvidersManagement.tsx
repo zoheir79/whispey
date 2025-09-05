@@ -210,7 +210,9 @@ export default function AIProvidersManagement() {
 
       if (providersRes.ok) {
         const providersData = await providersRes.json()
-        setProviders(providersData.providers || [])
+        // Filter out built-in providers - only show external providers
+        const externalProviders = (providersData.providers || []).filter((provider: Provider) => !provider.is_builtin)
+        setProviders(externalProviders)
       }
 
       const settings: GlobalSettings = {

@@ -89,13 +89,26 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     voice_type: 'inbound', 
     description: '',
     platform_mode: 'pag',
+    billing_cycle: 'monthly',
     s3_storage_gb: 50,
     stt_provider_id: '',
     stt_mode: 'builtin',
     tts_provider_id: '',
     tts_mode: 'builtin',
     llm_provider_id: '',
-    llm_mode: 'builtin'
+    llm_mode: 'builtin',
+    // Cost overrides for super admin
+    cost_overrides: {
+      stt_price: null as string | null,
+      stt_url: null as string | null,
+      stt_token: null as string | null,
+      tts_price: null as string | null,
+      tts_url: null as string | null,
+      tts_token: null as string | null,
+      llm_price: null as string | null,
+      llm_url: null as string | null,
+      llm_token: null as string | null
+    }
   })
 
   const [loading, setLoading] = useState(false)
@@ -181,9 +194,14 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         name: formData.name.trim(),
         agent_type: formData.agent_type,
         platform_mode: formData.platform_mode,
+        billing_cycle: formData.billing_cycle,
+        s3_storage_gb: formData.s3_storage_gb,
         configuration: {
           description: formData.description.trim() || null,
-          voice_type: formData.agent_type === 'voice' ? formData.voice_type : null
+          voice_type: formData.agent_type === 'voice' ? formData.voice_type : null,
+          billing_cycle: formData.billing_cycle,
+          s3_storage_gb: formData.s3_storage_gb,
+          cost_overrides: formData.cost_overrides
         },
         provider_config: providerConfig,
         cost_overrides: Object.keys(tempCostOverrides).length > 0 ? tempCostOverrides : null,
@@ -240,13 +258,25 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         voice_type: 'inbound', 
         description: '',
         platform_mode: 'pag',
+        billing_cycle: 'monthly',
         s3_storage_gb: 50,
         stt_provider_id: '',
         stt_mode: 'builtin',
         tts_provider_id: '',
         tts_mode: 'builtin',
         llm_provider_id: '',
-        llm_mode: 'builtin'
+        llm_mode: 'builtin',
+        cost_overrides: {
+          stt_price: null as string | null,
+          stt_url: null as string | null,
+          stt_token: null as string | null,
+          tts_price: null as string | null,
+          tts_url: null as string | null,
+          tts_token: null as string | null,
+          llm_price: null as string | null,
+          llm_url: null as string | null,
+          llm_token: null as string | null
+        }
       })
       setTempCostOverrides({})
       setShowCostOverrides(false)
@@ -366,6 +396,22 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                   )
                 })}
               </div>
+            </div>
+
+            {/* Billing Cycle */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                Cycle de Facturation
+              </label>
+              <Select value={formData.billing_cycle} onValueChange={(value) => setFormData(prev => ({ ...prev, billing_cycle: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez le cycle" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Mensuel</SelectItem>
+                  <SelectItem value="annual">Annuel (avec réduction)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Agent Name */}
@@ -551,6 +597,198 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                         </Select>
                       </div>
                     )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Cost Estimation */}
+            <div className="mt-6 p-4 bg-gray-50 dark:bg-slate-800 rounded-lg">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Estimation des Coûts
+              </h3>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {selectedPlatform === 'dedicated' && (
+                  <div>
+                    <div className="font-medium">Mode Dedicated:</div>
+                    <div>
+                      {formData.agent_type === 'voice' ? 'Agent Voice' : 'Agent Text-Only'} 
+                      {formData.billing_cycle === 'monthly' ? ' (Mensuel)' : ' (Annuel avec réduction)'}
+                    </div>
+                    <div className="text-lg font-bold text-green-600 mt-1">
+                      {formData.agent_type === 'voice' 
+                        ? (formData.billing_cycle === 'monthly' ? 'Estimation: $180/mois' : 'Estimation: $1,800/an')
+                        : (formData.billing_cycle === 'monthly' ? 'Estimation: $100/mois' : 'Estimation: $1,000/an')
+                      }
+                    </div>
+                  </div>
+                )}
+                {selectedPlatform === 'pag' && (
+                  <div>
+                    <div className="font-medium">Mode Pay-as-You-Go:</div>
+                    <div>
+                      {formData.agent_type === 'voice' 
+                        ? 'Facturation par minute d\'utilisation'
+                        : 'Facturation par token LLM utilisé'
+                      }
+                    </div>
+                    <div className="text-lg font-bold text-blue-600 mt-1">
+                      {formData.agent_type === 'voice' 
+                        ? 'Estimation: $0.05/minute'
+                        : 'Estimation: $0.00005/token'
+                      }
+                    </div>
+                  </div>
+                )}
+                {selectedPlatform === 'hybrid' && (
+                  <div>
+                    <div className="font-medium">Mode Hybrid:</div>
+                    <div>Mix de modèles dedicated et pay-as-you-go</div>
+                    <div className="text-lg font-bold text-purple-600 mt-1">
+                      {formData.agent_type === 'voice' 
+                        ? 'Estimation: $0.03/minute + coûts fixes'
+                        : 'Estimation: $0.00003/token + coûts fixes'
+                      }
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Super Admin Cost Overrides */}
+            {isSuperAdmin && (
+              <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-orange-900 dark:text-orange-100">
+                    🔧 Super Admin - Overrides Modèles
+                  </h3>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowCostOverrides(!showCostOverrides)}
+                  >
+                    {showCostOverrides ? 'Masquer' : 'Configurer'}
+                  </Button>
+                </div>
+                
+                {showCostOverrides && (
+                  <div className="space-y-4">
+                    <p className="text-xs text-orange-700 dark:text-orange-300 mb-3">
+                      Vous pouvez override les prix, URLs et tokens API des modèles pour cet agent.
+                    </p>
+                    
+                    {formData.agent_type === 'voice' && (
+                      <>
+                        {/* STT Overrides */}
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">STT Overrides</h4>
+                          <div className="grid grid-cols-3 gap-2">
+                            <Input
+                              placeholder="Prix custom"
+                              type="number"
+                              step="0.001"
+                              value={formData.cost_overrides.stt_price || ''}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                cost_overrides: { ...prev.cost_overrides, stt_price: e.target.value || null }
+                              }))}
+                              className="h-8 text-xs"
+                            />
+                            <Input
+                              placeholder="URL custom"
+                              value={formData.cost_overrides.stt_url || ''}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                cost_overrides: { ...prev.cost_overrides, stt_url: e.target.value || null }
+                              }))}
+                              className="h-8 text-xs"
+                            />
+                            <Input
+                              placeholder="API Token"
+                              value={formData.cost_overrides.stt_token || ''}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                cost_overrides: { ...prev.cost_overrides, stt_token: e.target.value || null }
+                              }))}
+                              className="h-8 text-xs"
+                            />
+                          </div>
+                        </div>
+
+                        {/* TTS Overrides */}
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">TTS Overrides</h4>
+                          <div className="grid grid-cols-3 gap-2">
+                            <Input
+                              placeholder="Prix custom"
+                              type="number"
+                              step="0.001"
+                              value={formData.cost_overrides.tts_price || ''}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                cost_overrides: { ...prev.cost_overrides, tts_price: e.target.value || null }
+                              }))}
+                              className="h-8 text-xs"
+                            />
+                            <Input
+                              placeholder="URL custom"
+                              value={formData.cost_overrides.tts_url || ''}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                cost_overrides: { ...prev.cost_overrides, tts_url: e.target.value || null }
+                              }))}
+                              className="h-8 text-xs"
+                            />
+                            <Input
+                              placeholder="API Token"
+                              value={formData.cost_overrides.tts_token || ''}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                cost_overrides: { ...prev.cost_overrides, tts_token: e.target.value || null }
+                              }))}
+                              className="h-8 text-xs"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* LLM Overrides */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100">LLM Overrides</h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        <Input
+                          placeholder="Prix custom"
+                          type="number"
+                          step="0.00001"
+                          value={formData.cost_overrides.llm_price || ''}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cost_overrides: { ...prev.cost_overrides, llm_price: e.target.value || null }
+                          }))}
+                          className="h-8 text-xs"
+                        />
+                        <Input
+                          placeholder="URL custom"
+                          value={formData.cost_overrides.llm_url || ''}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cost_overrides: { ...prev.cost_overrides, llm_url: e.target.value || null }
+                          }))}
+                          className="h-8 text-xs"
+                        />
+                        <Input
+                          placeholder="API Token"
+                          value={formData.cost_overrides.llm_token || ''}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cost_overrides: { ...prev.cost_overrides, llm_token: e.target.value || null }
+                          }))}
+                          className="h-8 text-xs"
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
