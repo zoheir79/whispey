@@ -6,9 +6,9 @@ import { getUserGlobalRole } from '@/services/getGlobalRole';
 export async function GET(request: NextRequest) {
   try {
     // Verify user authentication
-    const userId = await verifyUserAuth(request);
+    const { isAuthenticated, userId } = await verifyUserAuth(request);
     
-    if (!userId) {
+    if (!isAuthenticated || !userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }

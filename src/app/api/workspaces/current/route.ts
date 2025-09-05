@@ -4,8 +4,8 @@ import { verifyUserAuth } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
-    const userEmail = await verifyUserAuth(request)
-    if (!userEmail) {
+    const { isAuthenticated, userId: userEmail } = await verifyUserAuth(request)
+    if (!isAuthenticated || !userEmail) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
