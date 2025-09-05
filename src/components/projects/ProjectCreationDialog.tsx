@@ -9,7 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Loader2, Copy, Eye, EyeOff, CheckCircle } from 'lucide-react'
+import { Loader2, Copy, Eye, EyeOff, CheckCircle, Cloud, Database } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface ProjectCreationDialogProps {
   isOpen: boolean
@@ -25,7 +27,15 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
   const [currentStep, setCurrentStep] = useState<'form' | 'success'>('form')
   const [formData, setFormData] = useState({
     name: '',
-    description: ''
+    description: '',
+    s3_enabled: false,
+    s3_region: 'us-east-1',
+    s3_endpoint: '',
+    s3_bucket_prefix: '',
+    s3_access_key: '',
+    s3_secret_key: '',
+    s3_cost_per_gb: 0.023,
+    s3_default_storage_gb: 50
   })
   
   const [loading, setLoading] = useState(false)
@@ -54,6 +64,14 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
         body: JSON.stringify({
           name: formData.name.trim(),
           description: formData.description.trim() || null,
+          s3_enabled: formData.s3_enabled,
+          s3_region: formData.s3_enabled ? formData.s3_region : null,
+          s3_endpoint: formData.s3_enabled && formData.s3_endpoint ? formData.s3_endpoint : null,
+          s3_bucket_prefix: formData.s3_enabled && formData.s3_bucket_prefix ? formData.s3_bucket_prefix : null,
+          s3_access_key: formData.s3_enabled && formData.s3_access_key ? formData.s3_access_key : null,
+          s3_secret_key: formData.s3_enabled && formData.s3_secret_key ? formData.s3_secret_key : null,
+          s3_cost_per_gb: formData.s3_enabled ? formData.s3_cost_per_gb : null,
+          s3_default_storage_gb: formData.s3_enabled ? formData.s3_default_storage_gb : null,
         }),
       })
 
@@ -93,7 +111,15 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
       setCurrentStep('form')
       setFormData({
         name: '',
-        description: ''
+        description: '',
+        s3_enabled: false,
+        s3_region: 'us-east-1',
+        s3_endpoint: '',
+        s3_bucket_prefix: '',
+        s3_access_key: '',
+        s3_secret_key: '',
+        s3_cost_per_gb: 0.023,
+        s3_default_storage_gb: 50
       })
       setError(null)
       setCreatedProjectData(null)
@@ -157,6 +183,140 @@ const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
                     rows={3}
                     className="w-full px-4 py-3 text-sm border border-gray-300 dark:border-slate-600 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20 focus:outline-none resize-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                   />
+                </div>
+
+                {/* S3 Storage Configuration */}
+                <div className="space-y-4 p-4 border border-gray-200 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-800/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Cloud className="h-4 w-4 text-blue-500" />
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Enable S3 Storage
+                      </label>
+                    </div>
+                    <Switch
+                      checked={formData.s3_enabled}
+                      onCheckedChange={(checked) => setFormData({ ...formData, s3_enabled: checked })}
+                      disabled={loading}
+                    />
+                  </div>
+                  
+                  {formData.s3_enabled && (
+                    <div className="space-y-3 pl-6">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Region
+                          </label>
+                          <Select
+                            value={formData.s3_region}
+                            onValueChange={(value) => setFormData({ ...formData, s3_region: value })}
+                            disabled={loading}
+                          >
+                            <SelectTrigger className="h-9 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="us-east-1">US East (N. Virginia)</SelectItem>
+                              <SelectItem value="us-west-2">US West (Oregon)</SelectItem>
+                              <SelectItem value="eu-west-1">Europe (Ireland)</SelectItem>
+                              <SelectItem value="ap-south-1">Asia Pacific (Mumbai)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Endpoint <span className="text-gray-500">(optional)</span>
+                          </label>
+                          <Input
+                            placeholder="s3.amazonaws.com"
+                            value={formData.s3_endpoint}
+                            onChange={(e) => setFormData({ ...formData, s3_endpoint: e.target.value })}
+                            disabled={loading}
+                            className="h-9 text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Bucket Prefix
+                          </label>
+                          <Input
+                            placeholder="myproject-voice"
+                            value={formData.s3_bucket_prefix}
+                            onChange={(e) => setFormData({ ...formData, s3_bucket_prefix: e.target.value })}
+                            disabled={loading}
+                            className="h-9 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Default Storage (GB)
+                          </label>
+                          <Input
+                            type="number"
+                            min="1"
+                            step="1"
+                            value={formData.s3_default_storage_gb}
+                            onChange={(e) => setFormData({ ...formData, s3_default_storage_gb: parseInt(e.target.value) || 50 })}
+                            disabled={loading}
+                            className="h-9 text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Access Key
+                          </label>
+                          <Input
+                            type="password"
+                            placeholder="AKIAIOSFODNN7EXAMPLE"
+                            value={formData.s3_access_key}
+                            onChange={(e) => setFormData({ ...formData, s3_access_key: e.target.value })}
+                            disabled={loading}
+                            className="h-9 text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Secret Key
+                          </label>
+                          <Input
+                            type="password"
+                            placeholder="wJalrXUtnFEMI/K7MDENG..."
+                            value={formData.s3_secret_key}
+                            onChange={(e) => setFormData({ ...formData, s3_secret_key: e.target.value })}
+                            disabled={loading}
+                            className="h-9 text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                          Cost per GB/month ($)
+                        </label>
+                        <Input
+                          type="number"
+                          step="0.001"
+                          min="0"
+                          value={formData.s3_cost_per_gb}
+                          onChange={(e) => setFormData({ ...formData, s3_cost_per_gb: parseFloat(e.target.value) || 0.023 })}
+                          disabled={loading}
+                          className="h-9 text-xs w-32"
+                        />
+                      </div>
+
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded text-xs text-blue-800 dark:text-blue-200">
+                        <p className="font-medium mb-1">Estimated Monthly S3 Cost:</p>
+                        <p>${(formData.s3_cost_per_gb * formData.s3_default_storage_gb).toFixed(2)} for {formData.s3_default_storage_gb}GB storage</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Error Message */}

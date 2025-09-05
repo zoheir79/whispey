@@ -164,7 +164,7 @@ async function calculatePagCost(agent: any, year: number, month: number) {
       SUM((cost_calculation->'costs'->>'llm_cost')::numeric) as total_llm_cost,
       SUM((cost_calculation->'costs'->>'total_cost')::numeric) as total_cost,
       COUNT(*) as total_calls,
-      SUM(call_duration_minutes) as total_minutes,
+      SUM(duration_seconds/60.0) as total_minutes,
       SUM(tokens_used) as total_tokens,
       SUM(words_generated) as total_words
     FROM call_costs

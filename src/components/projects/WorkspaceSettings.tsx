@@ -65,6 +65,8 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [hasChanges, setHasChanges] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   // Fetch global S3 pricing on component mount
   useEffect(() => {
@@ -146,8 +148,8 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
       ...prev,
       [field]: value
     }))
-    setError(null)
-    setSuccess(null)
+    setError('')
+    setSuccess('')
   }
 
   const handleS3ConfigChange = (field: string, value: any) => {
@@ -155,16 +157,16 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
       ...prev,
       [field]: value
     }))
-    setError(null)
-    setSuccess(null)
+    setError('')
+    setSuccess('')
   }
 
   const handleSave = async () => {
     if (!hasChanges || !project) return
 
     setIsLoading(true)
-    setError(null)
-    setSuccess(null)
+    setError('')
+    setSuccess('')
 
     try {
       const updateData = {
@@ -213,8 +215,8 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
   }
 
   const handleClose = () => {
-    setError(null)
-    setSuccess(null)
+    setError('')
+    setSuccess('')
     onClose()
   }
 
