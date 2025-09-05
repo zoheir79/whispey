@@ -1026,9 +1026,15 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           <p className="text-xs text-gray-500">Remplissez seulement les champs à modifier (optionnel)</p>
                           <div className="grid grid-cols-3 gap-2">
                             <Input
-                              placeholder={`Prix $/minute (optionnel)`}
+                              placeholder={`Prix $/${
+                                formData.platform_mode === 'dedicated' 
+                                  ? 'mois' 
+                                  : formData.platform_mode === 'pag' && formData.stt_mode === 'builtin'
+                                  ? 'minute' 
+                                  : 'minute'
+                              } (optionnel)`}
                               type="number"
-                              step="0.001"
+                              step={formData.platform_mode === 'dedicated' ? "1" : "0.001"}
                               value={formData.cost_overrides.stt_price || ''}
                               onChange={(e) => setFormData(prev => ({
                                 ...prev,
@@ -1066,11 +1072,14 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           <div className="grid grid-cols-3 gap-2">
                             <Input
                               placeholder={`Prix $/${
-                                formData.platform_mode === 'pag' && formData.tts_mode === 'builtin'
-                                ? 'minute' : 'mot'
+                                formData.platform_mode === 'dedicated' 
+                                  ? 'mois' 
+                                  : formData.platform_mode === 'pag' && formData.tts_mode === 'builtin'
+                                  ? 'minute' 
+                                  : 'mot'
                               } (optionnel)`}
                               type="number"
-                              step="0.001"
+                              step={formData.platform_mode === 'dedicated' ? "1" : "0.001"}
                               value={formData.cost_overrides.tts_price || ''}
                               onChange={(e) => setFormData(prev => ({
                                 ...prev,
@@ -1110,17 +1119,23 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                       <div className="grid grid-cols-3 gap-2">
                         <Input
                           placeholder={`Prix $/${
-                            formData.platform_mode === 'pag' && 
-                            formData.agent_type === 'voice' &&
-                            formData.llm_mode === 'builtin'
-                            ? 'minute' : 'token'
+                            formData.platform_mode === 'dedicated' 
+                              ? 'mois' 
+                              : formData.platform_mode === 'pag' && 
+                                formData.agent_type === 'voice' &&
+                                formData.llm_mode === 'builtin'
+                              ? 'minute' 
+                              : 'token'
                           } (optionnel)`}
                           type="number"
                           step={
-                            formData.platform_mode === 'pag' && 
-                            formData.agent_type === 'voice' &&
-                            formData.llm_mode === 'builtin'
-                            ? "0.001" : "0.00001"
+                            formData.platform_mode === 'dedicated' 
+                              ? "1" 
+                              : formData.platform_mode === 'pag' && 
+                                formData.agent_type === 'voice' &&
+                                formData.llm_mode === 'builtin'
+                              ? "0.001" 
+                              : "0.00001"
                           }
                           value={formData.cost_overrides.llm_price || ''}
                           onChange={(e) => setFormData(prev => ({
