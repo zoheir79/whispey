@@ -246,19 +246,19 @@ export default function PricingManagement() {
           Sauvegarder
         </Button>
       </div>
-      <Card>
+      <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <DollarSign className="h-6 w-6 text-green-600" />
+              <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
               <div>
-                <CardTitle>Gestion des Tarifs Globaux</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-gray-900 dark:text-gray-100">Gestion des Tarifs Globaux</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-400">
                   Configurez les prix pour tous les modes de facturation et services
                 </CardDescription>
               </div>
             </div>
-            <Button onClick={saveSettings} disabled={saving} className="gap-2">
+            <Button onClick={saveSettings} disabled={saving} className="gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700">
               {saving ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />
               ) : (
@@ -271,8 +271,12 @@ export default function PricingManagement() {
 
         <CardContent>
           {message && (
-            <Alert className={`mb-6 ${message.type === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-              <AlertDescription className={message.type === 'success' ? 'text-green-700' : 'text-red-700'}>
+            <Alert className={`mb-6 ${message.type === 'success' 
+              ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20' 
+              : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20'}`}>
+              <AlertDescription className={message.type === 'success' 
+                ? 'text-green-700 dark:text-green-200' 
+                : 'text-red-700 dark:text-red-200'}>
                 {message.text}
               </AlertDescription>
             </Alert>
@@ -301,21 +305,21 @@ export default function PricingManagement() {
             <TabsContent value="dedicated" className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Mic className="h-5 w-5 text-blue-600" />
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Mic className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     Modèles IA - Tarifs Mensuels
                   </h3>
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="llm_monthly">LLM (par mois)</Label>
+                      <Label htmlFor="llm_monthly" className="text-gray-900 dark:text-gray-100">LLM (par mois)</Label>
                       <Input
                         id="llm_monthly"
                         type="number"
                         step="0.01"
                         value={settings.pricing_rates_dedicated.llm_monthly}
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'llm_monthly', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Usage illimité du modèle LLM built-in
@@ -323,14 +327,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="stt_monthly">STT (par mois)</Label>
+                      <Label htmlFor="stt_monthly" className="text-gray-900 dark:text-gray-100">STT (par mois)</Label>
                       <Input
                         id="stt_monthly"
                         type="number"
                         step="0.01"
                         value={settings.pricing_rates_dedicated.stt_monthly}
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'stt_monthly', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Transcription illimitée built-in
@@ -338,14 +342,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="tts_monthly">TTS (par mois)</Label>
+                      <Label htmlFor="tts_monthly" className="text-gray-900 dark:text-gray-100">TTS (par mois)</Label>
                       <Input
                         id="tts_monthly"
                         type="number"
                         step="0.01"
                         value={settings.pricing_rates_dedicated.tts_monthly}
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'tts_monthly', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Synthèse vocale illimitée built-in
@@ -355,21 +359,21 @@ export default function PricingManagement() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-purple-600" />
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Calendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     Modèles IA - Tarifs Annuels
                   </h3>
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="llm_annual">LLM (par an)</Label>
+                      <Label htmlFor="llm_annual" className="text-gray-900 dark:text-gray-100">LLM (par an)</Label>
                       <Input
                         id="llm_annual"
                         type="number"
                         step="0.01"
                         value={settings.pricing_rates_dedicated.llm_annual}
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'llm_annual', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Tarif annuel avec réduction
@@ -377,53 +381,53 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="stt_annual">STT (par an)</Label>
+                      <Label htmlFor="stt_annual" className="text-gray-900 dark:text-gray-100">STT (par an)</Label>
                       <Input
                         id="stt_annual"
                         type="number"
                         step="0.01"
                         value={settings.pricing_rates_dedicated.stt_annual}
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'stt_annual', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="tts_annual">TTS (par an)</Label>
+                      <Label htmlFor="tts_annual" className="text-gray-900 dark:text-gray-100">TTS (par an)</Label>
                       <Input
                         id="tts_annual"
                         type="number"
                         step="0.01"
                         value={settings.pricing_rates_dedicated.tts_annual}
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'tts_annual', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Comparaison Coûts</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Comparaison Coûts</h3>
                   <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700">
                     <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Comparaison Coûts</h4>
-                    <div className="text-sm font-medium mb-2">Mensuel vs Annuel:</div>
-                    <div className="flex justify-between text-sm">
+                    <div className="text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Mensuel vs Annuel:</div>
+                    <div className="flex justify-between text-sm text-gray-900 dark:text-gray-100">
                       <span>Total mensuel:</span>
-                      <Badge variant="secondary">{formatCurrency(
+                      <Badge variant="secondary" className="bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-gray-100">{formatCurrency(
                         settings.pricing_rates_dedicated.llm_monthly + 
                         settings.pricing_rates_dedicated.stt_monthly + 
                         settings.pricing_rates_dedicated.tts_monthly
                       )}</Badge>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm text-gray-900 dark:text-gray-100">
                       <span>Total annuel:</span>
-                      <Badge>{formatCurrency(
+                      <Badge className="bg-blue-600 dark:bg-blue-500 text-white">{formatCurrency(
                         settings.pricing_rates_dedicated.llm_annual + 
                         settings.pricing_rates_dedicated.stt_annual + 
                         settings.pricing_rates_dedicated.tts_annual
                       )}</Badge>
                     </div>
-                    <div className="flex justify-between text-sm font-semibold text-green-600">
+                    <div className="flex justify-between text-sm font-semibold text-green-600 dark:text-green-400">
                       <span>Économie annuelle:</span>
                       <span>{formatCurrency(
                         (settings.pricing_rates_dedicated.llm_monthly + 
@@ -446,14 +450,14 @@ export default function PricingManagement() {
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="llm_per_minute_voice">LLM Voice PAG Builtin (par minute)</Label>
+                      <Label htmlFor="llm_per_minute_voice" className="text-gray-900 dark:text-gray-100">LLM Voice PAG Builtin (par minute)</Label>
                       <Input
                         id="llm_per_minute_voice"
                         type="number"
                         step="0.001"
                         value={settings.pricing_rates_pag.llm_builtin_per_minute}
                         onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_minute', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents voice PAG builtin: facturation par minute d'utilisation
@@ -461,14 +465,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="llm_per_token_voice">LLM Voice External/Hybrid (par token)</Label>
+                      <Label htmlFor="llm_per_token_voice" className="text-gray-900 dark:text-gray-100">LLM Voice External/Hybrid (par token)</Label>
                       <Input
                         id="llm_per_token_voice"
                         type="number"
                         step="0.000001"
                         value={settings.pricing_rates_pag.llm_builtin_per_token}
                         onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents voice external/hybrid: facturation par token
@@ -476,14 +480,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="llm_per_token_text">LLM Text-Only (par token)</Label>
+                      <Label htmlFor="llm_per_token_text" className="text-gray-900 dark:text-gray-100">LLM Text-Only (par token)</Label>
                       <Input
                         id="llm_per_token_text"
                         type="number"
                         step="0.000001"
                         value={settings.pricing_rates_pag.llm_builtin_per_token_text}
                         onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token_text', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents text-only: facturation par token utilisé
@@ -491,14 +495,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="stt_per_minute">STT (par minute)</Label>
+                      <Label htmlFor="stt_per_minute" className="text-gray-900 dark:text-gray-100">STT (par minute)</Label>
                       <Input
                         id="stt_per_minute"
                         type="number"
                         step="0.001"
                         value={settings.pricing_rates_pag.stt_builtin_per_minute}
                         onChange={(e) => updateSetting('pricing_rates_pag', 'stt_builtin_per_minute', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Facturation par minute transcrite
@@ -506,14 +510,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="tts_per_minute">TTS Builtin Voice (par minute)</Label>
+                      <Label htmlFor="tts_per_minute" className="text-gray-900 dark:text-gray-100">TTS Builtin Voice (par minute)</Label>
                       <Input
                         id="tts_per_minute"
                         type="number"
                         step="0.001"
                         value={settings.pricing_rates_pag.tts_builtin_per_minute}
                         onChange={(e) => updateSetting('pricing_rates_pag', 'tts_builtin_per_minute', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents voice PAG builtin: facturation par minute d'utilisation
@@ -521,14 +525,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="tts_per_word">TTS External/Hybrid (par mot)</Label>
+                      <Label htmlFor="tts_per_word" className="text-gray-900 dark:text-gray-100">TTS External/Hybrid (par mot)</Label>
                       <Input
                         id="tts_per_word"
                         type="number"
                         step="0.0001"
                         value={settings.pricing_rates_pag.tts_builtin_per_word}
                         onChange={(e) => updateSetting('pricing_rates_pag', 'tts_builtin_per_word', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Agents voice external/hybrid PAG: facturation par mot synthétisé
@@ -538,29 +542,29 @@ export default function PricingManagement() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Exemple Coût PAG</h3>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg space-y-2">
-                    <p className="text-sm font-medium mb-2">Usage mensuel typique:</p>
-                    <div className="flex justify-between text-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Exemple Coût PAG</h3>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg space-y-2 border border-blue-200 dark:border-blue-700">
+                    <p className="text-sm font-medium mb-2 text-blue-900 dark:text-blue-100">Usage mensuel typique:</p>
+                    <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>60 minutes Voice PAG Builtin (STT+TTS+LLM):</span>
                       <span>{formatCurrency(60 * (settings.pricing_rates_pag.stt_builtin_per_minute + settings.pricing_rates_pag.tts_builtin_per_minute + settings.pricing_rates_pag.llm_builtin_per_minute))}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>1000 tokens LLM (external/hybrid):</span>
                       <span>{formatCurrency(1000 * settings.pricing_rates_pag.llm_builtin_per_token)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>5000 mots TTS (external/hybrid):</span>
                       <span>{formatCurrency(5000 * settings.pricing_rates_pag.tts_builtin_per_word)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>1000 tokens LLM text-only:</span>
                       <span>{formatCurrency(1000 * settings.pricing_rates_pag.llm_builtin_per_token_text)}</span>
                     </div>
-                    <Separator />
-                    <div className="flex justify-between font-semibold">
+                    <Separator className="bg-blue-200 dark:bg-blue-800" />
+                    <div className="flex justify-between font-semibold text-blue-900 dark:text-blue-100">
                       <span>Total estimé:</span>
-                      <Badge>{formatCurrency(
+                      <Badge className="bg-blue-600 dark:bg-blue-500 text-white">{formatCurrency(
                         1000 * settings.pricing_rates_pag.llm_builtin_per_token +
                         60 * settings.pricing_rates_pag.stt_builtin_per_minute +
                         5000 * settings.pricing_rates_pag.tts_builtin_per_word
@@ -574,21 +578,21 @@ export default function PricingManagement() {
             <TabsContent value="subscriptions" className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5 text-purple-600" />
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <MessageSquare className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     Subscriptions Mensuelles
                   </h3>
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="text_agent_sub">Agent Text-Only</Label>
+                      <Label htmlFor="text_agent_sub" className="text-gray-900 dark:text-gray-100">Agent Text-Only</Label>
                       <Input
                         id="text_agent_sub"
                         type="number"
                         step="0.01"
                         value={settings.subscription_costs.text_agent_monthly}
                         onChange={(e) => updateSetting('subscription_costs', 'text_agent_monthly', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Subscription mensuelle agent texte seul
@@ -596,14 +600,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="voice_agent_sub">Agent Voice</Label>
+                      <Label htmlFor="voice_agent_sub" className="text-gray-900 dark:text-gray-100">Agent Voice</Label>
                       <Input
                         id="voice_agent_sub"
                         type="number"
                         step="0.01"
                         value={settings.subscription_costs.voice_agent_monthly}
                         onChange={(e) => updateSetting('subscription_costs', 'voice_agent_monthly', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Subscription mensuelle agent vocal
@@ -611,14 +615,14 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="vision_agent_sub">Agent Vision</Label>
+                      <Label htmlFor="vision_agent_sub" className="text-gray-900 dark:text-gray-100">Agent Vision</Label>
                       <Input
                         id="vision_agent_sub"
                         type="number"
                         step="0.01"
                         value={settings.subscription_costs.vision_agent_monthly}
                         onChange={(e) => updateSetting('subscription_costs', 'vision_agent_monthly', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Subscription mensuelle agent avec vision
@@ -628,91 +632,91 @@ export default function PricingManagement() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-green-600" />
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Calendar className="h-5 w-5 text-green-600 dark:text-green-400" />
                     Subscriptions Annuelles
                   </h3>
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="text_agent_annual">Agent Text-Only (Annuel)</Label>
+                      <Label htmlFor="text_agent_annual" className="text-gray-900 dark:text-gray-100">Agent Text-Only (Annuel)</Label>
                       <Input
                         id="text_agent_annual"
                         type="number"
                         step="0.01"
                         value={settings.subscription_costs.text_agent_annual}
                         onChange={(e) => updateSetting('subscription_costs', 'text_agent_annual', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="voice_agent_annual">Agent Voice (Annuel)</Label>
+                      <Label htmlFor="voice_agent_annual" className="text-gray-900 dark:text-gray-100">Agent Voice (Annuel)</Label>
                       <Input
                         id="voice_agent_annual"
                         type="number"
                         step="0.01"
                         value={settings.subscription_costs.voice_agent_annual}
                         onChange={(e) => updateSetting('subscription_costs', 'voice_agent_annual', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="vision_agent_annual">Agent Vision (Annuel)</Label>
+                      <Label htmlFor="vision_agent_annual" className="text-gray-900 dark:text-gray-100">Agent Vision (Annuel)</Label>
                       <Input
                         id="vision_agent_annual"
                         type="number"
                         step="0.01"
                         value={settings.subscription_costs.vision_agent_annual}
                         onChange={(e) => updateSetting('subscription_costs', 'vision_agent_annual', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Comparaison Tarifs</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Comparaison Tarifs</h3>
                   <div className="space-y-2">
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <MessageSquare className="h-5 w-5 text-gray-600" />
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+                      <MessageSquare className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                       <div className="flex-1">
-                        <div className="font-medium">Text-Only</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">Text-Only</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           Mensuel: {formatCurrency(settings.subscription_costs.text_agent_monthly)} | 
                           Annuel: {formatCurrency(settings.subscription_costs.text_agent_annual)}
                         </div>
                       </div>
-                      <div className="text-green-600 font-medium text-sm">
+                      <div className="text-green-600 dark:text-green-400 font-medium text-sm">
                         Économie: {formatCurrency(settings.subscription_costs.text_agent_monthly * 12 - settings.subscription_costs.text_agent_annual)}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <Mic className="h-5 w-5 text-blue-600" />
+                    <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                      <Mic className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       <div className="flex-1">
-                        <div className="font-medium">Voice</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-blue-900 dark:text-blue-100">Voice</div>
+                        <div className="text-sm text-blue-700 dark:text-blue-300">
                           Mensuel: {formatCurrency(settings.subscription_costs.voice_agent_monthly)} | 
                           Annuel: {formatCurrency(settings.subscription_costs.voice_agent_annual)}
                         </div>
                       </div>
-                      <div className="text-green-600 font-medium text-sm">
+                      <div className="text-green-600 dark:text-green-400 font-medium text-sm">
                         Économie: {formatCurrency(settings.subscription_costs.voice_agent_monthly * 12 - settings.subscription_costs.voice_agent_annual)}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                      <Eye className="h-5 w-5 text-purple-600" />
+                    <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                      <Eye className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <div className="flex-1">
-                        <div className="font-medium">Vision</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-purple-900 dark:text-purple-100">Vision</div>
+                        <div className="text-sm text-purple-700 dark:text-purple-300">
                           Mensuel: {formatCurrency(settings.subscription_costs.vision_agent_monthly)} | 
                           Annuel: {formatCurrency(settings.subscription_costs.vision_agent_annual)}
                         </div>
                       </div>
-                      <div className="text-green-600 font-medium text-sm">
+                      <div className="text-green-600 dark:text-green-400 font-medium text-sm">
                         Économie: {formatCurrency(settings.subscription_costs.vision_agent_monthly * 12 - settings.subscription_costs.vision_agent_annual)}
                       </div>
                     </div>
@@ -724,21 +728,21 @@ export default function PricingManagement() {
             <TabsContent value="s3" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Cloud className="h-5 w-5 text-orange-600" />
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Cloud className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                     Configuration Stockage S3
                   </h3>
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="s3_cost_per_gb">Coût par GB/mois</Label>
+                      <Label htmlFor="s3_cost_per_gb" className="text-gray-900 dark:text-gray-100">Coût par GB/mois</Label>
                       <Input
                         id="s3_cost_per_gb"
                         type="number"
                         step="0.001"
                         value={settings.s3_config.cost_per_gb}
                         onChange={(e) => updateSetting('s3_config', 'cost_per_gb', parseFloat(e.target.value) || 0)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Tarif de stockage par GB par mois
@@ -746,44 +750,44 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="s3_region">Région S3</Label>
+                      <Label htmlFor="s3_region" className="text-gray-900 dark:text-gray-100">Région S3</Label>
                       <Input
                         id="s3_region"
                         value={settings.s3_config.region}
                         onChange={(e) => updateSetting('s3_config', 'region', e.target.value)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="s3_endpoint">Endpoint S3</Label>
+                      <Label htmlFor="s3_endpoint" className="text-gray-900 dark:text-gray-100">Endpoint S3</Label>
                       <Input
                         id="s3_endpoint"
                         value={settings.s3_config.endpoint}
                         onChange={(e) => updateSetting('s3_config', 'endpoint', e.target.value)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="bucket_prefix">Préfixe Buckets</Label>
+                      <Label htmlFor="bucket_prefix" className="text-gray-900 dark:text-gray-100">Préfixe Buckets</Label>
                       <Input
                         id="bucket_prefix"
                         value={settings.s3_config.bucket_prefix}
                         onChange={(e) => updateSetting('s3_config', 'bucket_prefix', e.target.value)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="default_storage_gb">Stockage Default (GB)</Label>
+                      <Label htmlFor="default_storage_gb" className="text-gray-900 dark:text-gray-100">Stockage Default (GB)</Label>
                       <Input
                         id="default_storage_gb"
                         type="number"
                         step="1"
                         value={settings.s3_config.default_storage_gb}
                         onChange={(e) => updateSetting('s3_config', 'default_storage_gb', parseFloat(e.target.value) || 50)}
-                        className="mt-1"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Stockage par défaut alloué aux nouveaux agents (actuellement 50GB)
@@ -793,33 +797,33 @@ export default function PricingManagement() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Calcul Coûts S3</h3>
-                  <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg space-y-2">
-                    <p className="text-sm font-medium mb-2">Exemples de coûts mensuels:</p>
-                    <div className="flex justify-between text-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Calcul Coûts S3</h3>
+                  <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg space-y-2 border border-orange-200 dark:border-orange-700">
+                    <p className="text-sm font-medium mb-2 text-orange-900 dark:text-orange-100">Exemples de coûts mensuels:</p>
+                    <div className="flex justify-between text-sm text-orange-800 dark:text-orange-200">
                       <span>10 GB:</span>
                       <span>{formatCurrency(10 * settings.s3_config.cost_per_gb)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm text-orange-800 dark:text-orange-200">
                       <span>50 GB (défaut):</span>
                       <span>{formatCurrency(50 * settings.s3_config.cost_per_gb)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm text-orange-800 dark:text-orange-200">
                       <span>100 GB:</span>
                       <span>{formatCurrency(100 * settings.s3_config.cost_per_gb)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm text-orange-800 dark:text-orange-200">
                       <span>500 GB:</span>
                       <span>{formatCurrency(500 * settings.s3_config.cost_per_gb)}</span>
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <h4 className="font-medium mb-2">Configuration actuelle:</h4>
-                    <div className="text-sm space-y-1">
-                      <div>Région: <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">{settings.s3_config.region}</code></div>
-                      <div>Préfixe: <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">{settings.s3_config.bucket_prefix}</code></div>
-                      <div>Tarif: <Badge variant="outline">{formatCurrency(settings.s3_config.cost_per_gb)}/GB/mois</Badge></div>
+                  <div className="bg-gray-50 dark:bg-slate-800 p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <h4 className="font-medium mb-2 text-gray-900 dark:text-gray-100">Configuration actuelle:</h4>
+                    <div className="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                      <div>Région: <code className="bg-gray-200 dark:bg-slate-600 px-1 rounded text-gray-900 dark:text-gray-100">{settings.s3_config.region}</code></div>
+                      <div>Préfixe: <code className="bg-gray-200 dark:bg-slate-600 px-1 rounded text-gray-900 dark:text-gray-100">{settings.s3_config.bucket_prefix}</code></div>
+                      <div>Tarif: <Badge variant="outline" className="border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100">{formatCurrency(settings.s3_config.cost_per_gb)}/GB/mois</Badge></div>
                     </div>
                   </div>
                 </div>

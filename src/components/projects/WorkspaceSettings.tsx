@@ -30,6 +30,8 @@ interface Project {
   s3_bucket_prefix?: string
   s3_cost_per_gb?: number
   s3_default_storage_gb?: number
+  s3_access_key?: string
+  s3_secret_key?: string
 }
 
 interface WorkspaceSettingsProps {
@@ -46,6 +48,19 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
     environment: 'dev',
     is_active: true
   })
+  
+  const [s3ConfigData, setS3ConfigData] = useState({
+    s3_enabled: false,
+    s3_region: '',
+    s3_endpoint: '',
+    s3_bucket_prefix: '',
+    s3_access_key: '',
+    s3_secret_key: '',
+    s3_cost_per_gb: 0.023,
+    s3_default_storage_gb: 50
+  })
+  
+  const [showS3Config, setShowS3Config] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -60,6 +75,17 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
         description: project.description || '',
         environment: project.environment || 'dev',
         is_active: project.is_active ?? true
+      })
+      
+      setS3ConfigData({
+        s3_enabled: project.s3_enabled || false,
+        s3_region: project.s3_region || '',
+        s3_endpoint: project.s3_endpoint || '',
+        s3_bucket_prefix: project.s3_bucket_prefix || '',
+        s3_access_key: project.s3_access_key || '',
+        s3_secret_key: project.s3_secret_key || '',
+        s3_cost_per_gb: project.s3_cost_per_gb || 0.023,
+        s3_default_storage_gb: project.s3_default_storage_gb || 50
       })
     }
   }, [project])

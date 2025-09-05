@@ -470,12 +470,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                 Cycle de Facturation
               </label>
               <Select value={formData.billing_cycle} onValueChange={(value) => setFormData(prev => ({ ...prev, billing_cycle: value }))}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder="Sélectionnez le cycle" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monthly">Mensuel</SelectItem>
-                  <SelectItem value="annual">Annuel (avec réduction)</SelectItem>
+                <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                  <SelectItem value="monthly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">Mensuel</SelectItem>
+                  <SelectItem value="annual" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">Annuel (avec réduction)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -539,9 +539,9 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                   <SelectTrigger className="h-10 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                     <SelectValue placeholder="Select voice type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
                     {VOICE_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
+                      <SelectItem key={type.value} value={type.value} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
                         {type.label} - {type.description}
                       </SelectItem>
                     ))}
@@ -646,12 +646,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           </div>
                           {formData.stt_mode === 'external' && (
                             <Select value={formData.stt_provider_id} onValueChange={(value) => setFormData({ ...formData, stt_provider_id: value })}>
-                              <SelectTrigger className="h-9 text-sm">
+                              <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                                 <SelectValue placeholder="Select STT provider" />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
                                 {sttProviders.map((provider) => (
-                                  <SelectItem key={provider.id} value={provider.id.toString()}>
+                                  <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
                                     {provider.name} - ${provider.cost_per_unit}/{provider.unit}
                                   </SelectItem>
                                 ))}
@@ -694,12 +694,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           </div>
                           {formData.tts_mode === 'external' && (
                             <Select value={formData.tts_provider_id} onValueChange={(value) => setFormData({ ...formData, tts_provider_id: value })}>
-                              <SelectTrigger className="h-9 text-sm">
+                              <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                                 <SelectValue placeholder="Select TTS provider" />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
                                 {ttsProviders.map((provider) => (
-                                  <SelectItem key={provider.id} value={provider.id.toString()}>
+                                  <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
                                     {provider.name} - ${provider.cost_per_unit}/{provider.unit}
                                   </SelectItem>
                                 ))}
@@ -744,12 +744,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                       </div>
                       {formData.llm_mode === 'external' && (
                         <Select value={formData.llm_provider_id} onValueChange={(value) => setFormData({ ...formData, llm_provider_id: value })}>
-                          <SelectTrigger className="h-9 text-sm">
+                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                             <SelectValue placeholder="Select LLM provider" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
                             {llmProviders.map((provider) => (
-                              <SelectItem key={provider.id} value={provider.id.toString()}>
+                              <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
                                 {provider.name} - ${provider.cost_per_unit}/{provider.unit}
                               </SelectItem>
                             ))}
@@ -769,12 +769,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           STT Provider
                         </label>
                         <Select value={formData.stt_provider_id} onValueChange={(value) => setFormData({ ...formData, stt_provider_id: value })}>
-                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                             <SelectValue placeholder="Select STT provider" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
                             {sttProviders.map((provider) => (
-                              <SelectItem key={provider.id} value={provider.id.toString()}>
+                              <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
                                 {provider.name} - ${provider.cost_per_unit}/{provider.unit}
                               </SelectItem>
                             ))}
@@ -789,12 +789,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           TTS Provider
                         </label>
                         <Select value={formData.tts_provider_id} onValueChange={(value) => setFormData({ ...formData, tts_provider_id: value })}>
-                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                             <SelectValue placeholder="Select TTS provider" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
                             {ttsProviders.map((provider) => (
-                              <SelectItem key={provider.id} value={provider.id.toString()}>
+                              <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
                                 {provider.name} - ${provider.cost_per_unit}/{provider.unit}
                               </SelectItem>
                             ))}
@@ -809,12 +809,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                           LLM Provider
                         </label>
                         <Select value={formData.llm_provider_id} onValueChange={(value) => setFormData({ ...formData, llm_provider_id: value })}>
-                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
+                          <SelectTrigger className="h-9 text-sm bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                             <SelectValue placeholder="Select LLM provider" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600">
                             {llmProviders.map((provider) => (
-                              <SelectItem key={provider.id} value={provider.id.toString()}>
+                              <SelectItem key={provider.id} value={provider.id.toString()} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-600">
                                 {provider.name} - ${provider.cost_per_unit}/{provider.unit}
                               </SelectItem>
                             ))}
@@ -833,15 +833,18 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                 Estimation des Coûts
               </h3>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {selectedPlatform === 'dedicated' && (
+                {formData.platform_mode === 'dedicated' && (
                   <div>
                     <div className="font-medium">Mode Dedicated:</div>
                     <div>
                       {formData.agent_type === 'voice' ? 'Agent Voice' : 'Agent Text-Only'} 
                     </div>
+                    <div className="text-lg font-bold text-green-600 dark:text-green-400 mt-1">
+                      Estimation: {calculateEstimation()}
+                    </div>
                   </div>
                 )}
-                {selectedPlatform === 'pag' && (
+                {formData.platform_mode === 'pag' && (
                   <div>
                     <div className="font-medium">Mode Pay-as-You-Go:</div>
                     <div>
@@ -850,16 +853,16 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                         : 'Facturation par token LLM utilisé'
                       }
                     </div>
-                    <div className="text-lg font-bold text-blue-600 mt-1">
+                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400 mt-1">
                       Estimation: {calculateEstimation()}
                     </div>
                   </div>
                 )}
-                {selectedPlatform === 'hybrid' && (
+                {formData.platform_mode === 'hybrid' && (
                   <div>
                     <div className="font-medium">Mode Hybrid:</div>
                     <div>Mix de modèles dedicated et pay-as-you-go</div>
-                    <div className="text-lg font-bold text-purple-600 mt-1">
+                    <div className="text-lg font-bold text-purple-600 dark:text-purple-400 mt-1">
                       Estimation: {calculateEstimation()}
                     </div>
                   </div>

@@ -102,9 +102,9 @@ export async function POST(request: NextRequest) {
     // Get all agents in workspace
     const agentsResult = await query(`
       SELECT id, name, platform_mode, billing_cycle, s3_storage_gb, 
-             pricing_config, stt_mode, tts_mode, llm_mode
+             pricing_config, provider_config
       FROM pype_voice_agents 
-      WHERE workspace_id = $1
+      WHERE project_id = $1
     `, [workspace_id])
 
     const agents = agentsResult.rows
@@ -181,35 +181,17 @@ export async function POST(request: NextRequest) {
         consumptionDetails.llm_pag_usage = totalLlmTokens
 
       } else if (agent.platform_mode === 'hybrid') {
-        // Mixed costs based on individual model modes using global settings
-        const pricing_config = agent.pricing_config || {}
+        // Mixed costs based on provider config using global settings
+        const provider_config = agent.provider_config || {}
         
-        // STT cost
-        if (agent.stt_mode === 'builtin_dedicated') {
-          sttCost = dedicatedRates.stt_monthly || 15.00
-          consumptionDetails.stt_dedicated_monthly = sttCost
-        } else {
-          sttCost = totalSttMinutes * (pagRates.stt_builtin_per_minute || 0.005)
-          consumptionDetails.stt_pag_usage = totalSttMinutes
-        }
+        // Default to PAG pricing for hybrid mode
+        sttCost = totalSttMinutes * (pagRates.stt_builtin_per_minute || 0.005)
+        ttsCost = totalTtsWords * (pagRates.tts_builtin_per_word || 0.002)
+        llmCost = totalLlmTokens * (pagRates.llm_builtin_per_token || 0.000015)
         
-        // TTS cost
-        if (agent.tts_mode === 'builtin_dedicated') {
-          ttsCost = dedicatedRates.tts_monthly || 12.00
-          consumptionDetails.tts_dedicated_monthly = ttsCost
-        } else {
-          ttsCost = totalTtsWords * (pagRates.tts_builtin_per_word || 0.002)
-          consumptionDetails.tts_pag_usage = totalTtsWords
-        }
-        
-        // LLM cost
-        if (agent.llm_mode === 'builtin_dedicated') {
-          llmCost = dedicatedRates.llm_monthly || 25.00
-          consumptionDetails.llm_dedicated_monthly = llmCost
-        } else {
-          llmCost = totalLlmTokens * (pagRates.llm_builtin_per_token || 0.000015)
-          consumptionDetails.llm_pag_usage = totalLlmTokens
-        }
+        consumptionDetails.stt_pag_usage = totalSttMinutes
+        consumptionDetails.tts_pag_usage = totalTtsWords
+        consumptionDetails.llm_pag_usage = totalLlmTokens
       }
 
       // S3 storage cost (monthly) from global settings
