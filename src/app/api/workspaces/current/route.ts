@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
     // Get user's current workspace (first one for now)
     const workspaces = await query(`
       SELECT w.id, w.name, w.created_at
-      FROM pype_voice_workspaces w
-      JOIN pype_voice_email_project_mapping m ON w.id = m.workspace_id
+      FROM pype_voice_projects w
+      JOIN pype_voice_email_project_mapping m ON w.id = m.project_id
       WHERE m.email = $1
       ORDER BY w.created_at DESC
       LIMIT 1

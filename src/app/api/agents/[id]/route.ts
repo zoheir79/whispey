@@ -43,7 +43,73 @@ export async function GET(
       hasVapiKeys: Boolean(agent.vapi_api_key_encrypted)
     })
 
-    // Return agent data (without exposing encrypted keys)
+    // Enrich cost_overrides with detailed provider info for form pre-population
+    let enrichedCostOverrides = null;
+    if (agent.cost_overrides) {
+      enrichedCostOverrides = {
+        // STT overrides with provider selection and units
+        stt_provider_id: agent.cost_overrides.stt_provider_id || null,
+        stt_cost_per_minute: agent.cost_overrides.stt_cost_per_minute || null,
+        stt_monthly_cost: agent.cost_overrides.stt_monthly_cost || null,
+        stt_unit: agent.cost_overrides.stt_unit || 'per_minute', // per_minute, monthly_dedicated
+        
+        // TTS overrides with provider selection and units  
+        tts_provider_id: agent.cost_overrides.tts_provider_id || null,
+        tts_cost_per_word: agent.cost_overrides.tts_cost_per_word || null,
+        tts_cost_per_character: agent.cost_overrides.tts_cost_per_character || null,
+        tts_monthly_cost: agent.cost_overrides.tts_monthly_cost || null,
+        tts_unit: agent.cost_overrides.tts_unit || 'per_word', // per_word, per_character, monthly_dedicated
+        
+        // LLM overrides with provider selection and units
+        llm_provider_id: agent.cost_overrides.llm_provider_id || null,
+        llm_cost_per_input_token: agent.cost_overrides.llm_cost_per_input_token || null,
+        llm_cost_per_output_token: agent.cost_overrides.llm_cost_per_output_token || null,
+        llm_monthly_cost: agent.cost_overrides.llm_monthly_cost || null,
+        llm_unit: agent.cost_overrides.llm_unit || 'per_token', // per_token, monthly_dedicated
+        
+        // Copy any other override fields
+        ...agent.cost_overrides
+      };
+    }
+
+    // Enrich provider_config with complete URLs and API keys for form pre-population
+    let enrichedProviderConfig = agent.provider_config || {};
+    
+    // Extract provider URLs and API keys for each service type
+    const providerDetails = {
+      // STT Provider configuration
+      stt: {
+        provider_id: enrichedProviderConfig.stt?.provider_id || null,
+        custom_url: enrichedProviderConfig.stt?.url || null,
+        api_key: enrichedProviderConfig.stt?.api_key || null,
+        model: enrichedProviderConfig.stt?.model || null,
+        // Copy all STT config
+        ...enrichedProviderConfig.stt
+      },
+      
+      // TTS Provider configuration  
+      tts: {
+        provider_id: enrichedProviderConfig.tts?.provider_id || null,
+        custom_url: enrichedProviderConfig.tts?.url || null,
+        api_key: enrichedProviderConfig.tts?.api_key || null,
+        model: enrichedProviderConfig.tts?.model || null,
+        voice: enrichedProviderConfig.tts?.voice || null,
+        // Copy all TTS config
+        ...enrichedProviderConfig.tts
+      },
+      
+      // LLM Provider configuration
+      llm: {
+        provider_id: enrichedProviderConfig.llm?.provider_id || null,
+        custom_url: enrichedProviderConfig.llm?.url || null,
+        api_key: enrichedProviderConfig.llm?.api_key || null,
+        model: enrichedProviderConfig.llm?.model || null,
+        // Copy all LLM config
+        ...enrichedProviderConfig.llm
+      }
+    };
+
+    // Return agent data (without exposing encrypted keys) with all form fields
     const agentResponse = {
       id: agent.id,
       name: agent.name,
@@ -62,7 +128,16 @@ export async function GET(
       // Include other fields you might have
       field_extractor: agent.field_extractor,
       field_extractor_prompt: agent.field_extractor_prompt,
-      field_extractor_keys: agent.field_extractor_keys
+      field_extractor_keys: agent.field_extractor_keys,
+      // Billing and configuration fields for form pre-population
+      platform_mode: agent.platform_mode || 'pag',
+      billing_cycle: agent.billing_cycle || 'monthly',
+      provider_config: enrichedProviderConfig,
+      provider_details: providerDetails, // Detailed provider config for form
+      cost_overrides: enrichedCostOverrides,
+      s3_storage_gb: agent.s3_storage_gb || 50,
+      // Platform info for form logic
+      platform: agent.platform || (agent.agent_type === 'vapi' ? 'vapi' : 'livekit')
     }
 
     return NextResponse.json(agentResponse)
@@ -84,6 +159,21 @@ export async function PATCH(
   try {
     const { id: agentId } = await params
     const body = await request.json()
+    const { 
+      name, 
+      agent_type, 
+      configuration, 
+      environment, 
+      is_active,
+      platform_mode,
+      billing_cycle,
+      provider_config,
+      cost_overrides,
+      s3_storage_gb,
+      field_extractor,
+      field_extractor_prompt,
+      field_extractor_keys
+    } = body
 
     console.log('🔍 Updating agent with ID:', agentId)
     console.log('🔍 Update data:', body)
@@ -95,24 +185,56 @@ export async function PATCH(
       )
     }
 
+    // Validation similar to creation logic
+    if (name && !name.trim()) {
+      return NextResponse.json(
+        { error: 'Agent name cannot be empty' },
+        { status: 400 }
+      )
+    }
+
+    // Validate platform_mode if provided
+    if (platform_mode && !['pag', 'dedicated', 'hybrid'].includes(platform_mode)) {
+      return NextResponse.json(
+        { error: 'platform_mode must be one of: pag, dedicated, hybrid' },
+        { status: 400 }
+      )
+    }
+
+    // Validate billing_cycle if provided
+    if (billing_cycle && !['monthly', 'annual'].includes(billing_cycle)) {
+      return NextResponse.json(
+        { error: 'billing_cycle must be either monthly or annual' },
+        { status: 400 }
+      )
+    }
+
     // Build update fields dynamically from request body
     const updateFields: string[] = []
     const values: any[] = []
     let paramIndex = 1
 
-    // Common updatable fields
-    const allowedFields = [
-      'name', 'agent_type', 'configuration', 'environment', 'is_active',
-      'field_extractor', 'field_extractor_prompt', 'field_extractor_keys',
-      'vapi_api_key_encrypted', 'vapi_project_key_encrypted'
-    ]
+    // Process updatable fields with validation
+    const fieldUpdates: Record<string, any> = {}
+    
+    if (name !== undefined) fieldUpdates.name = name.trim()
+    if (agent_type !== undefined) fieldUpdates.agent_type = agent_type
+    if (configuration !== undefined) fieldUpdates.configuration = configuration
+    if (environment !== undefined) fieldUpdates.environment = environment
+    if (is_active !== undefined) fieldUpdates.is_active = is_active
+    if (platform_mode !== undefined) fieldUpdates.platform_mode = platform_mode
+    if (billing_cycle !== undefined) fieldUpdates.billing_cycle = billing_cycle
+    if (provider_config !== undefined) fieldUpdates.provider_config = provider_config
+    if (cost_overrides !== undefined) fieldUpdates.cost_overrides = cost_overrides
+    if (s3_storage_gb !== undefined) fieldUpdates.s3_storage_gb = s3_storage_gb
+    if (field_extractor !== undefined) fieldUpdates.field_extractor = field_extractor
+    if (field_extractor_prompt !== undefined) fieldUpdates.field_extractor_prompt = field_extractor_prompt
+    if (field_extractor_keys !== undefined) fieldUpdates.field_extractor_keys = field_extractor_keys
 
-    for (const field of allowedFields) {
-      if (body[field] !== undefined) {
-        updateFields.push(`${field} = $${paramIndex}`)
-        values.push(body[field])
-        paramIndex++
-      }
+    for (const [field, value] of Object.entries(fieldUpdates)) {
+      updateFields.push(`${field} = $${paramIndex}`)
+      values.push(value)
+      paramIndex++
     }
 
     // Add updated_at timestamp
@@ -146,7 +268,7 @@ export async function PATCH(
     const updatedAgent = result.rows[0]
     console.log('✅ Agent updated successfully:', updatedAgent.id)
 
-    // Return updated agent data (without exposing encrypted keys in response)
+    // Return agent data (without exposing encrypted keys)
     const agentResponse = {
       id: updatedAgent.id,
       name: updatedAgent.name,
@@ -161,7 +283,13 @@ export async function PATCH(
       has_vapi_keys: Boolean(updatedAgent.vapi_api_key_encrypted && updatedAgent.vapi_project_key_encrypted),
       field_extractor: updatedAgent.field_extractor,
       field_extractor_prompt: updatedAgent.field_extractor_prompt,
-      field_extractor_keys: updatedAgent.field_extractor_keys
+      field_extractor_keys: updatedAgent.field_extractor_keys,
+      platform_mode: updatedAgent.platform_mode || 'pag',
+      billing_cycle: updatedAgent.billing_cycle || 'monthly',
+      provider_config: updatedAgent.provider_config || {},
+      cost_overrides: updatedAgent.cost_overrides || null,
+      s3_storage_gb: updatedAgent.s3_storage_gb || 50,
+      platform: updatedAgent.platform || 'vapi' // Derived from agent_type or stored separately
     }
 
     return NextResponse.json(agentResponse)

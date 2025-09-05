@@ -20,15 +20,15 @@ export async function GET(request: NextRequest) {
       // Super admin can see ALL workspaces
       workspaces = await query(`
         SELECT id, name, created_at 
-        FROM pype_voice_workspaces 
+        FROM pype_voice_projects 
         ORDER BY created_at DESC
       `);
     } else {
       // Regular users see only workspaces they have access to
       workspaces = await query(`
         SELECT DISTINCT w.id, w.name, w.created_at 
-        FROM pype_voice_workspaces w
-        LEFT JOIN pype_voice_email_project_mapping epm ON w.id = epm.workspace_id
+        FROM pype_voice_projects w
+        LEFT JOIN pype_voice_email_project_mapping epm ON w.id = epm.project_id
         LEFT JOIN pype_voice_users u ON u.email = epm.email
         WHERE u.user_id = $1 AND epm.is_active = true
         ORDER BY w.created_at DESC
