@@ -298,7 +298,7 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
 
       {/* Workspace Selector for Super Admin */}
       {workspaceId === 'all' && workspaces.length > 0 && (
-        <Card className="mb-6">
+        <Card className="mb-6 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
           <CardHeader>
             <CardTitle>Sélection Workspace</CardTitle>
             <CardDescription>
@@ -324,7 +324,7 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
 
       {/* Show content only if workspace is selected */}
       {!selectedWorkspace ? (
-        <Card>
+        <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
           <CardContent className="p-6">
             <div className="text-center text-gray-500 dark:text-gray-400">
               Sélectionnez un workspace pour afficher la facturation
@@ -336,54 +336,54 @@ export default function BillingDashboard({ workspaceId }: { workspaceId: string 
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card>
+        <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Factures ce mois
                 </p>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {invoices.filter(i => 
                     new Date(i.created_at).getMonth() === new Date().getMonth()
                   ).length}
                 </p>
               </div>
-              <Receipt className="h-8 w-8 text-blue-500" />
+              <Receipt className="h-8 w-8 text-blue-500 dark:text-blue-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Montant total
                 </p>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {formatCurrency(
                     invoices.reduce((sum, i) => sum + i.total_amount, 0)
                   )}
                 </p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-500" />
+              <DollarSign className="h-8 w-8 text-green-500 dark:text-green-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Factures payées
                 </p>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {invoices.filter(i => i.status === 'paid').length}
                 </p>
               </div>
-              <TrendingUp className="h-8 w-8 text-purple-500" />
+              <TrendingUp className="h-8 w-8 text-purple-500 dark:text-purple-400" />
             </div>
           </CardContent>
         </Card>

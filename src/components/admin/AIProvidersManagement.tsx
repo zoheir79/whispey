@@ -463,7 +463,7 @@ export default function AIProvidersManagement() {
       )}
 
       {/* Built-in Models Configuration */}
-      <Card className="mb-6">
+      <Card className="mb-6 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Server className="h-5 w-5" />
@@ -476,16 +476,16 @@ export default function AIProvidersManagement() {
         <CardContent>
           <div className="space-y-4">
             {/* STT Built-in */}
-            <div className="flex items-center justify-between p-4 border rounded-lg bg-purple-50 dark:bg-purple-900/20">
+            <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-slate-700 rounded-lg bg-purple-50 dark:bg-purple-900/20">
               <div>
-                <div className="font-medium flex items-center gap-2">
+                <div className="font-medium flex items-center gap-2 text-gray-900 dark:text-gray-100">
                   Speech-to-Text (Built-in)
                   <Badge variant="secondary" className="text-xs">NON SUPPRIMABLE</Badge>
                 </div>
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   URL: {globalSettings?.builtin_stt?.url || 'Non configuré'}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   Coûts configurés dans Tarifs & Facturation
                 </div>
               </div>
@@ -499,16 +499,16 @@ export default function AIProvidersManagement() {
             </div>
 
             {/* TTS Built-in */}
-            <div className="flex items-center justify-between p-4 border rounded-lg bg-purple-50 dark:bg-purple-900/20">
+            <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-slate-700 rounded-lg bg-purple-50 dark:bg-purple-900/20">
               <div>
-                <div className="font-medium flex items-center gap-2">
+                <div className="font-medium flex items-center gap-2 text-gray-900 dark:text-gray-100">
                   Text-to-Speech (Built-in)
                   <Badge variant="secondary" className="text-xs">NON SUPPRIMABLE</Badge>
                 </div>
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   URL: {globalSettings?.builtin_tts?.url || 'Non configuré'}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   Coûts configurés dans Tarifs & Facturation
                 </div>
               </div>
@@ -522,16 +522,16 @@ export default function AIProvidersManagement() {
             </div>
 
             {/* LLM Built-in */}
-            <div className="flex items-center justify-between p-4 border rounded-lg bg-purple-50 dark:bg-purple-900/20">
+            <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-slate-700 rounded-lg bg-purple-50 dark:bg-purple-900/20">
               <div>
-                <div className="font-medium flex items-center gap-2">
+                <div className="font-medium flex items-center gap-2 text-gray-900 dark:text-gray-100">
                   Large Language Model (Built-in)
                   <Badge variant="secondary" className="text-xs">NON SUPPRIMABLE</Badge>
                 </div>
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   URL: {globalSettings?.builtin_llm?.url || 'Non configuré'}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   Coûts configurés dans Tarifs & Facturation
                 </div>
               </div>
@@ -548,7 +548,7 @@ export default function AIProvidersManagement() {
       </Card>
 
       {/* External Providers */}
-      <Card>
+      <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
