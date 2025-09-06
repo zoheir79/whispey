@@ -152,11 +152,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialiser compte crédits pour ce workspace si nécessaire
-    await query(`
-      INSERT INTO user_credits (workspace_id, current_balance, currency, is_active)
-      VALUES ($1, 0, 'USD', true)
-      ON CONFLICT (workspace_id) DO NOTHING
-    `, [workspace_id]);
+    try {
+      await query(`
+        INSERT INTO user_credits (workspace_id, current_balance, currency, is_active)
+        VALUES ($1, 0, 'USD', true)
+      `, [workspace_id]);
+    } catch (creditError: any) {
+      // Ignore si les crédits existent déjà ou si la table n'existe pas
+      console.log('Credit initialization skipped:', creditError.message);
+    }
 
     return NextResponse.json({
       success: true,

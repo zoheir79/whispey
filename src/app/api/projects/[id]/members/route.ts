@@ -222,7 +222,7 @@ export async function GET(
     // Get members with basic info
     const { data: members, error } = await fetchFromTable({
       table: 'pype_voice_email_project_mapping',
-      select: 'id, user_id, email, role, permissions, is_active, added_by_user_id, joined_at',
+      select: 'id, user_id, email, role, permissions, is_active, added_by_user_id, created_at',
       filters: [
         { column: 'project_id', operator: '=', value: projectId },
         { column: 'is_active', operator: '=', value: true }

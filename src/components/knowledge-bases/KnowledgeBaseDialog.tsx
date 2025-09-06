@@ -98,6 +98,9 @@ export default function KnowledgeBaseDialog({
       const data = await response.json()
 
       if (!response.ok) {
+        if (response.status === 409 || data.error?.includes('duplicate key')) {
+          throw new Error(`A knowledge base with the name "${formData.name}" already exists in this workspace. Please choose a different name.`)
+        }
         throw new Error(data.error || `Failed to ${knowledgeBase ? 'update' : 'create'} knowledge base`)
       }
 
