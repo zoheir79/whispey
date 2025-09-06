@@ -339,7 +339,7 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {project?.s3_enabled ? (
+              {project?.s3_enabled && !showS3Config ? (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium dark:text-slate-300">Storage Status</span>
