@@ -237,18 +237,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS agent_billing_cycles_updated_at ON agent_billing_cycles;
 CREATE TRIGGER agent_billing_cycles_updated_at
     BEFORE UPDATE ON agent_billing_cycles
     FOR EACH ROW EXECUTE FUNCTION update_billing_cycle_timestamp();
 
+DROP TRIGGER IF EXISTS kb_billing_cycles_updated_at ON kb_billing_cycles;
 CREATE TRIGGER kb_billing_cycles_updated_at
     BEFORE UPDATE ON kb_billing_cycles
     FOR EACH ROW EXECUTE FUNCTION update_billing_cycle_timestamp();
 
+DROP TRIGGER IF EXISTS workflow_billing_cycles_updated_at ON workflow_billing_cycles;
 CREATE TRIGGER workflow_billing_cycles_updated_at
     BEFORE UPDATE ON workflow_billing_cycles
     FOR EACH ROW EXECUTE FUNCTION update_billing_cycle_timestamp();
 
+DROP TRIGGER IF EXISTS workspace_billing_cycles_updated_at ON workspace_billing_cycles;
 CREATE TRIGGER workspace_billing_cycles_updated_at
     BEFORE UPDATE ON workspace_billing_cycles
     FOR EACH ROW EXECUTE FUNCTION update_billing_cycle_timestamp();
@@ -470,7 +474,7 @@ LEFT JOIN agent_billing_cycles abc ON w.id = abc.workspace_id AND abc.is_active 
 LEFT JOIN kb_billing_cycles kbc ON w.id = kbc.workspace_id AND kbc.is_active = true
 LEFT JOIN workflow_billing_cycles wfc ON w.id = wfc.workspace_id AND wfc.is_active = true
 LEFT JOIN workspace_billing_cycles wbc ON w.id = wbc.workspace_id AND wbc.is_active = true
-GROUP BY w.id, w.name, w.user_id;
+GROUP BY w.id, w.name, w.owner_user_id;
 
 -- Vue des services à facturer prochainement
 CREATE OR REPLACE VIEW upcoming_billings AS
