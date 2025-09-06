@@ -105,6 +105,9 @@ export interface CostCalculationResult {
   usage?: UsageMetrics;
   platform_mode?: string;
   calculated_at: string;
+  breakdown?: {
+    [key: string]: number;
+  };
 }
 
 export class CreditManager {
