@@ -11,36 +11,70 @@ BEGIN;
 -- 1. TABLE CREDIT ALERTS
 -- ========================================
 
+-- Créer table si elle n'existe pas
 CREATE TABLE IF NOT EXISTS credit_alerts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
-    -- Workspace associé
     workspace_id UUID NOT NULL REFERENCES pype_voice_projects(id) ON DELETE CASCADE,
-    
-    -- Type d'alerte
-    alert_type VARCHAR(30) NOT NULL CHECK (alert_type IN ('low_balance', 'critical_balance', 'negative_balance', 'auto_suspension')),
-    
-    -- Détails balance
+    alert_type VARCHAR(30) NOT NULL,
     current_balance DECIMAL(10,4) NOT NULL,
     threshold DECIMAL(10,4) NOT NULL,
     currency VARCHAR(3) DEFAULT 'USD',
-    
-    -- Message et sévérité
     alert_message TEXT NOT NULL,
-    severity VARCHAR(20) NOT NULL CHECK (severity IN ('info', 'warning', 'critical', 'emergency')),
-    
-    -- Statut résolution
-    is_resolved BOOLEAN DEFAULT false,
-    resolved_at TIMESTAMP WITH TIME ZONE,
-    resolved_by VARCHAR(255), -- User ID ou 'system'
-    
-    -- Métadonnées
-    metadata JSONB DEFAULT '{}',
-    
-    -- Timestamps
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    severity VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Ajouter colonnes manquantes si elles n'existent pas
+DO $$ 
+BEGIN
+    -- Ajouter is_resolved
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='credit_alerts' AND column_name='is_resolved') THEN
+        ALTER TABLE credit_alerts ADD COLUMN is_resolved BOOLEAN DEFAULT false;
+    END IF;
+    
+    -- Ajouter resolved_at
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='credit_alerts' AND column_name='resolved_at') THEN
+        ALTER TABLE credit_alerts ADD COLUMN resolved_at TIMESTAMP WITH TIME ZONE;
+    END IF;
+    
+    -- Ajouter resolved_by
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='credit_alerts' AND column_name='resolved_by') THEN
+        ALTER TABLE credit_alerts ADD COLUMN resolved_by VARCHAR(255);
+    END IF;
+    
+    -- Ajouter metadata
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='credit_alerts' AND column_name='metadata') THEN
+        ALTER TABLE credit_alerts ADD COLUMN metadata JSONB DEFAULT '{}';
+    END IF;
+    
+    -- Ajouter updated_at
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='credit_alerts' AND column_name='updated_at') THEN
+        ALTER TABLE credit_alerts ADD COLUMN updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+    END IF;
+END $$;
+
+-- Ajouter contraintes si elles n'existent pas
+DO $$
+BEGIN
+    -- Contrainte alert_type
+    IF NOT EXISTS (SELECT 1 FROM information_schema.check_constraints 
+                   WHERE constraint_name='credit_alerts_alert_type_check') THEN
+        ALTER TABLE credit_alerts ADD CONSTRAINT credit_alerts_alert_type_check 
+        CHECK (alert_type IN ('low_balance', 'critical_balance', 'negative_balance', 'auto_suspension'));
+    END IF;
+    
+    -- Contrainte severity
+    IF NOT EXISTS (SELECT 1 FROM information_schema.check_constraints 
+                   WHERE constraint_name='credit_alerts_severity_check') THEN
+        ALTER TABLE credit_alerts ADD CONSTRAINT credit_alerts_severity_check 
+        CHECK (severity IN ('info', 'warning', 'critical', 'emergency'));
+    END IF;
+END $$;
 
 -- Index pour performance des alertes
 CREATE INDEX IF NOT EXISTS idx_credit_alerts_workspace_status 
