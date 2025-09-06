@@ -504,7 +504,7 @@ FROM pype_voice_agents a
 LEFT JOIN pype_voice_projects w ON a.project_id = w.id
 LEFT JOIN pype_voice_users u ON a.user_id = u.id  
 LEFT JOIN agent_billing_cycles abc ON a.id = abc.agent_id AND abc.is_active = true
-WHERE a.deleted_at IS NULL;
+WHERE a.is_active = true;
 
 -- Fonction pour nettoyer les configurations orphelines
 CREATE OR REPLACE FUNCTION cleanup_orphaned_agent_configs()
@@ -564,6 +564,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS agent_config_cleanup_before_update ON pype_voice_agents;
 CREATE TRIGGER agent_config_cleanup_before_update
     BEFORE INSERT OR UPDATE ON pype_voice_agents
     FOR EACH ROW EXECUTE FUNCTION agent_config_cleanup_trigger();
