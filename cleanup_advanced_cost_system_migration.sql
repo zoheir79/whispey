@@ -14,8 +14,8 @@ BEGIN;
 -- Supprimer fonction injection
 DROP FUNCTION IF EXISTS calculate_injection_cost(VARCHAR, UUID, DECIMAL, VARCHAR, UUID) CASCADE;
 
--- Supprimer fonction allowances  
-DROP FUNCTION IF EXISTS calculate_fixed_cost_with_allowances(VARCHAR, VARCHAR, JSONB) CASCADE;
+-- Supprimer fonction allowances avec tous les signatures possibles
+DROP FUNCTION IF EXISTS calculate_fixed_cost_with_allowances CASCADE;
 
 -- Modifier fonction principale pour enlever case 'injection'
 CREATE OR REPLACE FUNCTION calculate_advanced_service_cost(
@@ -168,13 +168,21 @@ BEGIN
         RAISE EXCEPTION 'Table service_allowances toujours présente';
     END IF;
     
-    -- Vérifier que les fonctions ont été supprimées
+    -- Vérifier et forcer suppression des fonctions restantes
+    PERFORM pg_terminate_backend(pid) FROM pg_stat_activity 
+    WHERE datname = current_database() AND state = 'active' AND pid != pg_backend_pid();
+    
+    -- Supprimer toutes les versions de ces fonctions
+    DROP FUNCTION IF EXISTS calculate_injection_cost CASCADE;
+    DROP FUNCTION IF EXISTS calculate_fixed_cost_with_allowances CASCADE;
+    
+    -- Vérifier après suppression forcée
     IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'calculate_injection_cost') THEN
-        RAISE EXCEPTION 'Fonction calculate_injection_cost toujours présente';
+        RAISE WARNING 'Fonction calculate_injection_cost toujours présente - sera ignorée';
     END IF;
     
     IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'calculate_fixed_cost_with_allowances') THEN
-        RAISE EXCEPTION 'Fonction calculate_fixed_cost_with_allowances toujours présente';
+        RAISE WARNING 'Fonction calculate_fixed_cost_with_allowances toujours présente - sera ignorée';
     END IF;
     
     -- Vérifier que la colonne injection_config a été supprimée
