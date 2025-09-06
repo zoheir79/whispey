@@ -2,7 +2,7 @@
 -- MIGRATION: Système de Coûts Avancé
 -- Version: 1.0
 -- Date: 2025-01-06
--- Modes: injection, fixed, dynamic, hybrid
+-- Modes: pag, dedicated, hybrid, fixed, dynamic (injection/allowance supprimés)
 -- ===================================
 
 BEGIN;

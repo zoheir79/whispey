@@ -183,7 +183,37 @@ export async function POST(
       }, { status: 500 });
     }
 
-    // Enregistrer métadonnées du fichier en base
+    // Calculer coût d'embedding estimé
+    const { estimateTextLength, calculateEmbeddingCost, recordEmbeddingMetrics } = await import('@/services/embeddingCostCalculator');
+    
+    const textLength = await estimateTextLength(fileBuffer, file.type);
+    const chunkCount = Math.ceil(textLength / 1000); // Chunks de 1000 chars
+    const tokensPerChunk = Math.ceil(1000 / 4); // ~250 tokens par chunk
+    const totalTokens = chunkCount * tokensPerChunk;
+    
+    // Récupérer tarif embedding depuis KB config ou settings globaux
+    const embeddingCost = await calculateEmbeddingCost(kbId, totalTokens);
+
+    // Déduire coût d'embedding immédiatement
+    const { creditManager } = await import('@/services/creditManager');
+    const deductionResult = await creditManager.deductCredits({
+      workspace_id: kb.workspace_id,
+      amount: embeddingCost.total_cost,
+      description: `KB file embedding: ${file.name} (${totalTokens} tokens)`,
+      service_type: 'knowledge_base',
+      service_id: kbId
+    });
+
+    if (!deductionResult.success) {
+      return NextResponse.json({ 
+        error: `Insufficient credits for embedding. Required: $${embeddingCost.total_cost}, Available: $${deductionResult.previous_balance || 0}` 
+      }, { status: 402 }); // Payment Required
+    }
+
+    // Enregistrer métriques d'embedding
+    await recordEmbeddingMetrics(kbId, embeddingCost, 'temp-file-id');
+
+    // Enregistrer métadonnées du fichier en base avec coûts
     const fileRecord = await query(`
       INSERT INTO kb_files (
         kb_id, filename, original_filename, file_type, file_size_bytes,
@@ -193,7 +223,13 @@ export async function POST(
     `, [
       kbId, fileName, file.name, file.type, file.size,
       file.type, fileName, bucketName, 'uploaded', 
-      JSON.stringify(metadata), userId
+      JSON.stringify({
+        ...metadata,
+        estimated_chunks: chunkCount,
+        estimated_tokens: totalTokens,
+        embedding_cost: embeddingCost.total_cost,
+        credits_deducted: deductionResult.amount_deducted
+      }), userId
     ]);
 
     // Mettre à jour les statistiques de la KB
