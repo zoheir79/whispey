@@ -207,7 +207,7 @@ export class AdvancedCostManager {
         WHERE id = $${paramCount}
       `, values);
 
-      return result.rowCount > 0;
+      return (result.rowCount || 0) > 0;
     } catch (error) {
       console.error('Failed to update cost configuration:', error);
       return false;
@@ -289,7 +289,7 @@ export class AdvancedCostManager {
         AND period_end >= CURRENT_DATE
       `, [service_type, service_id, allowance_type, usage_amount]);
 
-      return result.rowCount > 0;
+      return (result.rowCount || 0) > 0;
     } catch (error) {
       console.error('Failed to update allowance usage:', error);
       return false;
@@ -520,7 +520,7 @@ export class AdvancedCostManager {
         AND is_active = true
       `, [workspace_id]);
 
-      return result.rowCount > 0;
+      return (result.rowCount || 0) > 0;
     } catch (error) {
       console.error('Failed to reset monthly allowances:', error);
       return false;

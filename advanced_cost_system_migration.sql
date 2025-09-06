@@ -297,7 +297,7 @@ CREATE POLICY cost_injections_workspace_policy ON cost_injections
         source_workspace_id IN (
             SELECT DISTINCT epm.project_id 
             FROM pype_voice_email_project_mapping epm
-            INNER JOIN pype_voice_users u ON u.email = emp.email
+            INNER JOIN pype_voice_users u ON u.email = epm.email
             WHERE u.user_id = current_setting('app.current_user_id')::uuid 
             AND epm.is_active = true
         )
