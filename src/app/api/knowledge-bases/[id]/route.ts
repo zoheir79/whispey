@@ -21,7 +21,8 @@ export async function GET(
     const userGlobalRole = await getUserGlobalRole(userId);
     
     let kbQuery = `
-      SELECT kb.*, u.email as created_by_email, p.name as workspace_name
+      SELECT kb.*, u.email as created_by_email, p.name as workspace_name,
+             p.s3_bucket_name, p.s3_region, p.s3_access_key_id, p.s3_secret_access_key
       FROM pype_voice_knowledge_bases kb
       LEFT JOIN pype_voice_users u ON u.user_id = kb.created_by
       LEFT JOIN pype_voice_projects p ON p.id = kb.workspace_id

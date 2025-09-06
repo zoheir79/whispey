@@ -219,88 +219,78 @@ export default function KnowledgeBasesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredKnowledgeBases.map((kb) => (
-              <Card key={kb.id} className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-orange-500 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1 line-clamp-1">
-                        {kb.name}
-                      </CardTitle>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                        {kb.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 ml-2">
-                      {getStatusIcon(kb.status)}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">Workspace:</span>
-                      <Badge variant="outline" className="text-xs">
-                        {kb.workspace_name}
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">Files:</span>
-                      <span className="font-medium">{kb.file_count}</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">Size:</span>
-                      <span className="font-medium">{formatFileSize(kb.total_size)}</span>
+              <Card key={kb.id} className="bg-white dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-3 flex-1">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-lg">
+                          <FileText className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-orange-900 dark:text-orange-100 truncate">
+                            {kb.name}
+                          </h3>
+                          <div className="flex items-center gap-4 text-sm text-orange-600 dark:text-orange-400">
+                            <span>{kb.workspace_name}</span>
+                            <span>{kb.file_count} files</span>
+                            <span>{formatFileSize(kb.total_size)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      {kb.description && (
+                        <p className="text-sm text-orange-700 dark:text-orange-300 line-clamp-2">
+                          {kb.description}
+                        </p>
+                      )}
                     </div>
 
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">Status:</span>
+                    <div className="flex flex-col gap-2 ml-auto">
                       <Badge className={`text-xs ${getStatusColor(kb.status)}`}>
                         {kb.status}
                       </Badge>
                     </div>
+                  </div>
 
-                    <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="flex-1"
-                          onClick={() => window.location.href = `/knowledge-bases/${kb.id}`}
-                        >
-                          <Eye className="w-3 h-3 mr-1" />
-                          View
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => window.location.href = `/knowledge-bases/${kb.id}/files`}
-                        >
-                          <Upload className="w-3 h-3 mr-1" />
-                          Files
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(kb)}
-                        >
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                          onClick={() => handleDelete(kb)}
-                          disabled={deleteLoading === kb.id}
-                        >
-                          {deleteLoading === kb.id ? (
-                            <div className="w-3 h-3 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
-                          ) : (
-                            <Trash2 className="w-3 h-3" />
-                          )}
-                        </Button>
-                      </div>
+                  <div className="pt-3 border-t border-orange-200 dark:border-orange-700">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => window.location.href = `/knowledge-bases/${kb.id}`}
+                      >
+                        <Eye className="w-3 h-3 mr-1" />
+                        View
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.location.href = `/knowledge-bases/${kb.id}/files`}
+                      >
+                        <Upload className="w-3 h-3 mr-1" />
+                        Files
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(kb)}
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        onClick={() => handleDelete(kb)}
+                        disabled={deleteLoading === kb.id}
+                      >
+                        {deleteLoading === kb.id ? (
+                          <div className="w-3 h-3 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                        ) : (
+                          <Trash2 className="w-3 h-3" />
+                        )}
+                      </Button>
                     </div>
                   </div>
                 </CardContent>

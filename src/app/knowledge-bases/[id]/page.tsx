@@ -30,6 +30,7 @@ interface KnowledgeBase {
   workspace_id: string
   workspace_name: string
   s3_bucket?: string
+  s3_bucket_name?: string
   s3_prefix?: string
   file_count: number
   total_size: number
@@ -106,14 +107,14 @@ export default function KnowledgeBasePage() {
         <Header />
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-8"></div>
+            <div className="h-8 bg-orange-200 dark:bg-orange-800 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-orange-200 dark:bg-orange-800 rounded w-2/3 mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
+                <Card key={i} className="bg-white dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
                   <CardContent className="p-6">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="h-4 bg-orange-200 dark:bg-orange-700 rounded mb-2"></div>
+                    <div className="h-8 bg-orange-200 dark:bg-orange-700 rounded"></div>
                   </CardContent>
                 </Card>
               ))}
@@ -184,44 +185,44 @@ export default function KnowledgeBasePage() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
+          <Card className="bg-white dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Files</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Files</p>
+                  <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
                     {knowledgeBase.file_count}
                   </p>
                 </div>
-                <FileText className="w-8 h-8 text-blue-500" />
+                <FileText className="w-8 h-8 text-orange-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
+          <Card className="bg-white dark:bg-teal-900/20 border-teal-200 dark:border-teal-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Size</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-teal-600 dark:text-teal-400">Total Size</p>
+                  <p className="text-2xl font-bold text-teal-900 dark:text-teal-100">
                     {formatFileSize(knowledgeBase.total_size)}
                   </p>
                 </div>
-                <Database className="w-8 h-8 text-green-500" />
+                <Database className="w-8 h-8 text-teal-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
+          <Card className="bg-white dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">S3 Bucket</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
-                    {knowledgeBase.s3_bucket || 'Not configured'}
+                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400">S3 Bucket</p>
+                  <p className="text-lg font-semibold text-blue-900 dark:text-blue-100 truncate">
+                    {knowledgeBase.s3_bucket_name || knowledgeBase.s3_bucket || 'Not configured'}
                   </p>
                 </div>
-                <Upload className="w-8 h-8 text-purple-500" />
+                <Upload className="w-8 h-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
