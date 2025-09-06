@@ -136,15 +136,15 @@ export async function POST(request: NextRequest) {
       max_execution_time_minutes, retry_count, timeout_seconds, userId
     ]);
 
-    // Initialiser compte crédits pour ce workspace si nécessaire
+    // Initialize user credits for new workspace users (use ON CONFLICT to avoid duplicates)
     try {
       await query(`
-        INSERT INTO user_credits (workspace_id, user_id, current_balance, currency, is_active)
-        VALUES ($1, $2, 0, 'USD', true)
-      `, [workspace_id, userId]);
-    } catch (creditError: any) {
-      // Ignore si les crédits existent déjà ou si la table n'existe pas
-      console.log('Credit initialization skipped:', creditError.message);
+        INSERT INTO user_credits (workspace_id, user_id, current_balance, monthly_limit, cost_alerts_enabled, created_at)
+        VALUES ($1, $2, 0, 100, true, NOW())
+        ON CONFLICT (workspace_id, user_id) DO NOTHING
+      `, [result.rows[0].workspace_id, userId]);
+    } catch (creditError) {
+      console.warn('Could not initialize user credits:', creditError);
     }
 
     return NextResponse.json({

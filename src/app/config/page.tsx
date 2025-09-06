@@ -27,6 +27,8 @@ interface ConfigData {
     billingCycle: string
     dedicatedMode: boolean
     fixedPeriodCost: number
+    fixedMonthlyCost?: number
+    fixedYearlyCost?: number
   }
   workflows: {
     costBase: number
@@ -34,6 +36,8 @@ interface ConfigData {
     billingCycle: string
     dedicatedMode: boolean
     fixedPeriodCost: number
+    fixedMonthlyCost?: number
+    fixedYearlyCost?: number
   }
 }
 
@@ -229,23 +233,58 @@ export default function ConfigPage() {
                   />
                 </div>
 
-                {config.knowledgeBases.dedicatedMode && (
-                  <div>
-                    <Label className="text-orange-700 dark:text-orange-300">
-                      Fixed Period Cost (${config.knowledgeBases.billingCycle === 'monthly' ? 'Monthly' : 
-                                       config.knowledgeBases.billingCycle === 'quarterly' ? 'Quarterly' : 
-                                       config.knowledgeBases.billingCycle === 'yearly' ? 'Yearly' : 'Period'})
-                    </Label>
-                    <Input
-                      type="number"
-                      step="1.00"
-                      value={config.knowledgeBases.fixedPeriodCost}
-                      onChange={(e) => updateKBConfig('fixedPeriodCost', parseFloat(e.target.value) || 0)}
-                      className="border-orange-200 dark:border-orange-800"
-                    />
-                    <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
-                      Fixed cost for dedicated KB resources per billing period
-                    </p>
+                {config.knowledgeBases.dedicatedMode && config.knowledgeBases.billingCycle !== 'usage' && (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                      <h4 className="font-semibold text-orange-800 dark:text-orange-200 mb-2">
+                        Dedicated Mode - Fixed Pricing
+                      </h4>
+                      <p className="text-sm text-orange-700 dark:text-orange-300">
+                        Configure fixed monthly and yearly costs for dedicated KB infrastructure
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-orange-700 dark:text-orange-300">Monthly Fixed Cost ($)</Label>
+                        <Input
+                          type="number"
+                          step="1.00"
+                          value={config.knowledgeBases.fixedMonthlyCost || 0}
+                          onChange={(e) => updateKBConfig('fixedMonthlyCost', parseFloat(e.target.value) || 0)}
+                          className="border-orange-200 dark:border-orange-800"
+                          placeholder="e.g. 99.00"
+                        />
+                        <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                          Monthly cost for dedicated KB resources
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label className="text-orange-700 dark:text-orange-300">Yearly Fixed Cost ($)</Label>
+                        <Input
+                          type="number"
+                          step="1.00"
+                          value={config.knowledgeBases.fixedYearlyCost || 0}
+                          onChange={(e) => updateKBConfig('fixedYearlyCost', parseFloat(e.target.value) || 0)}
+                          className="border-orange-200 dark:border-orange-800"
+                          placeholder="e.g. 999.00"
+                        />
+                        <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                          Yearly cost (usually with discount vs monthly)
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <DollarSign className="w-4 h-4 text-green-600" />
+                      <span className="text-sm text-green-700 dark:text-green-300">
+                        Active billing: {config.knowledgeBases.billingCycle === 'monthly' ? 'Monthly' : 'Yearly'} - 
+                        ${config.knowledgeBases.billingCycle === 'monthly' ? 
+                          (config.knowledgeBases.fixedMonthlyCost || 0) : 
+                          (config.knowledgeBases.fixedYearlyCost || 0)}/period
+                      </span>
+                    </div>
                   </div>
                 )}
 
@@ -333,23 +372,58 @@ export default function ConfigPage() {
                   />
                 </div>
 
-                {config.workflows.dedicatedMode && (
-                  <div>
-                    <Label className="text-teal-700 dark:text-teal-300">
-                      Fixed Period Cost (${config.workflows.billingCycle === 'monthly' ? 'Monthly' : 
-                                       config.workflows.billingCycle === 'quarterly' ? 'Quarterly' : 
-                                       config.workflows.billingCycle === 'yearly' ? 'Yearly' : 'Period'})
-                    </Label>
-                    <Input
-                      type="number"
-                      step="1.00"
-                      value={config.workflows.fixedPeriodCost}
-                      onChange={(e) => updateWorkflowConfig('fixedPeriodCost', parseFloat(e.target.value) || 0)}
-                      className="border-teal-200 dark:border-teal-800"
-                    />
-                    <p className="text-sm text-teal-600 dark:text-teal-400 mt-1">
-                      Fixed cost for dedicated workflow runners per billing period
-                    </p>
+                {config.workflows.dedicatedMode && config.workflows.billingCycle !== 'usage' && (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-teal-100 dark:bg-teal-900/30 rounded-lg">
+                      <h4 className="font-semibold text-teal-800 dark:text-teal-200 mb-2">
+                        Dedicated Mode - Fixed Pricing
+                      </h4>
+                      <p className="text-sm text-teal-700 dark:text-teal-300">
+                        Configure fixed monthly and yearly costs for dedicated workflow infrastructure
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-teal-700 dark:text-teal-300">Monthly Fixed Cost ($)</Label>
+                        <Input
+                          type="number"
+                          step="1.00"
+                          value={config.workflows.fixedMonthlyCost || 0}
+                          onChange={(e) => updateWorkflowConfig('fixedMonthlyCost', parseFloat(e.target.value) || 0)}
+                          className="border-teal-200 dark:border-teal-800"
+                          placeholder="e.g. 149.00"
+                        />
+                        <p className="text-xs text-teal-600 dark:text-teal-400 mt-1">
+                          Monthly cost for dedicated workflow runners
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label className="text-teal-700 dark:text-teal-300">Yearly Fixed Cost ($)</Label>
+                        <Input
+                          type="number"
+                          step="1.00"
+                          value={config.workflows.fixedYearlyCost || 0}
+                          onChange={(e) => updateWorkflowConfig('fixedYearlyCost', parseFloat(e.target.value) || 0)}
+                          className="border-teal-200 dark:border-teal-800"
+                          placeholder="e.g. 1499.00"
+                        />
+                        <p className="text-xs text-teal-600 dark:text-teal-400 mt-1">
+                          Yearly cost (usually with discount vs monthly)
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <DollarSign className="w-4 h-4 text-green-600" />
+                      <span className="text-sm text-green-700 dark:text-green-300">
+                        Active billing: {config.workflows.billingCycle === 'monthly' ? 'Monthly' : 'Yearly'} - 
+                        ${config.workflows.billingCycle === 'monthly' ? 
+                          (config.workflows.fixedMonthlyCost || 0) : 
+                          (config.workflows.fixedYearlyCost || 0)}/period
+                      </span>
+                    </div>
                   </div>
                 )}
 

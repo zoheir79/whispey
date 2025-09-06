@@ -33,16 +33,40 @@ export class S3Manager {
   async initialize(): Promise<boolean> {
     try {
       // Récupérer la configuration S3 depuis la base de données
-      const result = await query(`
+      let result = await query(`
         SELECT value FROM settings_global WHERE key = 's3_config'
       `);
 
       if (!result.rows || result.rows.length === 0) {
-        console.error('S3 configuration not found in database');
-        return false;
-      }
+        console.log('S3 configuration not found, creating default configuration...');
+        
+        // Créer une configuration par défaut
+        const defaultConfig: S3Config = {
+          endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
+          access_key: process.env.S3_ACCESS_KEY || 'minioadmin',
+          secret_key: process.env.S3_SECRET_KEY || 'minioadmin',
+          region: process.env.S3_REGION || 'us-east-1',
+          bucket_prefix: process.env.S3_BUCKET_PREFIX || 'whispey-',
+          cost_per_gb: parseFloat(process.env.S3_COST_PER_GB || '0.023')
+        };
 
-      this.config = result.rows[0].value as S3Config;
+        // Insérer la configuration par défaut
+        try {
+          await query(`
+            INSERT INTO settings_global (key, value, created_at, updated_at)
+            VALUES ('s3_config', $1, NOW(), NOW())
+            ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()
+          `, [JSON.stringify(defaultConfig)]);
+          
+          this.config = defaultConfig;
+          console.log('✅ Created default S3 configuration');
+        } catch (insertError) {
+          console.warn('Could not save S3 config to database, using temporary config:', insertError);
+          this.config = defaultConfig;
+        }
+      } else {
+        this.config = result.rows[0].value as S3Config;
+      }
 
       // Valider la configuration
       if (!this.config.endpoint || !this.config.access_key || !this.config.secret_key) {
