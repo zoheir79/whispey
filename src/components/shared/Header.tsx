@@ -34,6 +34,7 @@ import {
 import { getUserGlobalRole } from '@/services/getGlobalRole'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useGlobalRole } from "@/hooks/useGlobalRole"
+import { CreditDisplay } from "@/components/ui/CreditDisplay"
 
 interface HeaderProps {
   breadcrumb?: {
@@ -317,6 +318,11 @@ function Header({ breadcrumb }: HeaderProps) {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Credit Display */}
+            <div className="hidden md:block">
+              <CreditDisplay variant="compact" />
+            </div>
 
             {/* User Profile Section */}
             <div className="flex items-center gap-3 pl-4 ml-2 border-l border-gray-200 dark:border-slate-700">

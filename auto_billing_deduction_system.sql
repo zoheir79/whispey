@@ -397,37 +397,74 @@ BEGIN
             JOIN pype_voice_agents a ON abc.agent_id = a.id
             WHERE abc.agent_id = p_service_id AND abc.is_active = true;
             
-            -- Calculer selon le type d'agent et mode
+            -- Calculer selon le type d'agent et mode (support HYBRID)
             IF v_agent_type = 'voice' THEN
                 v_minutes_used := (p_usage_metrics->>'minutes_used')::DECIMAL(10,3);
+                v_tokens_used := (p_usage_metrics->>'tokens_used')::INTEGER;
                 
-                -- STT cost
-                v_cost := v_cost + (v_minutes_used * COALESCE(
-                    (v_overrides->>'stt_price')::DECIMAL(10,3),
-                    (v_settings->>'voice_stt_builtin_per_minute')::DECIMAL(10,3),
-                    0.10
-                ));
-                
-                -- TTS cost
-                v_cost := v_cost + (v_minutes_used * COALESCE(
-                    (v_overrides->>'tts_price')::DECIMAL(10,3),
-                    (v_settings->>'voice_tts_builtin_per_minute')::DECIMAL(10,3),
-                    0.15
-                ));
-                
-                -- LLM cost (par minute pour voice builtin, par token pour external)
-                IF (v_overrides->>'llm_mode') = 'builtin' OR (v_overrides->>'llm_mode') IS NULL THEN
-                    v_cost := v_cost + (v_minutes_used * COALESCE(
-                        (v_overrides->>'llm_price')::DECIMAL(10,3),
-                        (v_settings->>'voice_llm_builtin_per_minute')::DECIMAL(10,3),
-                        0.05
-                    ));
+                -- STT cost - Check individual mode in HYBRID
+                IF (v_overrides->>'stt_mode') = 'dedicated' THEN
+                    -- STT Dedicated: pas de coût par usage, déjà facturé en fixe
+                    NULL;
                 ELSE
-                    v_tokens_used := (p_usage_metrics->>'tokens_used')::INTEGER;
+                    -- STT PAG (builtin ou external)
+                    IF (v_overrides->>'stt_mode') = 'external' THEN
+                        -- External STT par minute STT réelle
+                        v_cost := v_cost + ((p_usage_metrics->>'stt_duration_minutes')::DECIMAL(10,3) * COALESCE(
+                            (v_overrides->>'stt_price')::DECIMAL(10,3),
+                            (v_settings->>'external_stt_per_minute')::DECIMAL(10,3),
+                            0.12
+                        ));
+                    ELSE
+                        -- Builtin STT par minute d'appel
+                        v_cost := v_cost + (v_minutes_used * COALESCE(
+                            (v_overrides->>'stt_price')::DECIMAL(10,3),
+                            (v_settings->>'voice_stt_builtin_per_minute')::DECIMAL(10,3),
+                            0.10
+                        ));
+                    END IF;
+                END IF;
+                
+                -- TTS cost - Check individual mode in HYBRID
+                IF (v_overrides->>'tts_mode') = 'dedicated' THEN
+                    -- TTS Dedicated: pas de coût par usage
+                    NULL;
+                ELSE
+                    -- TTS PAG (builtin ou external)
+                    IF (v_overrides->>'tts_mode') = 'external' THEN
+                        -- External TTS par mot
+                        v_cost := v_cost + ((p_usage_metrics->>'tts_words_generated')::INTEGER * COALESCE(
+                            (v_overrides->>'tts_price')::DECIMAL(10,6),
+                            (v_settings->>'external_tts_per_word')::DECIMAL(10,6),
+                            0.005
+                        ));
+                    ELSE
+                        -- Builtin TTS par minute d'appel
+                        v_cost := v_cost + (v_minutes_used * COALESCE(
+                            (v_overrides->>'tts_price')::DECIMAL(10,3),
+                            (v_settings->>'voice_tts_builtin_per_minute')::DECIMAL(10,3),
+                            0.15
+                        ));
+                    END IF;
+                END IF;
+                
+                -- LLM cost - Check individual mode in HYBRID
+                IF (v_overrides->>'llm_mode') = 'dedicated' THEN
+                    -- LLM Dedicated: pas de coût par usage
+                    NULL;
+                ELSIF (v_overrides->>'llm_mode') = 'external' THEN
+                    -- External LLM par token
                     v_cost := v_cost + (v_tokens_used * COALESCE(
                         (v_overrides->>'llm_price')::DECIMAL(10,6),
                         (v_settings->>'external_llm_per_token')::DECIMAL(10,6),
                         0.0003
+                    ));
+                ELSE
+                    -- Builtin LLM par minute pour voice
+                    v_cost := v_cost + (v_minutes_used * COALESCE(
+                        (v_overrides->>'llm_price')::DECIMAL(10,3),
+                        (v_settings->>'voice_llm_builtin_per_minute')::DECIMAL(10,3),
+                        0.05
                     ));
                 END IF;
                 

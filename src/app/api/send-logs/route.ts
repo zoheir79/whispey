@@ -67,6 +67,11 @@ export async function POST(request: NextRequest) {
       new_vectors_created,
       storage_gb_used,
       
+      // KB RAG during agent call fields
+      kb_rag_usage,  // Array of {kb_id, tokens_used, search_queries}
+      kb_total_tokens_used,  // Total tokens for all KB RAG operations
+      kb_total_search_cost,  // Total cost for KB operations during call
+      
       // Workflow specific fields
       workflow_execution_id,
       workflow_operations_executed,
@@ -185,6 +190,7 @@ export async function POST(request: NextRequest) {
       let tokensUsed = 0
       let sttMinutesUsed = 0
       let ttsWordsUsed = 0
+      let kbRagTotalTokens = 0
 
       if (transcript_with_metrics && Array.isArray(transcript_with_metrics)) {
         transcript_with_metrics.forEach(turn => {
@@ -213,6 +219,13 @@ export async function POST(request: NextRequest) {
           const ttsCharacters = ttsMetrics.characters_count || 0
           const estimatedWords = Math.ceil(ttsCharacters / 5)
           ttsWordsUsed += estimatedWords
+          
+          // KB RAG usage during agent call (extract from turn kb_metrics)
+          const kbMetrics = turn.kb_metrics || {}
+          if (kbMetrics.tokens_used) {
+            if (!kbRagTotalTokens) kbRagTotalTokens = 0
+            kbRagTotalTokens += kbMetrics.tokens_used
+          }
         })
       }
 
@@ -272,6 +285,7 @@ export async function POST(request: NextRequest) {
           llm_metrics: turn.llm_metrics || {},
           tts_metrics: turn.tts_metrics || {},
           eou_metrics: turn.eou_metrics || {},
+          kb_metrics: turn.kb_metrics || {},
           lesson_day: metadata?.lesson_day || 1,
           phone_number: customer_number,
           call_duration: duration_seconds,
@@ -302,6 +316,48 @@ export async function POST(request: NextRequest) {
           console.error('Error inserting conversation turns:', turnsError)
         } else {
           console.log(`Inserted ${conversationTurns.length} conversation turns`)
+        }
+        
+        // Process KB RAG usage if tokens were used during agent call
+        if (kbRagTotalTokens > 0) {
+          // Calculate KB usage cost and deduct credits
+          const { creditManager } = await import('@/services/creditManager')
+          
+          // Get agent's associated KBs for cost calculation
+          const agentResult = await query(`
+            SELECT workspace_id FROM pype_voice_agents WHERE id = $1
+          `, [agent_id])
+          
+          if (agentResult.rows.length > 0) {
+            const workspaceId = agentResult.rows[0].workspace_id
+            
+            // Calculate KB search cost using global settings
+            const settingsResult = await query(`
+              SELECT value FROM pype_voice_global_settings 
+              WHERE key = 'pricing_rates_pag'
+            `)
+            
+            let kbTokenCost = 0.0001 // Default
+            if (settingsResult.rows.length > 0) {
+              const settings = settingsResult.rows[0].value
+              kbTokenCost = settings.kb_search_per_token || kbTokenCost
+            }
+            
+            const totalKbCost = kbRagTotalTokens * kbTokenCost
+            
+            if (totalKbCost > 0) {
+              // Deduct KB RAG costs from workspace credits
+              await creditManager.deductCredits({
+                workspace_id: workspaceId,
+                amount: totalKbCost,
+                description: `KB RAG usage during agent call - ${kbRagTotalTokens} tokens`,
+                service_type: 'knowledge_base',
+                service_id: agent_id
+              })
+              
+              console.log(`Deducted $${totalKbCost} for ${kbRagTotalTokens} KB RAG tokens`)
+            }
+          }
         }
       }
 
