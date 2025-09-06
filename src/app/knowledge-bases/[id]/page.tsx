@@ -110,7 +110,7 @@ export default function KnowledgeBasePage() {
             <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[1, 2, 3].map((i) => (
-                <Card key={i}>
+                <Card key={i} className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
                   <CardContent className="p-6">
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
                     <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -129,7 +129,7 @@ export default function KnowledgeBasePage() {
       <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900">
         <Header />
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <Card className="text-center py-12">
+          <Card className="text-center py-12 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
             <CardContent>
               <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
@@ -184,7 +184,7 @@ export default function KnowledgeBasePage() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
+          <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -198,7 +198,7 @@ export default function KnowledgeBasePage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -212,7 +212,7 @@ export default function KnowledgeBasePage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
