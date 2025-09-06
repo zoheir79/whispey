@@ -4,10 +4,10 @@ import { verifyUserAuth } from '@/lib/auth'
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { params } = context
+    const params = await context.params
     
     // Verify user authentication
     const { isAuthenticated, userId } = await verifyUserAuth(request)
