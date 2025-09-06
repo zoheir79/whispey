@@ -39,13 +39,18 @@ CREATE TABLE IF NOT EXISTS credit_alerts (
     
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
-    -- Index sur workspace et statut pour performance
-    INDEX (workspace_id, is_resolved, created_at),
-    INDEX (alert_type, severity),
-    INDEX (created_at)
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Index pour performance des alertes
+CREATE INDEX IF NOT EXISTS idx_credit_alerts_workspace_status 
+ON credit_alerts (workspace_id, is_resolved, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_credit_alerts_type_severity 
+ON credit_alerts (alert_type, severity);
+
+CREATE INDEX IF NOT EXISTS idx_credit_alerts_created_at 
+ON credit_alerts (created_at);
 
 -- ========================================
 -- 2. TABLE MONITORING LOGS
@@ -142,17 +147,13 @@ CREATE TRIGGER update_webhook_configs_updated_at
     BEFORE UPDATE ON webhook_configurations
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ========================================
--- 5. INDEXES POUR PERFORMANCE
--- ========================================
+-- Index pour logs de monitoring
+CREATE INDEX IF NOT EXISTS idx_monitoring_logs_timestamp ON credit_monitoring_logs(execution_timestamp);
+CREATE INDEX IF NOT EXISTS idx_monitoring_logs_run_id ON credit_monitoring_logs(monitoring_run_id);
 
 -- Index pour monitoring rapide des alertes
 CREATE INDEX IF NOT EXISTS idx_alerts_workspace_active ON credit_alerts(workspace_id, is_resolved) WHERE is_resolved = false;
 CREATE INDEX IF NOT EXISTS idx_alerts_severity_created ON credit_alerts(severity, created_at) WHERE is_resolved = false;
-
--- Index pour logs de monitoring
-CREATE INDEX IF NOT EXISTS idx_monitoring_logs_timestamp ON credit_monitoring_logs(execution_timestamp);
-CREATE INDEX IF NOT EXISTS idx_monitoring_logs_run_id ON credit_monitoring_logs(monitoring_run_id);
 
 -- Index pour webhooks
 CREATE INDEX IF NOT EXISTS idx_webhooks_workspace_active ON webhook_configurations(workspace_id, is_active) WHERE is_active = true;
