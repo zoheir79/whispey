@@ -109,12 +109,12 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
       
       setS3ConfigData({
         s3_enabled: project.s3_enabled || false,
-        s3_region: project.s3_region || '',
+        s3_region: project.s3_region || 'default',
         s3_endpoint: project.s3_endpoint || '',
         s3_bucket_prefix: project.s3_bucket_prefix || '',
         s3_access_key: project.s3_access_key || '',
         s3_secret_key: project.s3_secret_key || '',
-        s3_cost_per_gb: project.s3_cost_per_gb || 0.023,
+        s3_cost_per_gb: project.s3_cost_per_gb || globalS3Cost,
         s3_default_storage_gb: project.s3_default_storage_gb || 50
       })
     }
@@ -355,11 +355,11 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
                           setShowS3Config(true)
                           setS3ConfigData({
                             s3_enabled: true,
-                            s3_region: project.s3_region || '',
+                            s3_region: project.s3_region || 'default',
                             s3_endpoint: project.s3_endpoint || '',
                             s3_bucket_prefix: project.s3_bucket_prefix || '',
-                            s3_access_key: '',
-                            s3_secret_key: '',
+                            s3_access_key: project.s3_access_key || '',
+                            s3_secret_key: project.s3_secret_key || '',
                             s3_cost_per_gb: project.s3_cost_per_gb || globalS3Cost,
                             s3_default_storage_gb: project.s3_default_storage_gb || 50
                           })
@@ -481,9 +481,12 @@ export default function WorkspaceSettings({ isOpen, onClose, project, onProjectU
                                 id="s3_region"
                                 value={s3ConfigData.s3_region}
                                 onChange={(e) => handleS3ConfigChange('s3_region', e.target.value)}
-                                placeholder="us-east-1"
+                                placeholder="default (use 'default' for S3-compatible storage)"
                                 className="mt-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:placeholder:text-slate-400"
                               />
+                              <p className="text-xs text-gray-600 dark:text-slate-400 mt-1">
+                                Use "default" for most S3-compatible storage providers, or specific region for AWS
+                              </p>
                             </div>
                             <div>
                               <Label htmlFor="s3_endpoint" className="dark:text-slate-300">Endpoint *</Label>

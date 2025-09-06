@@ -335,6 +335,275 @@ export class S3Manager {
     return sizeGB * costPerGB;
   }
 
+  // Méthode pour migrer les buckets lors d'un changement de configuration
+  async migrateBucketsForWorkspace(
+    workspaceId: number,
+    oldConfig: S3Config,
+    newConfig: S3Config
+  ): Promise<{ success: boolean; migratedAgents: number; migratedKBs: number; errors: string[] }> {
+    const errors: string[] = [];
+    let migratedAgents = 0;
+    let migratedKBs = 0;
+
+    try {
+      // Vérifier si la configuration a vraiment changé
+      const configChanged = (
+        oldConfig.bucket_prefix !== newConfig.bucket_prefix ||
+        oldConfig.region !== newConfig.region ||
+        oldConfig.endpoint !== newConfig.endpoint
+      );
+
+      if (!configChanged) {
+        return { success: true, migratedAgents: 0, migratedKBs: 0, errors: [] };
+      }
+
+      // Migrer les buckets des agents
+      const agentsResult = await query(`
+        SELECT id, s3_bucket_name 
+        FROM pype_voice_agents 
+        WHERE project_id = $1 AND s3_bucket_name IS NOT NULL
+      `, [workspaceId]);
+
+      for (const agent of agentsResult.rows || []) {
+        const oldBucketName = agent.s3_bucket_name;
+        const newBucketName = this.generateBucketNameWithConfig(newConfig, 'agent', agent.id, workspaceId);
+
+        if (oldBucketName !== newBucketName) {
+          const migrationResult = await this.migrateBucket(
+            oldBucketName, 
+            newBucketName, 
+            oldConfig.endpoint, 
+            newConfig.endpoint
+          );
+          if (migrationResult.success) {
+            // Mettre à jour la référence en DB
+            await query(`
+              UPDATE pype_voice_agents 
+              SET s3_bucket_name = $1 
+              WHERE id = $2
+            `, [newBucketName, agent.id]);
+            migratedAgents++;
+          } else {
+            errors.push(`Agent ${agent.id}: ${migrationResult.error}`);
+          }
+        }
+      }
+
+      // Migrer les buckets des KB
+      const kbsResult = await query(`
+        SELECT id, s3_bucket_name 
+        FROM pype_voice_knowledge_bases 
+        WHERE workspace_id = $1 AND s3_bucket_name IS NOT NULL
+      `, [workspaceId]);
+
+      for (const kb of kbsResult.rows || []) {
+        const oldBucketName = kb.s3_bucket_name;
+        const newBucketName = this.generateBucketNameWithConfig(newConfig, 'kb', kb.id, workspaceId);
+
+        if (oldBucketName !== newBucketName) {
+          const migrationResult = await this.migrateBucket(
+            oldBucketName, 
+            newBucketName, 
+            oldConfig.endpoint, 
+            newConfig.endpoint
+          );
+          if (migrationResult.success) {
+            // Mettre à jour la référence en DB
+            await query(`
+              UPDATE pype_voice_knowledge_bases 
+              SET s3_bucket_name = $1 
+              WHERE id = $2
+            `, [newBucketName, kb.id]);
+            migratedKBs++;
+          } else {
+            errors.push(`KB ${kb.id}: ${migrationResult.error}`);
+          }
+        }
+      }
+
+      return {
+        success: errors.length === 0,
+        migratedAgents,
+        migratedKBs,
+        errors
+      };
+
+    } catch (error) {
+      console.error('Failed to migrate buckets for workspace:', error);
+      return {
+        success: false,
+        migratedAgents,
+        migratedKBs,
+        errors: [error instanceof Error ? error.message : 'Unknown error']
+      };
+    }
+  }
+
+  // Méthode pour migrer un bucket individuel
+  private async migrateBucket(
+    oldBucketName: string, 
+    newBucketName: string, 
+    oldEndpoint: string, 
+    newEndpoint: string
+  ): Promise<{ success: boolean; error?: string }> {
+    if (!this.s3Client) {
+      return { success: false, error: 'S3Manager not initialized' };
+    }
+
+    try {
+      // Vérifier si l'ancien bucket existe
+      let oldBucketExists = false;
+      try {
+        await this.s3Client.send(new HeadBucketCommand({ Bucket: oldBucketName }));
+        oldBucketExists = true;
+      } catch (error: any) {
+        if (error.name !== 'NotFound') {
+          throw error;
+        }
+      }
+
+      // Vérifier si le nouveau bucket existe déjà
+      let newBucketExists = false;
+      try {
+        await this.s3Client.send(new HeadBucketCommand({ Bucket: newBucketName }));
+        newBucketExists = true;
+      } catch (error: any) {
+        if (error.name !== 'NotFound') {
+          throw error;
+        }
+      }
+
+      if (oldBucketExists && !newBucketExists) {
+        // Vérifier si c'est le même endpoint
+        const sameEndpoint = oldEndpoint === newEndpoint;
+        
+        if (sameEndpoint) {
+          // Cas 1a: Même endpoint -> Renommer le bucket (copier tous les objets vers nouveau nom)
+          await this.s3Client.send(new CreateBucketCommand({ Bucket: newBucketName }));
+          
+          // Copier tous les objets de l'ancien vers le nouveau bucket
+          const copyResult = await this.copyAllObjectsBetweenBuckets(oldBucketName, newBucketName);
+          
+          if (copyResult.success) {
+            console.log(`✅ Renamed bucket: ${oldBucketName} -> ${newBucketName} (${copyResult.objectsCopied} objects)`);
+            // Note: En production, supprimer l'ancien bucket après vérification
+            // await this.deleteAllObjectsAndBucket(oldBucketName);
+          } else {
+            console.warn(`⚠️ Partial bucket rename: ${copyResult.error}`);
+          }
+        } else {
+          // Cas 1b: Endpoint différent -> Créer nouveau bucket seulement
+          await this.s3Client.send(new CreateBucketCommand({ Bucket: newBucketName }));
+          console.log(`✅ Created new bucket: ${newBucketName} (different endpoint, migration from ${oldBucketName})`);
+          console.warn(`⚠️ Manual data migration needed from ${oldEndpoint} to ${newEndpoint}`);
+        }
+      } else if (!oldBucketExists && !newBucketExists) {
+        // Cas 2: Aucun bucket n'existe -> Créer le nouveau
+        await this.s3Client.send(new CreateBucketCommand({ Bucket: newBucketName }));
+        console.log(`✅ Created new bucket: ${newBucketName} (no old bucket found)`);
+      } else if (newBucketExists) {
+        // Cas 3: Le nouveau bucket existe déjà -> OK
+        console.log(`ℹ️ New bucket ${newBucketName} already exists`);
+      }
+
+      return { success: true };
+
+    } catch (error) {
+      console.error(`Failed to migrate bucket ${oldBucketName} -> ${newBucketName}:`, error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Migration failed'
+      };
+    }
+  }
+
+  // Méthode pour copier tous les objets entre buckets (même endpoint)
+  private async copyAllObjectsBetweenBuckets(
+    sourceBucket: string, 
+    targetBucket: string
+  ): Promise<{ success: boolean; objectsCopied: number; error?: string }> {
+    if (!this.s3Client) {
+      return { success: false, objectsCopied: 0, error: 'S3Manager not initialized' };
+    }
+
+    try {
+      // Lister tous les objets du bucket source
+      const listCommand = new ListObjectsV2Command({ Bucket: sourceBucket });
+      const listResponse = await this.s3Client.send(listCommand);
+      
+      if (!listResponse.Contents || listResponse.Contents.length === 0) {
+        return { success: true, objectsCopied: 0 };
+      }
+
+      let copiedCount = 0;
+      const { CopyObjectCommand, GetObjectCommand, PutObjectCommand } = await import('@aws-sdk/client-s3');
+
+      // Copier chaque objet
+      for (const object of listResponse.Contents) {
+        if (!object.Key) continue;
+
+        try {
+          // Pour S3 compatible, utiliser Get + Put au lieu de Copy
+          const getCommand = new GetObjectCommand({
+            Bucket: sourceBucket,
+            Key: object.Key
+          });
+          
+          const getResponse = await this.s3Client.send(getCommand);
+          const body = await this.streamToBuffer(getResponse.Body);
+
+          const putCommand = new PutObjectCommand({
+            Bucket: targetBucket,
+            Key: object.Key,
+            Body: body,
+            ContentType: getResponse.ContentType,
+            Metadata: getResponse.Metadata
+          });
+
+          await this.s3Client.send(putCommand);
+          copiedCount++;
+
+        } catch (copyError) {
+          console.warn(`Failed to copy object ${object.Key}:`, copyError);
+          // Continue avec les autres objets
+        }
+      }
+
+      return { 
+        success: copiedCount === listResponse.Contents.length, 
+        objectsCopied: copiedCount,
+        error: copiedCount < listResponse.Contents.length ? 'Some objects failed to copy' : undefined
+      };
+
+    } catch (error) {
+      console.error('Failed to copy objects between buckets:', error);
+      return {
+        success: false,
+        objectsCopied: 0,
+        error: error instanceof Error ? error.message : 'Copy failed'
+      };
+    }
+  }
+
+  // Utilitaire pour convertir stream en buffer
+  private async streamToBuffer(stream: any): Promise<Buffer> {
+    if (Buffer.isBuffer(stream)) {
+      return stream;
+    }
+    
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
+  }
+
+  // Méthode utilitaire pour générer un nom de bucket avec une config spécifique
+  private generateBucketNameWithConfig(config: S3Config, type: 'agent' | 'kb', serviceId: string | number, projectId: number): string {
+    const prefix = config.bucket_prefix || 'whispey-';
+    return `${prefix}${type}-${serviceId}-${projectId}`.toLowerCase();
+  }
+
   // Méthode pour obtenir les statistiques globales de tous les buckets (agents + KB)
   async getGlobalStorageStats(): Promise<{
     total_agents: number;
