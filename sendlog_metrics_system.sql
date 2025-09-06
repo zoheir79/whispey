@@ -569,72 +569,48 @@ SELECT
     SUM(ue.total_cost) FILTER (WHERE ue.event_type LIKE 'kb_%') as kb_cost,
     SUM(ue.total_cost) FILTER (WHERE ue.event_type LIKE 'workflow_%') as workflow_cost
 
-FROM usage_events ue
-WHERE ue.is_processed = true
-GROUP BY ue.service_type, ue.service_id, ue.workspace_id, DATE_TRUNC('day', ue.event_timestamp)
-ORDER BY usage_date DESC;
+    FROM usage_events ue
+    WHERE ue.is_processed = true
+    GROUP BY ue.service_type, ue.service_id, ue.workspace_id, DATE_TRUNC('day', ue.event_timestamp)
+    ORDER BY usage_date DESC;
 
--- RLS pour sécuriser l'accès aux métriques
-ALTER TABLE usage_events ENABLE ROW LEVEL SECURITY;
-ALTER TABLE usage_metrics_aggregated ENABLE ROW LEVEL SECURITY;
+    -- RLS pour sécuriser l'accès aux métriques (désactivé temporairement)
+    -- ALTER TABLE usage_events ENABLE ROW LEVEL SECURITY;
+    -- ALTER TABLE usage_metrics_aggregated ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Usage events workspace access" ON usage_events
-    FOR ALL USING (
-        workspace_id IN (
-            SELECT workspace_id FROM pype_voice_email_project_mapping 
-            WHERE email = auth.jwt()->>'email'
-        )
-        OR EXISTS (
-            SELECT 1 FROM pype_voice_users u 
-            WHERE u.email = auth.jwt()->>'email' 
-            AND u.global_role = 'super_admin'
-        )
-    );
+    -- Note: Les politiques RLS seront activées plus tard quand le système d'authentification sera configuré
 
-CREATE POLICY "Usage metrics aggregated workspace access" ON usage_metrics_aggregated
-    FOR ALL USING (
-        workspace_id IN (
-            SELECT workspace_id FROM pype_voice_email_project_mapping 
-            WHERE email = auth.jwt()->>'email'
-        )
-        OR EXISTS (
-            SELECT 1 FROM pype_voice_users u 
-            WHERE u.email = auth.jwt()->>'email' 
-            AND u.global_role = 'super_admin'
-        )
-    );
-
--- Fonction pour simuler des événements d'usage (pour testing)
-CREATE OR REPLACE FUNCTION simulate_usage_events(
-    p_agent_id UUID,
-    p_minutes_used DECIMAL(10,3) DEFAULT 1.5,
-    p_tokens_used INTEGER DEFAULT 1000
-)
-RETURNS UUID AS $$
-DECLARE
-    v_event_id UUID;
-    v_metrics JSONB;
-BEGIN
-    -- Créer des métriques simulées pour un appel d'agent voice
-    v_metrics := jsonb_build_object(
-        'minutes_used', p_minutes_used,
-        'stt_minutes', p_minutes_used,
-        'tts_minutes', p_minutes_used * 0.8, -- Un peu moins de TTS que STT
-        'llm_tokens', p_tokens_used,
-        'call_quality', 'good',
-        'session_duration', p_minutes_used * 60
-    );
-    
-    -- Logger l'événement
-    SELECT log_usage_event(
-        'agent',
-        p_agent_id,
-        'agent_call_end',
-        v_metrics,
-        gen_random_uuid()::TEXT, -- session_id
-        gen_random_uuid()::TEXT  -- call_id
-    ) INTO v_event_id;
-    
-    RETURN v_event_id;
-END;
-$$ LANGUAGE plpgsql;
+    -- Fonction pour simuler des événements d'usage (pour testing)
+    CREATE OR REPLACE FUNCTION simulate_usage_events(
+        p_agent_id UUID,
+        p_minutes_used DECIMAL(10,3) DEFAULT 1.5,
+        p_tokens_used INTEGER DEFAULT 1000
+    )
+    RETURNS UUID AS $$
+    DECLARE
+        v_event_id UUID;
+        v_metrics JSONB;
+    BEGIN
+        -- Créer des métriques simulées pour un appel d'agent voice
+        v_metrics := jsonb_build_object(
+            'minutes_used', p_minutes_used,
+            'stt_minutes', p_minutes_used,
+            'tts_minutes', p_minutes_used * 0.8, -- Un peu moins de TTS que STT
+            'llm_tokens', p_tokens_used,
+            'call_quality', 'good',
+            'session_duration', p_minutes_used * 60
+        );
+        
+        -- Logger l'événement
+        SELECT log_usage_event(
+            'agent',
+            p_agent_id,
+            'agent_call_end',
+            v_metrics,
+            gen_random_uuid()::TEXT, -- session_id
+            gen_random_uuid()::TEXT  -- call_id
+        ) INTO v_event_id;
+        
+        RETURN v_event_id;
+    END;
+    $$ LANGUAGE plpgsql;
