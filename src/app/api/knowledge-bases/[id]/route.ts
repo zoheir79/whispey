@@ -22,7 +22,7 @@ export async function GET(
     
     let kbQuery = `
       SELECT kb.*, u.email as created_by_email, p.name as workspace_name,
-             p.s3_enabled, p.s3_region, p.s3_endpoint, p.s3_access_key, p.s3_secret_key, p.s3_bucket_prefix
+             p.s3_enabled, p.s3_region, p.s3_endpoint, p.s3_access_key, p.s3_secret_key, kb.s3_bucket_name
       FROM pype_voice_knowledge_bases kb
       LEFT JOIN pype_voice_users u ON u.user_id = kb.created_by
       LEFT JOIN pype_voice_projects p ON p.id = kb.workspace_id
@@ -35,7 +35,7 @@ export async function GET(
           SELECT DISTINCT epm.project_id 
           FROM pype_voice_email_project_mapping epm
           INNER JOIN pype_voice_users auth_user ON auth_user.email = epm.email
-          WHERE auth_user.user_id = $2 AND emp.is_active = true
+          WHERE auth_user.user_id = $2 AND epm.is_active = true
         )
       `;
     }
@@ -114,7 +114,7 @@ export async function PUT(
         FROM pype_voice_knowledge_bases kb
         INNER JOIN pype_voice_email_project_mapping epm ON epm.project_id = kb.workspace_id
         INNER JOIN pype_voice_users u ON u.email = epm.email
-        WHERE kb.id = $1 AND u.user_id = $2 AND emp.is_active = true
+        WHERE kb.id = $1 AND u.user_id = $2 AND epm.is_active = true
       `, [kbId, userId]);
 
       if (kbAccess.rows.length === 0 || 

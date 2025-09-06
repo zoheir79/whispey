@@ -19,7 +19,8 @@ import {
   RefreshCw,
   AlertTriangle,
   CheckCircle2,
-  Calendar
+  Calendar,
+  Database
 } from 'lucide-react'
 
 interface PricingSettings {
@@ -30,35 +31,16 @@ interface PricingSettings {
     stt_annual: number
     tts_monthly: number
     tts_annual: number
-    text_agent_monthly: number
-    text_agent_annual: number
-    voice_agent_monthly: number
-    voice_agent_annual: number
-    vision_agent_monthly: number
-    vision_agent_annual: number
-    s3_storage_per_gb_monthly: number
-    knowledge_base_monthly: number
-    knowledge_base_annual: number
+    kb_monthly: number
+    kb_annual: number
     workflow_monthly: number
     workflow_annual: number
   }
   pricing_rates_pag: {
     llm_builtin_per_token: number
-    llm_builtin_per_token_text: number
-    llm_builtin_per_minute: number
     stt_builtin_per_minute: number
-    tts_builtin_per_word: number
     tts_builtin_per_minute: number
-    s3_storage_per_gb_monthly: number
-  }
-  s3_config: {
-    region: string
-    endpoint: string
-    access_key: string
-    secret_key: string
-    cost_per_gb: number
-    bucket_prefix: string
-    default_storage_gb: number
+    tts_builtin_per_word: number
   }
   subscription_costs: {
     text_agent_monthly: number
@@ -67,6 +49,17 @@ interface PricingSettings {
     voice_agent_annual: number
     vision_agent_monthly: number
     vision_agent_annual: number
+  }
+  fixed_pricing: {
+    kb_monthly: number
+    kb_annual: number
+    workflow_monthly: number
+    workflow_annual: number
+  }
+  s3_rates: {
+    storage_gb_month: number
+    requests_per_1000: number
+    transfer_gb: number
   }
 }
 
@@ -110,35 +103,16 @@ export default function PricingManagement() {
           stt_annual: 150.00,
           tts_monthly: 12.00,
           tts_annual: 120.00,
-          text_agent_monthly: 19.99,
-          text_agent_annual: 199.90,
-          voice_agent_monthly: 29.99,
-          voice_agent_annual: 299.90,
-          vision_agent_monthly: 39.99,
-          vision_agent_annual: 399.90,
-          s3_storage_per_gb_monthly: 0.10,
-          knowledge_base_monthly: 49.99,
-          knowledge_base_annual: 499.90,
+          kb_monthly: 49.99,
+          kb_annual: 499.90,
           workflow_monthly: 39.99,
           workflow_annual: 399.90
         },
         pricing_rates_pag: settingsMap.pricing_rates_pag || {
           llm_builtin_per_token: 0.000015,
-          llm_builtin_per_token_text: 0.000010,
-          llm_builtin_per_minute: 0.002,
           stt_builtin_per_minute: 0.005,
-          tts_builtin_per_word: 0.002,
           tts_builtin_per_minute: 0.003,
-          s3_storage_per_gb_monthly: 0.10
-        },
-        s3_config: settingsMap.s3_config || {
-          region: 'us-east-1',
-          endpoint: 'https://s3.example.com',
-          access_key: '',
-          secret_key: '',
-          cost_per_gb: 0.023,
-          bucket_prefix: 'whispey-agent-',
-          default_storage_gb: 50
+          tts_builtin_per_word: 0.002
         },
         subscription_costs: settingsMap.subscription_costs || {
           text_agent_monthly: 19.99,
@@ -147,6 +121,17 @@ export default function PricingManagement() {
           voice_agent_annual: 299.90,
           vision_agent_monthly: 39.99,
           vision_agent_annual: 399.90
+        },
+        fixed_pricing: settingsMap.fixed_pricing || {
+          kb_monthly: 49.99,
+          kb_annual: 499.90,
+          workflow_monthly: 39.99,
+          workflow_annual: 399.90
+        },
+        s3_rates: settingsMap.s3_rates || {
+          storage_gb_month: 0.023,
+          requests_per_1000: 0.0004,
+          transfer_gb: 0.09
         }
       }
 
@@ -169,8 +154,9 @@ export default function PricingManagement() {
       const settingsToSave = [
         { key: 'pricing_rates_dedicated', value: settings.pricing_rates_dedicated, description: 'Monthly rates for dedicated models and subscriptions' },
         { key: 'pricing_rates_pag', value: settings.pricing_rates_pag, description: 'Pay-as-you-go rates for built-in models' },
-        { key: 's3_config', value: settings.s3_config, description: 'Configuration stockage S3 compatible (Ceph RGW) avec coût par Go' },
-        { key: 'subscription_costs', value: settings.subscription_costs, description: 'Monthly subscription costs for dedicated agent types' }
+        { key: 'subscription_costs', value: settings.subscription_costs, description: 'Monthly subscription costs for dedicated agent types' },
+        { key: 'fixed_pricing', value: settings.fixed_pricing, description: 'Fixed monthly/annual pricing for KB and Workflows' },
+        { key: 's3_rates', value: settings.s3_rates, description: 'S3 storage and transfer rates' }
       ]
 
       for (const setting of settingsToSave) {
@@ -291,7 +277,7 @@ export default function PricingManagement() {
           )}
 
           <Tabs defaultValue="dedicated" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-gray-100 dark:bg-slate-800">
+            <TabsList className="grid w-full grid-cols-6 bg-gray-100 dark:bg-slate-800">
               <TabsTrigger value="dedicated" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
                 <Cloud className="h-4 w-4" />
                 Mode Dédié
@@ -299,6 +285,10 @@ export default function PricingManagement() {
               <TabsTrigger value="pag" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
                 <DollarSign className="h-4 w-4" />
                 Pay-as-You-Go
+              </TabsTrigger>
+              <TabsTrigger value="kb-workflow" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
+                <Database className="h-4 w-4" />
+                KB & Workflows
               </TabsTrigger>
               <TabsTrigger value="subscriptions" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
                 <Calendar className="h-4 w-4" />
@@ -376,8 +366,8 @@ export default function PricingManagement() {
                         id="kb_monthly"
                         type="number"
                         step="0.01"
-                        value={settings.pricing_rates_dedicated.knowledge_base_monthly}
-                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'knowledge_base_monthly', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_dedicated.kb_monthly}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'kb_monthly', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -456,8 +446,8 @@ export default function PricingManagement() {
                         id="kb_annual"
                         type="number"
                         step="0.01"
-                        value={settings.pricing_rates_dedicated.knowledge_base_annual}
-                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'knowledge_base_annual', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_dedicated.kb_annual}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'kb_annual', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -531,8 +521,8 @@ export default function PricingManagement() {
                         id="llm_per_minute_voice"
                         type="number"
                         step="0.001"
-                        value={settings.pricing_rates_pag.llm_builtin_per_minute}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_minute', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.llm_builtin_per_token}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -561,8 +551,8 @@ export default function PricingManagement() {
                         id="llm_per_token_text"
                         type="number"
                         step="0.000001"
-                        value={settings.pricing_rates_pag.llm_builtin_per_token_text}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token_text', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.llm_builtin_per_token}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -624,7 +614,7 @@ export default function PricingManagement() {
                     <p className="text-sm font-medium mb-2 text-blue-900 dark:text-blue-100">Usage mensuel typique:</p>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>60 minutes Voice PAG Builtin (STT+TTS+LLM):</span>
-                      <span>{formatCurrency(60 * (settings.pricing_rates_pag.stt_builtin_per_minute + settings.pricing_rates_pag.tts_builtin_per_minute + settings.pricing_rates_pag.llm_builtin_per_minute))}</span>
+                      <span>{formatCurrency(60 * (settings.pricing_rates_pag.stt_builtin_per_minute + settings.pricing_rates_pag.tts_builtin_per_minute) + 1000 * settings.pricing_rates_pag.llm_builtin_per_token)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>1000 tokens LLM (external/hybrid):</span>
@@ -636,7 +626,7 @@ export default function PricingManagement() {
                     </div>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>1000 tokens LLM text-only:</span>
-                      <span>{formatCurrency(1000 * settings.pricing_rates_pag.llm_builtin_per_token_text)}</span>
+                      <span>{formatCurrency(1000 * settings.pricing_rates_pag.llm_builtin_per_token)}</span>
                     </div>
                     <Separator className="bg-blue-200 dark:bg-blue-800" />
                     <div className="flex justify-between font-semibold text-blue-900 dark:text-blue-100">
@@ -646,6 +636,100 @@ export default function PricingManagement() {
                         60 * settings.pricing_rates_pag.stt_builtin_per_minute +
                         5000 * settings.pricing_rates_pag.tts_builtin_per_word
                       )}</Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="kb-workflow" className="space-y-4">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Database className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                    Prix Fixes Knowledge Bases
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="kb_monthly" className="text-gray-900 dark:text-gray-100">Prix mensuel KB ($)</Label>
+                      <Input
+                        id="kb_monthly"
+                        type="number"
+                        step="0.01"
+                        value={settings.fixed_pricing.kb_monthly}
+                        onChange={(e) => updateSetting('fixed_pricing', 'kb_monthly', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Prix fixe mensuel par Knowledge Base
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="kb_annual" className="text-gray-900 dark:text-gray-100">Prix annuel KB ($)</Label>
+                      <Input
+                        id="kb_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.fixed_pricing.kb_annual}
+                        onChange={(e) => updateSetting('fixed_pricing', 'kb_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Prix fixe annuel par Knowledge Base (économie recommandée)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <RefreshCw className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    Prix Fixes Workflows
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="workflow_monthly" className="text-gray-900 dark:text-gray-100">Prix mensuel Workflow ($)</Label>
+                      <Input
+                        id="workflow_monthly"
+                        type="number"
+                        step="0.01"
+                        value={settings.fixed_pricing.workflow_monthly}
+                        onChange={(e) => updateSetting('fixed_pricing', 'workflow_monthly', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Prix fixe mensuel par Workflow
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="workflow_annual" className="text-gray-900 dark:text-gray-100">Prix annuel Workflow ($)</Label>
+                      <Input
+                        id="workflow_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.fixed_pricing.workflow_annual}
+                        onChange={(e) => updateSetting('fixed_pricing', 'workflow_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Prix fixe annuel par Workflow (économie recommandée)
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Économie annuelle</h4>
+                    <div className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
+                      <p>KB: <Badge variant="outline" className="ml-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700">
+                        {((settings.fixed_pricing.kb_monthly * 12 - settings.fixed_pricing.kb_annual) / (settings.fixed_pricing.kb_monthly * 12) * 100).toFixed(1)}% économie
+                      </Badge></p>
+                      <p>Workflow: <Badge variant="outline" className="ml-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700">
+                        {((settings.fixed_pricing.workflow_monthly * 12 - settings.fixed_pricing.workflow_annual) / (settings.fixed_pricing.workflow_monthly * 12) * 100).toFixed(1)}% économie
+                      </Badge></p>
                     </div>
                   </div>
                 </div>
@@ -817,8 +901,8 @@ export default function PricingManagement() {
                         id="s3_cost_per_gb"
                         type="number"
                         step="0.001"
-                        value={settings.s3_config.cost_per_gb}
-                        onChange={(e) => updateSetting('s3_config', 'cost_per_gb', parseFloat(e.target.value) || 0)}
+                        value={settings.s3_rates.storage_gb_month}
+                        onChange={(e) => updateSetting('s3_rates', 'storage_gb_month', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -827,31 +911,41 @@ export default function PricingManagement() {
                     </div>
 
                     <div>
-                      <Label htmlFor="s3_region" className="text-gray-900 dark:text-gray-100">Région S3</Label>
+                      <Label htmlFor="s3_requests" className="text-gray-900 dark:text-gray-100">Requêtes par 1000</Label>
                       <Input
-                        id="s3_region"
-                        value={settings.s3_config.region}
-                        onChange={(e) => updateSetting('s3_config', 'region', e.target.value)}
+                        id="s3_requests"
+                        type="number"
+                        step="0.0001"
+                        value={settings.s3_rates.requests_per_1000}
+                        onChange={(e) => updateSetting('s3_rates', 'requests_per_1000', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Coût par 1000 requêtes API S3
+                      </p>
                     </div>
 
                     <div>
-                      <Label htmlFor="s3_endpoint" className="text-gray-900 dark:text-gray-100">Endpoint S3</Label>
+                      <Label htmlFor="s3_transfer" className="text-gray-900 dark:text-gray-100">Transfert par GB</Label>
                       <Input
-                        id="s3_endpoint"
-                        value={settings.s3_config.endpoint}
-                        onChange={(e) => updateSetting('s3_config', 'endpoint', e.target.value)}
+                        id="s3_transfer"
+                        type="number"
+                        step="0.001"
+                        value={settings.s3_rates.transfer_gb}
+                        onChange={(e) => updateSetting('s3_rates', 'transfer_gb', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Coût par GB de transfert de données
+                      </p>
                     </div>
 
                     <div>
                       <Label htmlFor="bucket_prefix" className="text-gray-900 dark:text-gray-100">Préfixe Buckets</Label>
                       <Input
                         id="bucket_prefix"
-                        value={settings.s3_config.bucket_prefix}
-                        onChange={(e) => updateSetting('s3_config', 'bucket_prefix', e.target.value)}
+                        disabled
+                        placeholder="Configuration via admin système"
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                     </div>
@@ -862,8 +956,8 @@ export default function PricingManagement() {
                         id="default_storage_gb"
                         type="number"
                         step="1"
-                        value={settings.s3_config.default_storage_gb}
-                        onChange={(e) => updateSetting('s3_config', 'default_storage_gb', parseFloat(e.target.value) || 50)}
+                        disabled
+                        placeholder="Configuration via admin système"
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -879,28 +973,28 @@ export default function PricingManagement() {
                     <p className="text-sm font-medium mb-2 text-orange-900 dark:text-orange-100">Exemples de coûts mensuels:</p>
                     <div className="flex justify-between text-sm text-orange-800 dark:text-orange-200">
                       <span>10 GB:</span>
-                      <span>{formatCurrency(10 * settings.s3_config.cost_per_gb)}</span>
+                      <span>{formatCurrency(10 * settings.s3_rates.storage_gb_month)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-orange-800 dark:text-orange-200">
                       <span>50 GB (défaut):</span>
-                      <span>{formatCurrency(50 * settings.s3_config.cost_per_gb)}</span>
+                      <span>{formatCurrency(50 * settings.s3_rates.storage_gb_month)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-orange-800 dark:text-orange-200">
                       <span>100 GB:</span>
-                      <span>{formatCurrency(100 * settings.s3_config.cost_per_gb)}</span>
+                      <span>{formatCurrency(100 * settings.s3_rates.storage_gb_month)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-orange-800 dark:text-orange-200">
                       <span>500 GB:</span>
-                      <span>{formatCurrency(500 * settings.s3_config.cost_per_gb)}</span>
+                      <span>{formatCurrency(500 * settings.s3_rates.storage_gb_month)}</span>
                     </div>
                   </div>
 
                   <div className="bg-gray-50 dark:bg-slate-800 p-4 rounded-lg border border-gray-200 dark:border-slate-700">
                     <h4 className="font-medium mb-2 text-gray-900 dark:text-gray-100">Configuration actuelle:</h4>
                     <div className="text-sm space-y-1 text-gray-700 dark:text-gray-300">
-                      <div>Région: <code className="bg-gray-200 dark:bg-slate-600 px-1 rounded text-gray-900 dark:text-gray-100">{settings.s3_config.region}</code></div>
-                      <div>Préfixe: <code className="bg-gray-200 dark:bg-slate-600 px-1 rounded text-gray-900 dark:text-gray-100">{settings.s3_config.bucket_prefix}</code></div>
-                      <div>Tarif: <Badge variant="outline" className="border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100">{formatCurrency(settings.s3_config.cost_per_gb)}/GB/mois</Badge></div>
+                      <div>Stockage: <Badge variant="outline" className="border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100">{formatCurrency(settings.s3_rates.storage_gb_month)}/GB/mois</Badge></div>
+                      <div>Requêtes: <Badge variant="outline" className="border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100">{formatCurrency(settings.s3_rates.requests_per_1000)}/1000 req</Badge></div>
+                      <div>Transfert: <Badge variant="outline" className="border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100">{formatCurrency(settings.s3_rates.transfer_gb)}/GB</Badge></div>
                     </div>
                   </div>
                 </div>

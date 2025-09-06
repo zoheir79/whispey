@@ -126,13 +126,13 @@ export default function KnowledgeBasesPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800'
+        return 'bg-green-50 text-green-700 border-green-200 dark:bg-green-50 dark:text-green-700 dark:border-green-200'
       case 'processing':
-        return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
+        return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-50 dark:text-orange-700 dark:border-orange-200'
       case 'error':
-        return 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800'
+        return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-50 dark:text-red-700 dark:border-red-200'
       default:
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+        return 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-50 dark:text-gray-700 dark:border-gray-200'
     }
   }
 
