@@ -132,6 +132,25 @@ export async function POST(request: NextRequest) {
       chunk_size, chunk_overlap, search_similarity_threshold, max_search_results, userId
     ]);
 
+    const newKB = result.rows[0];
+
+    // Créer bucket S3 pour cette KB
+    const { s3Manager } = await import('@/services/s3Manager');
+    await s3Manager.initialize();
+    const bucketCreated = await s3Manager.createBucketForKB(newKB.id, workspace_id);
+    
+    if (bucketCreated) {
+      // Mettre à jour avec le nom du bucket généré
+      const bucketName = `whispey-kb-${newKB.id}-${workspace_id}`.toLowerCase();
+      await query(`
+        UPDATE pype_voice_knowledge_bases 
+        SET s3_bucket_name = $1, s3_region = 'us-east-1'
+        WHERE id = $2
+      `, [bucketName, newKB.id]);
+      
+      newKB.s3_bucket_name = bucketName;
+    }
+
     // Initialiser compte crédits pour ce workspace si nécessaire
     await query(`
       INSERT INTO user_credits (workspace_id, current_balance, currency, is_active)

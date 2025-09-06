@@ -77,7 +77,7 @@ export class S3Manager {
     }
 
     try {
-      const bucketName = this.generateBucketName(agentId, projectId);
+      const bucketName = this.generateBucketName('agent', agentId, projectId);
 
       // Vérifier si le bucket existe déjà
       try {
@@ -99,6 +99,82 @@ export class S3Manager {
     } catch (error) {
       console.error('Failed to create S3 bucket:', error);
       return false;
+    }
+  }
+
+  async createBucketForKB(kbId: string, projectId: number): Promise<boolean> {
+    if (!this.s3Client || !this.config) {
+      console.error('S3Manager not initialized');
+      return false;
+    }
+
+    try {
+      const bucketName = this.generateBucketName('kb', kbId, projectId);
+
+      // Vérifier si le bucket existe déjà
+      try {
+        await this.s3Client.send(new HeadBucketCommand({ Bucket: bucketName }));
+        console.log(`KB Bucket ${bucketName} already exists`);
+        return true;
+      } catch (error: any) {
+        if (error.name !== 'NotFound') {
+          throw error;
+        }
+      }
+
+      // Créer le bucket
+      await this.s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+      
+      console.log(`✅ Created S3 bucket for KB: ${bucketName}`);
+      return true;
+
+    } catch (error) {
+      console.error('Failed to create S3 bucket for KB:', error);
+      return false;
+    }
+  }
+
+  async uploadKBFile(
+    bucketName: string, 
+    fileName: string, 
+    fileContent: Buffer,
+    contentType: string = 'application/pdf'
+  ): Promise<S3UploadResult> {
+    if (!this.s3Client || !this.config) {
+      return {
+        success: false,
+        error: 'S3Manager not initialized'
+      };
+    }
+
+    try {
+      const key = `kb-files/${new Date().getFullYear()}/${new Date().getMonth() + 1}/${fileName}`;
+      
+      await this.s3Client.send(new PutObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+        Body: fileContent,
+        ContentType: contentType,
+        Metadata: {
+          'upload-timestamp': new Date().toISOString(),
+          'file-type': 'kb-document'
+        }
+      }));
+
+      const url = `${this.config.endpoint}/${bucketName}/${key}`;
+
+      return {
+        success: true,
+        url,
+        size_bytes: fileContent.length
+      };
+
+    } catch (error) {
+      console.error('Failed to upload KB file:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Upload failed'
+      };
     }
   }
 
@@ -249,9 +325,9 @@ export class S3Manager {
     }
   }
 
-  private generateBucketName(agentId: number, projectId: number): string {
-    const prefix = this.config?.bucket_prefix || 'whispey-agent-';
-    return `${prefix}${agentId}-${projectId}`.toLowerCase();
+  private generateBucketName(type: 'agent' | 'kb', serviceId: string | number, projectId: number): string {
+    const prefix = this.config?.bucket_prefix || 'whispey-';
+    return `${prefix}${type}-${serviceId}-${projectId}`.toLowerCase();
   }
 
   // Méthode utilitaire pour calculer le coût de stockage
@@ -259,37 +335,38 @@ export class S3Manager {
     return sizeGB * costPerGB;
   }
 
-  // Méthode pour obtenir les statistiques globales de tous les buckets d'agents
+  // Méthode pour obtenir les statistiques globales de tous les buckets (agents + KB)
   async getGlobalStorageStats(): Promise<{
     total_agents: number;
+    total_kbs: number;
     total_buckets: number;
     total_size_gb: number;
     total_monthly_cost: number;
     agents_usage: BucketUsage[];
+    kbs_usage: BucketUsage[];
   } | null> {
     try {
       // Récupérer tous les agents avec leurs buckets
-      const result = await query(`
+      const agentsResult = await query(`
         SELECT id, name, s3_bucket_name, project_id 
         FROM pype_voice_agents 
         WHERE s3_bucket_name IS NOT NULL
       `);
 
-      if (!result.rows || result.rows.length === 0) {
-        return {
-          total_agents: 0,
-          total_buckets: 0,
-          total_size_gb: 0,
-          total_monthly_cost: 0,
-          agents_usage: []
-        };
-      }
+      // Récupérer toutes les KB avec leurs buckets
+      const kbsResult = await query(`
+        SELECT id, name, s3_bucket_name, workspace_id 
+        FROM pype_voice_knowledge_bases 
+        WHERE s3_bucket_name IS NOT NULL
+      `);
 
       const agentsUsage: BucketUsage[] = [];
+      const kbsUsage: BucketUsage[] = [];
       let totalSizeGB = 0;
       let totalMonthlyCost = 0;
 
-      for (const agent of result.rows) {
+      // Traiter les buckets des agents
+      for (const agent of agentsResult.rows || []) {
         const usage = await this.getBucketUsage(agent.s3_bucket_name);
         if (usage) {
           agentsUsage.push(usage);
@@ -298,12 +375,24 @@ export class S3Manager {
         }
       }
 
+      // Traiter les buckets des KB
+      for (const kb of kbsResult.rows || []) {
+        const usage = await this.getBucketUsage(kb.s3_bucket_name);
+        if (usage) {
+          kbsUsage.push(usage);
+          totalSizeGB += usage.total_size_gb;
+          totalMonthlyCost += usage.estimated_monthly_cost;
+        }
+      }
+
       return {
-        total_agents: result.rows.length,
-        total_buckets: agentsUsage.length,
+        total_agents: agentsResult.rows?.length || 0,
+        total_kbs: kbsResult.rows?.length || 0,
+        total_buckets: agentsUsage.length + kbsUsage.length,
         total_size_gb: totalSizeGB,
         total_monthly_cost: totalMonthlyCost,
-        agents_usage: agentsUsage
+        agents_usage: agentsUsage,
+        kbs_usage: kbsUsage
       };
 
     } catch (error) {
