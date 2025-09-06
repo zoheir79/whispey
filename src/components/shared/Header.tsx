@@ -27,7 +27,9 @@ import {
   Settings,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  Database,
+  Workflow
 } from "lucide-react"
 import { getUserGlobalRole } from '@/services/getGlobalRole'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -181,6 +183,24 @@ function Header({ breadcrumb }: HeaderProps) {
               >
                 <Phone className="w-4 h-4 transition-transform group-hover:scale-110" />
                 <span>{isAdmin ? 'All Calls' : 'My Calls'}</span>
+              </Link>
+
+              {/* Knowledge Bases Access */}
+              <Link
+                href="/knowledge-bases"
+                className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-all duration-200 rounded-lg hover:bg-orange-50/50 dark:hover:bg-orange-900/20 border border-transparent hover:border-orange-100 dark:hover:border-orange-800"
+              >
+                <Database className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>{isAdmin ? 'All Knowledge Bases' : 'My Knowledge Bases'}</span>
+              </Link>
+
+              {/* Workflows Access */}
+              <Link
+                href="/workflows"
+                className="group flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-all duration-200 rounded-lg hover:bg-teal-50/50 dark:hover:bg-teal-900/20 border border-transparent hover:border-teal-100 dark:hover:border-teal-800"
+              >
+                <Workflow className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>{isAdmin ? 'All Workflows' : 'My Workflows'}</span>
               </Link>
 
               {/* Admin Badge */}
@@ -441,6 +461,24 @@ function Header({ breadcrumb }: HeaderProps) {
                   >
                     <Phone className="w-4 h-4" />
                     <span>{isAdmin ? 'All Calls' : 'My Calls'}</span>
+                  </Link>
+
+                  <Link
+                    href="/knowledge-bases"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Database className="w-4 h-4" />
+                    <span>{isAdmin ? 'All Knowledge Bases' : 'My Knowledge Bases'}</span>
+                  </Link>
+
+                  <Link
+                    href="/workflows"
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Workflow className="w-4 h-4" />
+                    <span>{isAdmin ? 'All Workflows' : 'My Workflows'}</span>
                   </Link>
 
                   {/* Admin Badge for Mobile */}
