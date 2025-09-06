@@ -37,11 +37,21 @@ interface PricingSettings {
     workflow_annual: number
   }
   pricing_rates_pag: {
-    llm_builtin_per_token: number
-    llm_builtin_per_minute: number
-    stt_builtin_per_minute: number
-    tts_builtin_per_minute: number
-    tts_builtin_per_word: number
+    // Voice Agent PAG (tout par minute)
+    voice_stt_builtin_per_minute: number
+    voice_tts_builtin_per_minute: number
+    voice_llm_builtin_per_minute: number
+    // Text Agent PAG (LLM par token)
+    text_llm_builtin_per_token: number
+    // External PAG (rates par provider)
+    external_stt_per_minute: number
+    external_tts_per_word: number
+    external_llm_per_token: number
+    // KB/Workflow PAG
+    kb_per_query: number
+    kb_per_upload_mb: number
+    workflow_per_execution: number
+    workflow_per_cpu_minute: number
   }
   subscription_costs: {
     text_agent_monthly: number
@@ -113,11 +123,17 @@ export default function PricingManagement() {
           workflow_annual: 399.90
         },
         pricing_rates_pag: settingsMap.pricing_rates_pag || {
-          llm_builtin_per_token: 0.000015,
-          llm_builtin_per_minute: 0.002,
-          stt_builtin_per_minute: 0.005,
-          tts_builtin_per_minute: 0.003,
-          tts_builtin_per_word: 0.002
+          voice_stt_builtin_per_minute: 0.10,
+          voice_tts_builtin_per_minute: 0.15,
+          voice_llm_builtin_per_minute: 0.05,
+          text_llm_builtin_per_token: 0.0002,
+          external_stt_per_minute: 0.12,
+          external_tts_per_word: 0.005,
+          external_llm_per_token: 0.0003,
+          kb_per_query: 0.01,
+          kb_per_upload_mb: 0.02,
+          workflow_per_execution: 0.10,
+          workflow_per_cpu_minute: 0.50
         },
         subscription_costs: settingsMap.subscription_costs || {
           text_agent_monthly: 19.99,
@@ -529,8 +545,8 @@ export default function PricingManagement() {
                         id="llm_per_minute_voice"
                         type="number"
                         step="0.001"
-                        value={settings.pricing_rates_pag.llm_builtin_per_minute}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_minute', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.voice_llm_builtin_per_minute}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'voice_llm_builtin_per_minute', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -544,8 +560,8 @@ export default function PricingManagement() {
                         id="llm_per_token"
                         type="number"
                         step="0.000001"
-                        value={settings.pricing_rates_pag.llm_builtin_per_token}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.external_llm_per_token}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'external_llm_per_token', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -559,8 +575,8 @@ export default function PricingManagement() {
                         id="llm_per_token_text"
                         type="number"
                         step="0.000001"
-                        value={settings.pricing_rates_pag.llm_builtin_per_token}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.text_llm_builtin_per_token}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'text_llm_builtin_per_token', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -574,8 +590,8 @@ export default function PricingManagement() {
                         id="stt_per_minute"
                         type="number"
                         step="0.001"
-                        value={settings.pricing_rates_pag.stt_builtin_per_minute}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'stt_builtin_per_minute', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.voice_stt_builtin_per_minute}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'voice_stt_builtin_per_minute', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -589,8 +605,8 @@ export default function PricingManagement() {
                         id="tts_per_minute"
                         type="number"
                         step="0.001"
-                        value={settings.pricing_rates_pag.tts_builtin_per_minute}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'tts_builtin_per_minute', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.voice_tts_builtin_per_minute}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'voice_tts_builtin_per_minute', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -604,8 +620,8 @@ export default function PricingManagement() {
                         id="tts_per_word"
                         type="number"
                         step="0.0001"
-                        value={settings.pricing_rates_pag.tts_builtin_per_word}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'tts_builtin_per_word', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.external_tts_per_word}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'external_tts_per_word', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -622,27 +638,27 @@ export default function PricingManagement() {
                     <p className="text-sm font-medium mb-2 text-blue-900 dark:text-blue-100">Usage mensuel typique:</p>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>60 minutes Voice PAG Builtin (STT+TTS+LLM):</span>
-                      <span>{formatCurrency(60 * (settings.pricing_rates_pag.stt_builtin_per_minute + settings.pricing_rates_pag.tts_builtin_per_minute + (settings.pricing_rates_pag.llm_builtin_per_minute || 0)))}</span>
+                      <span>{formatCurrency(60 * (settings.pricing_rates_pag.voice_stt_builtin_per_minute + settings.pricing_rates_pag.voice_tts_builtin_per_minute + settings.pricing_rates_pag.voice_llm_builtin_per_minute))}</span>
                     </div>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>1000 tokens LLM (external/hybrid):</span>
-                      <span>{formatCurrency(1000 * settings.pricing_rates_pag.llm_builtin_per_token)}</span>
+                      <span>{formatCurrency(1000 * settings.pricing_rates_pag.external_llm_per_token)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>5000 mots TTS (external/hybrid):</span>
-                      <span>{formatCurrency(5000 * settings.pricing_rates_pag.tts_builtin_per_word)}</span>
+                      <span>{formatCurrency(5000 * settings.pricing_rates_pag.external_tts_per_word)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>1000 tokens LLM text-only:</span>
-                      <span>{formatCurrency(1000 * settings.pricing_rates_pag.llm_builtin_per_token)}</span>
+                      <span>{formatCurrency(1000 * settings.pricing_rates_pag.text_llm_builtin_per_token)}</span>
                     </div>
                     <Separator className="bg-blue-200 dark:bg-blue-800" />
                     <div className="flex justify-between font-semibold text-blue-900 dark:text-blue-100">
                       <span>Total estimé:</span>
                       <Badge className="bg-blue-600 dark:bg-blue-500 text-white">{formatCurrency(
-                        1000 * settings.pricing_rates_pag.llm_builtin_per_token +
-                        60 * settings.pricing_rates_pag.stt_builtin_per_minute +
-                        5000 * settings.pricing_rates_pag.tts_builtin_per_word
+                        1000 * settings.pricing_rates_pag.text_llm_builtin_per_token +
+                        60 * settings.pricing_rates_pag.voice_stt_builtin_per_minute +
+                        5000 * settings.pricing_rates_pag.external_tts_per_word
                       )}</Badge>
                     </div>
                   </div>
@@ -651,7 +667,76 @@ export default function PricingManagement() {
             </TabsContent>
 
             <TabsContent value="kb-workflow" className="space-y-4">
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-3 gap-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <DollarSign className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    Prix PAG Knowledge Bases
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="kb_pag_per_query" className="text-gray-900 dark:text-gray-100">KB PAG (par requête)</Label>
+                      <Input
+                        id="kb_pag_per_query"
+                        type="number"
+                        step="0.0001"
+                        value={settings.pricing_rates_pag.kb_per_query || 0}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'kb_per_query', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Facturation par requête/recherche dans KB
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="kb_pag_per_upload" className="text-gray-900 dark:text-gray-100">KB PAG (par upload MB)</Label>
+                      <Input
+                        id="kb_pag_per_upload"
+                        type="number"
+                        step="0.001"
+                        value={settings.pricing_rates_pag.kb_per_upload_mb || 0}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'kb_per_upload_mb', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Facturation par MB de fichier uploadé
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="workflow_pag_per_execution" className="text-gray-900 dark:text-gray-100">Workflow PAG (par exécution)</Label>
+                      <Input
+                        id="workflow_pag_per_execution"
+                        type="number"
+                        step="0.001"
+                        value={settings.pricing_rates_pag.workflow_per_execution || 0}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'workflow_per_execution', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Facturation par exécution de workflow
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="workflow_pag_per_minute" className="text-gray-900 dark:text-gray-100">Workflow PAG (par minute CPU)</Label>
+                      <Input
+                        id="workflow_pag_per_minute"
+                        type="number"
+                        step="0.001"
+                        value={settings.pricing_rates_pag.workflow_per_cpu_minute || 0}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'workflow_per_cpu_minute', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Facturation par minute de temps CPU
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
                     <Database className="h-5 w-5 text-orange-600 dark:text-orange-400" />

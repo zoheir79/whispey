@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, Plus, Database, CheckCircle, AlertCircle, Clock, Search } from 'lucide-react'
+import { ChevronLeft, Plus, Database, CheckCircle, AlertCircle, Clock, Search, Eye, Edit, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -36,6 +36,10 @@ export default function ProjectKnowledgeBasesPage() {
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBase[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [editingKB, setEditingKB] = useState<KnowledgeBase | null>(null)
+  const [deletingKB, setDeletingKB] = useState<KnowledgeBase | null>(null)
+  const [knowledgeBaseDialog, setKnowledgeBaseDialog] = useState(false)
+  const [deleteDialog, setDeleteDialog] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -216,6 +220,40 @@ export default function ProjectKnowledgeBasesPage() {
                           <span className="ml-1 capitalize">{kb.status}</span>
                         </Badge>
                       </div>
+                    </div>
+                    
+                    {/* Action Icons */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/${params.projectid}/knowledge-bases/${kb.id}`)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingKB(kb)
+                          setKnowledgeBaseDialog(true)
+                        }}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setDeletingKB(kb)
+                          setDeleteDialog(true)
+                        }}
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:border-red-300"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                   

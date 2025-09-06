@@ -39,7 +39,11 @@ export default function WorkflowDialog({
       triggers: [],
       actions: [],
       conditions: []
-    }, null, 2)
+    }, null, 2),
+    pricing_mode: 'fixed', // 'fixed' or 'pag'
+    billing_cycle: 'monthly', // 'monthly' or 'yearly'
+    workflow_per_execution_override: undefined as number | undefined,
+    workflow_per_cpu_minute_override: undefined as number | undefined
   })
   const [error, setError] = useState('')
   const { isAdmin } = useGlobalRole()
@@ -52,11 +56,15 @@ export default function WorkflowDialog({
           name: workflow.name || '',
           description: workflow.description || '',
           workspace_id: workflow.workspace_id || '',
-          mcp_config: JSON.stringify(workflow.mcp_config || {
+          mcp_config: workflow.mcp_config || JSON.stringify({
             triggers: [],
             actions: [],
             conditions: []
-          }, null, 2)
+          }, null, 2),
+          pricing_mode: workflow.pricing_mode || 'fixed',
+          billing_cycle: workflow.billing_cycle || 'monthly',
+          workflow_per_execution_override: workflow.workflow_per_execution_override,
+          workflow_per_cpu_minute_override: workflow.workflow_per_cpu_minute_override
         })
       }
     }
@@ -146,7 +154,11 @@ export default function WorkflowDialog({
           triggers: [],
           actions: [],
           conditions: []
-        }, null, 2)
+        }, null, 2),
+        pricing_mode: 'fixed',
+        billing_cycle: 'monthly',
+        workflow_per_execution_override: undefined,
+        workflow_per_cpu_minute_override: undefined
       })
       setError('')
       onClose()
@@ -308,6 +320,119 @@ export default function WorkflowDialog({
             <p className="text-sm text-gray-500">
               Define triggers, actions, and conditions for your workflow in JSON format.
             </p>
+          </div>
+
+          {/* Pricing Mode Selection */}
+          <div className="space-y-3 p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-700">
+            <Label className="text-sm font-medium text-teal-900 dark:text-teal-100">Pricing Model</Label>
+            <div className="flex gap-2">
+              <div
+                className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                  formData.pricing_mode === 'fixed'
+                    ? 'border-teal-500 bg-teal-100 dark:bg-teal-800/50 dark:border-teal-400'
+                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
+                }`}
+                onClick={() => setFormData(prev => ({ ...prev, pricing_mode: 'fixed' }))}
+              >
+                <div className="text-center">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Fixed Pricing</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Monthly/Annual subscription</div>
+                </div>
+              </div>
+              
+              <div
+                className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                  formData.pricing_mode === 'pag'
+                    ? 'border-teal-500 bg-teal-100 dark:bg-teal-800/50 dark:border-teal-400'  
+                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
+                }`}
+                onClick={() => setFormData(prev => ({ ...prev, pricing_mode: 'pag' }))}
+              >
+                <div className="text-center">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Pay-as-You-Go</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Usage-based billing</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Billing Cycle - Only show for fixed pricing */}
+            {formData.pricing_mode === 'fixed' && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-teal-900 dark:text-teal-100">Billing Cycle</Label>
+                <div className="flex gap-2">
+                  <div
+                    className={`flex-1 p-2 rounded border cursor-pointer transition-all ${
+                      formData.billing_cycle === 'monthly'
+                        ? 'border-teal-500 bg-teal-100 dark:bg-teal-800/50'
+                        : 'border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, billing_cycle: 'monthly' }))}
+                  >
+                    <div className="text-center text-xs font-medium text-gray-900 dark:text-gray-100">Monthly</div>
+                  </div>
+                  
+                  <div
+                    className={`flex-1 p-2 rounded border cursor-pointer transition-all ${
+                      formData.billing_cycle === 'yearly'
+                        ? 'border-teal-500 bg-teal-100 dark:bg-teal-800/50'
+                        : 'border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, billing_cycle: 'yearly' }))}
+                  >
+                    <div className="text-center text-xs font-medium text-gray-900 dark:text-gray-100">Yearly</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PAG Overrides - Only show for PAG pricing */}
+            {formData.pricing_mode === 'pag' && (
+              <div className="space-y-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-700">
+                <Label className="text-sm font-medium text-yellow-900 dark:text-yellow-100">PAG Pricing Overrides (Optional)</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="workflow_per_execution_override" className="text-xs text-yellow-800 dark:text-yellow-200">Per Execution ($)</Label>
+                    <Input
+                      id="workflow_per_execution_override"
+                      type="number"
+                      step="0.001"
+                      value={formData.workflow_per_execution_override || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, workflow_per_execution_override: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                      placeholder="Default global rate"
+                      className="text-xs h-8"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="workflow_per_cpu_minute_override" className="text-xs text-yellow-800 dark:text-yellow-200">Per CPU Minute ($)</Label>
+                    <Input
+                      id="workflow_per_cpu_minute_override"
+                      type="number"
+                      step="0.001"
+                      value={formData.workflow_per_cpu_minute_override || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, workflow_per_cpu_minute_override: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                      placeholder="Default global rate"
+                      className="text-xs h-8"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                  Leave empty to use global PAG rates. Override only if specific pricing needed.
+                </p>
+              </div>
+            )}
+
+            {/* Cost Estimation */}
+            <div className="p-2 bg-white dark:bg-slate-800 rounded border">
+              <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Estimated Cost:</div>
+              <div className="text-sm font-semibold text-teal-600 dark:text-teal-400">
+                {formData.pricing_mode === 'fixed' 
+                  ? formData.billing_cycle === 'yearly' 
+                    ? '$299.90/year' 
+                    : '$29.99/month'
+                  : 'Variable based on usage'
+                }
+              </div>
+            </div>
           </div>
 
           <DialogFooter>

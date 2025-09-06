@@ -38,7 +38,9 @@ export default function KnowledgeBaseDialog({
     workspace_id: '',
     s3_prefix: '',
     pricing_mode: 'fixed', // 'fixed' or 'pag'
-    billing_cycle: 'monthly' // 'monthly' or 'yearly'
+    billing_cycle: 'monthly', // 'monthly' or 'yearly'
+    kb_per_query_override: undefined as number | undefined,
+    kb_per_upload_mb_override: undefined as number | undefined
   })
   const [error, setError] = useState('')
   const { isAdmin } = useGlobalRole()
@@ -53,7 +55,9 @@ export default function KnowledgeBaseDialog({
           workspace_id: knowledgeBase.workspace_id || '',
           s3_prefix: knowledgeBase.s3_prefix || '',
           pricing_mode: knowledgeBase.pricing_mode || 'fixed',
-          billing_cycle: knowledgeBase.billing_cycle || 'monthly'
+          billing_cycle: knowledgeBase.billing_cycle || 'monthly',
+          kb_per_query_override: knowledgeBase.kb_per_query_override,
+          kb_per_upload_mb_override: knowledgeBase.kb_per_upload_mb_override
         })
       }
     }
@@ -118,7 +122,16 @@ export default function KnowledgeBaseDialog({
 
   const handleClose = () => {
     if (!loading) {
-      setFormData({ name: '', description: '', workspace_id: '', s3_prefix: '', pricing_mode: 'fixed', billing_cycle: 'monthly' })
+      setFormData({ 
+        name: '', 
+        description: '', 
+        workspace_id: '', 
+        s3_prefix: '', 
+        pricing_mode: 'fixed', 
+        billing_cycle: 'monthly',
+        kb_per_query_override: undefined,
+        kb_per_upload_mb_override: undefined
+      })
       setError('')
       onClose()
     }
@@ -273,6 +286,42 @@ export default function KnowledgeBaseDialog({
                     <div className="text-center text-xs font-medium text-gray-900 dark:text-gray-100">Yearly</div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* PAG Overrides - Only show for PAG pricing */}
+            {formData.pricing_mode === 'pag' && (
+              <div className="space-y-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-700">
+                <Label className="text-sm font-medium text-yellow-900 dark:text-yellow-100">PAG Pricing Overrides (Optional)</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="kb_per_query_override" className="text-xs text-yellow-800 dark:text-yellow-200">Per Query ($)</Label>
+                    <Input
+                      id="kb_per_query_override"
+                      type="number"
+                      step="0.0001"
+                      value={formData.kb_per_query_override || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, kb_per_query_override: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                      placeholder="Default global rate"
+                      className="text-xs h-8"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="kb_per_upload_mb_override" className="text-xs text-yellow-800 dark:text-yellow-200">Per Upload MB ($)</Label>
+                    <Input
+                      id="kb_per_upload_mb_override"
+                      type="number"
+                      step="0.001"
+                      value={formData.kb_per_upload_mb_override || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, kb_per_upload_mb_override: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                      placeholder="Default global rate"
+                      className="text-xs h-8"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                  Leave empty to use global PAG rates. Override only if specific pricing needed.
+                </p>
               </div>
             )}
 

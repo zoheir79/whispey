@@ -204,7 +204,7 @@ export default function WorkflowSettings({
           )}
 
           {success && (
-            <Alert className="mb-4 bg-green-50 border-green-200 text-green-800">
+            <Alert className="mb-4 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200">
               <CheckCircle className="w-4 h-4" />
               <AlertDescription>{success}</AlertDescription>
             </Alert>

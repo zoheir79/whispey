@@ -1,15 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { query } from '@/lib/db'
-import { getUserGlobalRole } from '@/services/getGlobalRole'
+import { verifyUserAuth } from '@/lib/auth'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const globalRole = await getUserGlobalRole(request)
+    const { params } = context
     
-    if (globalRole !== 'super_admin') {
+    // Verify user authentication
+    const { isAuthenticated, userId } = await verifyUserAuth(request)
+    if (!isAuthenticated || !userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if user is super admin
+    const authResult = await query(`
+      SELECT global_role FROM pype_voice_users WHERE email = $1
+    `, [userId])
+
+    if (authResult.rows.length === 0 || authResult.rows[0].global_role !== 'super_admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

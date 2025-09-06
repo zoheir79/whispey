@@ -125,7 +125,8 @@ export async function PUT(
     const allowedFields = [
       'name', 'description', 'platform_mode', 'billing_cycle', 'cost_overrides',
       'workflow_definition', 'trigger_conditions', 'mcp_server_url', 'mcp_api_key',
-      'mcp_tools_enabled', 'max_execution_time_minutes', 'retry_count', 'timeout_seconds', 'is_active'
+      'mcp_tools_enabled', 'max_execution_time_minutes', 'retry_count', 'timeout_seconds', 'is_active',
+      'workflow_per_execution_override', 'workflow_per_cpu_minute_override'
     ];
 
     const updates = [];

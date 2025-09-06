@@ -209,9 +209,62 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     
     if (platform_mode === 'hybrid') {
       if (agent_type === 'voice') {
-        return '$0.03/minute + monthly fees'
+        // Calculate hybrid costs based on individual service modes
+        let fixedCosts = 0
+        let variableCosts = []
+        
+        // STT Cost calculation
+        if (formData.stt_mode === 'dedicated') {
+          fixedCosts += 9.99 // Fixed monthly STT
+        } else if (formData.stt_mode === 'builtin') {
+          const sttPerMinute = cost_overrides.stt_price ? parseFloat(cost_overrides.stt_price) : 0.005
+          variableCosts.push(`STT: $${sttPerMinute.toFixed(3)}/min`)
+        } else {
+          variableCosts.push('STT: External pricing')
+        }
+        
+        // TTS Cost calculation  
+        if (formData.tts_mode === 'dedicated') {
+          fixedCosts += 14.99 // Fixed monthly TTS
+        } else if (formData.tts_mode === 'builtin') {
+          const ttsPerMinute = cost_overrides.tts_price ? parseFloat(cost_overrides.tts_price) : 0.003
+          variableCosts.push(`TTS: $${ttsPerMinute.toFixed(3)}/min`)
+        } else {
+          variableCosts.push('TTS: External pricing')
+        }
+        
+        // LLM Cost calculation
+        if (formData.llm_mode === 'dedicated') {
+          fixedCosts += 19.99 // Fixed monthly LLM
+        } else if (formData.llm_mode === 'builtin') {
+          const llmPerMinute = cost_overrides.llm_price ? parseFloat(cost_overrides.llm_price) : 0.002
+          variableCosts.push(`LLM: $${llmPerMinute.toFixed(3)}/min`)
+        } else {
+          variableCosts.push('LLM: External pricing')
+        }
+        
+        const fixedPart = fixedCosts > 0 ? `$${fixedCosts.toFixed(2)}/mois` : ''
+        const variablePart = variableCosts.length > 0 ? variableCosts.join(' + ') : ''
+        
+        if (fixedPart && variablePart) {
+          return `${fixedPart} + ${variablePart}`
+        } else if (fixedPart) {
+          return fixedPart
+        } else if (variablePart) {
+          return variablePart
+        } else {
+          return '$0.00'
+        }
       } else {
-        return '$0.00003/token + monthly fees'
+        // Text-only hybrid: only LLM costs
+        if (formData.llm_mode === 'dedicated') {
+          return '$19.99/mois'
+        } else if (formData.llm_mode === 'builtin') {
+          const llmTokenPrice = cost_overrides.llm_price ? parseFloat(cost_overrides.llm_price) : 0.00005
+          return `$${llmTokenPrice.toFixed(5)}/token`
+        } else {
+          return 'External LLM pricing'
+        }
       }
     }
     

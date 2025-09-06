@@ -44,7 +44,7 @@ export default function ProjectAnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-800">
         <Header />
         <div className="flex items-center justify-center py-32">
           <div className="text-center">
@@ -57,7 +57,7 @@ export default function ProjectAnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-800">
       <Header breadcrumb={{ project: project?.name || 'Workspace', item: 'Analytics' }} />
       
       <div className="max-w-7xl mx-auto px-6 py-8">

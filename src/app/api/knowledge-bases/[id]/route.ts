@@ -103,7 +103,17 @@ export async function PUT(
 
     const params = await context.params;
     const kbId = params.id;
+
     const body = await request.json();
+    const { 
+      name, 
+      description, 
+      s3_prefix,
+      pricing_mode,
+      billing_cycle,
+      kb_per_query_override,
+      kb_per_upload_mb_override
+    } = body;
 
     // Vérifier permissions
     const userGlobalRole = await getUserGlobalRole(userId);
@@ -125,9 +135,10 @@ export async function PUT(
 
     // Préparer les champs à mettre à jour
     const allowedFields = [
-      'name', 'description', 'platform_mode', 'billing_cycle', 'cost_overrides',
+      'name', 'description', 's3_prefix', 'platform_mode', 'billing_cycle', 'cost_overrides',
       'embedding_model', 'vector_dimensions', 'chunk_size', 'chunk_overlap',
-      'search_similarity_threshold', 'max_search_results', 'is_active'
+      'search_similarity_threshold', 'max_search_results', 'is_active',
+      'kb_per_query_override', 'kb_per_upload_mb_override'
     ];
 
     const updates = [];

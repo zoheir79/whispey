@@ -83,8 +83,12 @@ export async function POST(request: NextRequest) {
       workspace_id,
       name,
       description,
-      platform_mode = 'pag',
+      s3_prefix,
+      pricing_mode = 'fixed',
       billing_cycle = 'monthly',
+      kb_per_query_override,
+      kb_per_upload_mb_override,
+      platform_mode = pricing_mode === 'fixed' ? 'dedicated' : 'pag',
       cost_overrides = {},
       embedding_model = 'text-embedding-ada-002',
       vector_dimensions = 1536,
@@ -121,15 +125,17 @@ export async function POST(request: NextRequest) {
     // Créer Knowledge Base
     const result = await query(`
       INSERT INTO pype_voice_knowledge_bases (
-        workspace_id, name, description, platform_mode, billing_cycle,
+        workspace_id, name, description, s3_prefix, platform_mode, billing_cycle,
         cost_overrides, embedding_model, vector_dimensions, chunk_size,
-        chunk_overlap, search_similarity_threshold, max_search_results, created_by
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        chunk_overlap, search_similarity_threshold, max_search_results, created_by,
+        kb_per_query_override, kb_per_upload_mb_override
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
       RETURNING *
     `, [
-      workspace_id, name, description, platform_mode, billing_cycle,
+      workspace_id, name, description, s3_prefix, platform_mode, billing_cycle,
       JSON.stringify(cost_overrides), embedding_model, vector_dimensions,
-      chunk_size, chunk_overlap, search_similarity_threshold, max_search_results, userId
+      chunk_size, chunk_overlap, search_similarity_threshold, max_search_results, userId,
+      kb_per_query_override, kb_per_upload_mb_override
     ]);
 
     const newKB = result.rows[0];

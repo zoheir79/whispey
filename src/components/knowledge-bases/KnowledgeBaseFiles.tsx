@@ -249,8 +249,8 @@ export default function KnowledgeBaseFiles({
             className={`
               border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer
               ${isDragActive 
-                ? 'border-orange-400 bg-orange-50 dark:bg-orange-900/20' 
-                : 'border-gray-300 dark:border-gray-600 hover:border-orange-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? 'border-orange-400 bg-orange-50 dark:bg-slate-700' 
+                : 'border-gray-300 dark:border-gray-600 hover:border-orange-400 hover:bg-gray-50 dark:hover:bg-slate-700'
               }
               ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
             `}

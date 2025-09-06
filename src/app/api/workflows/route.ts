@@ -83,8 +83,11 @@ export async function POST(request: NextRequest) {
       workspace_id,
       name,
       description,
-      platform_mode = 'pag',
+      pricing_mode = 'fixed',
+      platform_mode = pricing_mode === 'fixed' ? 'dedicated' : 'pag',
       billing_cycle = 'monthly',
+      workflow_per_execution_override,
+      workflow_per_cpu_minute_override,
       cost_overrides = {},
       workflow_definition = {},
       trigger_conditions = {},
@@ -126,14 +129,16 @@ export async function POST(request: NextRequest) {
         workspace_id, name, description, platform_mode, billing_cycle,
         cost_overrides, workflow_definition, trigger_conditions,
         mcp_server_url, mcp_api_key, mcp_tools_enabled,
-        max_execution_time_minutes, retry_count, timeout_seconds, created_by
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        max_execution_time_minutes, retry_count, timeout_seconds, created_by,
+        workflow_per_execution_override, workflow_per_cpu_minute_override
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
       RETURNING *
     `, [
       workspace_id, name, description, platform_mode, billing_cycle,
       JSON.stringify(cost_overrides), JSON.stringify(workflow_definition), 
       JSON.stringify(trigger_conditions), mcp_server_url, mcp_api_key, mcp_tools_enabled,
-      max_execution_time_minutes, retry_count, timeout_seconds, userId
+      max_execution_time_minutes, retry_count, timeout_seconds, userId,
+      workflow_per_execution_override, workflow_per_cpu_minute_override
     ]);
 
     // Initialize user credits for new workspace users (use ON CONFLICT to avoid duplicates)

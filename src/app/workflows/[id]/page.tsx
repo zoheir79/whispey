@@ -149,7 +149,7 @@ export default function WorkflowPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900">
+      <div className="min-h-screen bg-gray-50/50 dark:bg-slate-800">
         <Header />
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="animate-pulse">
@@ -173,7 +173,7 @@ export default function WorkflowPage() {
 
   if (!workflow) {
     return (
-      <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900">
+      <div className="min-h-screen bg-gray-50/50 dark:bg-slate-800">
         <Header />
         <div className="max-w-7xl mx-auto px-6 py-8">
           <Card className="text-center py-12">
@@ -193,7 +193,7 @@ export default function WorkflowPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-slate-800">
       <Header breadcrumb={{ 
         project: 'Workflows', 
         item: workflow.name 
