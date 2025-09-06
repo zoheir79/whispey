@@ -222,7 +222,7 @@ ON workspace_billing_cycles(next_billing_date)
 WHERE is_active = true AND is_paid = false;
 
 CREATE INDEX IF NOT EXISTS idx_billing_invoices_workspace_period 
-ON billing_invoices(workspace_id, billing_period_start DESC);
+ON billing_invoices(workspace_id, period_start DESC);
 
 CREATE INDEX IF NOT EXISTS idx_billing_invoices_due_date 
 ON billing_invoices(due_date) 
@@ -253,9 +253,9 @@ CREATE TRIGGER workspace_billing_cycles_updated_at
     BEFORE UPDATE ON workspace_billing_cycles
     FOR EACH ROW EXECUTE FUNCTION update_billing_cycle_timestamp();
 
-CREATE TRIGGER billing_invoices_updated_at
-    BEFORE UPDATE ON billing_invoices
-    FOR EACH ROW EXECUTE FUNCTION update_billing_cycle_timestamp();
+DROP TRIGGER IF EXISTS billing_invoices_updated_at ON billing_invoices;
+CREATE TRIGGER billing_invoices_updated_at BEFORE UPDATE ON billing_invoices
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Fonctions utilitaires pour la gestion des cycles de facturation
 
@@ -442,7 +442,7 @@ CREATE OR REPLACE VIEW workspace_billing_summary AS
 SELECT 
     w.id as workspace_id,
     w.name as workspace_name,
-    w.user_id,
+    w.owner_user_id as user_id,
     
     -- Coûts agents
     COALESCE(SUM(abc.total_cost), 0) as agents_total_cost,
