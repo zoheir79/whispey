@@ -64,16 +64,18 @@ export default function WorkflowsPage() {
   }
 
   const filteredWorkflows = workflows.filter(workflow => 
-    workflow.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    workflow.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    workflow.workspace_name.toLowerCase().includes(searchQuery.toLowerCase())
+    (workflow.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (workflow.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (workflow.workspace_name || '').toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | null | undefined) => {
+    if (amount == null || isNaN(amount)) return '$0.0000'
     return `$${amount.toFixed(4)}`
   }
 
-  const formatExecutionTime = (seconds: number) => {
+  const formatExecutionTime = (seconds: number | null | undefined) => {
+    if (seconds == null || isNaN(seconds)) return '0s'
     if (seconds < 60) return `${seconds.toFixed(1)}s`
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
@@ -237,7 +239,7 @@ export default function WorkflowsPage() {
                     
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500 dark:text-gray-400">Executions:</span>
-                      <span className="font-medium">{workflow.execution_count}</span>
+                      <span className="font-medium">{workflow.execution_count || 0}</span>
                     </div>
                     
                     <div className="flex items-center justify-between text-sm">
