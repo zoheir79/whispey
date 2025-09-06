@@ -179,12 +179,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     if (platform_mode === 'pag') {
       if (agent_type === 'voice') {
         if (!hasExternalProvider) {
-          // PAG Builtin Voice: unified per minute pricing
-          const sttPrice = cost_overrides.stt_price ? parseFloat(cost_overrides.stt_price) : 0.01
-          const ttsPrice = cost_overrides.tts_price ? parseFloat(cost_overrides.tts_price) : 0.02  
-          const llmPrice = cost_overrides.llm_price ? parseFloat(cost_overrides.llm_price) : 0.02
-          const totalPerMinute = sttPrice + ttsPrice + llmPrice
-          return `$${totalPerMinute.toFixed(3)}/minute`
+          // PAG Builtin Voice: 3 coûts séparés par minute (STT + TTS + LLM)
+          const sttPerMinute = cost_overrides.stt_price ? parseFloat(cost_overrides.stt_price) : 0.005
+          const ttsPerMinute = cost_overrides.tts_price ? parseFloat(cost_overrides.tts_price) : 0.003
+          const llmPerMinute = cost_overrides.llm_price ? parseFloat(cost_overrides.llm_price) : 0.002
+          const totalPerMinute = sttPerMinute + ttsPerMinute + llmPerMinute
+          return `$${totalPerMinute.toFixed(4)}/minute`
         } else {
           // PAG External Voice: mixed pricing
           return '$0.05/minute (variable)'

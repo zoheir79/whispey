@@ -38,6 +38,7 @@ interface PricingSettings {
   }
   pricing_rates_pag: {
     llm_builtin_per_token: number
+    llm_builtin_per_minute: number
     stt_builtin_per_minute: number
     tts_builtin_per_minute: number
     tts_builtin_per_word: number
@@ -60,6 +61,9 @@ interface PricingSettings {
     storage_gb_month: number
     requests_per_1000: number
     transfer_gb: number
+  }
+  s3_config: {
+    default_storage_gb: number
   }
 }
 
@@ -110,6 +114,7 @@ export default function PricingManagement() {
         },
         pricing_rates_pag: settingsMap.pricing_rates_pag || {
           llm_builtin_per_token: 0.000015,
+          llm_builtin_per_minute: 0.002,
           stt_builtin_per_minute: 0.005,
           tts_builtin_per_minute: 0.003,
           tts_builtin_per_word: 0.002
@@ -132,6 +137,9 @@ export default function PricingManagement() {
           storage_gb_month: 0.023,
           requests_per_1000: 0.0004,
           transfer_gb: 0.09
+        },
+        s3_config: settingsMap.s3_config || {
+          default_storage_gb: 50
         }
       }
 
@@ -521,19 +529,19 @@ export default function PricingManagement() {
                         id="llm_per_minute_voice"
                         type="number"
                         step="0.001"
-                        value={settings.pricing_rates_pag.llm_builtin_per_token}
-                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_token', parseFloat(e.target.value) || 0)}
+                        value={settings.pricing_rates_pag.llm_builtin_per_minute}
+                        onChange={(e) => updateSetting('pricing_rates_pag', 'llm_builtin_per_minute', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Agents voice PAG builtin: facturation par minute d'utilisation
+                        Agents voice PAG builtin: LLM facturé par minute d'appel
                       </p>
                     </div>
 
                     <div>
-                      <Label htmlFor="llm_per_token_voice" className="text-gray-900 dark:text-gray-100">LLM Voice External/Hybrid (par token)</Label>
+                      <Label htmlFor="llm_per_token" className="text-gray-900 dark:text-gray-100">LLM Voice External/Hybrid (par token)</Label>
                       <Input
-                        id="llm_per_token_voice"
+                        id="llm_per_token"
                         type="number"
                         step="0.000001"
                         value={settings.pricing_rates_pag.llm_builtin_per_token}
@@ -614,7 +622,7 @@ export default function PricingManagement() {
                     <p className="text-sm font-medium mb-2 text-blue-900 dark:text-blue-100">Usage mensuel typique:</p>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>60 minutes Voice PAG Builtin (STT+TTS+LLM):</span>
-                      <span>{formatCurrency(60 * (settings.pricing_rates_pag.stt_builtin_per_minute + settings.pricing_rates_pag.tts_builtin_per_minute) + 1000 * settings.pricing_rates_pag.llm_builtin_per_token)}</span>
+                      <span>{formatCurrency(60 * (settings.pricing_rates_pag.stt_builtin_per_minute + settings.pricing_rates_pag.tts_builtin_per_minute + (settings.pricing_rates_pag.llm_builtin_per_minute || 0)))}</span>
                     </div>
                     <div className="flex justify-between text-sm text-blue-800 dark:text-blue-200">
                       <span>1000 tokens LLM (external/hybrid):</span>
@@ -956,12 +964,12 @@ export default function PricingManagement() {
                         id="default_storage_gb"
                         type="number"
                         step="1"
-                        disabled
-                        placeholder="Configuration via admin système"
+                        value={settings.s3_config.default_storage_gb}
+                        onChange={(e) => updateSetting('s3_config', 'default_storage_gb', parseInt(e.target.value) || 50)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Stockage par défaut alloué aux nouveaux agents (actuellement 50GB)
+                        Stockage par défaut alloué aux nouveaux agents lors de la création
                       </p>
                     </div>
                   </div>
