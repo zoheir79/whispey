@@ -59,17 +59,13 @@ export async function GET(
       scalingTiers = await advancedCostManager.getScalingTiers(configId);
     }
 
-    // Récupérer allowances associées
-    const allowances = await advancedCostManager.getServiceAllowances(
-      configuration.service_type,
-      configuration.service_id
-    );
+    // Allowances removed - no quota management
 
     return NextResponse.json({
       success: true,
       configuration,
-      scaling_tiers: scalingTiers,
-      allowances: allowances
+      scaling_tiers: scalingTiers
+      // allowances removed - no quota management
     });
 
   } catch (error: any) {

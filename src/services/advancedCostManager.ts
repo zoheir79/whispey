@@ -256,38 +256,7 @@ export class AdvancedCostManager {
   // INJECTION PROCESSING
   // ========================================
 
-  async processPendingInjections(): Promise<any> {
-    try {
-      const result = await query(`
-        SELECT process_pending_cost_injections() as process_result
-      `);
-
-      return result.rows[0]?.process_result || null;
-    } catch (error) {
-      console.error('Failed to process pending injections:', error);
-      return null;
-    }
-  }
-
-  async getCostInjections(
-    workspace_id: string,
-    limit: number = 50,
-    offset: number = 0
-  ): Promise<any[]> {
-    try {
-      const result = await query(`
-        SELECT * FROM cost_injections
-        WHERE source_workspace_id = $1 OR target_workspace_id = $1
-        ORDER BY created_at DESC
-        LIMIT $2 OFFSET $3
-      `, [workspace_id, limit, offset]);
-
-      return result.rows || [];
-    } catch (error) {
-      console.error('Failed to get cost injections:', error);
-      return [];
-    }
-  }
+  // processPendingInjections and getCostInjections removed - no injection management
 
   // ========================================
   // SCALING TIERS MANAGEMENT

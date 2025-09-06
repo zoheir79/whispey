@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const {
       service_type,
       service_id,
-      calculation_type = 'advanced', // 'advanced', 'injection', 'fixed', 'dynamic', 'hybrid'
+      calculation_type = 'advanced', // 'advanced', 'fixed', 'dynamic', 'hybrid'
       usage_metrics = {},
       usage_timestamp,
       usage_volume,
@@ -101,20 +101,12 @@ export async function POST(request: NextRequest) {
         );
         break;
 
-      case 'injection':
-        if (!base_cost) {
-          return NextResponse.json({ 
-            error: 'base_cost is required for injection calculation' 
-          }, { status: 400 });
-        }
-        calculationResult = await advancedCostManager.calculateInjectionCost(
-          service_type, service_id, base_cost, target_service_type, target_service_id
-        );
-        break;
+      // case 'injection' removed - embedding costs handled in file upload
 
       case 'fixed':
-        calculationResult = await advancedCostManager.calculateFixedCostWithAllowances(
-          service_type, service_id, usage_metrics
+        // calculateFixedCostWithAllowances removed - no allowance management
+        calculationResult = await advancedCostManager.calculateAdvancedServiceCost(
+          service_type, service_id, usage_metrics, usage_timestamp
         );
         break;
 
@@ -236,11 +228,7 @@ export async function GET(request: NextRequest) {
 
     const config = configResult.rows[0];
 
-    // Récupérer allowances si applicable
-    let allowances = [];
-    if (['fixed', 'hybrid'].includes(config.cost_mode)) {
-      allowances = await advancedCostManager.getServiceAllowances(service_type, service_id);
-    }
+    // Allowances removed - no quota management
 
     // Récupérer scaling tiers si mode dynamic
     let scalingTiers = [];
@@ -252,11 +240,11 @@ export async function GET(request: NextRequest) {
       success: true,
       has_advanced_config: true,
       configuration: config,
-      allowances,
+      // allowances removed
       scaling_tiers: scalingTiers,
       supported_calculation_types: [
         'advanced',
-        config.cost_mode === 'injection' ? 'injection' : null,
+        // injection mode removed
         config.cost_mode === 'fixed' ? 'fixed' : null,
         config.cost_mode === 'dynamic' ? 'dynamic' : null,
         config.cost_mode === 'hybrid' ? 'hybrid' : null

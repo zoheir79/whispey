@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       service_id,
       workspace_id,
       cost_mode,
-      injection_config,
+      // injection_config removed
       fixed_cost_config,
       dynamic_cost_config,
       hybrid_config,
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
       service_id,
       workspace_id,
       cost_mode,
-      injection_config,
+      // injection_config removed
       fixed_cost_config,
       dynamic_cost_config,
       hybrid_config,
