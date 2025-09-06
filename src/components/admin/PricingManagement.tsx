@@ -283,7 +283,7 @@ export default function PricingManagement() {
           )}
 
           <Tabs defaultValue="dedicated" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-100 dark:bg-slate-800">
+            <TabsList className="grid w-full grid-cols-5 bg-gray-100 dark:bg-slate-800">
               <TabsTrigger value="dedicated" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
                 <Cloud className="h-4 w-4" />
                 Mode Dédié
@@ -299,6 +299,10 @@ export default function PricingManagement() {
               <TabsTrigger value="s3" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
                 <Eye className="h-4 w-4" />
                 Stockage S3
+              </TabsTrigger>
+              <TabsTrigger value="monitoring" className="gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
+                <CheckCircle2 className="h-4 w-4" />
+                Monitoring
               </TabsTrigger>
             </TabsList>
 
@@ -829,6 +833,235 @@ export default function PricingManagement() {
                   </div>
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="monitoring" className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      Seuils d'Alerte
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="low_balance_threshold">Seuil Balance Faible ($)</Label>
+                      <Input
+                        id="low_balance_threshold"
+                        type="number"
+                        step="0.01"
+                        defaultValue="50.00"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Déclenche une alerte quand le solde descend sous ce montant
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="usage_spike_threshold">Seuil Pic d'Usage (%)</Label>
+                      <Input
+                        id="usage_spike_threshold"
+                        type="number"
+                        step="1"
+                        defaultValue="200"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Alerte si l'usage augmente de ce pourcentage en 24h
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="auto_suspend_threshold">Suspension Automatique ($)</Label>
+                      <Input
+                        id="auto_suspend_threshold"
+                        type="number"
+                        step="0.01"
+                        defaultValue="-100.00"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Suspend automatiquement si le solde devient plus négatif
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5 text-orange-500" />
+                      Configuration Coûts Services
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="kb_base_cost">Knowledge Bases - Coût Base ($)</Label>
+                      <Input
+                        id="kb_base_cost"
+                        type="number"
+                        step="0.01"
+                        defaultValue="0.10"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Coût de base par opération KB
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="workflow_base_cost">Workflows - Coût Base ($)</Label>
+                      <Input
+                        id="workflow_base_cost"
+                        type="number"
+                        step="0.01"
+                        defaultValue="0.05"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Coût de base par exécution workflow
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="workflow_minute_cost">Workflows - Coût par Minute ($)</Label>
+                      <Input
+                        id="workflow_minute_cost"
+                        type="number"
+                        step="0.001"
+                        defaultValue="0.002"
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Coût additionnel par minute d'exécution
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-blue-500" />
+                    Calculateur d'Impact des Coûts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                      <AlertDescription className="text-blue-800 dark:text-blue-200">
+                        Utilisez ce calculateur pour estimer l'impact des changements de configuration sur vos coûts mensuels.
+                      </AlertDescription>
+                    </Alert>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <Card className="border-blue-200">
+                        <CardHeader>
+                          <CardTitle className="text-lg text-blue-600 flex items-center gap-2">
+                            <Cloud className="w-5 h-5" />
+                            Knowledge Bases
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span>Fichiers moyens/mois:</span>
+                              <span className="font-medium">1,250</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Taille moyenne:</span>
+                              <span className="font-medium">2.3 MB</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Coût estimé:</span>
+                              <span className="font-bold text-blue-600">$45.20</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="border-green-200">
+                        <CardHeader>
+                          <CardTitle className="text-lg text-green-600 flex items-center gap-2">
+                            <RefreshCw className="w-5 h-5" />
+                            Workflows
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span>Exécutions moyennes:</span>
+                              <span className="font-medium">8,430</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Durée moyenne:</span>
+                              <span className="font-medium">3.2 min</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Coût estimé:</span>
+                              <span className="font-bold text-green-600">$128.90</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="border-purple-200">
+                        <CardHeader>
+                          <CardTitle className="text-lg text-purple-600 flex items-center gap-2">
+                            <MessageSquare className="w-5 h-5" />
+                            Agents IA
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span>Tokens moyens:</span>
+                              <span className="font-medium">2.4M</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Usage modèles:</span>
+                              <span className="font-medium">Mixte</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Coût estimé:</span>
+                              <span className="font-bold text-purple-600">$234.50</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="border-t pt-4">
+                      <div className="flex items-center justify-between text-lg font-semibold">
+                        <span>Coût Total Mensuel Estimé:</span>
+                        <span className="text-2xl text-gray-900 dark:text-gray-100">$408.60</span>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                        Basé sur les patterns d'usage actuels et la configuration des coûts
+                      </p>
+                    </div>
+
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        onClick={saveSettings}
+                        disabled={saving}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        {saving ? (
+                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4 mr-2" />
+                        )}
+                        Sauvegarder Configuration
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </CardContent>
