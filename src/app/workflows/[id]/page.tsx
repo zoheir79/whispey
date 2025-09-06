@@ -67,11 +67,13 @@ export default function WorkflowPage() {
     }
   }
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | null | undefined) => {
+    if (amount == null || isNaN(amount)) return '$0.0000'
     return `$${amount.toFixed(4)}`
   }
 
-  const formatExecutionTime = (seconds: number) => {
+  const formatExecutionTime = (seconds: number | null | undefined) => {
+    if (seconds == null || isNaN(seconds)) return '0s'
     if (seconds < 60) return `${seconds.toFixed(1)}s`
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
