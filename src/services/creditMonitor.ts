@@ -98,6 +98,7 @@ export class CreditMonitor {
    * Traiter le monitoring des workspaces (logique commune)
    */
   private async processWorkspaceMonitoring(workspaces: any[], enableAutoActions: boolean = true): Promise<MonitoringResult> {
+    try {
       let alertsGenerated = 0;
       let suspensionsTriggered = 0;
       const alerts: CreditAlert[] = [];
