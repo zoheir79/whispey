@@ -27,6 +27,41 @@ export interface MonitoringResult {
 export class CreditMonitor {
 
   /**
+   * Surveiller workspaces spécifiques pour balance de crédits
+   */
+  async monitorSpecificWorkspaces(workspaceIds: string[], enableAutoActions: boolean = true): Promise<MonitoringResult> {
+    try {
+      const placeholders = workspaceIds.map((_, index) => `$${index + 1}`).join(', ');
+      
+      // Récupérer workspaces spécifiés avec leurs crédits
+      const workspacesResult = await query(`
+        SELECT 
+          p.id as workspace_id,
+          p.project_name,
+          uc.id as credit_id,
+          uc.current_balance,
+          uc.currency,
+          uc.low_balance_threshold,
+          uc.credit_limit,
+          uc.auto_recharge_enabled,
+          uc.auto_recharge_threshold,
+          uc.auto_recharge_amount,
+          uc.is_suspended
+        FROM pype_voice_projects p
+        INNER JOIN user_credits uc ON uc.workspace_id = p.id
+        WHERE uc.is_active = true AND p.id IN (${placeholders})
+        ORDER BY uc.current_balance ASC
+      `, workspaceIds);
+
+      return await this.processWorkspaceMonitoring(workspacesResult.rows, enableAutoActions);
+
+    } catch (error) {
+      console.error('Error monitoring specific workspaces:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Surveiller tous les workspaces pour balance de crédits
    */
   async monitorAllWorkspaces(): Promise<MonitoringResult> {
@@ -51,7 +86,18 @@ export class CreditMonitor {
         ORDER BY uc.current_balance ASC
       `);
 
-      const workspaces = workspacesResult.rows;
+      return await this.processWorkspaceMonitoring(workspacesResult.rows, true);
+
+    } catch (error) {
+      console.error('Error monitoring all workspaces:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Traiter le monitoring des workspaces (logique commune)
+   */
+  private async processWorkspaceMonitoring(workspaces: any[], enableAutoActions: boolean = true): Promise<MonitoringResult> {
       let alertsGenerated = 0;
       let suspensionsTriggered = 0;
       const alerts: CreditAlert[] = [];
