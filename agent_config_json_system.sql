@@ -71,10 +71,10 @@ BEGIN
     
     -- Validation des pricing_overrides
     IF p_pricing_overrides IS NOT NULL THEN
-        -- Valider les overrides de prix pour services
+        -- Valider les prix overrides
         DECLARE
-            service_key TEXT;
             price_fields TEXT[] := ARRAY['stt_price', 'tts_price', 'llm_price'];
+            service_key TEXT;
         BEGIN
             FOREACH service_key IN ARRAY price_fields LOOP
                 IF p_pricing_overrides ? service_key THEN
@@ -93,12 +93,13 @@ BEGIN
         -- Valider les URL overrides
         DECLARE
             url_fields TEXT[] := ARRAY['stt_url', 'tts_url', 'llm_url'];
+            url_service_key TEXT;
         BEGIN
-            FOREACH service_key IN ARRAY url_fields LOOP
-                IF p_pricing_overrides ? service_key THEN
-                    IF p_pricing_overrides->>service_key IS NOT NULL THEN
-                        IF NOT (p_pricing_overrides->>service_key ~ '^https?://') THEN
-                            v_warnings := array_append(v_warnings, format('%s should be a valid HTTP(S) URL', service_key));
+            FOREACH url_service_key IN ARRAY url_fields LOOP
+                IF p_pricing_overrides ? url_service_key THEN
+                    IF p_pricing_overrides->>url_service_key IS NOT NULL THEN
+                        IF NOT (p_pricing_overrides->>url_service_key ~ '^https?://') THEN
+                            v_warnings := array_append(v_warnings, format('%s should be a valid HTTP(S) URL', url_service_key));
                         END IF;
                     END IF;
                 END IF;
@@ -235,7 +236,7 @@ BEGIN
         u.email as owner_email
     INTO v_agent
     FROM pype_voice_agents a
-    LEFT JOIN pype_voice_workspaces w ON a.workspace_id = w.id
+    LEFT JOIN pype_voice_projects w ON a.project_id = w.id
     LEFT JOIN pype_voice_users u ON a.user_id = u.id
     WHERE a.id = p_agent_id;
     
@@ -500,7 +501,7 @@ SELECT
     a.updated_at
 
 FROM pype_voice_agents a
-LEFT JOIN pype_voice_workspaces w ON a.workspace_id = w.id
+LEFT JOIN pype_voice_projects w ON a.project_id = w.id
 LEFT JOIN pype_voice_users u ON a.user_id = u.id  
 LEFT JOIN agent_billing_cycles abc ON a.id = abc.agent_id AND abc.is_active = true
 WHERE a.deleted_at IS NULL;
