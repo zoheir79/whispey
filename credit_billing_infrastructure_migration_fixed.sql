@@ -1,6 +1,6 @@
 -- ===================================
--- MIGRATION: Infrastructure Crédits et Cycles de Facturation
--- Version: 1.0
+-- MIGRATION: Infrastructure Credits et Cycles de Facturation
+-- Version: 1.1 - Fixed encoding issues
 -- Date: 2025-01-06
 -- ===================================
 
@@ -10,7 +10,7 @@ BEGIN;
 -- 1. EXTENSION DES TABLES EXISTANTES
 -- ========================================
 
--- Étendre monthly_consumption pour KB et Workflow
+-- Etendre monthly_consumption pour KB et Workflow
 ALTER TABLE monthly_consumption 
 ADD COLUMN IF NOT EXISTS kb_storage_gb DECIMAL(10,4) DEFAULT 0,
 ADD COLUMN IF NOT EXISTS kb_storage_cost DECIMAL(10,4) DEFAULT 0,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS user_credits (
     auto_recharge_amount DECIMAL(10,4) DEFAULT 100 CHECK (auto_recharge_amount > 0),
     auto_recharge_threshold DECIMAL(10,4) DEFAULT 20 CHECK (auto_recharge_threshold >= 0),
     
-    -- Statut et contrôle
+    -- Statut et controle
     is_active BOOLEAN DEFAULT true,
     is_suspended BOOLEAN DEFAULT false,
     suspension_reason TEXT,
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS billing_cycles (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     
-    -- Période (pour faciliter les requêtes)
+    -- Periode (pour faciliter les requetes)
     period_year INTEGER NOT NULL,
     period_month INTEGER CHECK (period_month BETWEEN 1 AND 12),
     period_quarter INTEGER CHECK (period_quarter BETWEEN 1 AND 4),
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS billing_cycles (
     -- Statut du cycle
     status VARCHAR(20) DEFAULT 'current' CHECK (status IN ('current', 'consumed', 'invoiced', 'cancelled')),
     
-    -- Coûts
+    -- Couts
     estimated_cost DECIMAL(10,4) DEFAULT 0 CHECK (estimated_cost >= 0),
     actual_cost DECIMAL(10,4) DEFAULT 0 CHECK (actual_cost >= 0),
     fixed_cost DECIMAL(10,4) DEFAULT 0 CHECK (fixed_cost >= 0),
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS billing_cycles (
     invoice_id UUID,
     invoice_date TIMESTAMP WITH TIME ZONE,
     
-    -- Métadonnées
+    -- Metadonnees
     usage_data JSONB DEFAULT '{}',
     notes TEXT,
     
@@ -300,7 +300,7 @@ CREATE POLICY user_credits_workspace_policy ON user_credits
         )
     );
 
--- Politique pour billing_cycles: même logique workspace
+-- Politique pour billing_cycles: meme logique workspace
 CREATE POLICY billing_cycles_workspace_policy ON billing_cycles
     FOR ALL
     USING (
@@ -318,7 +318,7 @@ CREATE POLICY billing_cycles_workspace_policy ON billing_cycles
         )
     );
 
--- Politique pour credit_transactions: même logique workspace
+-- Politique pour credit_transactions: meme logique workspace
 CREATE POLICY credit_transactions_workspace_policy ON credit_transactions
     FOR ALL
     USING (
@@ -336,7 +336,7 @@ CREATE POLICY credit_transactions_workspace_policy ON credit_transactions
         )
     );
 
--- Politique pour credit_alerts: même logique workspace
+-- Politique pour credit_alerts: meme logique workspace
 CREATE POLICY credit_alerts_workspace_policy ON credit_alerts
     FOR ALL
     USING (
@@ -357,33 +357,33 @@ CREATE POLICY credit_alerts_workspace_policy ON credit_alerts
 COMMIT;
 
 -- ========================================
--- 8. VÉRIFICATION POST-MIGRATION
+-- 8. VERIFICATION POST-MIGRATION
 -- ========================================
 
--- Vérifier que les tables ont été créées
+-- Verifier que les tables ont ete creees
 DO $$
 BEGIN
-    -- Vérifier user_credits
+    -- Verifier user_credits
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'user_credits') THEN
         RAISE EXCEPTION 'Table user_credits not created';
     END IF;
     
-    -- Vérifier billing_cycles
+    -- Verifier billing_cycles
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'billing_cycles') THEN
         RAISE EXCEPTION 'Table billing_cycles not created';
     END IF;
     
-    -- Vérifier credit_transactions
+    -- Verifier credit_transactions
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'credit_transactions') THEN
         RAISE EXCEPTION 'Table credit_transactions not created';
     END IF;
     
-    -- Vérifier credit_alerts
+    -- Verifier credit_alerts
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'credit_alerts') THEN
         RAISE EXCEPTION 'Table credit_alerts not created';
     END IF;
     
-    -- Vérifier extensions monthly_consumption
+    -- Verifier extensions monthly_consumption
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
         WHERE table_name = 'monthly_consumption' 
