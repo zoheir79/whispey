@@ -263,11 +263,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Triggers pour toutes les tables avec updated_at
+-- Triggers pour toutes les tables avec updated_at (idempotent)
+DROP TRIGGER IF EXISTS update_user_credits_updated_at ON user_credits;
 CREATE TRIGGER update_user_credits_updated_at
     BEFORE UPDATE ON user_credits
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_billing_cycles_updated_at ON billing_cycles;
 CREATE TRIGGER update_billing_cycles_updated_at
     BEFORE UPDATE ON billing_cycles
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -282,7 +284,8 @@ ALTER TABLE billing_cycles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE credit_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE credit_alerts ENABLE ROW LEVEL SECURITY;
 
--- Politique pour user_credits: utilisateurs voient seulement leurs workspaces
+-- Politique pour user_credits: utilisateurs voient seulement leurs workspaces (idempotent)
+DROP POLICY IF EXISTS user_credits_workspace_policy ON user_credits;
 CREATE POLICY user_credits_workspace_policy ON user_credits
     FOR ALL
     USING (
@@ -300,7 +303,8 @@ CREATE POLICY user_credits_workspace_policy ON user_credits
         )
     );
 
--- Politique pour billing_cycles: même logique workspace
+-- Politique pour billing_cycles: même logique workspace (idempotent)
+DROP POLICY IF EXISTS billing_cycles_workspace_policy ON billing_cycles;
 CREATE POLICY billing_cycles_workspace_policy ON billing_cycles
     FOR ALL
     USING (
@@ -318,7 +322,8 @@ CREATE POLICY billing_cycles_workspace_policy ON billing_cycles
         )
     );
 
--- Politique pour credit_transactions: même logique workspace
+-- Politique pour credit_transactions: même logique workspace (idempotent)
+DROP POLICY IF EXISTS credit_transactions_workspace_policy ON credit_transactions;
 CREATE POLICY credit_transactions_workspace_policy ON credit_transactions
     FOR ALL
     USING (
@@ -336,7 +341,8 @@ CREATE POLICY credit_transactions_workspace_policy ON credit_transactions
         )
     );
 
--- Politique pour credit_alerts: même logique workspace
+-- Politique pour credit_alerts: même logique workspace (idempotent)
+DROP POLICY IF EXISTS credit_alerts_workspace_policy ON credit_alerts;
 CREATE POLICY credit_alerts_workspace_policy ON credit_alerts
     FOR ALL
     USING (

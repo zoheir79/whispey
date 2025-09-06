@@ -172,8 +172,19 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     const hasExternalProvider = formData.stt_mode === 'external' || formData.tts_mode === 'external' || formData.llm_mode === 'external'
     
     if (platform_mode === 'dedicated') {
-      const monthlyFee = 30.00 // Base dedicated cost
-      return `$${monthlyFee.toFixed(2)}/month`
+      // Use subscription costs based on agent type and billing cycle
+      const isAnnual = formData.billing_cycle === 'yearly'
+      let cost = 0
+      
+      if (agent_type === 'voice') {
+        cost = isAnnual ? 299.90 : 29.99 // voice_agent_annual : voice_agent_monthly
+      } else if (agent_type === 'text') {
+        cost = isAnnual ? 199.90 : 19.99 // text_agent_annual : text_agent_monthly
+      } else if (agent_type === 'vision') {
+        cost = isAnnual ? 399.90 : 39.99 // vision_agent_annual : vision_agent_monthly
+      }
+      
+      return `$${cost.toFixed(2)}${isAnnual ? '/année' : '/mois'}`
     }
     
     if (platform_mode === 'pag') {
@@ -629,6 +640,44 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
                 className="h-10 px-3 text-sm border-gray-200 dark:border-slate-600 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
               />
             </div>
+
+            {/* Billing Cycle Selection - For dedicated and subscription modes */}
+            {(formData.platform_mode === 'dedicated' || formData.platform_mode === 'hybrid') && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                  Cycle de Facturation
+                </label>
+                <div className="flex gap-2">
+                  <div
+                    className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                      formData.billing_cycle === 'monthly'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
+                        : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
+                    }`}
+                    onClick={() => setFormData({ ...formData, billing_cycle: 'monthly' })}
+                  >
+                    <div className="text-center">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Mensuel</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Facturation mensuelle</div>
+                    </div>
+                  </div>
+                  
+                  <div
+                    className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                      formData.billing_cycle === 'yearly'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
+                        : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
+                    }`}
+                    onClick={() => setFormData({ ...formData, billing_cycle: 'yearly' })}
+                  >
+                    <div className="text-center">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Annuel</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Facturation annuelle (réduction)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Provider Selection - For PAG and Hybrid modes */}
             {(formData.platform_mode === 'pag' || formData.platform_mode === 'hybrid') && (

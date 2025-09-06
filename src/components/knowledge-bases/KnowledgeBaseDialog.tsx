@@ -36,7 +36,9 @@ export default function KnowledgeBaseDialog({
     name: '',
     description: '',
     workspace_id: '',
-    s3_prefix: ''
+    s3_prefix: '',
+    pricing_mode: 'fixed', // 'fixed' or 'pag'
+    billing_cycle: 'monthly' // 'monthly' or 'yearly'
   })
   const [error, setError] = useState('')
   const { isAdmin } = useGlobalRole()
@@ -49,7 +51,9 @@ export default function KnowledgeBaseDialog({
           name: knowledgeBase.name || '',
           description: knowledgeBase.description || '',
           workspace_id: knowledgeBase.workspace_id || '',
-          s3_prefix: knowledgeBase.s3_prefix || ''
+          s3_prefix: knowledgeBase.s3_prefix || '',
+          pricing_mode: knowledgeBase.pricing_mode || 'fixed',
+          billing_cycle: knowledgeBase.billing_cycle || 'monthly'
         })
       }
     }
@@ -114,7 +118,7 @@ export default function KnowledgeBaseDialog({
 
   const handleClose = () => {
     if (!loading) {
-      setFormData({ name: '', description: '', workspace_id: '', s3_prefix: '' })
+      setFormData({ name: '', description: '', workspace_id: '', s3_prefix: '', pricing_mode: 'fixed', billing_cycle: 'monthly' })
       setError('')
       onClose()
     }
@@ -207,6 +211,83 @@ export default function KnowledgeBaseDialog({
             <p className="text-sm text-gray-500">
               S3 folder path for this knowledge base. If empty, will use default structure.
             </p>
+          </div>
+
+          {/* Pricing Mode Selection */}
+          <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+            <Label className="text-sm font-medium text-blue-900 dark:text-blue-100">Pricing Model</Label>
+            <div className="flex gap-2">
+              <div
+                className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                  formData.pricing_mode === 'fixed'
+                    ? 'border-blue-500 bg-blue-100 dark:bg-blue-800/50 dark:border-blue-400'
+                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
+                }`}
+                onClick={() => setFormData(prev => ({ ...prev, pricing_mode: 'fixed' }))}
+              >
+                <div className="text-center">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Fixed Pricing</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Monthly/Annual subscription</div>
+                </div>
+              </div>
+              
+              <div
+                className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                  formData.pricing_mode === 'pag'
+                    ? 'border-blue-500 bg-blue-100 dark:bg-blue-800/50 dark:border-blue-400'  
+                    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800'
+                }`}
+                onClick={() => setFormData(prev => ({ ...prev, pricing_mode: 'pag' }))}
+              >
+                <div className="text-center">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Pay-as-You-Go</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Usage-based billing</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Billing Cycle - Only show for fixed pricing */}
+            {formData.pricing_mode === 'fixed' && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-blue-900 dark:text-blue-100">Billing Cycle</Label>
+                <div className="flex gap-2">
+                  <div
+                    className={`flex-1 p-2 rounded border cursor-pointer transition-all ${
+                      formData.billing_cycle === 'monthly'
+                        ? 'border-blue-500 bg-blue-100 dark:bg-blue-800/50'
+                        : 'border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, billing_cycle: 'monthly' }))}
+                  >
+                    <div className="text-center text-xs font-medium text-gray-900 dark:text-gray-100">Monthly</div>
+                  </div>
+                  
+                  <div
+                    className={`flex-1 p-2 rounded border cursor-pointer transition-all ${
+                      formData.billing_cycle === 'yearly'
+                        ? 'border-blue-500 bg-blue-100 dark:bg-blue-800/50'
+                        : 'border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, billing_cycle: 'yearly' }))}
+                  >
+                    <div className="text-center text-xs font-medium text-gray-900 dark:text-gray-100">Yearly</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Cost Estimation */}
+            <div className="p-2 bg-white dark:bg-slate-800 rounded border">
+              <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Estimated Cost:</div>
+              <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                {formData.pricing_mode === 'fixed' 
+                  ? formData.billing_cycle === 'yearly' 
+                    ? '$499.90/year' 
+                    : '$49.99/month'
+                  : 'Variable based on usage'
+                }
+              </div>
+            </div>
           </div>
 
           <DialogFooter>
