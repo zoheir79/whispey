@@ -138,8 +138,8 @@ export async function POST(
       }, { status: 400 });
     }
 
-    // Initialiser S3Manager si nécessaire
-    if (!(await s3Manager.initialize())) {
+    // Initialiser S3Manager si nécessaire avec la config du workspace
+    if (!(await s3Manager.initialize(kb.workspace_id))) {
       return NextResponse.json({ 
         error: 'S3 storage not configured' 
       }, { status: 500 });

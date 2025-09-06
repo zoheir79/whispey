@@ -29,43 +29,73 @@ interface BucketUsage {
 export class S3Manager {
   private s3Client: S3Client | null = null;
   private config: S3Config | null = null;
+  private workspaceId: number | null = null;
 
-  async initialize(): Promise<boolean> {
+  async initialize(workspaceId?: number): Promise<boolean> {
     try {
-      // Récupérer la configuration S3 depuis la base de données
-      let result = await query(`
-        SELECT value FROM settings_global WHERE key = 's3_config'
-      `);
+      this.workspaceId = workspaceId || null;
+      
+      // Si un workspaceId est fourni, utiliser la config du workspace
+      if (workspaceId) {
+        const workspaceResult = await query(`
+          SELECT s3_enabled, s3_region, s3_endpoint, s3_access_key, s3_secret_key, s3_bucket_prefix, s3_cost_per_gb 
+          FROM projects 
+          WHERE id = $1 AND s3_enabled = true
+        `, [workspaceId]);
 
-      if (!result.rows || result.rows.length === 0) {
-        console.log('S3 configuration not found, creating default configuration...');
-        
-        // Créer une configuration par défaut
-        const defaultConfig: S3Config = {
-          endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
-          access_key: process.env.S3_ACCESS_KEY || 'minioadmin',
-          secret_key: process.env.S3_SECRET_KEY || 'minioadmin',
-          region: process.env.S3_REGION || 'us-east-1',
-          bucket_prefix: process.env.S3_BUCKET_PREFIX || 'whispey-',
-          cost_per_gb: parseFloat(process.env.S3_COST_PER_GB || '0.023')
-        };
-
-        // Insérer la configuration par défaut
-        try {
-          await query(`
-            INSERT INTO settings_global (key, value, created_at, updated_at)
-            VALUES ('s3_config', $1, NOW(), NOW())
-            ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()
-          `, [JSON.stringify(defaultConfig)]);
+        if (workspaceResult.rows && workspaceResult.rows.length > 0) {
+          const workspace = workspaceResult.rows[0];
+          this.config = {
+            endpoint: workspace.s3_endpoint,
+            access_key: workspace.s3_access_key,
+            secret_key: workspace.s3_secret_key,
+            region: workspace.s3_region || 'us-east-1',
+            bucket_prefix: workspace.s3_bucket_prefix || 'whispey-',
+            cost_per_gb: workspace.s3_cost_per_gb || 0.023
+          };
           
-          this.config = defaultConfig;
-          console.log('✅ Created default S3 configuration');
-        } catch (insertError) {
-          console.warn('Could not save S3 config to database, using temporary config:', insertError);
-          this.config = defaultConfig;
+          console.log(`✅ Using workspace S3 config for workspace ${workspaceId}`);
+        } else {
+          console.log(`Workspace ${workspaceId} has no S3 config, falling back to global config`);
         }
-      } else {
-        this.config = result.rows[0].value as S3Config;
+      }
+      
+      // Si pas de config workspace ou pas de workspaceId, utiliser la config globale
+      if (!this.config) {
+        let result = await query(`
+          SELECT value FROM settings_global WHERE key = 's3_config'
+        `);
+
+        if (!result.rows || result.rows.length === 0) {
+          console.log('S3 configuration not found, creating default configuration...');
+          
+          // Créer une configuration par défaut
+          const defaultConfig: S3Config = {
+            endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
+            access_key: process.env.S3_ACCESS_KEY || 'minioadmin',
+            secret_key: process.env.S3_SECRET_KEY || 'minioadmin',
+            region: process.env.S3_REGION || 'us-east-1',
+            bucket_prefix: process.env.S3_BUCKET_PREFIX || 'whispey-',
+            cost_per_gb: parseFloat(process.env.S3_COST_PER_GB || '0.023')
+          };
+
+          // Insérer la configuration par défaut
+          try {
+            await query(`
+              INSERT INTO settings_global (key, value, created_at, updated_at)
+              VALUES ('s3_config', $1, NOW(), NOW())
+              ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()
+            `, [JSON.stringify(defaultConfig)]);
+            
+            this.config = defaultConfig;
+            console.log('✅ Created default S3 configuration');
+          } catch (insertError) {
+            console.warn('Could not save S3 config to database, using temporary config:', insertError);
+            this.config = defaultConfig;
+          }
+        } else {
+          this.config = result.rows[0].value as S3Config;
+        }
       }
 
       // Valider la configuration
@@ -126,10 +156,10 @@ export class S3Manager {
     }
   }
 
-  async createBucketForKB(kbId: string, projectId: number): Promise<boolean> {
+  async createBucketForKB(kbId: string, projectId: number): Promise<string | null> {
     if (!this.s3Client || !this.config) {
       console.error('S3Manager not initialized');
-      return false;
+      return null;
     }
 
     try {
@@ -138,8 +168,8 @@ export class S3Manager {
       // Vérifier si le bucket existe déjà
       try {
         await this.s3Client.send(new HeadBucketCommand({ Bucket: bucketName }));
-        console.log(`KB Bucket ${bucketName} already exists`);
-        return true;
+        console.log(`Bucket ${bucketName} already exists`);
+        return bucketName;
       } catch (error: any) {
         if (error.name !== 'NotFound') {
           throw error;
@@ -149,12 +179,12 @@ export class S3Manager {
       // Créer le bucket
       await this.s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
       
-      console.log(`✅ Created S3 bucket for KB: ${bucketName}`);
-      return true;
+      console.log(`✅ Created S3 bucket: ${bucketName}`);
+      return bucketName;
 
     } catch (error) {
-      console.error('Failed to create S3 bucket for KB:', error);
-      return false;
+      console.error('Failed to create S3 bucket:', error);
+      return null;
     }
   }
 

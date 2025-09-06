@@ -136,12 +136,11 @@ export async function POST(request: NextRequest) {
 
     // Créer bucket S3 pour cette KB
     const { s3Manager } = await import('@/services/s3Manager');
-    await s3Manager.initialize();
-    const bucketCreated = await s3Manager.createBucketForKB(newKB.id, workspace_id);
+    await s3Manager.initialize(workspace_id);
+    const bucketName = await s3Manager.createBucketForKB(newKB.id, workspace_id);
     
-    if (bucketCreated) {
-      // Mettre à jour avec le nom du bucket généré
-      const bucketName = `whispey-kb-${newKB.id}-${workspace_id}`.toLowerCase();
+    if (bucketName) {
+      // Mettre à jour avec le nom du bucket généré par S3Manager
       await query(`
         UPDATE pype_voice_knowledge_bases 
         SET s3_bucket_name = $1, s3_region = 'us-east-1'

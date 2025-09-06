@@ -244,7 +244,7 @@ export async function PATCH(
         )) {
           try {
             const { s3Manager } = await import('@/services/s3Manager')
-            await s3Manager.initialize()
+            await s3Manager.initialize(parseInt(projectId))
             
             const migrationResult = await s3Manager.migrateBucketsForWorkspace(
               parseInt(projectId),
