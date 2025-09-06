@@ -5,7 +5,7 @@ import { creditManager } from '@/services/creditManager'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { isAuthenticated, userId } = await verifyUserAuth(request);
@@ -14,6 +14,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
+    const params = await context.params;
     const alertId = params.id;
     const body = await request.json();
     const { action } = body; // 'read' | 'dismiss'
