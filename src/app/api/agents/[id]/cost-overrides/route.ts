@@ -139,7 +139,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const body = await request.json();
     const { cost_overrides } = body;
 
-    // Validate cost_overrides structure
+    // Validate cost overrides structure
     if (cost_overrides && typeof cost_overrides !== 'object') {
       return NextResponse.json(
         { error: 'cost_overrides must be an object' },
@@ -147,18 +147,33 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       );
     }
 
-    // Validate cost values if provided
+    // Validate cost values if provided - Compatible avec PricingSettings v2
     const validKeys = [
+      // Builtin costs (compatibles avec pricing_rates_pag)
       'builtin_stt_cost',
       'builtin_tts_cost', 
       'builtin_llm_cost',
+      // External providers
       'external_stt_provider',
       'external_stt_cost',
       'external_tts_provider',
       'external_tts_cost',
       'external_llm_provider',
       'external_llm_cost',
-      's3_storage_cost_per_gb'
+      // S3 storage (compatible avec s3_rates.storage_gb_month)
+      's3_storage_cost_per_gb',
+      // Dedicated costs (compatibles avec pricing_rates_dedicated)
+      'stt_monthly_cost',
+      'tts_monthly_cost',
+      'llm_monthly_cost',
+      // Subscription overrides (compatible avec subscription_costs)
+      'agent_monthly_cost',
+      'agent_annual_cost',
+      // KB/WF overrides (compatible avec fixed_pricing)
+      'kb_monthly_cost',
+      'kb_annual_cost',
+      'workflow_monthly_cost',
+      'workflow_annual_cost'
     ];
 
     if (cost_overrides) {

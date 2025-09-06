@@ -31,10 +31,13 @@ BEGIN
             prorata_ratio := 1.0; -- Fallback si fonction non disponible
     END;
     
-    -- Recuperer settings globaux
+    -- Recuperer settings globaux avec nouvelle structure PricingSettings
     SELECT 
         COALESCE((SELECT value FROM settings_global WHERE key = 'pricing_rates_dedicated'), '{}'::jsonb) as dedicated_rates,
-        COALESCE((SELECT value FROM settings_global WHERE key = 'pricing_rates_pag'), '{}'::jsonb) as pag_rates
+        COALESCE((SELECT value FROM settings_global WHERE key = 'pricing_rates_pag'), '{}'::jsonb) as pag_rates,
+        COALESCE((SELECT value FROM settings_global WHERE key = 'subscription_costs'), '{}'::jsonb) as subscription_costs,
+        COALESCE((SELECT value FROM settings_global WHERE key = 'fixed_pricing'), '{}'::jsonb) as fixed_pricing,
+        COALESCE((SELECT value FROM settings_global WHERE key = 's3_rates'), '{}'::jsonb) as s3_rates
     INTO settings_record;
     
     CASE p_service_type
@@ -45,48 +48,48 @@ BEGIN
             FROM pype_voice_agents WHERE id = p_service_id;
             
             IF service_record.platform_mode = 'dedicated' THEN
-                -- Utiliser overrides agent ou tarifs globaux
+                -- Utiliser overrides agent ou tarifs globaux (subscription_costs)
                 IF service_record.cost_overrides IS NOT NULL AND 
                    service_record.cost_overrides ? 'agent_monthly_cost' THEN
                     fixed_cost := (service_record.cost_overrides->>'agent_monthly_cost')::DECIMAL;
                 ELSE
-                    -- Tarifs par defaut selon type agent
+                    -- Tarifs par defaut selon type agent depuis subscription_costs
                     fixed_cost := CASE 
                         WHEN service_record.agent_type = 'voice' THEN 
-                            COALESCE((settings_record.dedicated_rates->>'voice_agent_monthly')::DECIMAL, 29.99)
+                            COALESCE((settings_record.subscription_costs->>'voice_agent_monthly')::DECIMAL, 29.99)
                         ELSE 
-                            COALESCE((settings_record.dedicated_rates->>'text_agent_monthly')::DECIMAL, 19.99)
+                            COALESCE((settings_record.subscription_costs->>'text_agent_monthly')::DECIMAL, 19.99)
                     END;
                 END IF;
             END IF;
             
         WHEN 'knowledge_base' THEN
             -- Recuperer config KB
-            SELECT platform_mode, cost_overrides
+            SELECT billing_mode, cost_overrides
             INTO service_record
             FROM pype_voice_knowledge_bases WHERE id = p_service_id;
             
-            IF service_record.platform_mode = 'dedicated' THEN
+            IF service_record.billing_mode = 'fixed' THEN
                 IF service_record.cost_overrides IS NOT NULL AND 
                    service_record.cost_overrides ? 'kb_monthly_cost' THEN
                     fixed_cost := (service_record.cost_overrides->>'kb_monthly_cost')::DECIMAL;
                 ELSE
-                    fixed_cost := COALESCE((settings_record.dedicated_rates->>'kb_monthly')::DECIMAL, 49.99);
+                    fixed_cost := COALESCE((settings_record.fixed_pricing->>'kb_monthly')::DECIMAL, 49.99);
                 END IF;
             END IF;
             
         WHEN 'workflow' THEN
             -- Recuperer config Workflow
-            SELECT platform_mode, cost_overrides
+            SELECT billing_mode, cost_overrides
             INTO service_record
             FROM pype_voice_workflows WHERE id = p_service_id;
             
-            IF service_record.platform_mode = 'subscription' THEN
+            IF service_record.billing_mode = 'fixed' THEN
                 IF service_record.cost_overrides IS NOT NULL AND 
                    service_record.cost_overrides ? 'workflow_monthly_cost' THEN
                     fixed_cost := (service_record.cost_overrides->>'workflow_monthly_cost')::DECIMAL;
                 ELSE
-                    fixed_cost := COALESCE((settings_record.dedicated_rates->>'workflow_subscription_monthly')::DECIMAL, 79.99);
+                    fixed_cost := COALESCE((settings_record.fixed_pricing->>'workflow_monthly')::DECIMAL, 79.99);
                 END IF;
             END IF;
             
@@ -96,7 +99,7 @@ BEGIN
             FROM pype_voice_projects WHERE id = p_service_id;
             
             fixed_cost := COALESCE(service_record.s3_storage_gb, 50) * 
-                         COALESCE((settings_record.dedicated_rates->>'s3_storage_per_gb_monthly')::DECIMAL, 0.10);
+                         COALESCE((settings_record.s3_rates->>'storage_gb_month')::DECIMAL, 0.10);
     END CASE;
     
     -- Appliquer prorata

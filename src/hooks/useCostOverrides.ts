@@ -2,16 +2,31 @@
 import { useState, useEffect } from 'react';
 
 interface CostOverrides {
+  // Builtin costs (PAG rates)
   builtin_stt_cost?: number;
   builtin_tts_cost?: number;
   builtin_llm_cost?: number;
+  // External providers
   external_stt_provider?: number;
   external_stt_cost?: number;
   external_tts_provider?: number;
   external_tts_cost?: number;
   external_llm_provider?: number;
   external_llm_cost?: number;
+  // S3 storage 
   s3_storage_cost_per_gb?: number;
+  // Dedicated costs (compatible avec pricing_rates_dedicated)
+  stt_monthly_cost?: number;
+  tts_monthly_cost?: number;
+  llm_monthly_cost?: number;
+  // Agent subscription overrides (compatible avec subscription_costs)
+  agent_monthly_cost?: number;
+  agent_annual_cost?: number;
+  // KB/WF overrides (compatible avec fixed_pricing)
+  kb_monthly_cost?: number;
+  kb_annual_cost?: number;
+  workflow_monthly_cost?: number;
+  workflow_annual_cost?: number;
 }
 
 interface AgentCostData {
@@ -136,7 +151,7 @@ export function useCostOverrides(agentId: number | null): UseCostOverridesReturn
   };
 }
 
-// Hook pour calculer les coûts effectifs avec overrides
+// Hook pour calculer les coûts effectifs avec overrides - Compatible PricingSettings v2
 export function useEffectiveCosts(
   agentType: string,
   pricingMode: string,
@@ -156,32 +171,43 @@ export function useEffectiveCosts(
       total: 0
     };
 
+    // Logique consolidée: Override → Global → Défaut
     if (pricingMode === 'dedicated') {
-      // Mode dédié - coûts mensuels fixes
-      costs.stt = costOverrides.builtin_stt_cost ?? globalSettings.builtin_stt?.cost_dedicated_monthly ?? 0;
-      costs.tts = costOverrides.builtin_tts_cost ?? globalSettings.builtin_tts?.cost_dedicated_monthly ?? 0;
-      costs.llm = costOverrides.builtin_llm_cost ?? globalSettings.builtin_llm?.cost_dedicated_monthly ?? 0;
+      // Mode dédié - coûts mensuels fixes depuis pricing_rates_dedicated
+      costs.stt = costOverrides.stt_monthly_cost ?? 
+                 globalSettings.pricing_rates_dedicated?.stt_monthly ?? 0;
+      costs.tts = costOverrides.tts_monthly_cost ?? 
+                 globalSettings.pricing_rates_dedicated?.tts_monthly ?? 0;
+      costs.llm = costOverrides.llm_monthly_cost ?? 
+                 globalSettings.pricing_rates_dedicated?.llm_monthly ?? 0;
     } else {
-      // Mode PAG - coûts par unité (estimation basée sur usage moyen)
+      // Mode PAG - coûts par unité depuis pricing_rates_pag
       const avgMinutesPerMonth = 1000; // Estimation
-      const avgWordsPerMonth = 50000;
       const avgTokensPerMonth = 100000;
       
-      costs.stt = (costOverrides.builtin_stt_cost ?? globalSettings.builtin_stt?.cost_per_minute ?? 0) * avgMinutesPerMonth;
-      costs.tts = (costOverrides.builtin_tts_cost ?? globalSettings.builtin_tts?.cost_per_word ?? 0) * avgWordsPerMonth;
-      costs.llm = (costOverrides.builtin_llm_cost ?? globalSettings.builtin_llm?.cost_per_token ?? 0) * avgTokensPerMonth;
+      costs.stt = (costOverrides.builtin_stt_cost ?? 
+                  globalSettings.pricing_rates_pag?.stt_builtin_per_minute ?? 0) * avgMinutesPerMonth;
+      costs.tts = (costOverrides.builtin_tts_cost ?? 
+                  globalSettings.pricing_rates_pag?.tts_builtin_per_minute ?? 0) * avgMinutesPerMonth;
+      costs.llm = (costOverrides.builtin_llm_cost ?? 
+                  globalSettings.pricing_rates_pag?.llm_builtin_per_token ?? 0) * avgTokensPerMonth;
     }
 
-    // Coût stockage S3 (par Go/mois)
+    // Coût stockage S3 depuis s3_rates
     const avgStorageGB = 5; // Estimation 5 Go par agent
-    costs.s3 = (costOverrides.s3_storage_cost_per_gb ?? globalSettings.s3_config?.cost_per_gb ?? 0) * avgStorageGB;
+    costs.s3 = (costOverrides.s3_storage_cost_per_gb ?? 
+               globalSettings.s3_rates?.storage_gb_month ?? 0) * avgStorageGB;
 
-    // Coût subscription agent
+    // Coût subscription agent depuis subscription_costs
     if (agentType === 'voice') {
-      const avgMinutesPerMonth = 1000;
-      costs.subscription = (globalSettings.agent_subscription_costs?.voice_per_minute ?? 0) * avgMinutesPerMonth;
-    } else if (agentType === 'text_only') {
-      costs.subscription = globalSettings.agent_subscription_costs?.textonly_per_month ?? 0;
+      costs.subscription = costOverrides.agent_monthly_cost ?? 
+                          globalSettings.subscription_costs?.voice_agent_monthly ?? 0;
+    } else if (agentType === 'textonly' || agentType === 'text') {
+      costs.subscription = costOverrides.agent_monthly_cost ?? 
+                          globalSettings.subscription_costs?.text_agent_monthly ?? 0;
+    } else if (agentType === 'vision') {
+      costs.subscription = costOverrides.agent_monthly_cost ?? 
+                          globalSettings.subscription_costs?.vision_agent_monthly ?? 0;
     }
 
     costs.total = costs.stt + costs.tts + costs.llm + costs.s3 + costs.subscription;
@@ -190,4 +216,41 @@ export function useEffectiveCosts(
   };
 
   return calculateEffectiveCosts();
+}
+
+// Hook pour coûts KB/Workflow avec overrides
+export function useServiceEffectiveCosts(
+  serviceType: 'knowledge_base' | 'workflow',
+  costOverrides: CostOverrides,
+  globalSettings: any
+) {
+  const calculateServiceCosts = () => {
+    if (!globalSettings) return null;
+
+    let monthlyCost = 0;
+    let annualCost = 0;
+
+    if (serviceType === 'knowledge_base') {
+      monthlyCost = costOverrides.kb_monthly_cost ?? 
+                   globalSettings.fixed_pricing?.kb_monthly ?? 0;
+      annualCost = costOverrides.kb_annual_cost ?? 
+                  globalSettings.fixed_pricing?.kb_annual ?? 0;
+    } else if (serviceType === 'workflow') {
+      monthlyCost = costOverrides.workflow_monthly_cost ?? 
+                   globalSettings.fixed_pricing?.workflow_monthly ?? 0;
+      annualCost = costOverrides.workflow_annual_cost ?? 
+                  globalSettings.fixed_pricing?.workflow_annual ?? 0;
+    }
+
+    const savings = annualCost > 0 ? ((monthlyCost * 12 - annualCost) / (monthlyCost * 12)) * 100 : 0;
+
+    return {
+      monthly: monthlyCost,
+      annual: annualCost,
+      savings_percent: Math.round(savings * 100) / 100,
+      effective_monthly: annualCost > 0 ? annualCost / 12 : monthlyCost
+    };
+  };
+
+  return calculateServiceCosts();
 }

@@ -405,11 +405,11 @@ BEGIN
     LIMIT 1;
     
     IF NOT FOUND THEN
-        -- Fallback vers système standard
+        -- Fallback vers système standard avec nouvelle structure
         RETURN jsonb_build_object(
             'cost_mode', 'standard',
             'message', 'Using standard cost calculation',
-            'result', calculate_service_total_cost(p_service_type, p_service_id)
+            'result', calculate_service_total_cost_v2(p_service_type, p_service_id)
         );
     END IF;
     
