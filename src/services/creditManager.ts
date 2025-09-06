@@ -82,6 +82,9 @@ export interface UsageMetrics {
   // Workflow metrics
   operations?: number;
   execution_minutes?: number;
+  mcp_calls?: number;
+  input_tokens?: number;
+  output_tokens?: number;
 }
 
 export interface CostCalculationResult {
