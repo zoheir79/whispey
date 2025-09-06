@@ -194,65 +194,12 @@ CREATE INDEX IF NOT EXISTS idx_webhooks_workspace_active ON webhook_configuratio
 CREATE INDEX IF NOT EXISTS idx_webhooks_global_active ON webhook_configurations(is_global, is_active) WHERE is_global = true AND is_active = true;
 
 -- ========================================
--- 6. RLS POLICIES
+-- 6. NOTES SÉCURITÉ
 -- ========================================
 
--- Activer RLS
-ALTER TABLE credit_alerts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE credit_monitoring_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE webhook_configurations ENABLE ROW LEVEL SECURITY;
-
--- Politique pour credit_alerts (accès workspace)
-CREATE POLICY credit_alerts_workspace_policy ON credit_alerts
-    FOR ALL
-    USING (
-        workspace_id IN (
-            SELECT epm.project_id
-            FROM pype_voice_email_project_mapping epm
-            INNER JOIN pype_voice_users u ON u.email = epm.email
-            WHERE u.user_id = auth.uid()
-            AND epm.is_active = true
-        )
-        OR EXISTS (
-            SELECT 1 FROM pype_voice_users u
-            WHERE u.user_id = auth.uid()
-            AND u.global_role IN ('admin', 'super_admin')
-        )
-    );
-
--- Politique pour monitoring_logs (admin seulement)
-CREATE POLICY monitoring_logs_admin_policy ON credit_monitoring_logs
-    FOR ALL
-    USING (
-        EXISTS (
-            SELECT 1 FROM pype_voice_users u
-            WHERE u.user_id = auth.uid()
-            AND u.global_role IN ('admin', 'super_admin')
-        )
-    );
-
--- Politique pour webhook_configurations
-CREATE POLICY webhook_configs_workspace_policy ON webhook_configurations
-    FOR ALL
-    USING (
-        (workspace_id IS NOT NULL AND workspace_id IN (
-            SELECT epm.project_id
-            FROM pype_voice_email_project_mapping epm
-            INNER JOIN pype_voice_users u ON u.email = epm.email
-            WHERE u.user_id = auth.uid()
-            AND epm.is_active = true
-            AND epm.role IN ('admin', 'owner')
-        ))
-        OR (is_global = true AND EXISTS (
-            SELECT 1 FROM pype_voice_users u
-            WHERE u.user_id = auth.uid()
-            AND u.global_role = 'super_admin'
-        ))
-    );
-
--- ========================================
--- 7. COMMENTAIRES DOCUMENTATION
--- ========================================
+-- Note: RLS policies retirees car dépendantes de Supabase auth.uid()
+-- La sécurité est gérée au niveau application via les APIs Next.js
+-- avec vérification des permissions par workspace
 
 COMMENT ON TABLE credit_alerts IS 'Alertes automatiques pour surveillance des crédits';
 COMMENT ON COLUMN credit_alerts.alert_type IS 'Type alerte: low_balance, critical_balance, negative_balance, auto_suspension';
