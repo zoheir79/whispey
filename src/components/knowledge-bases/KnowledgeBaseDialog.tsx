@@ -57,16 +57,20 @@ export default function KnowledgeBaseDialog({
 
   const fetchWorkspaces = async () => {
     try {
-      const response = await fetch('/api/projects')
+      // Use scope=all for super admins to get all workspaces
+      const endpoint = isAdmin ? '/api/projects?scope=all' : '/api/projects'
+      const response = await fetch(endpoint)
       if (response.ok) {
         const data = await response.json()
-        // Filter workspaces with S3 enabled
-        const s3Workspaces = data.projects?.filter((p: any) => p.s3_enabled) || []
-        setWorkspaces(s3Workspaces)
+        // For super admins, show all workspaces. For regular users, filter S3 enabled only
+        const availableWorkspaces = isAdmin 
+          ? (data || []) 
+          : (data?.filter((p: any) => p.s3_enabled) || [])
+        setWorkspaces(availableWorkspaces)
         
         // Auto-select first workspace if only one available
-        if (s3Workspaces.length === 1 && !formData.workspace_id) {
-          setFormData(prev => ({ ...prev, workspace_id: s3Workspaces[0].id }))
+        if (availableWorkspaces.length === 1 && !formData.workspace_id) {
+          setFormData(prev => ({ ...prev, workspace_id: availableWorkspaces[0].id }))
         }
       }
     } catch (error) {

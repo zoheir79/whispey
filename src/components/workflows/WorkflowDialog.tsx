@@ -64,14 +64,17 @@ export default function WorkflowDialog({
 
   const fetchWorkspaces = async () => {
     try {
-      const response = await fetch('/api/projects')
+      // Use scope=all for super admins to get all workspaces
+      const endpoint = isAdmin ? '/api/projects?scope=all' : '/api/projects'
+      const response = await fetch(endpoint)
       if (response.ok) {
         const data = await response.json()
-        setWorkspaces(data.projects || [])
+        const availableWorkspaces = data || []
+        setWorkspaces(availableWorkspaces)
         
         // Auto-select first workspace if only one available
-        if (data.projects?.length === 1 && !formData.workspace_id) {
-          setFormData(prev => ({ ...prev, workspace_id: data.projects[0].id }))
+        if (availableWorkspaces.length === 1 && !formData.workspace_id) {
+          setFormData(prev => ({ ...prev, workspace_id: availableWorkspaces[0].id }))
         }
       }
     } catch (error) {

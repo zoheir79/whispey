@@ -272,10 +272,10 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
               </Button>
             </div>
 
-            {/* Create Agent Button - disabled in global view */}
+            {/* Create Agent Button - with workspace selection */}
             <Button 
-              disabled 
-              className="flex items-center justify-center px-3 md:px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300"
+              onClick={() => setShowCreateDialog(true)}
+              className="flex items-center justify-center px-3 md:px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Plus className="w-4 h-4 md:mr-2" />
               <span className="hidden md:inline">New Agent</span>
@@ -578,6 +578,17 @@ const GlobalAgentSelection: React.FC<GlobalAgentSelectionProps> = () => {
           </div>
         )}
       </main>
+
+      {/* Agent Creation Dialog */}
+      <AgentCreationDialog
+        isOpen={showCreateDialog}
+        onClose={() => setShowCreateDialog(false)}
+        onAgentCreated={(newAgent) => {
+          setAgents(prev => [...prev, newAgent])
+          setShowCreateDialog(false)
+        }}
+        globalView={true}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!showDeleteConfirm} onOpenChange={() => setShowDeleteConfirm(null)}>

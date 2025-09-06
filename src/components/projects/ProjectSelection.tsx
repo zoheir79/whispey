@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import TokenRegenerationConfirmDialog from '../TokenRegenerationConfirmDialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
-import { Plus, Building2, Users, Settings, MoreVertical, Eye, Trash2, Copy, ExternalLink, Grid, List, Filter, Search, X, AlertCircle, SortDesc, Grid3X3, FolderOpen, Key, MoreHorizontal, Loader2, RefreshCw, Clock, ChevronRight, EyeOff } from 'lucide-react'
+import { Plus, Building2, Users, Settings, MoreVertical, Eye, Trash2, Copy, ExternalLink, Grid, List, Filter, Search, X, AlertCircle, SortDesc, Grid3X3, FolderOpen, Key, MoreHorizontal, Loader2, RefreshCw, Clock, ChevronRight, EyeOff, Bot, Database, Workflow, FileText } from 'lucide-react'
 import WorkspaceDashboard from '@/components/dashboard/WorkspaceDashboard'
 import ProjectCreationDialog from './ProjectCreationDialog'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
@@ -103,10 +103,12 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
   const refetch = fetchProjects;
 
   const handleProjectClick = (project: Project) => {
+    // Remove automatic redirect - workspace cards now show navigation options
     setSelectedProject(project.id)
-    setTimeout(() => {
-      router.push(`/${project.id}/agents`)
-    }, 150)
+  }
+
+  const handleNavigation = (projectId: string, section: string) => {
+    router.push(`/${projectId}/${section}`)
   }
 
   const handleCreateProject = () => {
@@ -515,15 +517,63 @@ const ProjectSelection: React.FC<ProjectSelectionProps> = () => {
                     </p>
                   )}
 
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
-                      <Clock className="w-3 h-3" />
-                      <span>Created {formatDate(project.created_at)}</span>
+                  {/* Navigation Options */}
+                  <div className="pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
+                        <Clock className="w-3 h-3" />
+                        <span>Created {formatDate(project.created_at)}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors">
-                      <span>Open workspace</span>
-                      <ChevronRight className="w-3 h-3" />
+                    <div className="grid grid-cols-4 gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleNavigation(project.id, 'agents')
+                        }}
+                        className="flex flex-col items-center gap-1 h-auto py-2 px-2 text-xs text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10"
+                      >
+                        <Bot className="w-4 h-4" />
+                        <span>Agents</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleNavigation(project.id, 'workflows')
+                        }}
+                        className="flex flex-col items-center gap-1 h-auto py-2 px-2 text-xs text-gray-600 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-500/10"
+                      >
+                        <Workflow className="w-4 h-4" />
+                        <span>Workflows</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleNavigation(project.id, 'knowledge-bases')
+                        }}
+                        className="flex flex-col items-center gap-1 h-auto py-2 px-2 text-xs text-gray-600 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10"
+                      >
+                        <Database className="w-4 h-4" />
+                        <span>Knowledge</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleNavigation(project.id, 'analytics')
+                        }}
+                        className="flex flex-col items-center gap-1 h-auto py-2 px-2 text-xs text-gray-600 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-500/10"
+                      >
+                        <FileText className="w-4 h-4" />
+                        <span>Analytics</span>
+                      </Button>
                     </div>
                   </div>
                 </CardContent>

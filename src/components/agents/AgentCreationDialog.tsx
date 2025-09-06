@@ -21,7 +21,7 @@ interface AgentCreationDialogProps {
   isOpen: boolean
   onClose: () => void
   onAgentCreated: (agentData: any) => void
-  projectId: string
+  projectId?: string
   projectData?: {
     s3_enabled?: boolean
     s3_region?: string
@@ -30,6 +30,7 @@ interface AgentCreationDialogProps {
     s3_cost_per_gb?: number
     s3_default_storage_gb?: number
   }
+  globalView?: boolean
 }
 
 const PLATFORM_MODES = [
@@ -82,7 +83,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   onClose, 
   onAgentCreated,
   projectId,
-  projectData
+  projectData,
+  globalView = false
 }) => {
   const [currentStep, setCurrentStep] = useState<'form' | 'creating' | 'success'>('form')
   const [selectedPlatform, setSelectedPlatform] = useState('pag')
@@ -108,6 +110,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
     tts_mode: 'builtin',
     llm_provider_id: '',
     llm_mode: 'builtin',
+    // Workspace selection for global view
+    selected_workspace: projectId || '',
     // Cost overrides for super admin
     cost_overrides: {
       stt_price: null as string | null,
@@ -125,6 +129,8 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [createdAgentData, setCreatedAgentData] = useState<any>(null)
+  const [workspaces, setWorkspaces] = useState<any[]>([])
+  const [workspacesLoading, setWorkspacesLoading] = useState(false)
   
   const sttProviders = getProvidersByType(providers, 'STT')
   const ttsProviders = getProvidersByType(providers, 'TTS')
@@ -133,6 +139,30 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
   useEffect(() => {
     setFormData(prev => ({ ...prev, platform_mode: selectedPlatform }))
   }, [selectedPlatform])
+
+  // Load workspaces for global view
+  useEffect(() => {
+    if (globalView && isOpen) {
+      loadWorkspaces()
+    }
+  }, [globalView, isOpen])
+
+  const loadWorkspaces = async () => {
+    if (!globalView) return
+    
+    try {
+      setWorkspacesLoading(true)
+      const response = await fetch('/api/projects')
+      if (!response.ok) throw new Error('Failed to load workspaces')
+      const data = await response.json()
+      setWorkspaces(data)
+    } catch (error) {
+      console.error('Error loading workspaces:', error)
+      setWorkspaces([])
+    } finally {
+      setWorkspacesLoading(false)
+    }
+  }
 
   // Calculate dynamic cost estimation
   const calculateEstimation = () => {
@@ -189,6 +219,11 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
 
     if (!formData.name.trim()) {
       setError('Agent name is required')
+      return
+    }
+
+    if (globalView && !formData.selected_workspace) {
+      setError('Please select a workspace')
       return
     }
     
@@ -269,11 +304,12 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         },
         provider_config: providerConfig,
         cost_overrides: Object.keys(tempCostOverrides).length > 0 ? tempCostOverrides : null,
-        project_id: projectId,
+        project_id: globalView ? formData.selected_workspace : projectId,
         environment: 'dev',
         platform: 'livekit'
       }
 
+      // Create agent via API
       const response = await fetch('/api/agents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -332,6 +368,7 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
         tts_mode: 'builtin',
         llm_provider_id: '',
         llm_mode: 'builtin',
+        selected_workspace: projectId || '',
         cost_overrides: {
           stt_price: null as string | null,
           stt_url: null as string | null,
@@ -417,6 +454,35 @@ const AgentCreationDialog: React.FC<AgentCreationDialogProps> = ({
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
+            )}
+
+            {/* Workspace Selection for Global View */}
+            {globalView && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                  Workspace <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  value={formData.selected_workspace}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, selected_workspace: value }))}
+                  disabled={workspacesLoading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={workspacesLoading ? "Loading workspaces..." : "Select a workspace"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {workspaces.map((workspace) => (
+                      <SelectItem key={workspace.id} value={workspace.id}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <span>{workspace.name}</span>
+                          <span className="text-xs text-gray-500">({workspace.environment})</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             )}
 
             {/* Platform Mode Selection */}
