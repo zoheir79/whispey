@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS usage_events (
     -- Identifiants du service
     service_type TEXT NOT NULL CHECK (service_type IN ('agent', 'kb', 'workflow', 'workspace')),
     service_id UUID NOT NULL,
-    workspace_id UUID NOT NULL REFERENCES pype_voice_workspaces(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES pype_voice_users(id) ON DELETE CASCADE,
+    workspace_id UUID NOT NULL REFERENCES pype_voice_projects(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES pype_voice_users(user_id) ON DELETE CASCADE,
     
     -- Type d'événement
     event_type TEXT NOT NULL CHECK (event_type IN (
