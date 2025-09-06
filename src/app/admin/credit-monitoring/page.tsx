@@ -35,6 +35,7 @@ interface CreditAlert {
   status: 'active' | 'acknowledged' | 'resolved'
   created_at: string
   acknowledged_at: string | null
+  acknowledged_by: string | null
 }
 
 interface WorkspaceCredit {
@@ -424,7 +425,6 @@ export default function CreditMonitoringPage() {
                               variant="outline"
                               onClick={() => suspendWorkspace(workspace.workspace_id)}
                               className="text-red-600 hover:bg-red-50"
-                              disabled={workspace.status === 'suspended'}
                             >
                               <Pause className="w-3 h-3 mr-1" />
                               Suspend
