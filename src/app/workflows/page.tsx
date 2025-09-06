@@ -172,7 +172,7 @@ export default function WorkflowsPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse">
+              <Card key={i} className="animate-pulse bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
                 <CardHeader className="pb-3">
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                   <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
@@ -187,9 +187,9 @@ export default function WorkflowsPage() {
             ))}
           </div>
         ) : filteredWorkflows.length === 0 ? (
-          <Card className="text-center py-12">
+          <Card className="text-center py-12 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
             <CardContent>
-              <Workflow className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <Workflow className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 No workflows found
               </h3>
@@ -210,7 +210,7 @@ export default function WorkflowsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredWorkflows.map((workflow) => (
-              <Card key={workflow.id} className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-teal-500">
+              <Card key={workflow.id} className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-teal-500 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -275,7 +275,7 @@ export default function WorkflowsPage() {
                           size="sm"
                           variant="outline"
                           className="flex-1"
-                          onClick={() => window.open(`/workflows/${workflow.id}`, '_blank')}
+                          onClick={() => window.location.href = `/workflows/${workflow.id}`}
                         >
                           <Eye className="w-3 h-3 mr-1" />
                           View
@@ -295,7 +295,7 @@ export default function WorkflowsPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => window.open(`/workflows/${workflow.id}/settings`, '_blank')}
+                          onClick={() => window.location.href = `/workflows/${workflow.id}/settings`}
                         >
                           <Settings className="w-3 h-3" />
                         </Button>

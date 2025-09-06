@@ -42,6 +42,9 @@ export default function KnowledgeBasesPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [showEditDialog, setShowEditDialog] = useState(false)
+  const [selectedKB, setSelectedKB] = useState<KnowledgeBase | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
   const { isAdmin, isSuperAdmin } = useGlobalRole()
 
   useEffect(() => {
@@ -63,11 +66,41 @@ export default function KnowledgeBasesPage() {
     }
   }
 
-  const filteredKnowledgeBases = knowledgeBases.filter(kb => 
+  const filteredKnowledgeBases = knowledgeBases.filter(kb =>
     kb.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     kb.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     kb.workspace_name.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  const handleEdit = (kb: KnowledgeBase) => {
+    setSelectedKB(kb)
+    setShowEditDialog(true)
+  }
+
+  const handleDelete = async (kb: KnowledgeBase) => {
+    if (!confirm(`Are you sure you want to delete "${kb.name}"? This action cannot be undone.`)) {
+      return
+    }
+
+    setDeleteLoading(kb.id)
+    try {
+      const response = await fetch(`/api/knowledge-bases/${kb.id}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to delete knowledge base')
+      }
+
+      await fetchKnowledgeBases()
+    } catch (error) {
+      console.error('Delete error:', error)
+      alert(error instanceof Error ? error.message : 'Failed to delete knowledge base')
+    } finally {
+      setDeleteLoading(null)
+    }
+  }
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 B'
@@ -148,7 +181,7 @@ export default function KnowledgeBasesPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse">
+              <Card key={i} className="animate-pulse bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
                 <CardHeader className="pb-3">
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                   <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
@@ -163,9 +196,9 @@ export default function KnowledgeBasesPage() {
             ))}
           </div>
         ) : filteredKnowledgeBases.length === 0 ? (
-          <Card className="text-center py-12">
+          <Card className="text-center py-12 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
             <CardContent>
-              <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <Database className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 No knowledge bases found
               </h3>
@@ -186,7 +219,7 @@ export default function KnowledgeBasesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredKnowledgeBases.map((kb) => (
-              <Card key={kb.id} className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-orange-500">
+              <Card key={kb.id} className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-orange-500 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -234,7 +267,7 @@ export default function KnowledgeBasesPage() {
                           size="sm"
                           variant="outline"
                           className="flex-1"
-                          onClick={() => window.open(`/knowledge-bases/${kb.id}`, '_blank')}
+                          onClick={() => window.location.href = `/knowledge-bases/${kb.id}`}
                         >
                           <Eye className="w-3 h-3 mr-1" />
                           View
@@ -242,10 +275,30 @@ export default function KnowledgeBasesPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => window.open(`/knowledge-bases/${kb.id}/files`, '_blank')}
+                          onClick={() => window.location.href = `/knowledge-bases/${kb.id}/files`}
                         >
                           <Upload className="w-3 h-3 mr-1" />
                           Files
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEdit(kb)}
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          onClick={() => handleDelete(kb)}
+                          disabled={deleteLoading === kb.id}
+                        >
+                          {deleteLoading === kb.id ? (
+                            <div className="w-3 h-3 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                          ) : (
+                            <Trash2 className="w-3 h-3" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -264,6 +317,23 @@ export default function KnowledgeBasesPage() {
           onClose={() => setShowCreateDialog(false)}
           onSuccess={() => {
             setShowCreateDialog(false)
+            fetchKnowledgeBases()
+          }}
+        />
+      )}
+
+      {/* Edit Knowledge Base Dialog */}
+      {showEditDialog && selectedKB && (
+        <KnowledgeBaseDialog
+          open={showEditDialog}
+          knowledgeBase={selectedKB}
+          onClose={() => {
+            setShowEditDialog(false)
+            setSelectedKB(null)
+          }}
+          onSuccess={() => {
+            setShowEditDialog(false)
+            setSelectedKB(null)
             fetchKnowledgeBases()
           }}
         />
