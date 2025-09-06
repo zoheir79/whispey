@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
       knowledge_base: result.rows[0]
     }, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating knowledge base:', error);
     
     if (error.code === '23505') { // Duplicate key

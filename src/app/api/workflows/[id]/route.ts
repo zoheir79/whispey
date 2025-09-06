@@ -79,7 +79,7 @@ export async function GET(
       recent_executions: recentExecutions.rows
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching workflow:', error);
     return NextResponse.json(
       { error: 'Internal server error' }, 
@@ -163,7 +163,7 @@ export async function PUT(
       workflow: result.rows[0]
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating workflow:', error);
     return NextResponse.json(
       { error: 'Internal server error' }, 
@@ -226,7 +226,7 @@ export async function DELETE(
       message: 'Workflow deleted successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting workflow:', error);
     return NextResponse.json(
       { error: 'Internal server error' }, 
@@ -294,7 +294,7 @@ export async function POST(
       message: 'Workflow execution started'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error executing workflow:', error);
     return NextResponse.json(
       { error: 'Internal server error' }, 

@@ -80,7 +80,7 @@ export async function GET(
       recent_metrics: recentMetrics.rows
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching knowledge base:', error);
     return NextResponse.json(
       { error: 'Internal server error' }, 
@@ -164,7 +164,7 @@ export async function PUT(
       knowledge_base: result.rows[0]
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating knowledge base:', error);
     return NextResponse.json(
       { error: 'Internal server error' }, 
@@ -227,7 +227,7 @@ export async function DELETE(
       message: 'Knowledge base deleted successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting knowledge base:', error);
     return NextResponse.json(
       { error: 'Internal server error' }, 
