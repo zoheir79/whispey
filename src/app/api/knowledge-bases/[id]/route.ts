@@ -22,7 +22,7 @@ export async function GET(
     
     let kbQuery = `
       SELECT kb.*, u.email as created_by_email, p.name as workspace_name,
-             p.s3_bucket_name, p.s3_region, p.s3_access_key_id, p.s3_secret_access_key
+             p.s3_enabled, p.s3_region, p.s3_endpoint, p.s3_access_key, p.s3_secret_key, p.s3_bucket_prefix
       FROM pype_voice_knowledge_bases kb
       LEFT JOIN pype_voice_users u ON u.user_id = kb.created_by
       LEFT JOIN pype_voice_projects p ON p.id = kb.workspace_id

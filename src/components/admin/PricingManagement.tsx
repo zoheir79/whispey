@@ -37,6 +37,10 @@ interface PricingSettings {
     vision_agent_monthly: number
     vision_agent_annual: number
     s3_storage_per_gb_monthly: number
+    knowledge_base_monthly: number
+    knowledge_base_annual: number
+    workflow_monthly: number
+    workflow_annual: number
   }
   pricing_rates_pag: {
     llm_builtin_per_token: number
@@ -112,7 +116,11 @@ export default function PricingManagement() {
           voice_agent_annual: 299.90,
           vision_agent_monthly: 39.99,
           vision_agent_annual: 399.90,
-          s3_storage_per_gb_monthly: 0.10
+          s3_storage_per_gb_monthly: 0.10,
+          knowledge_base_monthly: 49.99,
+          knowledge_base_annual: 499.90,
+          workflow_monthly: 39.99,
+          workflow_annual: 399.90
         },
         pricing_rates_pag: settingsMap.pricing_rates_pag || {
           llm_builtin_per_token: 0.000015,
@@ -359,13 +367,45 @@ export default function PricingManagement() {
                         Synthèse vocale illimitée built-in
                       </p>
                     </div>
+
+                    <Separator className="my-4" />
+
+                    <div>
+                      <Label htmlFor="kb_monthly" className="text-gray-900 dark:text-gray-100">Knowledge Base (par mois)</Label>
+                      <Input
+                        id="kb_monthly"
+                        type="number"
+                        step="0.01"
+                        value={settings.pricing_rates_dedicated.knowledge_base_monthly}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'knowledge_base_monthly', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Accès illimité aux Knowledge Bases
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="workflow_monthly" className="text-gray-900 dark:text-gray-100">Workflow (par mois)</Label>
+                      <Input
+                        id="workflow_monthly"
+                        type="number"
+                        step="0.01"
+                        value={settings.pricing_rates_dedicated.workflow_monthly}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'workflow_monthly', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Exécution illimitée de workflows
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-gray-100">
                     <Calendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                    Modèles IA - Tarifs Annuels
+                    Tarifs Annuels (avec réduction)
                   </h3>
                   
                   <div className="space-y-3">
@@ -406,6 +446,38 @@ export default function PricingManagement() {
                         onChange={(e) => updateSetting('pricing_rates_dedicated', 'tts_annual', parseFloat(e.target.value) || 0)}
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
+                    </div>
+
+                    <Separator className="my-4" />
+
+                    <div>
+                      <Label htmlFor="kb_annual" className="text-gray-900 dark:text-gray-100">Knowledge Base (par an)</Label>
+                      <Input
+                        id="kb_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.pricing_rates_dedicated.knowledge_base_annual}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'knowledge_base_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Tarif annuel avec réduction
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="workflow_annual" className="text-gray-900 dark:text-gray-100">Workflow (par an)</Label>
+                      <Input
+                        id="workflow_annual"
+                        type="number"
+                        step="0.01"
+                        value={settings.pricing_rates_dedicated.workflow_annual}
+                        onChange={(e) => updateSetting('pricing_rates_dedicated', 'workflow_annual', parseFloat(e.target.value) || 0)}
+                        className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
+                      />
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Tarif annuel avec réduction
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -893,49 +965,49 @@ export default function PricingManagement() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <AlertTriangle className="w-5 h-5 text-orange-500" />
-                      Configuration Coûts Services
+                      Configuration Système
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <Label htmlFor="kb_base_cost">Knowledge Bases - Coût Base ($)</Label>
+                      <Label htmlFor="agent_timeout">Timeout Agent (secondes)</Label>
                       <Input
-                        id="kb_base_cost"
+                        id="agent_timeout"
                         type="number"
-                        step="0.01"
-                        defaultValue="0.10"
+                        step="1"
+                        defaultValue="300"
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Coût de base par opération KB
+                        Timeout maximum pour les appels d'agents
                       </p>
                     </div>
 
                     <div>
-                      <Label htmlFor="workflow_base_cost">Workflows - Coût Base ($)</Label>
+                      <Label htmlFor="max_concurrent_calls">Appels Concurrents Max</Label>
                       <Input
-                        id="workflow_base_cost"
+                        id="max_concurrent_calls"
                         type="number"
-                        step="0.01"
-                        defaultValue="0.05"
+                        step="1"
+                        defaultValue="100"
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Coût de base par exécution workflow
+                        Nombre maximum d'appels simultanés
                       </p>
                     </div>
 
                     <div>
-                      <Label htmlFor="workflow_minute_cost">Workflows - Coût par Minute ($)</Label>
+                      <Label htmlFor="storage_cleanup_days">Nettoyage Stockage (jours)</Label>
                       <Input
-                        id="workflow_minute_cost"
+                        id="storage_cleanup_days"
                         type="number"
-                        step="0.001"
-                        defaultValue="0.002"
+                        step="1"
+                        defaultValue="90"
                         className="mt-1 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Coût additionnel par minute d'exécution
+                        Suppression automatique des fichiers après X jours
                       </p>
                     </div>
                   </CardContent>
